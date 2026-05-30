@@ -1,0 +1,26 @@
+{
+  "source": "indiehackers",
+  "url": "https://www.indiehackers.com/post/free-tool-to-calculate-saas-subscription-revenue-growth-559280bdff",
+  "title": "free tool to calculate saas subscription revenue growth",
+  "status": "candidate",
+  "score": 40,
+  "matched_keywords": [
+    "revenue",
+    "growth",
+    "saas",
+    "tool"
+  ],
+  "raw_text": "Free tool to calculate SaaS subscription revenue growth - Indie Hackers Home Starting Up Case Studies DB Products Ideas DB Vibe Coding Tools Subscribe to IH+ Starting Up Case Studies Ideas DB Products DB Join 9 Likes 0 Bookmarks 2 Comments Report Free tool to calculate SaaS subscription revenue growth by Julian Meyer Hi IHers! I launched a free tool today to predict growth given certain common SaaS metrics like Customer Acquisition Cost, Churn Rate, and Average Revenue Per Customer. You can check out the revenue growth calculator here: https://growthcalculator.app I built this tool to promote https://pagecheck.app , my site which helps improve conversion rates by tracking site load times and security. I learned about this technique, called Engineering as Marketing, through a book called Traction . Julian Meyer posted to Growth on January 28, 2020 9 0 Share Say something nice to meyer9… Post Comment 1 Nice idea. Some people also call that side project marketing. People are always asking about what metrics to use, you may be able to add other calculations to the list :) rosiesherry · 6 years ago · Reply 1 Absolutely. I wanted to get the basic version out, but definitely looking for feedback about more features to add. meyer9 · 6 years ago · Reply Trending on Indie Hackers 30 days ago I posted here with $0 revenue. Here's what actually happened next. 151 comments How to spot high-intent customers in 5 minutes, for free. 48 comments Fixing broken scrapers instead of working on my actual product. So I made it my problem. 39 comments I Built a Habit Tracker SaaS Alone in 6 Weeks (No CS Degree, No Team). Here's Exactly How 39 comments I built an open-source PII masking layer for LLM APIs — early traction, looking for design partners 29 comments How to see revenue problems before they get worse 23 comments Stay informed as an indie hacker. Market insights that help you start and grow your business. Subscribe Follow @IndieHackers on X for stories and insights about founders building profitable online businesses, and to connect with others in the Indie Hackers community. © Indie Hackers, Inc. · FAQ · Terms · Privacy · Cookie Settings / Policy · Community Groups Meetups Top Today Top This Week Top This Month Join Products All Products Highest Revenue Side Projects Self-Funded Add Yours Databases Ideas Products Stories",
+  "buyer": "",
+  "pain": "",
+  "bad_workaround": "",
+  "product_angle": "",
+  "revenue_signal": "",
+  "why_money": "",
+  "mvp": "",
+  "nocode_prompt": "",
+  "codex_prompt": "",
+  "created_at": "2026-05-29T03:30:13.685Z",
+  "fetched_at": "2026-05-29T17:39:05.319Z",
+  "http_status": 200
+}
