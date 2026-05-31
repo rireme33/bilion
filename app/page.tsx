@@ -1,198 +1,301 @@
-"use client";
-
-import { useState } from "react";
-
-type FreeSignal = {
-  id: string;
-  product_angle: string;
-  buyer: string;
-  pain: string;
-  bad_workaround: string;
-  mvp: string;
-  why_money: string;
-  price_signal: string;
-  score: number;
-  locked: Record<string, boolean>;
-};
+const CHECKOUT_URL =
+  process.env.NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL || "#";
 
 export default function HomePage() {
-  const [signal, setSignal] = useState<FreeSignal | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const checkoutUrl =
-    process.env.NEXT_PUBLIC_CHECKOUT_URL || "https://gumroad.com/l/YOUR_PRODUCT";
-
-  async function handleBuildToday() {
-    setLoading(true);
-    setError("");
-
-    try {
-      const res = await fetch("/api/goldmine/match", {
-        method: "GET",
-        cache: "no-store",
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to find a build idea.");
-      }
-
-      setSignal(data.signal);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Something went wrong."
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
-
   return (
-    <main className="min-h-screen bg-zinc-950 text-white">
-      <section className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-6 py-10">
-        <header className="mb-16 flex items-center justify-between">
-          <div className="text-xl font-bold tracking-tight">Bilion</div>
-          <div className="rounded-full border border-zinc-800 px-4 py-2 text-sm text-zinc-400">
-            Tweet Hunter for vibe coders
-          </div>
-        </header>
-
-        <div className="grid flex-1 items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
-          <section>
-            <div className="mb-5 inline-flex rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-300">
-              For Codex, Cursor, Claude Code, Lovable users
+    <main className="min-h-screen bg-[#070707] text-white">
+      <section className="mx-auto flex max-w-6xl flex-col px-6 pb-20 pt-6 md:pb-28">
+        <header className="mb-16 flex items-center justify-between gap-4">
+          <a href="/" className="group flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white text-lg font-black text-black">
+              B
             </div>
 
-            <h1 className="mb-6 max-w-3xl text-5xl font-black leading-tight tracking-tight md:text-7xl">
-              What should I build today?
-            </h1>
+            <div>
+              <div className="text-2xl font-black tracking-tight transition group-hover:text-zinc-200">
+                Bilion
+              </div>
+              <div className="text-xs text-zinc-500">
+                by Build Decision
+              </div>
+            </div>
+          </a>
 
-            <p className="mb-8 max-w-2xl text-lg leading-8 text-zinc-300">
-              Bilion shows AI builders what to build next using real indie
-              founder signals, buyer pain, and proven small-business patterns.
+          <nav className="hidden items-center gap-3 md:flex">
+            <a
+              href="/app"
+              className="rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-zinc-300 transition hover:bg-white/[0.04] hover:text-white"
+            >
+              Try Free
+            </a>
+
+            <a
+              href={CHECKOUT_URL}
+              className="rounded-full bg-white px-4 py-2 text-sm font-bold text-black transition hover:bg-zinc-200"
+            >
+              Unlock Pro — $19
+            </a>
+          </nav>
+        </header>
+
+        <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+          <div>
+            <div className="inline-flex rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 text-sm text-emerald-300">
+              AI product signal engine
+            </div>
+
+            <div className="mt-8">
+              <div className="text-lg font-bold uppercase tracking-[0.35em] text-zinc-500">
+                Bilion
+              </div>
+
+              <h1 className="mt-3 max-w-4xl text-5xl font-black tracking-tight md:text-7xl">
+                Know what to build next.
+              </h1>
+            </div>
+
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-400">
+              Bilion helps AI builders find launch-ready product ideas backed by
+              real founder and product signals.
             </p>
 
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <button
-                onClick={handleBuildToday}
-                disabled={loading}
-                className="rounded-2xl bg-white px-7 py-4 text-base font-bold text-zinc-950 transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60"
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <a
+                href="/app"
+                className="rounded-2xl bg-white px-6 py-4 text-center text-sm font-bold text-black transition hover:bg-zinc-200"
               >
-                {loading ? "Finding signal..." : "What should I build today?"}
-              </button>
+                Try Bilion Free
+              </a>
 
               <a
-                href={checkoutUrl}
-                className="rounded-2xl border border-zinc-700 px-7 py-4 text-center text-base font-bold text-white transition hover:bg-zinc-900"
+                href={CHECKOUT_URL}
+                className="rounded-2xl border border-white/10 px-6 py-4 text-center text-sm font-bold text-white transition hover:bg-white/[0.04]"
               >
-                Unlock Launch Pack - $12
+                Unlock Pro — $19
               </a>
             </div>
 
-            {error && (
-              <p className="mt-5 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-                {error}
-              </p>
-            )}
-          </section>
+            <div className="mt-8 flex flex-wrap gap-3 text-sm text-zinc-500">
+              <span className="rounded-full border border-white/10 px-3 py-1">
+                For Codex users
+              </span>
+              <span className="rounded-full border border-white/10 px-3 py-1">
+                For Cursor builders
+              </span>
+              <span className="rounded-full border border-white/10 px-3 py-1">
+                For solo AI builders
+              </span>
+            </div>
+          </div>
 
-          <section className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-5 shadow-2xl">
-            {!signal ? (
-              <div className="flex min-h-[520px] flex-col justify-center rounded-2xl border border-dashed border-zinc-700 p-8 text-center">
-                <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-zinc-500">
-                  Build This Today
-                </p>
-                <h2 className="mb-4 text-3xl font-black">
-                  Your next AI product signal appears here.
-                </h2>
-                <p className="text-zinc-400">
-                  Click the button to get one buildable product direction from
-                  the Bilion goldmine.
-                </p>
-              </div>
-            ) : (
-              <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
-                <div className="mb-5 flex items-start justify-between gap-4">
-                  <div>
-                    <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-emerald-400">
-                      Build This Today
-                    </p>
-                    <h2 className="text-3xl font-black leading-tight">
-                      {signal.product_angle}
-                    </h2>
-                  </div>
+          <div className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl">
+            <div className="mb-4 inline-flex rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300">
+              Free preview
+            </div>
 
-                  <div className="rounded-full bg-emerald-500/10 px-3 py-1 text-sm font-bold text-emerald-300">
-                    Score {signal.score}
-                  </div>
-                </div>
+            <h2 className="text-3xl font-black">
+              Generate one build idea for free.
+            </h2>
 
-                <div className="grid gap-4">
-                  <InfoBlock label="Buyer" value={signal.buyer} />
-                  <InfoBlock label="Pain" value={signal.pain} />
-                  <InfoBlock
-                    label="Bad workaround"
-                    value={signal.bad_workaround}
-                  />
-                  <InfoBlock label="MVP" value={signal.mvp} />
-                  <InfoBlock label="Why money" value={signal.why_money} />
-                  <InfoBlock
-                    label="Price signal"
-                    value={signal.price_signal}
-                  />
-                </div>
+            <p className="mt-3 text-sm leading-6 text-zinc-400">
+              Pick what you can build and who you want to sell to. Bilion
+              returns one product opportunity with buyer, pain, and a tiny MVP.
+            </p>
 
-                <div className="mt-6 rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-5">
-                  <p className="mb-3 text-sm font-bold uppercase tracking-[0.18em] text-yellow-300">
-                    Locked in Launch Pack
-                  </p>
+            <div className="mt-6 space-y-3">
+              <PreviewItem
+                label="Build idea"
+                value="Local Review Reply Assistant"
+              />
+              <PreviewItem label="Buyer" value="Local businesses" />
+              <PreviewItem
+                label="Pain"
+                value="Owners know reviews matter but do not have time to write consistent replies."
+              />
+              <PreviewItem
+                label="Tiny MVP"
+                value="Paste a customer review → get 3 reply options in the store's tone."
+              />
+            </div>
 
-                  <div className="grid gap-2 text-sm text-zinc-300">
-                    <LockedItem text="Lovable prompt" />
-                    <LockedItem text="Codex prompt" />
-                    <LockedItem text="Landing page copy" />
-                    <LockedItem text="Pricing details" />
-                    <LockedItem text="X launch posts" />
-                    <LockedItem text="DM script" />
-                    <LockedItem text="48h validation plan" />
-                    <LockedItem text="First customer target" />
-                    <LockedItem text="Similar successful examples" />
-                  </div>
-
-                  <a
-                    href={checkoutUrl}
-                    className="mt-5 block rounded-2xl bg-yellow-300 px-6 py-4 text-center font-black text-zinc-950 transition hover:bg-yellow-200"
-                  >
-                    Unlock Launch Pack - $12
-                  </a>
-                </div>
-              </div>
-            )}
-          </section>
+            <a
+              href="/app"
+              className="mt-6 block rounded-2xl bg-white px-5 py-4 text-center text-sm font-bold text-black transition hover:bg-zinc-200"
+            >
+              Open Free Generator
+            </a>
+          </div>
         </div>
+
+        <section className="mt-24 grid gap-6 md:grid-cols-3">
+          <FeatureCard
+            title="Stop guessing"
+            text="Most AI builders can ship fast now. The bottleneck is choosing what is worth building."
+          />
+          <FeatureCard
+            title="Start from signals"
+            text="Bilion turns founder and product patterns into small product opportunities."
+          />
+          <FeatureCard
+            title="Validate fast"
+            text="Free gives the idea. Pro unlocks prompts, copy, pricing, DM scripts, and a 48h validation plan."
+          />
+        </section>
+
+        <section className="mt-24 rounded-3xl border border-white/10 bg-[#101011] p-8 md:p-10">
+          <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+            <div>
+              <div className="inline-flex rounded-full bg-yellow-400/10 px-3 py-1 text-xs font-medium text-yellow-300">
+                Free vs Pro
+              </div>
+
+              <h2 className="mt-4 text-4xl font-black tracking-tight">
+                The idea is free. The launch plan is Pro.
+              </h2>
+
+              <p className="mt-4 text-sm leading-7 text-zinc-400">
+                Bilion is designed to make the free result useful, but not
+                complete. If the idea looks promising, Pro gives the execution
+                package.
+              </p>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <PlanCard
+                title="Free"
+                price="$0"
+                items={[
+                  "1 build idea preview",
+                  "Buyer",
+                  "Pain",
+                  "Why now",
+                  "Tiny MVP",
+                ]}
+                cta="Try Free"
+                href="/app"
+              />
+
+              <PlanCard
+                title="Pro"
+                price="$19"
+                highlight
+                items={[
+                  "Codex-ready prompt",
+                  "Landing page copy",
+                  "Pricing strategy",
+                  "X launch posts",
+                  "Cold DM script",
+                  "48h validation plan",
+                ]}
+                cta="Unlock Pro"
+                href={CHECKOUT_URL}
+              />
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-24 text-center">
+          <div className="mx-auto mb-5 inline-flex rounded-full border border-white/10 px-4 py-2 text-sm text-zinc-400">
+            Bilion by Build Decision
+          </div>
+
+          <h2 className="text-4xl font-black tracking-tight">
+            Build from buyer pain, not random inspiration.
+          </h2>
+
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-zinc-400">
+            Use Bilion when you can build with AI, but you are stuck choosing
+            what to build next.
+          </p>
+
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <a
+              href="/app"
+              className="rounded-2xl bg-white px-6 py-4 text-center text-sm font-bold text-black transition hover:bg-zinc-200"
+            >
+              Try Bilion Free
+            </a>
+
+            <a
+              href={CHECKOUT_URL}
+              className="rounded-2xl border border-white/10 px-6 py-4 text-center text-sm font-bold text-white transition hover:bg-white/[0.04]"
+            >
+              Unlock Pro — $19
+            </a>
+          </div>
+        </section>
       </section>
     </main>
   );
 }
 
-function InfoBlock({ label, value }: { label: string; value: string }) {
+function PreviewItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
-      <p className="mb-1 text-xs font-bold uppercase tracking-[0.18em] text-zinc-500">
+    <div className="rounded-2xl border border-white/10 bg-black/40 p-4">
+      <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
         {label}
-      </p>
-      <p className="text-base leading-7 text-zinc-100">{value || "—"}</p>
+      </div>
+      <div className="mt-2 text-sm leading-6 text-zinc-100">{value}</div>
     </div>
   );
 }
 
-function LockedItem({ text }: { text: string }) {
+function FeatureCard({ title, text }: { title: string; text: string }) {
   return (
-    <div className="flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-950/70 px-4 py-3">
-      <span>{text}</span>
-      <span className="text-yellow-300">Locked</span>
+    <div className="rounded-3xl border border-white/10 bg-[#101011] p-6">
+      <h3 className="text-xl font-bold">{title}</h3>
+      <p className="mt-3 text-sm leading-6 text-zinc-500">{text}</p>
+    </div>
+  );
+}
+
+function PlanCard({
+  title,
+  price,
+  items,
+  cta,
+  href,
+  highlight,
+}: {
+  title: string;
+  price: string;
+  items: string[];
+  cta: string;
+  href: string;
+  highlight?: boolean;
+}) {
+  return (
+    <div
+      className={[
+        "rounded-3xl border p-6",
+        highlight
+          ? "border-yellow-400/30 bg-yellow-400/[0.04]"
+          : "border-white/10 bg-black/40",
+      ].join(" ")}
+    >
+      <div className="text-sm font-bold text-zinc-400">{title}</div>
+      <div className="mt-3 text-4xl font-black">{price}</div>
+
+      <ul className="mt-6 space-y-3 text-sm text-zinc-300">
+        {items.map((item) => (
+          <li key={item} className="flex gap-2">
+            <span className="text-emerald-300">✓</span>
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+
+      <a
+        href={href}
+        className={[
+          "mt-6 block rounded-2xl px-5 py-4 text-center text-sm font-bold transition",
+          highlight
+            ? "bg-white text-black hover:bg-zinc-200"
+            : "border border-white/10 text-white hover:bg-white/[0.04]",
+        ].join(" ")}
+      >
+        {cta}
+      </a>
     </div>
   );
 }
