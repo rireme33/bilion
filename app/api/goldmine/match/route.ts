@@ -81,7 +81,7 @@ const fallbackSignals: RawSignal[] = [
 
 async function loadSignals(): Promise<RawSignal[]> {
   try {
-    const filePath = path.join(process.cwd(), "data", "goldmine_signals.json");
+    const filePath = path.join(process.cwd(), "data", "top100_signals.json");
     const raw = await fs.readFile(filePath, "utf8");
     const parsed = JSON.parse(raw);
 

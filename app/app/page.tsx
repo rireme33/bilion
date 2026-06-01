@@ -91,7 +91,7 @@ export default function BilionAppPage() {
           <div className="mb-8">
             <div className="text-2xl font-black tracking-tight">Bilion</div>
             <div className="mt-1 text-xs text-zinc-500">
-              Build ideas backed by real founder signals
+              100 curated money patterns from founder signals
             </div>
           </div>
 
@@ -117,16 +117,16 @@ export default function BilionAppPage() {
           <header className="mb-8 flex items-center justify-between gap-4">
             <div>
               <div className="inline-flex rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs text-emerald-300">
-                Free build idea generator
+                Money Pattern Explorer
               </div>
 
               <h1 className="mt-4 text-4xl font-black tracking-tight md:text-6xl">
-                Know what to build next.
+                Know what to build before you build.
               </h1>
 
               <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-400">
-                Bilion turns real founder and product signals into small AI
-                product ideas you can build and validate fast.
+               Built from 47,000+ founder-source URLs. Start with 100 curated
+                money patterns and unlock the launch plan.
               </p>
             </div>
           </header>
@@ -170,8 +170,8 @@ export default function BilionAppPage() {
               className="mt-5 w-full rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading
-                ? "Finding a profitable build idea..."
-                : "Generate free idea"}
+                ? "Finding a matched opportunity..."
+                : "Find Opportunity"}
             </button>
 
             {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
@@ -181,11 +181,11 @@ export default function BilionAppPage() {
             <div className="mt-8 rounded-3xl border border-dashed border-white/10 bg-white/[0.02] p-8 text-center">
               <div className="text-3xl">🧭</div>
               <h2 className="mt-4 text-xl font-bold">
-                Stop building random AI apps.
+                Stop building blind.
               </h2>
               <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-zinc-500">
-                Pick a build type and audience. Bilion will return one
-                business-backed idea from the signal database.
+                Pick a build type and audience. Bilion will surface one
+                launchable opportunity from the curated pattern set.
               </p>
             </div>
           )}
@@ -224,11 +224,11 @@ export default function BilionAppPage() {
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                   <div>
                     <div className="inline-flex rounded-full bg-yellow-400/10 px-3 py-1 text-xs font-medium text-yellow-300">
-                      Pro preview
+                      Founder Access
                     </div>
 
                     <h3 className="mt-3 text-2xl font-black">
-                      The idea is free. The launch plan is Pro.
+                      Free shows the opportunity. Founder Access shows how to launch it.
                     </h3>
 
                     <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
@@ -241,7 +241,7 @@ export default function BilionAppPage() {
                     href={CHECKOUT_URL}
                     className="rounded-2xl bg-white px-5 py-4 text-center text-sm font-bold text-black transition hover:bg-zinc-200"
                   >
-                    Unlock Pro — $19
+                    Unlock Founder Access — $19
                   </a>
                 </div>
 
@@ -264,7 +264,7 @@ export default function BilionAppPage() {
           <div className="sticky top-5">
             <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5">
               <div className="inline-flex rounded-full bg-yellow-400/10 px-3 py-1 text-xs font-medium text-yellow-300">
-                Pro Launch Pack
+                Founder Access
               </div>
 
               <h2 className="mt-4 text-2xl font-black">
@@ -272,7 +272,7 @@ export default function BilionAppPage() {
               </h2>
 
               <p className="mt-3 text-sm leading-6 text-zinc-500">
-                Free gives you the opportunity. Pro gives you the execution
+                Free gives you the opportunity. Founder Access gives you the execution
                 package.
               </p>
 
@@ -296,7 +296,7 @@ export default function BilionAppPage() {
                 href={CHECKOUT_URL}
                 className="mt-6 block rounded-2xl bg-white px-5 py-4 text-center text-sm font-bold text-black transition hover:bg-zinc-200"
               >
-                Unlock Bilion Pro — $19
+                Unlock Founder Access — $19
               </a>
 
               <p className="mt-3 text-center text-xs text-zinc-600">

@@ -15,9 +15,7 @@ export default function HomePage() {
               <div className="text-2xl font-black tracking-tight transition group-hover:text-zinc-200">
                 Bilion
               </div>
-              <div className="text-xs text-zinc-500">
-                by Build Decision
-              </div>
+              <div className="text-xs text-zinc-500">by Build Decision</div>
             </div>
           </a>
 
@@ -33,7 +31,7 @@ export default function HomePage() {
               href={CHECKOUT_URL}
               className="rounded-full bg-white px-4 py-2 text-sm font-bold text-black transition hover:bg-zinc-200"
             >
-              Unlock Pro — $19
+              Unlock Founder Access — $19
             </a>
           </nav>
         </header>
@@ -41,7 +39,7 @@ export default function HomePage() {
         <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
           <div>
             <div className="inline-flex rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 text-sm text-emerald-300">
-              AI product signal engine
+              100 curated money patterns
             </div>
 
             <div className="mt-8">
@@ -50,13 +48,13 @@ export default function HomePage() {
               </div>
 
               <h1 className="mt-3 max-w-4xl text-5xl font-black tracking-tight md:text-7xl">
-                Know what to build next.
+                Know what to build before you build.
               </h1>
             </div>
 
             <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-400">
-              Bilion helps AI builders find launch-ready product ideas backed by
-              real founder and product signals.
+              Built from 47,000+ founder-source URLs. Bilion helps AI builders
+              find what to build, who to sell to, and how to validate it fast.
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -71,7 +69,7 @@ export default function HomePage() {
                 href={CHECKOUT_URL}
                 className="rounded-2xl border border-white/10 px-6 py-4 text-center text-sm font-bold text-white transition hover:bg-white/[0.04]"
               >
-                Unlock Pro — $19
+                Unlock Founder Access — $19
               </a>
             </div>
 
@@ -94,17 +92,18 @@ export default function HomePage() {
             </div>
 
             <h2 className="text-3xl font-black">
-              Generate one build idea for free.
+              Try the Money Pattern Explorer for free.
             </h2>
 
             <p className="mt-3 text-sm leading-6 text-zinc-400">
               Pick what you can build and who you want to sell to. Bilion
-              returns one product opportunity with buyer, pain, and a tiny MVP.
+              returns one launchable opportunity with buyer, pain, and a tiny
+              MVP.
             </p>
 
             <div className="mt-6 space-y-3">
               <PreviewItem
-                label="Build idea"
+                label="Opportunity"
                 value="Local Review Reply Assistant"
               />
               <PreviewItem label="Buyer" value="Local businesses" />
@@ -122,7 +121,7 @@ export default function HomePage() {
               href="/app"
               className="mt-6 block rounded-2xl bg-white px-5 py-4 text-center text-sm font-bold text-black transition hover:bg-zinc-200"
             >
-              Open Free Generator
+              Open Money Pattern Explorer
             </a>
           </div>
         </div>
@@ -138,7 +137,7 @@ export default function HomePage() {
           />
           <FeatureCard
             title="Validate fast"
-            text="Free gives the idea. Pro unlocks prompts, copy, pricing, DM scripts, and a 48h validation plan."
+            text="Free shows the opportunity. Founder Access unlocks prompts, copy, pricing, DM scripts, and a 48h validation plan."
           />
         </section>
 
@@ -146,17 +145,18 @@ export default function HomePage() {
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
             <div>
               <div className="inline-flex rounded-full bg-yellow-400/10 px-3 py-1 text-xs font-medium text-yellow-300">
-                Free vs Pro
+                Free vs Founder Access
               </div>
 
               <h2 className="mt-4 text-4xl font-black tracking-tight">
-                The idea is free. The launch plan is Pro.
+                Free shows the opportunity. Founder Access shows how to launch
+                it.
               </h2>
 
               <p className="mt-4 text-sm leading-7 text-zinc-400">
                 Bilion is designed to make the free result useful, but not
-                complete. If the idea looks promising, Pro gives the execution
-                package.
+                complete. If the opportunity looks promising, Founder Access
+                gives the execution package.
               </p>
             </div>
 
@@ -165,7 +165,7 @@ export default function HomePage() {
                 title="Free"
                 price="$0"
                 items={[
-                  "1 build idea preview",
+                  "1 opportunity preview",
                   "Buyer",
                   "Pain",
                   "Why now",
@@ -176,7 +176,7 @@ export default function HomePage() {
               />
 
               <PlanCard
-                title="Pro"
+                title="Founder Access"
                 price="$19"
                 highlight
                 items={[
@@ -187,7 +187,7 @@ export default function HomePage() {
                   "Cold DM script",
                   "48h validation plan",
                 ]}
-                cta="Unlock Pro"
+                cta="Unlock Founder Access"
                 href={CHECKOUT_URL}
               />
             </div>
@@ -220,7 +220,7 @@ export default function HomePage() {
               href={CHECKOUT_URL}
               className="rounded-2xl border border-white/10 px-6 py-4 text-center text-sm font-bold text-white transition hover:bg-white/[0.04]"
             >
-              Unlock Pro — $19
+              Unlock Founder Access — $19
             </a>
           </div>
         </section>
