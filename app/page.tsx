@@ -21,6 +21,13 @@ export default function HomePage() {
 
           <nav className="hidden items-center gap-3 md:flex">
             <a
+              href="/products"
+              className="rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-zinc-300 transition hover:bg-white/[0.04] hover:text-white"
+            >
+              Products
+            </a>
+
+            <a
               href="/app"
               className="rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-zinc-300 transition hover:bg-white/[0.04] hover:text-white"
             >

@@ -6,6 +6,7 @@ export const runtime = "nodejs";
 
 type RawSignal = {
   title?: string;
+  opportunity?: string;
   name?: string;
   product?: string;
   idea?: string;
@@ -21,15 +22,21 @@ type RawSignal = {
   why_now?: string;
   why_it_matters?: string;
   reason?: string;
+  why_money?: string;
   mvp?: string;
   tiny_mvp?: string;
   free_mvp?: string;
   solution?: string;
+  product_angle?: string;
+  price_signal?: string;
+  revenue_evidence?: string;
+  revenue_signal?: string;
   source_url?: string;
   url?: string;
   source?: string;
   category?: string;
   tags?: string[];
+  score?: number;
 };
 
 const fallbackSignals: RawSignal[] = [
@@ -80,24 +87,48 @@ const fallbackSignals: RawSignal[] = [
 ];
 
 async function loadSignals(): Promise<RawSignal[]> {
-  try {
-    const filePath = path.join(process.cwd(), "data", "top100_signals.json");
-    const raw = await fs.readFile(filePath, "utf8");
-    const parsed = JSON.parse(raw);
+  for (const file of ["goldmine_signals.json", "top100_signals.json"]) {
+    try {
+      const filePath = path.join(process.cwd(), "data", file);
+      const raw = await fs.readFile(filePath, "utf8");
+      const parsed = JSON.parse(raw);
 
-    if (Array.isArray(parsed)) return parsed;
-    if (Array.isArray(parsed.signals)) return parsed.signals;
-    if (Array.isArray(parsed.items)) return parsed.items;
-    if (Array.isArray(parsed.data)) return parsed.data;
-
-    return fallbackSignals;
-  } catch {
-    return fallbackSignals;
+      if (Array.isArray(parsed)) return parsed;
+      if (Array.isArray(parsed.signals)) return parsed.signals;
+      if (Array.isArray(parsed.items)) return parsed.items;
+      if (Array.isArray(parsed.data)) return parsed.data;
+    } catch {
+      continue;
+    }
   }
+
+  return fallbackSignals;
 }
 
 function asSearchText(signal: RawSignal) {
   return JSON.stringify(signal).toLowerCase();
+}
+
+function fieldScore(signal: RawSignal) {
+  let score = typeof signal.score === "number" ? signal.score : 0;
+
+  if (signal.price_signal || signal.revenue_evidence || signal.revenue_signal) {
+    score += 20;
+  }
+  if (signal.buyer || signal.audience || signal.target_user || signal.who) {
+    score += 10;
+  }
+  if (signal.pain || signal.paid_pain || signal.problem || signal.issue) {
+    score += 10;
+  }
+  if (signal.mvp || signal.tiny_mvp || signal.free_mvp || signal.product_angle) {
+    score += 10;
+  }
+  if (signal.source_url || signal.url || signal.source) {
+    score += 10;
+  }
+
+  return score;
 }
 
 function pickBestSignal(
@@ -110,22 +141,21 @@ function pickBestSignal(
 
   const scored = signals.map((signal) => {
     const text = asSearchText(signal);
-    let score = 0;
+    let score = fieldScore(signal);
 
     if (text.includes(build)) score += 5;
     if (text.includes(buyer)) score += 5;
 
+    if (text.includes("mrr")) score += 4;
+    if (text.includes("arr")) score += 4;
+    if (text.includes("revenue")) score += 3;
+    if (text.includes("customer")) score += 3;
+    if (text.includes("sold")) score += 3;
+    if (text.includes("profitable")) score += 3;
     if (text.includes("ai")) score += 2;
     if (text.includes("automation")) score += 2;
     if (text.includes("saas")) score += 2;
-    if (text.includes("founder")) score += 2;
     if (text.includes("agency")) score += 2;
-    if (text.includes("creator")) score += 2;
-    if (text.includes("local")) score += 2;
-    if (text.includes("pain")) score += 1;
-    if (text.includes("revenue")) score += 1;
-    if (text.includes("customer")) score += 1;
-    if (text.includes("manual")) score += 1;
     if (text.includes("workflow")) score += 1;
 
     return { signal, score };
@@ -133,17 +163,12 @@ function pickBestSignal(
 
   scored.sort((a, b) => b.score - a.score);
 
-  const top = scored.slice(0, 5).filter((item) => item.score > 0);
-
-  if (top.length > 0) {
-    return top[Math.floor(Math.random() * top.length)].signal;
-  }
-
-  return signals[Math.floor(Math.random() * signals.length)] || fallbackSignals[0];
+  return scored[0]?.signal || fallbackSignals[0];
 }
 
 function normalize(signal: RawSignal) {
   const title =
+    signal.opportunity ||
     signal.title ||
     signal.build_this ||
     signal.product ||
@@ -168,24 +193,33 @@ function normalize(signal: RawSignal) {
   const why_now =
     signal.why_now ||
     signal.why_it_matters ||
+    signal.why_money ||
     signal.reason ||
     "AI coding tools make it possible to ship small products quickly, but market selection is now the bottleneck.";
 
   const mvp =
-    signal.mvp ||
     signal.tiny_mvp ||
+    signal.mvp ||
     signal.free_mvp ||
+    signal.product_angle ||
     signal.solution ||
     "Paste a specific workflow problem → get a small AI product idea, buyer, and validation angle.";
+
+  const price_signal =
+    signal.price_signal || signal.revenue_evidence || signal.revenue_signal;
 
   const source_url = signal.source_url || signal.url || signal.source;
 
   return {
     title: String(title),
+    opportunity: String(title),
     buyer: String(buyer),
     pain: String(pain),
     why_now: String(why_now),
+    tiny_mvp: String(mvp),
     mvp: String(mvp),
+    price_signal: price_signal ? String(price_signal) : undefined,
+    revenue_evidence: price_signal ? String(price_signal) : undefined,
     source_url: source_url ? String(source_url) : undefined,
   };
 }
