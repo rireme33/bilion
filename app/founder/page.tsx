@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 type FounderPageProps = {
@@ -65,12 +66,12 @@ export default async function FounderPage({ searchParams }: FounderPageProps) {
     <main className="min-h-screen bg-[#070707] text-white">
       <section className="mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-14">
         <header className="mb-8">
-          <a
+          <Link
             href="/"
             className="text-sm font-semibold text-zinc-500 transition hover:text-white"
           >
             Back to Bilion
-          </a>
+          </Link>
 
           <div className="mt-8 inline-flex rounded-full bg-yellow-400/10 px-3 py-1 text-xs font-medium text-yellow-300">
             Founder Mode

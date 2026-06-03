@@ -224,6 +224,70 @@ function normalize(signal: RawSignal) {
   };
 }
 
+function buildLaunchPack(free: ReturnType<typeof normalize>) {
+  const productName = free.title;
+  const buyer = free.buyer;
+  const pain = free.pain;
+  const source = free.source_url || "Source signal not provided";
+  const price =
+    free.price_signal ||
+    "$19 one-time for early access, then $9/mo if users need it weekly.";
+
+  return {
+    product_name: productName,
+    price,
+    lp_copy:
+      "Headline: Solve this painful workflow for " +
+      buyer +
+      "\n\nSubhead: " +
+      productName +
+      " helps " +
+      buyer +
+      " handle this problem faster: " +
+      pain +
+      "\n\nCTA: Get the first workflow\n\nProof angle: Built from a real founder signal. Source: " +
+      source,
+    x_post:
+      "I found a tiny product angle for " +
+      buyer +
+      ":\n\nPain: " +
+      pain +
+      "\n\nBuild this: " +
+      productName +
+      "\n\nThe plan is not to build a huge SaaS. It is to ship one narrow workflow, show a manual sample, and ask if people would pay " +
+      price +
+      ".",
+    dm_script:
+      "Hey - quick question. Do you ever deal with this problem?\n\n" +
+      pain +
+      "\n\nI am testing a tiny workflow called " +
+      productName +
+      " for " +
+      buyer +
+      ". If I send one free sample, would you tell me if it is useful?",
+    gumroad_description:
+      productName +
+      " is a tiny launch-ready workflow for " +
+      buyer +
+      ".\n\nIt helps with: " +
+      pain +
+      "\n\nYou get the product angle, landing copy, X post, DM script, Codex prompt, and a 48-hour launch plan so you can test demand before overbuilding.\n\nSource: " +
+      source,
+    codex_prompt:
+      "Build a clean dark Bilion-style web app called " +
+      productName +
+      " for " +
+      buyer +
+      ". The app should solve this paid pain: " +
+      pain +
+      ". Inputs: buyer context, current workflow, tone, and desired output. Outputs: one useful result, landing page copy, pricing, X post, DM script, Gumroad description, and a 48-hour launch plan. Do not add auth, database, webhooks, subscriptions, or new dependencies. Add copy buttons for every output.",
+    launch_plan_48h:
+      "Hour 0-4: Turn the pain into one manual sample workflow.\nHour 4-12: Pick 20 target buyers and send the DM script.\nHour 12-24: Create free samples for anyone who replies.\nHour 24-36: Ask if the result is worth " +
+      price +
+      ".\nHour 36-48: Build only the smallest version if 3+ people ask to use it again or agree to pay.",
+  };
+}
+
 export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}));
 
@@ -236,6 +300,7 @@ export async function POST(req: Request) {
 
   return NextResponse.json({
     free,
+    paid: buildLaunchPack(free),
     locked: {
       codex_prompt: true,
       landing_page_copy: true,

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const CHECKOUT_URL =
   process.env.NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL || "#";
 
@@ -6,7 +8,7 @@ export default function HomePage() {
     <main className="min-h-screen bg-[#070707] text-white">
       <section className="mx-auto flex max-w-6xl flex-col px-6 pb-20 pt-6 md:pb-28">
         <header className="mb-16 flex items-center justify-between gap-4">
-          <a href="/" className="group flex items-center gap-3">
+          <Link href="/" className="group flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white text-lg font-black text-black">
               B
             </div>
@@ -17,7 +19,7 @@ export default function HomePage() {
               </div>
               <div className="text-xs text-zinc-500">by Build Decision</div>
             </div>
-          </a>
+          </Link>
 
           <nav className="hidden items-center gap-3 md:flex">
             <a

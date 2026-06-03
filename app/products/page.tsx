@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const products = [
   {
     name: "ReplyTask",
@@ -7,7 +9,7 @@ const products = [
     price: "$9",
     status: "testing",
     cta: "View product",
-    href: "#replytask",
+    href: "/reply-task",
   },
   {
     name: "Founder Launch Kit",
@@ -38,12 +40,12 @@ export default function ProductsPage() {
       <section className="mx-auto max-w-6xl px-5 py-8 md:px-6 md:py-14">
         <header className="mb-10 flex flex-col gap-6 md:mb-14 md:flex-row md:items-end md:justify-between">
           <div>
-            <a
+            <Link
               href="/"
               className="text-sm font-semibold text-zinc-500 transition hover:text-white"
             >
               Back to Bilion
-            </a>
+            </Link>
 
             <div className="mt-8 inline-flex rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 text-sm text-emerald-300">
               Built with Bilion
