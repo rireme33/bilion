@@ -10,6 +10,8 @@ type RawSignal = {
   what_happened?: string;
   what_you_can_build?: string;
   why_its_useful?: string;
+  pattern?: string;
+  pattern_matches?: string[];
   core_features?: string[];
   comparable_price?: string;
   build_steps?: string[];
@@ -59,6 +61,13 @@ const fallbackSignals: RawSignal[] = [
       "A LINE-based operations bot for small farms or local field businesses.",
     why_its_useful:
       "Many local operators already use LINE, but their tasks, logs, schedules, and sensor checks are scattered. A simple bot can reduce manual checking and make daily operations easier.",
+    pattern: "AI-assisted internal operations automation",
+    pattern_matches: [
+      "Agriculture",
+      "Construction",
+      "Property Management",
+      "Local Services",
+    ],
     core_features: [
       "Check today's tasks",
       "Add a work log",
@@ -289,6 +298,19 @@ function normalize(signal: RawSignal) {
         pain ||
         "It turns a repeated manual workflow into a small tool someone can use today."
     ),
+    source_label: "Founder Story",
+    pattern: String(
+      signal.pattern || "AI-assisted internal operations automation"
+    ),
+    confidence: "High",
+    pattern_matches: (
+      signal.pattern_matches || [
+        "Agriculture",
+        "Construction",
+        "Property Management",
+        "Local Services",
+      ]
+    ).map(String),
     core_features: coreFeatures.map(String),
     comparable_price: String(
       signal.comparable_price ||
@@ -313,6 +335,7 @@ function buildLaunchPack(free: ReturnType<typeof normalize>) {
     core_features: free.core_features,
     comparable_price: free.comparable_price,
     build_steps: free.build_steps,
+    pattern_matches: free.pattern_matches,
     code_x_prompt: free.code_x_prompt,
   };
 }

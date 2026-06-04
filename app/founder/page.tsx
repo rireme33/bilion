@@ -29,6 +29,12 @@ const founderSignal = {
     "Add mock sensor data first.",
     "Add a minimal admin page to edit fields and tasks.",
   ],
+  patternMatches: [
+    "Agriculture",
+    "Construction",
+    "Property Management",
+    "Local Services",
+  ],
   codeXPrompt:
     "Build a minimal prototype of a LINE-based operations bot for a small farm or local field business. Use Next.js or Cloudflare Workers with a simple database. The bot should support checking today's tasks, adding a work log, checking greenhouse temperature from mock sensor data, and showing the next task for a field. Include a minimal admin screen for tasks, fields, and mock sensor readings. Keep the UI and code simple. Prioritize a working MVP over complex architecture.",
 };
@@ -105,6 +111,10 @@ export default async function FounderPage({ searchParams }: FounderPageProps) {
             value={founderSignal.buildSteps
               .map((item, index) => index + 1 + ". " + item)
               .join("\n")}
+          />
+          <FounderBlock
+            label="Pattern Matches"
+            value={founderSignal.patternMatches.join("\n")}
           />
           <FounderBlock label="Code X Prompt" value={founderSignal.codeXPrompt} />
         </div>

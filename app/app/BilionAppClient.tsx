@@ -7,6 +7,9 @@ type FreeIdea = {
   what_happened: string;
   what_you_can_build: string;
   why_its_useful: string;
+  source_label: string;
+  pattern: string;
+  confidence: string;
 };
 
 type BuildPromptPack = {
@@ -15,6 +18,7 @@ type BuildPromptPack = {
   core_features: string[];
   comparable_price: string;
   build_steps: string[];
+  pattern_matches: string[];
   code_x_prompt: string;
 };
 
@@ -28,12 +32,10 @@ type BilionAppClientProps = {
 };
 
 const lockedItems = [
-  "Latest Signal",
-  "What You Can Build",
-  "Core Features",
-  "Comparable Price",
-  "Build Steps",
-  "Code X Prompt",
+  "Core Features 🔒",
+  "Comparable Price 🔒",
+  "Full Code X Prompt 🔒",
+  "Pattern Matches 🔒",
 ];
 
 export default function BilionAppClient({
@@ -80,7 +82,7 @@ export default function BilionAppClient({
           <div className="mb-8">
             <div className="text-2xl font-black tracking-tight">Bilion</div>
             <div className="mt-1 text-xs text-zinc-500">
-              Build Prompt Engine
+              47,000+ Founder Stories
             </div>
           </div>
 
@@ -179,6 +181,12 @@ export default function BilionAppClient({
                     value={result.free.why_its_useful}
                   />
                 </div>
+
+                <SignalMeta
+                  source={result.free.source_label}
+                  pattern={result.free.pattern}
+                  confidence={result.free.confidence}
+                />
               </div>
 
               {hasFounderAccess ? (
@@ -194,7 +202,7 @@ export default function BilionAppClient({
           <div className="sticky top-5">
             <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5">
               <div className="inline-flex rounded-full bg-yellow-400/10 px-3 py-1 text-xs font-medium text-yellow-300">
-                Founder Unlock
+                Founder Preview
               </div>
 
               <h2 className="mt-4 text-2xl font-black">
@@ -209,8 +217,8 @@ export default function BilionAppClient({
               <div className="mt-5 space-y-3">
                 <RightPanelItem title="Core features" />
                 <RightPanelItem title="Comparable price" />
-                <RightPanelItem title="Build steps" />
-                <RightPanelItem title="Code X Prompt" />
+                <RightPanelItem title="Full Code X Prompt" />
+                <RightPanelItem title="Pattern Matches" />
               </div>
             </div>
           </div>
@@ -244,6 +252,10 @@ function FounderPromptView({ pack }: { pack: BuildPromptPack }) {
             .map((item, index) => index + 1 + ". " + item)
             .join("\n")}
         />
+        <PaidBlock
+          label="Pattern Matches"
+          value={pack.pattern_matches.join("\n")}
+        />
         <PaidBlock label="Code X Prompt" value={pack.code_x_prompt} />
       </div>
     </div>
@@ -258,11 +270,12 @@ function LockedFounderView() {
       </div>
 
       <h3 className="mt-3 text-2xl font-black">
-        Founder access unlocks the build prompt.
+        Founder preview
       </h3>
 
       <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
-        The full Code X Prompt is hidden in the free preview.
+        The full Code X Prompt and matching domains are hidden in the free
+        preview.
       </p>
 
       <div className="mt-6 grid gap-3 md:grid-cols-2">
@@ -305,6 +318,35 @@ function InfoBlock({ label, value }: { label: string; value: string }) {
         {label}
       </div>
       <div className="mt-2 text-sm leading-6 text-zinc-100">{value}</div>
+    </div>
+  );
+}
+
+function SignalMeta({
+  source,
+  pattern,
+  confidence,
+}: {
+  source: string;
+  pattern: string;
+  confidence: string;
+}) {
+  return (
+    <div className="mt-5 grid gap-3 rounded-2xl border border-white/10 bg-black/30 p-4 text-sm md:grid-cols-3">
+      <MetaItem label="Source" value={source} />
+      <MetaItem label="Pattern" value={pattern} />
+      <MetaItem label="Confidence" value={confidence} />
+    </div>
+  );
+}
+
+function MetaItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+        {label}
+      </div>
+      <div className="mt-1 text-zinc-100">{value}</div>
     </div>
   );
 }

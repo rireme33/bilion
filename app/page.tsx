@@ -48,7 +48,7 @@ export default function HomePage() {
         <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
           <div>
             <div className="inline-flex rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 text-sm text-emerald-300">
-              100 curated money patterns
+              47,000+ Founder Stories
             </div>
 
             <div className="mt-8">
@@ -62,8 +62,13 @@ export default function HomePage() {
             </div>
 
             <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-400">
-              Built from 47,000+ founder-source URLs. Bilion helps AI builders
-              find what to build, who to sell to, and how to validate it fast.
+              Built from 47,000+ founder stories.
+              <br />
+              <br />
+              Not random ideas.
+              <br />
+              <br />
+              Every signal comes from a real founder, operator, or AI use case.
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -101,7 +106,7 @@ export default function HomePage() {
             </div>
 
             <h2 className="text-3xl font-black">
-              Try the Money Pattern Explorer for free.
+              Try the Build Prompt Engine for free.
             </h2>
 
             <p className="mt-3 text-sm leading-6 text-zinc-400">
@@ -128,7 +133,7 @@ export default function HomePage() {
               href="/app"
               className="mt-6 block rounded-2xl bg-white px-5 py-4 text-center text-sm font-bold text-black transition hover:bg-zinc-200"
             >
-              Open Money Pattern Explorer
+              Open Build Prompt Engine
             </a>
           </div>
         </div>
