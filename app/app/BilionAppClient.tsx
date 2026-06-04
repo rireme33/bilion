@@ -38,6 +38,8 @@ const lockedItems = [
   "Pattern Matches 🔒",
 ];
 
+const CHECKOUT_URL = process.env.NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL || "";
+
 export default function BilionAppClient({
   hasFounderAccess,
 }: BilionAppClientProps) {
@@ -273,6 +275,31 @@ function LockedFounderView() {
         {lockedItems.map((item) => (
           <LockedItem key={item} text={item} />
         ))}
+      </div>
+
+      <div className="mt-6 rounded-2xl border border-white/10 bg-black/40 p-5">
+        <h4 className="text-xl font-black">Unlock Founder Access</h4>
+        <p className="mt-2 text-sm leading-6 text-zinc-400">
+          Get the full Code X prompt, build steps, comparable price, and pattern
+          matches.
+        </p>
+
+        {CHECKOUT_URL ? (
+          <a
+            href={CHECKOUT_URL}
+            className="mt-5 block rounded-2xl bg-white px-5 py-4 text-center text-sm font-bold text-black transition hover:bg-zinc-200"
+          >
+            Unlock Founder Access — $9
+          </a>
+        ) : (
+          <button
+            type="button"
+            disabled
+            className="mt-5 w-full cursor-not-allowed rounded-2xl border border-white/10 px-5 py-4 text-center text-sm font-bold text-zinc-500"
+          >
+            Checkout link not configured
+          </button>
+        )}
       </div>
     </div>
   );
