@@ -289,7 +289,7 @@ function LockedFounderView() {
             href={CHECKOUT_URL}
             className="mt-5 block rounded-2xl bg-white px-5 py-4 text-center text-sm font-bold text-black transition hover:bg-zinc-200"
           >
-            Unlock Founder Access — $9
+            Unlock Founder Access — $19
           </a>
         ) : (
           <button
