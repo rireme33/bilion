@@ -77,7 +77,12 @@ export default function BilionAppClient({
 
   return (
     <main className="min-h-screen bg-[#070707] text-white">
-      <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[260px_1fr_340px]">
+      <div
+        className={[
+          "grid min-h-screen grid-cols-1",
+          result ? "lg:grid-cols-[260px_1fr_340px]" : "lg:grid-cols-[260px_1fr]",
+        ].join(" ")}
+      >
         <aside className="hidden border-r border-white/10 bg-[#0b0b0c] p-5 lg:block">
           <div className="mb-8">
             <div className="text-2xl font-black tracking-tight">Bilion</div>
@@ -120,39 +125,23 @@ export default function BilionAppClient({
             </p>
           </header>
 
-          <div className="rounded-3xl border border-white/10 bg-[#101011] p-5 shadow-2xl md:p-6">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <div>
-                <div className="text-sm font-bold text-zinc-200">
-                  Latest build signal
-                </div>
-                <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-500">
-                  Generate one small tool idea from the newest curated AI usage
-                  signal.
-                </p>
-              </div>
-
+          {!result && (
+            <div className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl md:p-8">
+              <h2 className="text-2xl font-black tracking-tight">
+                {"Today's Build Signal"}
+              </h2>
+              <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-400">
+                Click to reveal a real AI use case and a buildable Code X
+                prompt.
+              </p>
               <button
                 onClick={generateIdea}
                 disabled={loading}
-                className="rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-6 rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {loading ? "Finding signal..." : "Generate Build Prompt"}
+                {loading ? "Revealing signal..." : "See Today's Signal"}
               </button>
-            </div>
-
-            {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
-          </div>
-
-          {!result && (
-            <div className="mt-8 rounded-3xl border border-dashed border-white/10 bg-white/[0.02] p-8 text-center">
-              <h2 className="text-xl font-bold">
-                Start from a real AI usage signal.
-              </h2>
-              <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-zinc-500">
-                The free preview shows what happened, what you can build, and
-                why it is useful. Founder access unlocks the Code X Prompt.
-              </p>
+              {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
             </div>
           )}
 
@@ -198,6 +187,7 @@ export default function BilionAppClient({
           )}
         </section>
 
+        {result && (
         <aside className="border-l border-white/10 bg-[#0b0b0c] p-5">
           <div className="sticky top-5">
             <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5">
@@ -223,6 +213,7 @@ export default function BilionAppClient({
             </div>
           </div>
         </aside>
+        )}
       </div>
     </main>
   );
