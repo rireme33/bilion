@@ -2,7 +2,8 @@ import { cookies } from "next/headers";
 import BilionAppClient from "./BilionAppClient";
 
 export default async function BilionAppPage() {
-  const hasPaidAccess = (await cookies()).get("paid_access")?.value === "1";
+  const hasFounderAccess =
+    (await cookies()).get("founder_access")?.value === "1";
 
-  return <BilionAppClient hasPaidAccess={hasPaidAccess} />;
+  return <BilionAppClient hasFounderAccess={hasFounderAccess} />;
 }

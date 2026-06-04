@@ -6,6 +6,14 @@ export const runtime = "nodejs";
 
 type RawSignal = {
   title?: string;
+  latest_signal?: string;
+  what_happened?: string;
+  what_you_can_build?: string;
+  why_its_useful?: string;
+  core_features?: string[];
+  comparable_price?: string;
+  build_steps?: string[];
+  code_x_prompt?: string;
   opportunity?: string;
   name?: string;
   product?: string;
@@ -40,6 +48,43 @@ type RawSignal = {
 };
 
 const fallbackSignals: RawSignal[] = [
+  {
+    title:
+      "Japanese farmer uses ChatGPT and Codex to automate farm operations",
+    latest_signal:
+      "A Japanese farmer in Hokkaido uses ChatGPT and Codex to automate practical farm work, including greenhouse temperature checks, LINE-based remote controls, field data, schedules, sensor logs, and crop troubleshooting.",
+    what_happened:
+      "He used ChatGPT and Codex as an always-available engineer to build small internal tools for real farm operations.",
+    what_you_can_build:
+      "A LINE-based operations bot for small farms or local field businesses.",
+    why_its_useful:
+      "Many local operators already use LINE, but their tasks, logs, schedules, and sensor checks are scattered. A simple bot can reduce manual checking and make daily operations easier.",
+    core_features: [
+      "Check today's tasks",
+      "Add a work log",
+      "Check greenhouse temperature from mock sensor data",
+      "Show the next task for a field",
+      "Simple admin screen for tasks and fields",
+    ],
+    comparable_price:
+      "Simple internal automation tools can be sold as setup fee + monthly maintenance. A realistic starting reference is ¥49,800 setup + ¥9,800/month or $299 setup + $29/month.",
+    build_steps: [
+      "Create a small database for fields, tasks, work logs, and sensor readings.",
+      "Build a simple LINE webhook or mock chat interface.",
+      "Add commands for today's tasks, add log, greenhouse temperature, and next field task.",
+      "Add mock sensor data first.",
+      "Add a minimal admin page to edit fields and tasks.",
+    ],
+    code_x_prompt:
+      "Build a minimal prototype of a LINE-based operations bot for a small farm or local field business. Use Next.js or Cloudflare Workers with a simple database. The bot should support checking today's tasks, adding a work log, checking greenhouse temperature from mock sensor data, and showing the next task for a field. Include a minimal admin screen for tasks, fields, and mock sensor readings. Keep the UI and code simple. Prioritize a working MVP over complex architecture.",
+    buyer: "small farms and local field businesses",
+    pain:
+      "Tasks, logs, schedules, and sensor checks are scattered across daily operations.",
+    source_url: "https://x.com/",
+    category: "Automation",
+    tags: ["local businesses", "automation", "line", "codex", "farm"],
+    score: 999,
+  },
   {
     title: "Cold Outreach Follow-up Generator",
     buyer: "solo founders and small agencies",
@@ -176,13 +221,6 @@ function normalize(signal: RawSignal) {
     signal.name ||
     "AI Workflow Assistant";
 
-  const buyer =
-    signal.buyer ||
-    signal.audience ||
-    signal.target_user ||
-    signal.who ||
-    "solo founders and AI builders";
-
   const pain =
     signal.pain ||
     signal.paid_pain ||
@@ -209,82 +247,73 @@ function normalize(signal: RawSignal) {
     signal.price_signal || signal.revenue_evidence || signal.revenue_signal;
 
   const source_url = signal.source_url || signal.url || signal.source;
+  const whatYouCanBuild =
+    signal.what_you_can_build ||
+    signal.build_this ||
+    signal.product_angle ||
+    signal.solution ||
+    String(title);
+  const coreFeatures =
+    signal.core_features && signal.core_features.length > 0
+      ? signal.core_features
+      : [
+          "Simple input screen",
+          "One useful generated output",
+          "Copy button for the result",
+          "Minimal admin view",
+        ];
+  const buildSteps =
+    signal.build_steps && signal.build_steps.length > 0
+      ? signal.build_steps
+      : [
+          "Create the basic page and data model.",
+          "Add the main workflow input.",
+          "Generate the useful output.",
+          "Add copy buttons and a simple admin view.",
+        ];
 
   return {
     title: String(title),
-    opportunity: String(title),
-    buyer: String(buyer),
-    pain: String(pain),
-    why_now: String(why_now),
-    tiny_mvp: String(mvp),
-    mvp: String(mvp),
-    price_signal: price_signal ? String(price_signal) : undefined,
-    revenue_evidence: price_signal ? String(price_signal) : undefined,
+    latest_signal: String(
+      signal.latest_signal ||
+        why_now ||
+        "A practical AI workflow is being used in real operations."
+    ),
+    what_happened: String(
+      signal.what_happened ||
+        "A builder used AI coding tools to turn a real workflow into a small internal tool."
+    ),
+    what_you_can_build: String(whatYouCanBuild || mvp),
+    why_its_useful: String(
+      signal.why_its_useful ||
+        pain ||
+        "It turns a repeated manual workflow into a small tool someone can use today."
+    ),
+    core_features: coreFeatures.map(String),
+    comparable_price: String(
+      signal.comparable_price ||
+        price_signal ||
+        "$299 setup + $29/month for a small internal automation prototype."
+    ),
+    build_steps: buildSteps.map(String),
+    code_x_prompt: String(
+      signal.code_x_prompt ||
+        "Build a minimal prototype for this tool: " +
+          whatYouCanBuild +
+          ". Keep the UI and code simple. Prioritize a working MVP over complex architecture."
+    ),
     source_url: source_url ? String(source_url) : undefined,
   };
 }
 
 function buildLaunchPack(free: ReturnType<typeof normalize>) {
-  const productName = free.title;
-  const buyer = free.buyer;
-  const pain = free.pain;
-  const source = free.source_url || "Source signal not provided";
-  const price =
-    free.price_signal ||
-    "$19 one-time for early access, then $9/mo if users need it weekly.";
-
   return {
-    product_name: productName,
-    price,
-    lp_copy:
-      "Headline: Solve this painful workflow for " +
-      buyer +
-      "\n\nSubhead: " +
-      productName +
-      " helps " +
-      buyer +
-      " handle this problem faster: " +
-      pain +
-      "\n\nCTA: Get the first workflow\n\nProof angle: Built from a real founder signal. Source: " +
-      source,
-    x_post:
-      "I found a tiny product angle for " +
-      buyer +
-      ":\n\nPain: " +
-      pain +
-      "\n\nBuild this: " +
-      productName +
-      "\n\nThe plan is not to build a huge SaaS. It is to ship one narrow workflow, show a manual sample, and ask if people would pay " +
-      price +
-      ".",
-    dm_script:
-      "Hey - quick question. Do you ever deal with this problem?\n\n" +
-      pain +
-      "\n\nI am testing a tiny workflow called " +
-      productName +
-      " for " +
-      buyer +
-      ". If I send one free sample, would you tell me if it is useful?",
-    gumroad_description:
-      productName +
-      " is a tiny launch-ready workflow for " +
-      buyer +
-      ".\n\nIt helps with: " +
-      pain +
-      "\n\nYou get the product angle, landing copy, X post, DM script, Codex prompt, and a 48-hour launch plan so you can test demand before overbuilding.\n\nSource: " +
-      source,
-    codex_prompt:
-      "Build a clean dark Bilion-style web app called " +
-      productName +
-      " for " +
-      buyer +
-      ". The app should solve this paid pain: " +
-      pain +
-      ". Inputs: buyer context, current workflow, tone, and desired output. Outputs: one useful result, landing page copy, pricing, X post, DM script, Gumroad description, and a 48-hour launch plan. Do not add auth, database, webhooks, subscriptions, or new dependencies. Add copy buttons for every output.",
-    launch_plan_48h:
-      "Hour 0-4: Turn the pain into one manual sample workflow.\nHour 4-12: Pick 20 target buyers and send the DM script.\nHour 12-24: Create free samples for anyone who replies.\nHour 24-36: Ask if the result is worth " +
-      price +
-      ".\nHour 36-48: Build only the smallest version if 3+ people ask to use it again or agree to pay.",
+    latest_signal: free.latest_signal,
+    what_you_can_build: free.what_you_can_build,
+    core_features: free.core_features,
+    comparable_price: free.comparable_price,
+    build_steps: free.build_steps,
+    code_x_prompt: free.code_x_prompt,
   };
 }
 
@@ -302,14 +331,12 @@ export async function POST(req: Request) {
     free,
     paid: buildLaunchPack(free),
     locked: {
-      codex_prompt: true,
-      landing_page_copy: true,
-      pricing: true,
-      x_posts: true,
-      dm_script: true,
-      validation_plan: true,
-      similar_examples: true,
-      export: true,
+      latest_signal: true,
+      what_you_can_build: true,
+      core_features: true,
+      comparable_price: true,
+      build_steps: true,
+      code_x_prompt: true,
     },
   });
 }

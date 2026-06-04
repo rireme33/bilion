@@ -105,24 +105,22 @@ export default function HomePage() {
             </h2>
 
             <p className="mt-3 text-sm leading-6 text-zinc-400">
-              Pick what you can build and who you want to sell to. Bilion
-              returns one launchable opportunity with buyer, pain, and a tiny
-              MVP.
+              Bilion returns one practical AI usage signal and a small tool you
+              can build in Code X.
             </p>
 
             <div className="mt-6 space-y-3">
               <PreviewItem
-                label="Opportunity"
-                value="Local Review Reply Assistant"
-              />
-              <PreviewItem label="Buyer" value="Local businesses" />
-              <PreviewItem
-                label="Pain"
-                value="Owners know reviews matter but do not have time to write consistent replies."
+                label="Latest Signal"
+                value="Japanese farmer uses ChatGPT and Codex to automate farm operations"
               />
               <PreviewItem
-                label="Tiny MVP"
-                value="Paste a customer review → get 3 reply options in the store's tone."
+                label="What Happened"
+                value="He used ChatGPT and Codex as an always-available engineer for real farm operations."
+              />
+              <PreviewItem
+                label="What You Can Build"
+                value="A LINE-based operations bot for small farms or local field businesses."
               />
             </div>
 
@@ -145,8 +143,8 @@ export default function HomePage() {
             text="Bilion turns founder and product patterns into small product opportunities."
           />
           <FeatureCard
-            title="Validate fast"
-            text="Free shows the opportunity. Founder Access unlocks prompts, copy, pricing, DM scripts, and a 48h validation plan."
+            title="Build today"
+            text="Free shows the signal. Founder Access unlocks core features, build steps, and the full Code X Prompt."
           />
         </section>
 
@@ -158,14 +156,13 @@ export default function HomePage() {
               </div>
 
               <h2 className="mt-4 text-4xl font-black tracking-tight">
-                Free shows the opportunity. Founder Access shows how to launch
-                it.
+                Free shows the signal. Founder Access shows the full build
+                prompt.
               </h2>
 
               <p className="mt-4 text-sm leading-7 text-zinc-400">
-                Bilion is designed to make the free result useful, but not
-                complete. If the opportunity looks promising, Founder Access
-                gives the execution package.
+                Bilion is designed to make the free preview useful, but the
+                full Code X Prompt stays behind Founder Access.
               </p>
             </div>
 
@@ -174,11 +171,10 @@ export default function HomePage() {
                 title="Free"
                 price="$0"
                 items={[
-                  "1 opportunity preview",
-                  "Buyer",
-                  "Pain",
-                  "Why now",
-                  "Tiny MVP",
+                  "Latest Signal",
+                  "What Happened",
+                  "What You Can Build",
+                  "Why It's Useful",
                 ]}
                 cta="Try Free"
                 href="/app"
@@ -189,12 +185,12 @@ export default function HomePage() {
                 price="$19"
                 highlight
                 items={[
-                  "Codex-ready prompt",
-                  "Landing page copy",
-                  "Pricing strategy",
-                  "X launch posts",
-                  "Cold DM script",
-                  "48h validation plan",
+                  "Latest Signal",
+                  "What You Can Build",
+                  "Core Features",
+                  "Comparable Price",
+                  "Build Steps",
+                  "Code X Prompt",
                 ]}
                 cta="Unlock Founder Access"
                 href={CHECKOUT_URL}

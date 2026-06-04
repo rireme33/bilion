@@ -3,12 +3,15 @@ import Link from "next/link";
 type SuccessPageProps = {
   searchParams: Promise<{
     error?: string | string[];
+    paid?: string | string[];
   }>;
 };
 
 export default async function SuccessPage({ searchParams }: SuccessPageProps) {
   const params = await searchParams;
   const error = Array.isArray(params.error) ? params.error[0] : params.error;
+  const paid = Array.isArray(params.paid) ? params.paid[0] : params.paid;
+  const isPaidRedirect = paid === "1";
 
   return (
     <main className="min-h-screen bg-[#070707] px-6 py-16 text-white">
@@ -23,9 +26,27 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
           </h1>
 
           <p className="mt-4 text-base leading-7 text-zinc-400">
-            Thanks for buying Bilion Pro. Use the access code from your purchase
-            email to unlock the Launch Pack in this browser.
+            Thanks for buying Bilion Pro. Your Build Prompt access is handled
+            in this browser.
           </p>
+
+          {isPaidRedirect && (
+            <div className="mt-8 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.04] p-5">
+              <h2 className="text-xl font-bold text-emerald-200">
+                Paid access unlocked.
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-zinc-300">
+                This browser now has paid access. Open Bilion, generate a
+                signal, and the full Code X Prompt will be visible.
+              </p>
+              <Link
+                href="/app"
+                className="mt-5 block rounded-2xl bg-white px-5 py-4 text-center text-sm font-bold text-black transition hover:bg-zinc-200"
+              >
+                Open Bilion App
+              </Link>
+            </div>
+          )}
 
           <div className="mt-8 rounded-2xl border border-white/10 bg-black/40 p-5">
             <h2 className="text-xl font-bold">Unlock paid access</h2>
@@ -55,7 +76,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
                 type="submit"
                 className="rounded-2xl bg-white px-5 py-4 text-center text-sm font-bold text-black transition hover:bg-zinc-200"
               >
-                Unlock Launch Pack
+                Unlock Build Prompt
               </button>
             </form>
           </div>
@@ -67,8 +88,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
               <li>1. Enter your access code above.</li>
               <li>2. Generate one build idea in the Bilion app.</li>
               <li>
-                3. Use the unlocked Launch Pack to turn it into a product,
-                prompt, sales copy, and 48-hour validation plan.
+                3. Use the unlocked Code X Prompt to build the small tool.
               </li>
             </ol>
           </div>
