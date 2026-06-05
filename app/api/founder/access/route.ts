@@ -19,7 +19,7 @@ export async function GET(req: Request) {
     return NextResponse.redirect(deniedUrl);
   }
 
-  const res = NextResponse.redirect(new URL("/founder", req.url));
+  const res = NextResponse.redirect(new URL("/app", req.url));
 
   res.cookies.set("founder_access", "1", {
     httpOnly: true,
