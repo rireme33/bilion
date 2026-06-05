@@ -27,6 +27,22 @@ type ApiResult = {
   paid: BuildPromptPack;
 };
 
+type BuildSignal = {
+  id: string;
+  latestSignal: string;
+  whatHappened: string;
+  whatYouCanBuild: string;
+  whyItsUseful: string;
+  sourceLabel: string;
+  pattern: string;
+  confidence: string;
+  coreFeatures: string[];
+  comparablePrice: string;
+  buildSteps: string[];
+  patternMatches: string[];
+  codeXPrompt: string;
+};
+
 type BilionAppClientProps = {
   hasFounderAccess: boolean;
 };
@@ -40,6 +56,227 @@ const lockedItems = [
 
 const CHECKOUT_URL = process.env.NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL || "";
 
+const buildSignals: BuildSignal[] = [
+  {
+    id: "hokkaido-farm-ops",
+    latestSignal:
+      "A Japanese farmer in Hokkaido uses ChatGPT and Codex to automate practical farm work, including greenhouse temperature checks, LINE-based remote controls, field data, schedules, sensor logs, and crop troubleshooting.",
+    whatHappened:
+      "He used ChatGPT and Codex as an always-available engineer to build small internal tools for real farm operations.",
+    whatYouCanBuild:
+      "A LINE-based operations bot for small farms or local field businesses.",
+    whyItsUseful:
+      "Many local operators already use LINE, but their tasks, logs, schedules, and sensor checks are scattered. A simple bot can reduce manual checking and make daily operations easier.",
+    sourceLabel: "Founder Story",
+    pattern: "AI-assisted internal operations automation",
+    confidence: "High",
+    coreFeatures: [
+      "Check today's tasks",
+      "Add a work log",
+      "Check greenhouse temperature from mock sensor data",
+      "Show the next task for a field",
+      "Simple admin screen for tasks and fields",
+    ],
+    comparablePrice:
+      "Simple internal automation tools can be sold as setup fee + monthly maintenance. A realistic starting reference is JPY 49,800 setup + JPY 9,800/month or $299 setup + $29/month.",
+    buildSteps: [
+      "Create a small database for fields, tasks, work logs, and sensor readings.",
+      "Build a simple LINE webhook or mock chat interface.",
+      "Add commands for today's tasks, add log, greenhouse temperature, and next field task.",
+      "Add mock sensor data first.",
+      "Add a minimal admin page to edit fields and tasks.",
+    ],
+    patternMatches: [
+      "Agriculture",
+      "Construction",
+      "Property Management",
+      "Local Services",
+    ],
+    codeXPrompt:
+      "Build a minimal prototype of a LINE-based operations bot for a small farm or local field business. Use Next.js or Cloudflare Workers with a simple database. The bot should support checking today's tasks, adding a work log, checking greenhouse temperature from mock sensor data, and showing the next task for a field. Include a minimal admin screen for tasks, fields, and mock sensor readings. Keep the UI and code simple. Prioritize a working MVP over complex architecture.",
+  },
+  {
+    id: "clinic-call-triage",
+    latestSignal:
+      "Small clinics are using AI assistants to summarize phone inquiries, extract patient intent, and route routine requests before staff follow up.",
+    whatHappened:
+      "Operators used AI to reduce repeated front-desk work without replacing the human callback step.",
+    whatYouCanBuild:
+      "A clinic inquiry triage tool that turns call notes into intent, urgency, and next action.",
+    whyItsUseful:
+      "Front desks handle repeated questions across appointments, refills, documents, and directions. A simple triage tool helps staff respond faster and avoid missing important requests.",
+    sourceLabel: "Founder Story",
+    pattern: "AI intake triage for high-volume local service desks",
+    confidence: "High",
+    coreFeatures: [
+      "Paste call notes",
+      "Detect inquiry type",
+      "Flag urgent requests",
+      "Draft staff follow-up",
+      "Simple dashboard for open requests",
+    ],
+    comparablePrice:
+      "A small intake automation can start at $499 setup + $49/month for local clinics or service offices.",
+    buildSteps: [
+      "Create request types and urgency levels.",
+      "Build a paste-in call notes screen.",
+      "Generate structured intent, urgency, and next action.",
+      "Add a list view for unresolved requests.",
+      "Add copy buttons for staff follow-up messages.",
+    ],
+    patternMatches: [
+      "Healthcare",
+      "Dental Clinics",
+      "Veterinary Offices",
+      "Repair Services",
+    ],
+    codeXPrompt:
+      "Build a minimal prototype of a clinic inquiry triage tool. Use Next.js with a simple local database or JSON mock data. The app should let staff paste call notes, detect the inquiry type, flag urgent requests, draft a follow-up message, and show unresolved requests in a simple dashboard. Keep the UI plain and operational. Prioritize a working internal tool over complex architecture.",
+  },
+  {
+    id: "construction-daily-report",
+    latestSignal:
+      "Construction teams are using AI to turn messy site notes, photos, and chat updates into daily reports for clients and managers.",
+    whatHappened:
+      "Field operators used AI to reduce end-of-day reporting work and standardize updates from scattered jobsite information.",
+    whatYouCanBuild:
+      "A construction daily report generator for small contractors.",
+    whyItsUseful:
+      "Small contractors often collect updates in chat threads and notebooks. A report generator makes progress, blockers, materials, and next steps easier to communicate.",
+    sourceLabel: "Founder Story",
+    pattern: "AI reporting from messy field updates",
+    confidence: "High",
+    coreFeatures: [
+      "Paste jobsite notes",
+      "Add weather and crew count",
+      "Generate client-ready report",
+      "List blockers and materials",
+      "Save reports by project",
+    ],
+    comparablePrice:
+      "A simple reporting workflow can sell for $299 setup + $29/month per small contractor team.",
+    buildSteps: [
+      "Create projects and daily report records.",
+      "Build a notes input screen.",
+      "Generate progress, blockers, materials, and next steps.",
+      "Add a saved report view by project.",
+      "Add copy/export buttons for sending to clients.",
+    ],
+    patternMatches: [
+      "Construction",
+      "Landscaping",
+      "Property Maintenance",
+      "Field Services",
+    ],
+    codeXPrompt:
+      "Build a minimal prototype of a construction daily report generator for small contractors. Use Next.js with simple mock project data. The app should accept messy jobsite notes, weather, crew count, and materials, then generate a client-ready daily report with progress, blockers, and next steps. Include a simple project list and saved reports view. Keep the interface mobile-first for field use.",
+  },
+  {
+    id: "property-maintenance-router",
+    latestSignal:
+      "Property managers are using AI to classify tenant maintenance messages, identify urgency, and prepare vendor-ready work orders.",
+    whatHappened:
+      "Operators used AI to convert unstructured tenant messages into cleaner internal tasks for maintenance coordination.",
+    whatYouCanBuild:
+      "A tenant maintenance request router for small property managers.",
+    whyItsUseful:
+      "Maintenance messages arrive with missing details, unclear urgency, and scattered photos. A simple router helps managers prioritize and send cleaner work orders.",
+    sourceLabel: "Founder Story",
+    pattern: "AI task routing from unstructured customer messages",
+    confidence: "High",
+    coreFeatures: [
+      "Paste tenant message",
+      "Classify issue category",
+      "Estimate urgency",
+      "Generate missing-detail questions",
+      "Create vendor-ready work order",
+    ],
+    comparablePrice:
+      "Small property operators can pay $399 setup + $39/month for a lightweight maintenance coordination tool.",
+    buildSteps: [
+      "Define maintenance categories and urgency levels.",
+      "Build a request intake screen.",
+      "Generate classification, urgency, and missing questions.",
+      "Create a vendor work order output.",
+      "Add a simple queue for open requests.",
+    ],
+    patternMatches: [
+      "Property Management",
+      "HOA Management",
+      "Facility Management",
+      "Local Services",
+    ],
+    codeXPrompt:
+      "Build a minimal prototype of a tenant maintenance request router for small property managers. Use Next.js and simple mock data. The app should accept a tenant message, classify the issue, estimate urgency, ask for missing details, and generate a vendor-ready work order. Include a simple queue for open requests. Keep the UI simple and mobile-friendly.",
+  },
+  {
+    id: "restaurant-shift-brief",
+    latestSignal:
+      "Restaurant operators are using AI to turn sales notes, staff updates, reservations, and inventory issues into shift briefs.",
+    whatHappened:
+      "Managers used AI to make handoffs clearer between shifts without creating a complex operations system.",
+    whatYouCanBuild:
+      "A restaurant shift brief generator for independent restaurants.",
+    whyItsUseful:
+      "Shift handoffs are often informal and easy to miss. A structured brief helps teams see reservations, staffing, stock issues, and priorities before service.",
+    sourceLabel: "Founder Story",
+    pattern: "AI handoff briefs for shift-based operations",
+    confidence: "High",
+    coreFeatures: [
+      "Paste manager notes",
+      "Add reservations and staffing",
+      "Flag stock or prep issues",
+      "Generate shift brief",
+      "Save briefs by date",
+    ],
+    comparablePrice:
+      "A lightweight shift operations tool can start at $199 setup + $19/month for independent restaurants.",
+    buildSteps: [
+      "Create a simple shift brief data model.",
+      "Build inputs for notes, reservations, staffing, and inventory issues.",
+      "Generate a concise shift brief.",
+      "Add saved briefs by date.",
+      "Add copy buttons for sharing in chat.",
+    ],
+    patternMatches: [
+      "Restaurants",
+      "Retail",
+      "Hospitality",
+      "Local Services",
+    ],
+    codeXPrompt:
+      "Build a minimal prototype of a restaurant shift brief generator for independent restaurants. Use Next.js with simple mock data. The app should accept manager notes, reservations, staffing updates, and inventory issues, then generate a concise shift brief for the next team. Include saved briefs by date and copy buttons for sharing. Keep the UI mobile-first and operational.",
+  },
+];
+
+function getTodaysSignal() {
+  const index = Math.floor(Date.now() / 86400000) % buildSignals.length;
+  return buildSignals[index];
+}
+
+function buildResult(signal: BuildSignal): ApiResult {
+  return {
+    free: {
+      latest_signal: signal.latestSignal,
+      what_happened: signal.whatHappened,
+      what_you_can_build: signal.whatYouCanBuild,
+      why_its_useful: signal.whyItsUseful,
+      source_label: signal.sourceLabel,
+      pattern: signal.pattern,
+      confidence: signal.confidence,
+    },
+    paid: {
+      latest_signal: signal.latestSignal,
+      what_you_can_build: signal.whatYouCanBuild,
+      core_features: signal.coreFeatures,
+      comparable_price: signal.comparablePrice,
+      build_steps: signal.buildSteps,
+      pattern_matches: signal.patternMatches,
+      code_x_prompt: signal.codeXPrompt,
+    },
+  };
+}
+
 export default function BilionAppClient({
   hasFounderAccess,
 }: BilionAppClientProps) {
@@ -47,34 +284,12 @@ export default function BilionAppClient({
   const [result, setResult] = useState<ApiResult | null>(null);
   const [error, setError] = useState("");
 
-  async function generateIdea() {
+  function generateIdea() {
     setLoading(true);
     setError("");
     setResult(null);
-
-    try {
-      const res = await fetch("/api/goldmine/match", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          buildType: "Automation",
-          audience: "local businesses",
-        }),
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to generate idea");
-      }
-
-      const data = await res.json();
-      setResult(data);
-    } catch {
-      setError("Could not generate a build prompt idea. Try again.");
-    } finally {
-      setLoading(false);
-    }
+    setResult(buildResult(getTodaysSignal()));
+    setLoading(false);
   }
 
   return (
