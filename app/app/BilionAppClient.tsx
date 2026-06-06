@@ -103,8 +103,63 @@ const buildSignals: BuildSignal[] = [
       "Property Management",
       "Local Services",
     ],
-    codeXPrompt:
-      "Build a minimal working prototype of a LINE-based operations bot for a small farm or local field business. Use Next.js with a simple mobile-first single-page UI. Keep mock data in the same file. Do not add authentication, payments, databases, or external APIs. The user should be able to check today's tasks, add a work log, check greenhouse temperature from mock sensor data, and show the next task for a field. Include a mock chat panel, today's tasks, fields list, sensor readings, work log form, and simple admin section for tasks and fields. Add copy buttons where useful. Prioritize a working MVP over architecture. Acceptance criteria: the page loads without setup, all interactions work with mock data, no network calls are required, and the full workflow can be tested on mobile.",
+    codeXPrompt: `Build a standalone new web app from scratch.
+
+Product:
+Farm Operations Chat Console
+
+Goal:
+Help small farms and local field businesses manage daily tasks, work logs, fields, and mock greenhouse sensor readings from one simple operations dashboard.
+
+Target user:
+Small farm owners, greenhouse operators, local field teams, and hands-on managers who need a lightweight daily operations tool.
+
+Core workflow:
+1. The user selects a mock field or greenhouse.
+2. The user checks today's task list and mock sensor readings.
+3. The user sends or selects a mock chat command.
+4. The app shows the matching task, field, sensor, or next-action response.
+5. The user adds a work log.
+6. The user can copy the chat summary or saved work log.
+
+Technical requirements:
+- Build this as a standalone working web app.
+- Use Next.js and React.
+- Use mock data only.
+- Use local React state only.
+- Do not add authentication.
+- Do not add payments.
+- Do not add a database.
+- Do not use external APIs.
+- Do not require environment variables.
+- Do not ask clarifying questions.
+- Make reasonable product decisions and implement the MVP.
+- Prioritize a working demo over perfect architecture.
+
+UI requirements:
+- Mobile-first layout.
+- Clean premium SaaS-style interface.
+- Clear cards and sections.
+- Good spacing and readable typography.
+- No generic AI gradients.
+- No unnecessary animations.
+- Include sample data so the demo works immediately.
+- Include obvious action buttons.
+
+Feature requirements:
+- Include a mock chat panel with commands for today's tasks, add log, greenhouse temperature, and next field task.
+- Include a field selector, today's tasks, mock sensor readings, work log form, saved work logs, and simple admin controls for task status.
+- Include preview/output sections for chat responses and daily work summaries.
+- Include save/copy buttons for generated responses and work logs.
+- Include at least 3 mock fields or greenhouse areas with realistic tasks, readings, and statuses.
+
+Acceptance criteria:
+- The app loads successfully.
+- The main workflow works from sample data.
+- Generated output appears immediately.
+- Save/copy buttons work where relevant.
+- The app works without external services.
+- The result is polished enough to record in a short demo video.`,
   },
   {
     id: "clinic-call-triage",
@@ -144,8 +199,62 @@ const buildSignals: BuildSignal[] = [
       "Veterinary Offices",
       "Repair Services",
     ],
-    codeXPrompt:
-      "Build a minimal working prototype of a clinic inquiry triage tool for small clinics and appointment-based local offices. Use Next.js with a simple mobile-first single-page UI. Keep mock data in the same file. Do not add authentication, payments, databases, or external APIs. The user should be able to paste call notes, detect inquiry type, flag urgency, draft a staff follow-up, and move requests through an open/resolved board. Include call notes input, triage result, open requests list, urgency filter, and follow-up draft section. Add copy buttons where useful. Prioritize a working MVP over architecture. Acceptance criteria: sample call notes can be triaged, urgency labels appear, request status can be changed, follow-up text can be copied, and everything works with mock data only.",
+    codeXPrompt: `Build a standalone new web app from scratch.
+
+Product:
+Clinic Inquiry Triage Desk
+
+Goal:
+Help small clinics turn messy phone inquiry notes into structured intent, urgency, next actions, and staff follow-up messages.
+
+Target user:
+Small clinics, dental offices, veterinary offices, wellness practices, and appointment-based local teams with busy front desks.
+
+Core workflow:
+1. The user selects or pastes sample call notes.
+2. The user clicks "Triage Inquiry."
+3. The app classifies inquiry type and urgency.
+4. The app generates next actions and a staff follow-up draft.
+5. The user saves the inquiry to an open requests queue.
+6. The user can copy the follow-up message or mark the request resolved.
+
+Technical requirements:
+- Build this as a standalone working web app.
+- Use Next.js and React.
+- Use mock data only.
+- Use local React state only.
+- Do not add authentication.
+- Do not add payments.
+- Do not add a database.
+- Do not use external APIs.
+- Do not require environment variables.
+- Do not ask clarifying questions.
+- Make reasonable product decisions and implement the MVP.
+- Prioritize a working demo over perfect architecture.
+
+UI requirements:
+- Mobile-first layout.
+- Clean premium SaaS-style interface.
+- Clear cards and sections.
+- Good spacing and readable typography.
+- No generic AI gradients.
+- No unnecessary animations.
+- Include sample data so the demo works immediately.
+- Include obvious action buttons.
+
+Feature requirements:
+- Include call notes input, sample call note buttons, triage result preview, inquiry type, urgency badge, next action checklist, and follow-up message output.
+- Include an open requests queue with status controls, urgency filter, and resolved state.
+- Include save/copy buttons for the triage result and follow-up draft.
+- Include at least 4 mock inquiry types such as appointment request, medication question, billing question, and urgent symptom.
+
+Acceptance criteria:
+- The app loads successfully.
+- The main workflow works from sample data.
+- Generated output appears immediately.
+- Save/copy buttons work where relevant.
+- The app works without external services.
+- The result is polished enough to record in a short demo video.`,
   },
   {
     id: "construction-daily-report",
@@ -185,8 +294,82 @@ const buildSignals: BuildSignal[] = [
       "Property Maintenance",
       "Field Services",
     ],
-    codeXPrompt:
-      "Build a minimal working prototype of a construction daily report generator for small contractors. Use Next.js with a simple mobile-first single-page UI. Keep mock data in the same file. Do not add authentication, payments, databases, or external APIs. The user should be able to choose a mock project, paste messy jobsite notes, add weather and crew count, generate a client-ready daily report, and save it to a local mock reports list. Include project selector, notes input, report preview, blockers/materials section, and saved reports. Add copy buttons where useful. Prioritize a working MVP over architecture. Acceptance criteria: reports generate from sample notes, saved reports appear immediately, copy buttons work, and no external services are used.",
+    codeXPrompt: `Build a standalone new web app from scratch.
+
+Product:
+Construction Daily Report Generator
+
+Goal:
+Create a minimal working prototype that helps small contractors turn messy jobsite notes into clean client-ready daily reports.
+
+Target user:
+Small contractors, renovation teams, landscapers, property maintenance teams, and field service operators who need to send daily progress updates to clients or managers.
+
+Core workflow:
+1. The user selects a mock project.
+2. The user enters work date, weather, and crew count.
+3. The user pastes messy jobsite notes.
+4. The user clicks "Generate Daily Report."
+5. The app turns the messy notes into a structured report.
+6. The user can copy the report.
+7. The user can save the report to a local saved reports list.
+8. Saved reports appear immediately on the page.
+
+Technical requirements:
+- Build this as a standalone working web app.
+- Use Next.js and React.
+- Use mock data only.
+- Use local React state only.
+- Do not add authentication.
+- Do not add payments.
+- Do not add a database.
+- Do not use external APIs.
+- Do not require environment variables.
+- Do not ask clarifying questions.
+- Make reasonable product decisions and implement the MVP.
+- Prioritize a working demo over perfect architecture.
+
+UI requirements:
+- Mobile-first layout.
+- Clean premium SaaS-style interface.
+- Clear cards and sections.
+- Good spacing and readable typography.
+- No generic AI gradients.
+- No unnecessary animations.
+- Include sample messy notes so the demo works immediately.
+- Include obvious buttons for Generate, Save Report, and Copy Report.
+
+Report output sections:
+- Client-ready summary
+- Progress completed today
+- Blockers or risks
+- Materials used or needed
+- Crew and weather details
+- Next steps
+- Full client update message
+
+Saved reports:
+- Show saved reports below the generator.
+- Each saved report should include project name, date, short summary, and full report preview.
+- Saved reports only need to persist during the current session.
+
+Sample project data:
+Include at least 3 mock projects:
+1. Kitchen Remodel - Tanaka Residence
+2. Roof Repair - Green Valley Office
+3. Parking Lot Drainage - Northside Plaza
+
+Sample messy notes:
+Include a realistic messy note example with scattered details about work completed, materials, weather, blockers, and next steps.
+
+Acceptance criteria:
+- The app loads successfully.
+- The user can generate a report from the sample notes.
+- The generated report has all required sections.
+- The save button adds the report to the saved reports list immediately.
+- The copy button copies the report text.
+- The app works without external services.
+- The result is polished enough to record in a short demo video.`,
   },
   {
     id: "property-maintenance-router",
@@ -226,8 +409,62 @@ const buildSignals: BuildSignal[] = [
       "Facility Management",
       "Local Services",
     ],
-    codeXPrompt:
-      "Build a minimal working prototype of a tenant maintenance request router for small property managers. Use Next.js with a simple mobile-first single-page UI. Keep mock data in the same file. Do not add authentication, payments, databases, or external APIs. The user should be able to paste a tenant message, classify the issue, estimate urgency, generate missing-detail questions, create a vendor-ready work order, and move the request through a simple queue. Include request intake, triage card, vendor work order preview, open queue, and category filter. Add copy buttons where useful. Prioritize a working MVP over architecture. Acceptance criteria: sample tenant requests classify correctly enough for demo, queue interactions work, work order copy works, and all data is mock data.",
+    codeXPrompt: `Build a standalone new web app from scratch.
+
+Product:
+Tenant Maintenance Request Router
+
+Goal:
+Help small property managers turn messy tenant messages into categorized, prioritized, vendor-ready maintenance work orders.
+
+Target user:
+Small property managers, HOA managers, facility operators, and local landlords who coordinate tenant maintenance without a large operations team.
+
+Core workflow:
+1. The user selects or pastes a sample tenant maintenance message.
+2. The user clicks "Route Request."
+3. The app classifies the issue category and urgency.
+4. The app generates missing-detail questions and a vendor-ready work order.
+5. The user saves the request to an open queue.
+6. The user can copy the work order or move the request through queue statuses.
+
+Technical requirements:
+- Build this as a standalone working web app.
+- Use Next.js and React.
+- Use mock data only.
+- Use local React state only.
+- Do not add authentication.
+- Do not add payments.
+- Do not add a database.
+- Do not use external APIs.
+- Do not require environment variables.
+- Do not ask clarifying questions.
+- Make reasonable product decisions and implement the MVP.
+- Prioritize a working demo over perfect architecture.
+
+UI requirements:
+- Mobile-first layout.
+- Clean premium SaaS-style interface.
+- Clear cards and sections.
+- Good spacing and readable typography.
+- No generic AI gradients.
+- No unnecessary animations.
+- Include sample data so the demo works immediately.
+- Include obvious action buttons.
+
+Feature requirements:
+- Include tenant message input, sample request buttons, route request button, triage preview, category badge, urgency badge, missing-detail questions, and vendor work order output.
+- Include an open request queue with category filter, status controls, and saved request cards.
+- Include save/copy buttons for work orders and tenant follow-up questions.
+- Include at least 5 maintenance categories such as plumbing, electrical, HVAC, appliance, and exterior.
+
+Acceptance criteria:
+- The app loads successfully.
+- The main workflow works from sample data.
+- Generated output appears immediately.
+- Save/copy buttons work where relevant.
+- The app works without external services.
+- The result is polished enough to record in a short demo video.`,
   },
   {
     id: "restaurant-shift-brief",
@@ -267,8 +504,62 @@ const buildSignals: BuildSignal[] = [
       "Hospitality",
       "Local Services",
     ],
-    codeXPrompt:
-      "Build a minimal working prototype of a restaurant shift brief generator for independent restaurants. Use Next.js with a simple mobile-first single-page UI. Keep mock data in the same file. Do not add authentication, payments, databases, or external APIs. The user should be able to enter manager notes, reservations, staffing updates, and inventory issues, then generate a concise shift brief for the next team and save it by date. Include notes input, reservations list, staffing panel, inventory issues, generated brief, and saved briefs. Add copy buttons where useful. Prioritize a working MVP over architecture. Acceptance criteria: a shift brief generates from mock inputs, saved briefs display by date, copy buttons work, and the page is usable on mobile.",
+    codeXPrompt: `Build a standalone new web app from scratch.
+
+Product:
+Restaurant Shift Brief Generator
+
+Goal:
+Help independent restaurant managers turn scattered notes, reservations, staffing updates, and stock issues into a clear shift handoff brief.
+
+Target user:
+Independent restaurant owners, general managers, shift leads, cafe operators, and hospitality teams that need reliable daily handoffs.
+
+Core workflow:
+1. The user enters shift date, shift type, and manager notes.
+2. The user reviews sample reservations, staffing, and inventory issues.
+3. The user clicks "Generate Shift Brief."
+4. The app creates a concise brief for the next team.
+5. The user can copy the brief.
+6. The user can save the brief to a local saved briefs list.
+
+Technical requirements:
+- Build this as a standalone working web app.
+- Use Next.js and React.
+- Use mock data only.
+- Use local React state only.
+- Do not add authentication.
+- Do not add payments.
+- Do not add a database.
+- Do not use external APIs.
+- Do not require environment variables.
+- Do not ask clarifying questions.
+- Make reasonable product decisions and implement the MVP.
+- Prioritize a working demo over perfect architecture.
+
+UI requirements:
+- Mobile-first layout.
+- Clean premium SaaS-style interface.
+- Clear cards and sections.
+- Good spacing and readable typography.
+- No generic AI gradients.
+- No unnecessary animations.
+- Include sample data so the demo works immediately.
+- Include obvious action buttons.
+
+Feature requirements:
+- Include manager notes input, shift selector, reservations list, staffing panel, inventory/prep issue checklist, generated brief preview, and saved briefs section.
+- Include output sections for service focus, reservation notes, staffing risks, stock/prep issues, and handoff message.
+- Include save/copy buttons for the generated brief.
+- Include at least 3 sample shifts with realistic reservations, staff notes, and inventory issues.
+
+Acceptance criteria:
+- The app loads successfully.
+- The main workflow works from sample data.
+- Generated output appears immediately.
+- Save/copy buttons work where relevant.
+- The app works without external services.
+- The result is polished enough to record in a short demo video.`,
   },
   {
     id: "local-review-reply-copilot",
@@ -308,8 +599,62 @@ const buildSignals: BuildSignal[] = [
       "Salons",
       "Small Shops",
     ],
-    codeXPrompt:
-      "Build a minimal working prototype of a local review reply copilot for restaurants, clinics, salons, and small shops. Use Next.js with a simple mobile-first single-page UI. Keep mock data in the same file. Do not add authentication, payments, databases, or external APIs. The user should be able to choose a business type, paste a customer review, choose a tone, generate three reply options, flag negative reviews, and copy a reply. Include business profile selector, review input, tone controls, generated replies, negative review alert, and saved brand details. Add copy buttons where useful. Prioritize a working MVP over architecture. Acceptance criteria: sample reviews generate distinct replies, negative reviews show an alert, copy buttons work, and no external services are used.",
+    codeXPrompt: `Build a standalone new web app from scratch.
+
+Product:
+Local Review Reply Copilot
+
+Goal:
+Help local businesses quickly draft polite, specific, on-brand replies to customer reviews while flagging negative reviews for owner attention.
+
+Target user:
+Restaurant owners, clinic managers, salon owners, small shop operators, and local service teams who need consistent review replies.
+
+Core workflow:
+1. The user selects a mock business profile.
+2. The user selects or pastes a customer review.
+3. The user chooses a reply tone.
+4. The user clicks "Generate Replies."
+5. The app generates three reply options and flags negative reviews.
+6. The user can copy a reply or save it to a local saved replies list.
+
+Technical requirements:
+- Build this as a standalone working web app.
+- Use Next.js and React.
+- Use mock data only.
+- Use local React state only.
+- Do not add authentication.
+- Do not add payments.
+- Do not add a database.
+- Do not use external APIs.
+- Do not require environment variables.
+- Do not ask clarifying questions.
+- Make reasonable product decisions and implement the MVP.
+- Prioritize a working demo over perfect architecture.
+
+UI requirements:
+- Mobile-first layout.
+- Clean premium SaaS-style interface.
+- Clear cards and sections.
+- Good spacing and readable typography.
+- No generic AI gradients.
+- No unnecessary animations.
+- Include sample data so the demo works immediately.
+- Include obvious action buttons.
+
+Feature requirements:
+- Include business profile selector, brand detail card, review input, sample review buttons, tone selector, negative review alert, and three generated reply cards.
+- Include save/copy buttons for each reply and a saved replies section.
+- Include at least 4 mock business profiles and sample positive, neutral, and negative reviews.
+- Include output labels that show tone, sentiment, and whether owner review is recommended.
+
+Acceptance criteria:
+- The app loads successfully.
+- The main workflow works from sample data.
+- Generated output appears immediately.
+- Save/copy buttons work where relevant.
+- The app works without external services.
+- The result is polished enough to record in a short demo video.`,
   },
   {
     id: "invoice-follow-up-assistant",
@@ -349,8 +694,62 @@ const buildSignals: BuildSignal[] = [
       "Consultants",
       "Bookkeepers",
     ],
-    codeXPrompt:
-      "Build a minimal working prototype of an invoice follow-up assistant for freelancers and solo agencies. Use Next.js with a simple mobile-first single-page UI. Keep mock data in the same file. Do not add authentication, payments, databases, or external APIs. The user should be able to view mock invoices, filter overdue invoices, select an invoice, generate a polite follow-up email, generate a firmer second reminder, and set a next follow-up date. Include invoice list, overdue filter, selected invoice details, message generator, follow-up date controls, and copied email drafts. Add copy buttons where useful. Prioritize a working MVP over architecture. Acceptance criteria: overdue filters work, both reminder styles generate, next follow-up date changes in UI state, copy buttons work, and no external services are used.",
+    codeXPrompt: `Build a standalone new web app from scratch.
+
+Product:
+Invoice Follow-Up Assistant
+
+Goal:
+Help freelancers and solo agencies turn unpaid invoice context into polite follow-up emails, firmer reminders, and next follow-up dates.
+
+Target user:
+Freelancers, solo agencies, consultants, bookkeepers, and independent service providers who need to follow up on unpaid invoices without awkward manual drafting.
+
+Core workflow:
+1. The user views a list of mock invoices.
+2. The user filters overdue or due-soon invoices.
+3. The user selects an invoice.
+4. The user chooses a reminder style and clicks "Generate Follow-Up."
+5. The app generates an email draft and suggested next follow-up date.
+6. The user can copy the email and save the follow-up note in local state.
+
+Technical requirements:
+- Build this as a standalone working web app.
+- Use Next.js and React.
+- Use mock data only.
+- Use local React state only.
+- Do not add authentication.
+- Do not add payments.
+- Do not add a database.
+- Do not use external APIs.
+- Do not require environment variables.
+- Do not ask clarifying questions.
+- Make reasonable product decisions and implement the MVP.
+- Prioritize a working demo over perfect architecture.
+
+UI requirements:
+- Mobile-first layout.
+- Clean premium SaaS-style interface.
+- Clear cards and sections.
+- Good spacing and readable typography.
+- No generic AI gradients.
+- No unnecessary animations.
+- Include sample data so the demo works immediately.
+- Include obvious action buttons.
+
+Feature requirements:
+- Include invoice list, overdue/due-soon filters, selected invoice details, reminder style controls, generated email preview, next follow-up date control, and saved follow-up notes.
+- Include save/copy buttons for generated emails.
+- Include at least 5 mock invoices with client name, amount, due date, status, reminder stage, and project context.
+- Include output sections for subject line, email body, tone, and next step.
+
+Acceptance criteria:
+- The app loads successfully.
+- The main workflow works from sample data.
+- Generated output appears immediately.
+- Save/copy buttons work where relevant.
+- The app works without external services.
+- The result is polished enough to record in a short demo video.`,
   },
   {
     id: "micro-saas-ticket-triage",
@@ -390,8 +789,62 @@ const buildSignals: BuildSignal[] = [
       "Productized Services",
       "Developer Tools",
     ],
-    codeXPrompt:
-      "Build a minimal working prototype of a support ticket triage board for micro SaaS founders. Use Next.js with a simple mobile-first single-page UI. Keep mock data in the same file. Do not add authentication, payments, databases, or external APIs. The user should be able to view mock tickets, classify a ticket as bug, billing, feature request, or question, detect urgency, draft a short customer reply, and move tickets across triage columns. Include ticket board, ticket detail panel, type and urgency labels, reply draft area, and column controls. Add copy buttons where useful. Prioritize a working MVP over architecture. Acceptance criteria: tickets can move between columns, classifications display clearly, reply drafts can be copied, mobile layout is usable, and all data is mock data.",
+    codeXPrompt: `Build a standalone new web app from scratch.
+
+Product:
+Micro SaaS Support Triage Board
+
+Goal:
+Help micro SaaS founders categorize support tickets, detect urgency, draft short replies, and move requests through a lightweight triage board.
+
+Target user:
+Micro SaaS founders, indie hackers, productized service owners, and small developer-tool teams who need to manage support without a full helpdesk.
+
+Core workflow:
+1. The user views a board of mock support tickets.
+2. The user selects a ticket.
+3. The user clicks "Triage Ticket."
+4. The app classifies type, urgency, and recommended next action.
+5. The app generates a short customer reply.
+6. The user can copy the reply and move the ticket across columns.
+
+Technical requirements:
+- Build this as a standalone working web app.
+- Use Next.js and React.
+- Use mock data only.
+- Use local React state only.
+- Do not add authentication.
+- Do not add payments.
+- Do not add a database.
+- Do not use external APIs.
+- Do not require environment variables.
+- Do not ask clarifying questions.
+- Make reasonable product decisions and implement the MVP.
+- Prioritize a working demo over perfect architecture.
+
+UI requirements:
+- Mobile-first layout.
+- Clean premium SaaS-style interface.
+- Clear cards and sections.
+- Good spacing and readable typography.
+- No generic AI gradients.
+- No unnecessary animations.
+- Include sample data so the demo works immediately.
+- Include obvious action buttons.
+
+Feature requirements:
+- Include a ticket board, ticket detail panel, ticket text preview, type selector or generated type badge, urgency badge, reply draft output, and column movement controls.
+- Include columns for New, Needs Reply, Waiting, and Resolved.
+- Include save/copy buttons for reply drafts and triage summaries.
+- Include at least 6 mock tickets covering bugs, billing questions, feature requests, onboarding questions, and urgent customer issues.
+
+Acceptance criteria:
+- The app loads successfully.
+- The main workflow works from sample data.
+- Generated output appears immediately.
+- Save/copy buttons work where relevant.
+- The app works without external services.
+- The result is polished enough to record in a short demo video.`,
   },
 ];
 
@@ -453,44 +906,7 @@ export default function BilionAppClient({
   };
 
   async function copyFullCodeXPrompt() {
-    const signal = selectedSignal;
-    const copyText = [
-      "Latest Signal",
-      signal.latestSignal,
-      "",
-      "Source Title",
-      signal.sourceTitle,
-      ...(signal.sourceUrl ? ["", "Source URL", signal.sourceUrl] : []),
-      "",
-      "Buyer",
-      signal.buyer,
-      "",
-      "Pain",
-      signal.pain,
-      "",
-      "Why Now",
-      signal.whyNow,
-      "",
-      "What You Can Build",
-      signal.whatYouCanBuild,
-      "",
-      "Core Features",
-      signal.coreFeatures.map((item) => "- " + item).join("\n"),
-      "",
-      "Comparable Price",
-      signal.comparablePrice,
-      "",
-      "Build Steps",
-      signal.buildSteps.map((item, index) => index + 1 + ". " + item).join("\n"),
-      "",
-      "Pattern Matches",
-      signal.patternMatches.join("\n"),
-      "",
-      "Full Code X Prompt",
-      signal.codeXPrompt,
-    ].join("\n");
-
-    await navigator.clipboard.writeText(copyText);
+    await navigator.clipboard.writeText(selectedSignal.codeXPrompt);
     setCopiedPrompt(true);
     window.setTimeout(() => setCopiedPrompt(false), 1000);
   }
@@ -688,9 +1104,37 @@ function FounderPromptView({
           label="Pattern Matches"
           value={pack.pattern_matches.join("\n")}
         />
+        <HowToUsePromptBlock />
         <PaidBlock label="Full Code X Prompt" value={pack.code_x_prompt} />
       </div>
     </div>
+  );
+}
+
+function HowToUsePromptBlock() {
+  const steps = [
+    "Create a new empty project folder on your computer.",
+    "Open that folder in VS Code, Cursor, or another AI coding tool.",
+    "Open Codex / Code X.",
+    "Paste the Full Code X Prompt below.",
+    "Let the AI build the standalone MVP.",
+    "Run the app locally and record the result.",
+  ];
+
+  return (
+    <article className="rounded-2xl border border-white/10 bg-black/40 p-4">
+      <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+        How to use this prompt
+      </div>
+      <ol className="mt-3 space-y-2 text-sm leading-6 text-zinc-100">
+        {steps.map((step, index) => (
+          <li key={step} className="flex gap-3">
+            <span className="text-zinc-500">{index + 1}.</span>
+            <span>{step}</span>
+          </li>
+        ))}
+      </ol>
+    </article>
   );
 }
 
