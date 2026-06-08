@@ -124,7 +124,7 @@ const masterPromptAngles = [
     label: "Local business tool",
     price: "$199 setup + $29/month",
     promptTitle: (signal: BuildSignal) =>
-      `${titleCase(localBusinessNiche(signal))} ${workflowConsoleName(signal)}`,
+      workflowConsoleName(signal),
     buyer: (signal: BuildSignal) =>
       `${signal.buyer || "Local operators"} who need practical admin relief, faster response speed, and a tool staff can use during the workday.`,
     pain: (signal: BuildSignal) =>
@@ -1067,13 +1067,6 @@ function compactBuyer(signal: BuildSignal) {
     .toLowerCase();
 }
 
-function localBusinessNiche(signal: BuildSignal) {
-  return compactBuyer(signal)
-    .replace(/\bteams\b/i, "team")
-    .replace(/\bbusinesses\b/i, "business")
-    .replace(/\bmanagers\b/i, "manager");
-}
-
 function workflowName(signal: BuildSignal) {
   if (signal.id.includes("restaurant")) return "shift brief";
   if (signal.id.includes("property")) return "tenant maintenance request";
@@ -1102,7 +1095,13 @@ function workflowBrandName(signal: BuildSignal) {
 }
 
 function workflowConsoleName(signal: BuildSignal) {
-  return `${titleCase(workflowName(signal))} Desk`;
+  if (signal.id.includes("restaurant")) return "ShiftBrief Desk";
+  if (signal.id.includes("property")) return "MaintRouter Desk";
+  if (signal.id.includes("clinic")) return "Clinic Triage Desk";
+  if (signal.id.includes("construction")) return "SiteReport Desk";
+  if (signal.id.includes("farm")) return "FarmOps Brief Desk";
+
+  return `${workflowBrandName(signal)} Desk`;
 }
 
 function workflowInput(signal: BuildSignal) {
@@ -1175,6 +1174,21 @@ function featureSummary(signal: BuildSignal) {
     .join(", ");
 }
 
+function normalizeLocalOnlyBuildStep(step: string) {
+  return step
+    .replace(
+      /^Create a small database for fields, tasks, work logs, and sensor readings\.$/i,
+      "Create local mock records for fields, tasks, work logs, and sensor readings using React state.",
+    )
+    .replace(
+      /^Build a simple LINE webhook or mock chat interface\.$/i,
+      "Build a mock chat-style command panel that simulates LINE-style operations without external APIs.",
+    )
+    .replace(/\b[Cc]reate a small database\b/g, "Create local mock records")
+    .replace(/\b[Cc]reate a database\b/g, "Create local mock records")
+    .replace(/\b[Bb]uild a simple LINE webhook\b/g, "Build a mock chat-style command panel");
+}
+
 function buildPromptTitle(signal: BuildSignal, angleIndex: number) {
   const angle = getAngle(angleIndex);
   return angle.promptTitle(signal);
@@ -1219,7 +1233,7 @@ function buildMasterPrompt(signal: BuildSignal, angleIndex: number): MasterPromp
     ? signal.coreFeatures
     : ["Main input form", "Generated output", "Saved examples", "Copy button"];
   const buildSteps = signal.buildSteps.length
-    ? signal.buildSteps
+    ? signal.buildSteps.map(normalizeLocalOnlyBuildStep)
     : [
         "Create the main page and mock data.",
         "Build the primary workflow.",
