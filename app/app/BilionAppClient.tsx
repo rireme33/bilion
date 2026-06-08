@@ -1189,6 +1189,55 @@ function normalizeLocalOnlyBuildStep(step: string) {
     .replace(/\b[Bb]uild a simple LINE webhook\b/g, "Build a mock chat-style command panel");
 }
 
+function slugifyProductName(productName?: string) {
+  const slug = (productName || "bilion-build-demo")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 64)
+    .replace(/-$/g, "");
+
+  return slug || "bilion-build-demo";
+}
+
+function buildSafeCodeXPrompt(masterPrompt: MasterPrompt) {
+  const routeSlug = slugifyProductName(masterPrompt.promptTitle);
+  const routePath = `/${routeSlug}`;
+
+  return `Important implementation constraint:
+
+Do not modify the existing Bilion app routes, access logic, API routes, data files, package files, global layout, or existing production pages.
+
+Build this as a new isolated demo route inside the existing Next.js app.
+
+Create or edit only the files required for this isolated route.
+
+Preferred route:
+${routePath}
+
+Preferred file:
+app/${routeSlug}/page.tsx
+
+Do not edit:
+app/app/BilionAppClient.tsx
+app/app/page.tsx
+app/page.tsx
+API routes
+data files
+package files
+global CSS
+layout files
+
+The goal is to create a screenshot-worthy demo product generated from this Bilion master prompt without breaking Bilion itself.
+
+--- FULL CODE X MASTER PROMPT ---
+
+${masterPrompt.fullCodeXMasterPrompt}`;
+}
+
 function buildPromptTitle(signal: BuildSignal, angleIndex: number) {
   const angle = getAngle(angleIndex);
   return angle.promptTitle(signal);
@@ -1482,6 +1531,7 @@ export default function BilionAppClient({
   const [result, setResult] = useState<ApiResult | null>(null);
   const [error, setError] = useState("");
   const [copiedMasterPrompt, setCopiedMasterPrompt] = useState(false);
+  const [copiedSafePrompt, setCopiedSafePrompt] = useState(false);
   const [copiedSavedSignalId, setCopiedSavedSignalId] = useState("");
   const [savedSignals, setSavedSignals] = useState<SavedSignal[]>([]);
   const [masterPrompt, setMasterPrompt] = useState<MasterPrompt | null>(null);
@@ -1519,12 +1569,14 @@ export default function BilionAppClient({
     setResult(nextResult);
     setMasterPrompt(null);
     setCopiedMasterPrompt(false);
+    setCopiedSafePrompt(false);
     saveResult(nextResult);
     setLoading(false);
   }
 
   function viewSavedSignal(signal: SavedSignal) {
     setCopiedMasterPrompt(false);
+    setCopiedSafePrompt(false);
     setResult(buildResultFromSavedSignal(signal));
     setMasterPrompt(null);
   }
@@ -1549,6 +1601,7 @@ export default function BilionAppClient({
     const nextResult = buildResult(nextSignal);
 
     setCopiedMasterPrompt(false);
+    setCopiedSafePrompt(false);
     setSignalIndex(nextIndexes.signalIndex);
     setMasterPromptAngleIndex(nextIndexes.angleIndex);
     setResult(nextResult);
@@ -1588,6 +1641,7 @@ export default function BilionAppClient({
     const nextResult = buildResult(nextSignal);
 
     setCopiedMasterPrompt(false);
+    setCopiedSafePrompt(false);
     setSignalIndex(buildSignals.indexOf(nextSignal));
     setMasterPromptAngleIndex(safeAngleIndex);
     setResult(nextResult);
@@ -1603,6 +1657,16 @@ export default function BilionAppClient({
     await navigator.clipboard.writeText(masterPrompt.fullCodeXMasterPrompt);
     setCopiedMasterPrompt(true);
     window.setTimeout(() => setCopiedMasterPrompt(false), 1000);
+  }
+
+  async function copySafeBuildPrompt() {
+    if (!masterPrompt || !hasFounderAccess) {
+      return;
+    }
+
+    await navigator.clipboard.writeText(buildSafeCodeXPrompt(masterPrompt));
+    setCopiedSafePrompt(true);
+    window.setTimeout(() => setCopiedSafePrompt(false), 1000);
   }
 
   function deleteSavedSignal(signalId: string) {
@@ -1790,9 +1854,11 @@ export default function BilionAppClient({
               {masterPrompt && (
                 <MasterPromptCard
                   copied={copiedMasterPrompt}
+                  copiedSafe={copiedSafePrompt}
                   hasFounderAccess={hasFounderAccess}
                   masterPrompt={masterPrompt}
                   onCopy={copyMasterPrompt}
+                  onCopySafe={copySafeBuildPrompt}
                   angleNumber={masterPromptAngleIndex + 1}
                   signalNumber={signalIndex + 1}
                 />
@@ -1845,16 +1911,20 @@ export default function BilionAppClient({
 function MasterPromptCard({
   angleNumber,
   copied,
+  copiedSafe,
   hasFounderAccess,
   masterPrompt,
   onCopy,
+  onCopySafe,
   signalNumber,
 }: {
   angleNumber: number;
   copied: boolean;
+  copiedSafe: boolean;
   hasFounderAccess: boolean;
   masterPrompt: MasterPrompt;
   onCopy: () => void;
+  onCopySafe: () => void;
   signalNumber: number;
 }) {
   return (
@@ -1883,13 +1953,22 @@ function MasterPromptCard({
         </div>
 
         {hasFounderAccess ? (
-          <button
-            type="button"
-            onClick={onCopy}
-            className="rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200"
-          >
-            {copied ? "Copied" : "Copy to Code X"}
-          </button>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <button
+              type="button"
+              onClick={onCopySafe}
+              className="rounded-2xl bg-emerald-300 px-5 py-4 text-sm font-bold text-black transition hover:bg-emerald-200"
+            >
+              {copiedSafe ? "Copied" : "Copy Safe Build Prompt"}
+            </button>
+            <button
+              type="button"
+              onClick={onCopy}
+              className="rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200"
+            >
+              {copied ? "Copied" : "Copy to Code X"}
+            </button>
+          </div>
         ) : (
           <div className="rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] px-5 py-4 text-sm font-bold text-yellow-200">
             Founder Access required
