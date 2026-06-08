@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type FreeIdea = {
   latest_signal: string;
@@ -54,14 +54,157 @@ type BilionAppClientProps = {
   hasFounderAccess: boolean;
 };
 
+type SavedSignal = {
+  id: string;
+  createdAt: string;
+  sourceTitle: string;
+  buyer: string;
+  pain: string;
+  whyNow: string;
+  coreFeatures: string[];
+  comparablePrice: string;
+  buildSteps: string[];
+  patternMatches: string[];
+  fullCodeXPrompt: string;
+  latestSignal: string;
+  whatYouCanBuild: string;
+  sourceUrl: string;
+  sourceType: string;
+  sourceNote: string;
+};
+
+type MasterPrompt = {
+  angleLabel: string;
+  promptTitle: string;
+  buyer: string;
+  pain: string;
+  productAngle: string;
+  firstVersion: string;
+  price: string;
+  validationPlan: string[];
+  fullCodeXMasterPrompt: string;
+};
+
+/*
 const lockedItems = [
   "Core Features 🔒",
   "Comparable Price 🔒",
   "Full Code X Prompt 🔒",
   "Pattern Matches 🔒",
 ];
+*/
 
 const CHECKOUT_URL = process.env.NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL || "";
+const SAVED_SIGNALS_STORAGE_KEY = "bilion.savedSignals";
+const MAX_SAVED_SIGNALS = 10;
+
+const masterPromptAngles = [
+  {
+    label: "Micro SaaS",
+    price: "$29/month",
+    promptTitle: (signal: BuildSignal) =>
+      `${workflowBrandName(signal)} SaaS for ${titleCase(compactBuyer(signal))}`,
+    buyer: (signal: BuildSignal) =>
+      `${signal.buyer || "Niche operators"} who repeat ${workflowName(signal)} every week and want a small subscription app that keeps the work organized.`,
+    pain: (signal: BuildSignal) =>
+      `${signal.pain || "The workflow is manual, repeated, and easy to lose track of."} The SaaS pain is that the buyer needs one reliable place to capture inputs, generate the output, save records, and reuse the result next week.`,
+    productAngle: (signal: BuildSignal) =>
+      `A small subscription app for ${compactBuyer(signal)} that turns ${workflowInput(signal)} into ${workflowOutcome(signal)}.`,
+    firstVersion: (signal: BuildSignal) =>
+      `A subscription-style app with one focused input flow, ${featureSummary(signal)}, saved records, a simple dashboard, and copy/export actions.`,
+    validationPlan: (signal: BuildSignal) => [
+      `Create a one-page landing page for ${compactBuyer(signal)} showing the messy input and the saved output.`,
+      `Record a 90-second demo of ${workflowName(signal)} moving from input to generated result to saved record.`,
+      "Send the demo to 20 niche operators and ask for 3 paid beta users at $29/month.",
+    ],
+    buildInstruction:
+      "Tell Code X to build a small subscription-style app with input, saved records, dashboard, generated outputs, and copy/export.",
+  },
+  {
+    label: "Local business tool",
+    price: "$199 setup + $29/month",
+    promptTitle: (signal: BuildSignal) =>
+      `${titleCase(localBusinessNiche(signal))} ${workflowConsoleName(signal)}`,
+    buyer: (signal: BuildSignal) =>
+      `${signal.buyer || "Local operators"} who need practical admin relief, faster response speed, and a tool staff can use during the workday.`,
+    pain: (signal: BuildSignal) =>
+      `${signal.pain || "Admin work is scattered across messages, notes, and memory."} The local tool pain is urgent, operational, and staff-facing: the buyer needs the next action to be clear without adopting a complex platform.`,
+    productAngle: (signal: BuildSignal) =>
+      `A practical operator dashboard for ${compactBuyer(signal)} that turns ${workflowInput(signal)} into ${workflowOutcome(signal)} for faster daily handoffs.`,
+    firstVersion: (signal: BuildSignal) =>
+      `One local-operator dashboard with sample jobs or requests, ${featureSummary(signal)}, status controls, staff notes, and copyable summaries.`,
+    validationPlan: (signal: BuildSignal) => [
+      `Contact 15 local operators similar to ${compactBuyer(signal)} with a before/after sample.`,
+      `Show how one messy ${workflowName(signal)} input becomes a staff-ready output.`,
+      "Offer a 48-hour setup at $199 setup + $29/month and ask what would make it usable by staff tomorrow.",
+    ],
+    buildInstruction:
+      "Tell Code X to build a practical local operator dashboard focused on one urgent admin workflow.",
+  },
+  {
+    label: "AI workflow tool",
+    price: "$49/month",
+    promptTitle: (signal: BuildSignal) =>
+      `${workflowInputTitle(signal)} to ${workflowOutputTitle(signal)} AI Workflow`,
+    buyer: (signal: BuildSignal) =>
+      `${signal.buyer || "Operators and internal teams"} who already have messy inputs and need AI to turn them into structured decisions, summaries, and next actions.`,
+    pain: (signal: BuildSignal) =>
+      `${signal.pain || "Messy inputs take too long to structure by hand."} The workflow-tool pain is the gap between raw notes and a clean operational output people can act on.`,
+    productAngle: (signal: BuildSignal) =>
+      `An AI workflow layer for ${compactBuyer(signal)} that turns ${workflowInput(signal)} into ${workflowOutcome(signal)} with classification, next actions, and saved history.`,
+    firstVersion: (signal: BuildSignal) =>
+      `A paste/import workflow with AI-style classification, generated structured output, ${featureSummary(signal)}, saved history, and export actions.`,
+    validationPlan: () => [
+      "Find 10 target users who already do this workflow manually each week.",
+      "Ask each user for one real anonymized input and run it through the prototype.",
+      "Measure whether the generated output is good enough to justify $49/month before adding more features.",
+    ],
+    buildInstruction:
+      "Tell Code X to build an AI workflow layer that turns messy inputs into structured outputs and next actions.",
+  },
+  {
+    label: "Prompt pack",
+    price: "$19 one-time",
+    promptTitle: (signal: BuildSignal) =>
+      `${workflowOutputTitle(signal)} Prompt System for ${titleCase(compactBuyer(signal))}`,
+    buyer: (signal: BuildSignal) =>
+      `Builders, freelancers, operators, and consultants who need repeatable AI outputs for ${workflowName(signal)} without designing the prompt system themselves.`,
+    pain: () =>
+      "Generic prompts produce inconsistent output, and users need a commercial prompt system with examples, usage notes, and before/after results.",
+    productAngle: (signal: BuildSignal) =>
+      `A curated prompt system for ${compactBuyer(signal)} that uses reusable prompts, examples, and before/after outputs to produce ${workflowOutcome(signal)}.`,
+    firstVersion: (signal: BuildSignal) =>
+      `A digital product with 15 prompts, example inputs, before/after outputs, usage instructions, and copy buttons organized around ${workflowName(signal)}.`,
+    validationPlan: () => [
+      "Create 5 public sample prompts with before/after screenshots.",
+      "Publish a simple checkout-ready page with the full prompt pack positioned at $19 one-time.",
+      "Send the samples to 30 builders or consultants and ask for 5 purchases or explicit objections.",
+    ],
+    buildInstruction:
+      "Tell Code X to build a sellable prompt-pack product page with prompts, examples, before/after outputs, and copy buttons.",
+  },
+  {
+    label: "Agency service",
+    price: "$500 setup + $150/month",
+    promptTitle: (signal: BuildSignal) =>
+      `Done-for-You ${workflowOutputTitle(signal)} Setup`,
+    buyer: (signal: BuildSignal) =>
+      `Businesses that want ${workflowOutcome(signal)} but do not want to buy, configure, or maintain software themselves.`,
+    pain: (signal: BuildSignal) =>
+      `${signal.pain || "The business wants the outcome but lacks time to implement a new process."} The agency-service pain is that the buyer wants the result delivered for them, not another tool to manage.`,
+    productAngle: (signal: BuildSignal) =>
+      `A done-for-you service for ${compactBuyer(signal)} that uses AI behind the scenes to turn ${workflowInput(signal)} into ${workflowOutcome(signal)} on a recurring basis.`,
+    firstVersion: (signal: BuildSignal) =>
+      `A service landing page plus internal delivery workflow with client intake, before/after sample output, fulfillment checklist, ${featureSummary(signal)}, and proposal copy.`,
+    validationPlan: () => [
+      "Create one before/after sample that shows the messy input and the polished deliverable.",
+      "Send the sample to 20 likely buyers with a clear $500 setup + $150/month offer.",
+      "Ask which part they would want done for them this week and use replies to refine the service package.",
+    ],
+    buildInstruction:
+      "Tell Code X to build a service landing page plus internal delivery workflow for a done-for-you implementation service.",
+  },
+];
 
 const buildSignals: BuildSignal[] = [
   {
@@ -850,6 +993,19 @@ Acceptance criteria:
 
 const todayIndex = Math.floor(Date.now() / 86400000) % buildSignals.length;
 
+function createClientSeed() {
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.getRandomValues === "function"
+  ) {
+    const values = new Uint32Array(1);
+    crypto.getRandomValues(values);
+    return values[0];
+  }
+
+  return Date.now();
+}
+
 function buildResult(signal: BuildSignal): ApiResult {
   return {
     free: {
@@ -878,6 +1034,432 @@ function buildResult(signal: BuildSignal): ApiResult {
   };
 }
 
+function getAngle(index: number) {
+  return masterPromptAngles[index % masterPromptAngles.length];
+}
+
+function cleanPromptSubject(signal: BuildSignal) {
+  const subject = (signal.whatYouCanBuild || signal.sourceTitle || "Buildable Tool")
+    .replace(/^(a|an)\s+/i, "")
+    .replace(/\s+(for|to)\s+.+$/i, "")
+    .replace(/\.$/, "")
+    .trim();
+
+  return subject
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+function titleCase(value: string) {
+  return value
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+function compactBuyer(signal: BuildSignal) {
+  return (signal.buyer || "niche operators")
+    .split(/,| and |\/| with /i)[0]
+    .replace(/^small\s+/i, "")
+    .trim()
+    .toLowerCase();
+}
+
+function localBusinessNiche(signal: BuildSignal) {
+  return compactBuyer(signal)
+    .replace(/\bteams\b/i, "team")
+    .replace(/\bbusinesses\b/i, "business")
+    .replace(/\bmanagers\b/i, "manager");
+}
+
+function workflowName(signal: BuildSignal) {
+  if (signal.id.includes("restaurant")) return "shift brief";
+  if (signal.id.includes("property")) return "tenant maintenance request";
+  if (signal.id.includes("clinic")) return "clinic inquiry triage";
+  if (signal.id.includes("construction")) return "daily jobsite report";
+  if (signal.id.includes("farm")) return "farm operations brief";
+
+  return cleanPromptSubject(signal)
+    .replace(/\bGenerator\b/i, "")
+    .replace(/\bRouter\b/i, "")
+    .replace(/\bAssistant\b/i, "")
+    .replace(/\bTool\b/i, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+function workflowBrandName(signal: BuildSignal) {
+  if (signal.id.includes("restaurant")) return "ShiftBrief";
+  if (signal.id.includes("property")) return "MaintRouter";
+  if (signal.id.includes("clinic")) return "InquiryDesk";
+  if (signal.id.includes("construction")) return "JobsiteBrief";
+  if (signal.id.includes("farm")) return "FarmOps";
+
+  return titleCase(workflowName(signal)).replace(/\s+/g, "");
+}
+
+function workflowConsoleName(signal: BuildSignal) {
+  return `${titleCase(workflowName(signal))} Desk`;
+}
+
+function workflowInput(signal: BuildSignal) {
+  const subject = workflowName(signal);
+
+  if (signal.id.includes("restaurant")) {
+    return "messy manager notes, reservation updates, staffing notes, and inventory issues";
+  }
+  if (signal.id.includes("property")) {
+    return "messy tenant maintenance messages, photos, and missing request details";
+  }
+  if (signal.id.includes("clinic")) {
+    return "front-desk call notes, patient questions, and follow-up requests";
+  }
+  if (signal.id.includes("construction")) {
+    return "jobsite notes, weather updates, crew counts, and blocker notes";
+  }
+  if (signal.id.includes("farm")) {
+    return "field tasks, greenhouse readings, work logs, and crop notes";
+  }
+
+  return `messy notes and requests around ${subject}`;
+}
+
+function workflowOutcome(signal: BuildSignal) {
+  if (signal.id.includes("restaurant")) {
+    return "saved shift briefs, prep lists, blockers, and handoff summaries for independent restaurant teams";
+  }
+  if (signal.id.includes("property")) {
+    return "categorized, urgent, vendor-ready work orders for small property managers";
+  }
+  if (signal.id.includes("clinic")) {
+    return "triaged inquiry summaries, urgency labels, and staff follow-up drafts for small clinics";
+  }
+  if (signal.id.includes("construction")) {
+    return "client-ready daily reports, blockers, materials lists, and next-step summaries for contractors";
+  }
+  if (signal.id.includes("farm")) {
+    return "daily task lists, sensor summaries, field logs, and next actions for farm teams";
+  }
+
+  return `structured outputs, next actions, and saved records for ${compactBuyer(signal)}`;
+}
+
+function workflowInputTitle(signal: BuildSignal) {
+  if (signal.id.includes("restaurant")) return "Manager Notes";
+  if (signal.id.includes("property")) return "Tenant Messages";
+  if (signal.id.includes("clinic")) return "Call Notes";
+  if (signal.id.includes("construction")) return "Jobsite Notes";
+  if (signal.id.includes("farm")) return "Field Logs";
+  return titleCase(workflowName(signal));
+}
+
+function workflowOutputTitle(signal: BuildSignal) {
+  if (signal.id.includes("restaurant")) return "Shift Briefs";
+  if (signal.id.includes("property")) return "Vendor Work Orders";
+  if (signal.id.includes("clinic")) return "Inquiry Triage";
+  if (signal.id.includes("construction")) return "Daily Reports";
+  if (signal.id.includes("farm")) return "Farm Ops Briefs";
+  return `${titleCase(workflowName(signal))} Outputs`;
+}
+
+function featureSummary(signal: BuildSignal) {
+  const features = signal.coreFeatures.length
+    ? signal.coreFeatures.slice(0, 3)
+    : ["structured input", "generated output", "copy-ready result"];
+
+  return features
+    .map((feature) => feature.charAt(0).toLowerCase() + feature.slice(1))
+    .join(", ");
+}
+
+function buildPromptTitle(signal: BuildSignal, angleIndex: number) {
+  const angle = getAngle(angleIndex);
+  return angle.promptTitle(signal);
+}
+
+function getSeededPromptIndexes(previousPromptTitle?: string) {
+  const seed = createClientSeed();
+  let signalIndex = seed % buildSignals.length;
+  let angleIndex =
+    Math.floor(seed / Math.max(buildSignals.length, 1)) %
+    masterPromptAngles.length;
+
+  if (
+    previousPromptTitle &&
+    buildPromptTitle(buildSignals[signalIndex], angleIndex) ===
+      previousPromptTitle
+  ) {
+    angleIndex = (angleIndex + 1) % masterPromptAngles.length;
+
+    if (
+      buildPromptTitle(buildSignals[signalIndex], angleIndex) ===
+        previousPromptTitle &&
+      buildSignals.length > 1
+    ) {
+      signalIndex = (signalIndex + 1) % buildSignals.length;
+    }
+  }
+
+  return { angleIndex, signalIndex };
+}
+
+function buildMasterPrompt(signal: BuildSignal, angleIndex: number): MasterPrompt {
+  const angle = getAngle(angleIndex);
+  const promptTitle = buildPromptTitle(signal, angleIndex);
+  const buyer = angle.buyer(signal);
+  const pain = angle.pain(signal);
+  const productAngle = angle.productAngle(signal);
+  const firstVersion = angle.firstVersion(signal);
+  const price = angle.price;
+  const validationPlan = angle.validationPlan(signal);
+  const features = signal.coreFeatures.length
+    ? signal.coreFeatures
+    : ["Main input form", "Generated output", "Saved examples", "Copy button"];
+  const buildSteps = signal.buildSteps.length
+    ? signal.buildSteps
+    : [
+        "Create the main page and mock data.",
+        "Build the primary workflow.",
+        "Add generated output and copy buttons.",
+      ];
+
+  const fullCodeXMasterPrompt = `Build a standalone new web app from scratch.
+
+Product name:
+${promptTitle}
+
+Source Signal:
+${signal.latestSignal || signal.sourceTitle}
+
+Source Context:
+- Title: ${signal.sourceTitle || "Practical AI adoption signal"}
+- Type: ${signal.sourceType || "Founder Story"}
+- Note: ${signal.sourceNote || signal.whyNow}
+${signal.sourceUrl ? `- URL: ${signal.sourceUrl}` : ""}
+
+Buyer:
+${buyer}
+
+Pain:
+${pain}
+
+Product Angle:
+${productAngle}
+
+First Version:
+${firstVersion}
+
+Price:
+Show this exact price in the product: ${price}
+
+48h Validation Plan:
+${validationPlan.map((step, index) => `${index + 1}. ${step}`).join("\n")}
+
+Commercial Build Instructions:
+${angle.buildInstruction}
+
+Core workflow:
+1. The user opens the product and sees the product name, buyer, pain, and ${price} pricing.
+2. The user enters or selects realistic sample input related to ${workflowInput(signal)}.
+3. The app transforms that input into a structured commercial output.
+4. The user reviews recommended next actions, status, and saved records.
+5. The user can copy or export the output and see a clear validation asset for selling the product.
+
+Required pages or sections:
+- Main generator/workflow screen
+- Sample data selector
+- Structured output preview
+- Saved records or examples
+- Pricing/offer panel showing ${price}
+- 48h validation asset section with outreach copy or sample proof
+
+Data model:
+- Use local React state only.
+- Create mock records for source input, generated output, status, created date, buyer, price, and notes.
+- Include at least 3 realistic sample records grounded in the source signal.
+
+AI behavior:
+- Use deterministic mock AI behavior.
+- Classify the input, extract key details, generate the structured output, and recommend next actions.
+- Do not call external AI APIs.
+
+Core Features:
+${features.map((feature) => `- ${feature}`).join("\n")}
+
+Build Steps:
+${buildSteps.map((step, index) => `${index + 1}. ${step}`).join("\n")}
+
+Pattern Matches:
+${(signal.patternMatches.length ? signal.patternMatches : ["AI workflow", "Local operations"])
+  .map((match) => `- ${match}`)
+  .join("\n")}
+
+Technical Requirements:
+- Use Next.js and React.
+- Use mock data only.
+- Use local React state only.
+- Do not add authentication.
+- Do not add payments.
+- Do not add a database.
+- Do not use external APIs.
+- Do not require environment variables.
+- Do not ask clarifying questions.
+- Make reasonable product decisions and implement the MVP.
+- Prioritize a working demo over perfect architecture.
+- Keep the scope narrow, commercial, and shippable.
+
+UI Requirements:
+- Mobile-first layout.
+- Screenshot-worthy, premium SaaS-style interface.
+- Clear sections for the workflow, generated output, saved examples, and next action.
+- Include sample data so the app works immediately.
+- Include obvious buttons for generate, save, and copy.
+- Avoid generic startup copy. Make every label specific to this product.
+- Show the price ${price} consistently wherever pricing appears.
+
+Acceptance Criteria:
+- The app loads successfully.
+- The main workflow works from sample data.
+- Generated output appears immediately.
+- Copy buttons work where relevant.
+- The product name, buyer, pain, product angle, price, and validation plan are visible.
+- The result feels ready to paste into Code X and build now.`;
+
+  return {
+    angleLabel: angle.label,
+    promptTitle,
+    buyer,
+    pain,
+    productAngle,
+    firstVersion,
+    price,
+    validationPlan,
+    fullCodeXMasterPrompt,
+  };
+}
+
+function buildFreeSavedSignalCopy(signal: SavedSignal) {
+  return `Bilion signal preview
+
+Latest Signal:
+${signal.latestSignal}
+
+Buyer:
+${signal.buyer}
+
+Pain:
+${signal.pain}
+
+What You Can Build:
+${signal.whatYouCanBuild}
+
+Why Now:
+${signal.whyNow}`;
+}
+
+function buildSavedSignal(result: ApiResult): SavedSignal {
+  return {
+    id:
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : String(Date.now()),
+    createdAt: new Date().toISOString(),
+    sourceTitle: result.paid.source_title,
+    buyer: result.paid.buyer,
+    pain: result.paid.pain,
+    whyNow: result.paid.why_now,
+    coreFeatures: result.paid.core_features,
+    comparablePrice: result.paid.comparable_price,
+    buildSteps: result.paid.build_steps,
+    patternMatches: result.paid.pattern_matches,
+    fullCodeXPrompt: result.paid.code_x_prompt,
+    latestSignal: result.paid.latest_signal,
+    whatYouCanBuild: result.paid.what_you_can_build,
+    sourceUrl: result.paid.source_url,
+    sourceType: result.paid.source_type,
+    sourceNote: result.paid.source_note,
+  };
+}
+
+function buildResultFromSavedSignal(signal: SavedSignal): ApiResult {
+  return {
+    free: {
+      latest_signal: signal.latestSignal,
+      what_you_can_build: signal.whatYouCanBuild,
+      buyer: signal.buyer,
+      pain: signal.pain,
+      why_now: signal.whyNow,
+    },
+    paid: {
+      latest_signal: signal.latestSignal,
+      source_title: signal.sourceTitle,
+      source_url: signal.sourceUrl,
+      source_type: signal.sourceType,
+      source_note: signal.sourceNote,
+      buyer: signal.buyer,
+      pain: signal.pain,
+      why_now: signal.whyNow,
+      what_you_can_build: signal.whatYouCanBuild,
+      core_features: signal.coreFeatures,
+      comparable_price: signal.comparablePrice,
+      build_steps: signal.buildSteps,
+      pattern_matches: signal.patternMatches,
+      code_x_prompt: signal.fullCodeXPrompt,
+    },
+  };
+}
+
+function readSavedSignals(): SavedSignal[] {
+  try {
+    const rawSignals = window.localStorage.getItem(SAVED_SIGNALS_STORAGE_KEY);
+
+    if (!rawSignals) {
+      return [];
+    }
+
+    const parsedSignals = JSON.parse(rawSignals);
+
+    if (!Array.isArray(parsedSignals)) {
+      return [];
+    }
+
+    return parsedSignals
+      .filter((signal): signal is SavedSignal => {
+        return (
+          signal &&
+          typeof signal.id === "string" &&
+          typeof signal.createdAt === "string" &&
+          typeof signal.sourceTitle === "string" &&
+          typeof signal.buyer === "string" &&
+          typeof signal.pain === "string" &&
+          typeof signal.whyNow === "string" &&
+          Array.isArray(signal.coreFeatures) &&
+          typeof signal.comparablePrice === "string" &&
+          Array.isArray(signal.buildSteps) &&
+          Array.isArray(signal.patternMatches) &&
+          typeof signal.fullCodeXPrompt === "string"
+        );
+      })
+      .slice(0, MAX_SAVED_SIGNALS);
+  } catch {
+    return [];
+  }
+}
+
+function writeSavedSignals(signals: SavedSignal[]) {
+  try {
+    window.localStorage.setItem(
+      SAVED_SIGNALS_STORAGE_KEY,
+      JSON.stringify(signals.slice(0, MAX_SAVED_SIGNALS)),
+    );
+  } catch {
+    // localStorage can be unavailable in private modes or locked-down browsers.
+  }
+}
+
 export default function BilionAppClient({
   hasFounderAccess,
 }: BilionAppClientProps) {
@@ -885,30 +1467,139 @@ export default function BilionAppClient({
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ApiResult | null>(null);
   const [error, setError] = useState("");
-  const [copiedPrompt, setCopiedPrompt] = useState(false);
+  const [copiedMasterPrompt, setCopiedMasterPrompt] = useState(false);
+  const [copiedSavedSignalId, setCopiedSavedSignalId] = useState("");
+  const [savedSignals, setSavedSignals] = useState<SavedSignal[]>([]);
+  const [masterPrompt, setMasterPrompt] = useState<MasterPrompt | null>(null);
+  const [masterPromptAngleIndex, setMasterPromptAngleIndex] = useState(0);
   const selectedSignal = buildSignals[signalIndex];
+
+  useEffect(() => {
+    const loadSavedSignals = window.setTimeout(() => {
+      setSavedSignals(readSavedSignals());
+    }, 0);
+
+    return () => window.clearTimeout(loadSavedSignals);
+  }, []);
+
+  function saveResult(nextResult: ApiResult) {
+    const savedSignal = buildSavedSignal(nextResult);
+
+    setSavedSignals((currentSignals) => {
+      const nextSignals = [
+        savedSignal,
+        ...currentSignals.filter(
+          (signal) => signal.fullCodeXPrompt !== savedSignal.fullCodeXPrompt,
+        ),
+      ].slice(0, MAX_SAVED_SIGNALS);
+
+      writeSavedSignals(nextSignals);
+      return nextSignals;
+    });
+  }
 
   function generateIdea() {
     setLoading(true);
     setError("");
-    setResult(null);
-    setResult(buildResult(selectedSignal));
+    const nextResult = buildResult(selectedSignal);
+    setResult(nextResult);
+    setMasterPrompt(null);
+    setCopiedMasterPrompt(false);
+    saveResult(nextResult);
     setLoading(false);
   }
 
-  const showNextSignal = () => {
-    setCopiedPrompt(false);
-    setSignalIndex((current) => {
-      const next = (current + 1) % buildSignals.length;
-      setResult(buildResult(buildSignals[next]));
-      return next;
-    });
-  };
+  function viewSavedSignal(signal: SavedSignal) {
+    setCopiedMasterPrompt(false);
+    setResult(buildResultFromSavedSignal(signal));
+    setMasterPrompt(null);
+  }
 
-  async function copyFullCodeXPrompt() {
-    await navigator.clipboard.writeText(selectedSignal.codeXPrompt);
-    setCopiedPrompt(true);
-    window.setTimeout(() => setCopiedPrompt(false), 1000);
+  async function copySavedSignalPrompt(signal: SavedSignal) {
+    const text = hasFounderAccess
+      ? signal.fullCodeXPrompt
+      : buildFreeSavedSignalCopy(signal);
+
+    await navigator.clipboard.writeText(text);
+    setCopiedSavedSignalId(signal.id);
+    window.setTimeout(() => setCopiedSavedSignalId(""), 1000);
+  }
+
+  function generateMasterPrompt() {
+    if (!hasFounderAccess && masterPrompt) {
+      return;
+    }
+
+    const nextIndexes = getSeededPromptIndexes(masterPrompt?.promptTitle);
+    const nextSignal = buildSignals[nextIndexes.signalIndex];
+    const nextResult = buildResult(nextSignal);
+
+    setCopiedMasterPrompt(false);
+    setSignalIndex(nextIndexes.signalIndex);
+    setMasterPromptAngleIndex(nextIndexes.angleIndex);
+    setResult(nextResult);
+    setMasterPrompt(buildMasterPrompt(nextSignal, nextIndexes.angleIndex));
+    saveResult(nextResult);
+  }
+
+  function generateAnotherAngle() {
+    if (!hasFounderAccess) {
+      return;
+    }
+
+    const nextAngleIndex =
+      (masterPromptAngleIndex + 1) % masterPromptAngles.length;
+    const nextSignalIndex =
+      nextAngleIndex === 0 && buildSignals.length > 1
+        ? (signalIndex + 1) % buildSignals.length
+        : signalIndex;
+    let nextSignal = buildSignals[nextSignalIndex];
+    let safeAngleIndex = nextAngleIndex;
+
+    if (
+      masterPrompt &&
+      buildPromptTitle(nextSignal, safeAngleIndex) === masterPrompt.promptTitle
+    ) {
+      safeAngleIndex = (safeAngleIndex + 1) % masterPromptAngles.length;
+
+      if (
+        buildPromptTitle(nextSignal, safeAngleIndex) ===
+          masterPrompt.promptTitle &&
+        buildSignals.length > 1
+      ) {
+        nextSignal = buildSignals[(nextSignalIndex + 1) % buildSignals.length];
+      }
+    }
+
+    const nextResult = buildResult(nextSignal);
+
+    setCopiedMasterPrompt(false);
+    setSignalIndex(buildSignals.indexOf(nextSignal));
+    setMasterPromptAngleIndex(safeAngleIndex);
+    setResult(nextResult);
+    setMasterPrompt(buildMasterPrompt(nextSignal, safeAngleIndex));
+    saveResult(nextResult);
+  }
+
+  async function copyMasterPrompt() {
+    if (!masterPrompt || !hasFounderAccess) {
+      return;
+    }
+
+    await navigator.clipboard.writeText(masterPrompt.fullCodeXMasterPrompt);
+    setCopiedMasterPrompt(true);
+    window.setTimeout(() => setCopiedMasterPrompt(false), 1000);
+  }
+
+  function deleteSavedSignal(signalId: string) {
+    setSavedSignals((currentSignals) => {
+      const nextSignals = currentSignals.filter(
+        (signal) => signal.id !== signalId,
+      );
+
+      writeSavedSignals(nextSignals);
+      return nextSignals;
+    });
   }
 
   return (
@@ -923,59 +1614,60 @@ export default function BilionAppClient({
           <div className="mb-8">
             <div className="text-2xl font-black tracking-tight">Bilion</div>
             <div className="mt-1 text-xs text-zinc-500">
-              47,000+ Founder Stories
+              Build Intelligence Console
             </div>
           </div>
 
           <nav className="space-y-2">
-            <SidebarItem active label="Latest Signals" />
-            <SidebarItem label="Build Prompts" locked={!hasFounderAccess} />
-            <SidebarItem label="Founder View" locked={!hasFounderAccess} />
+            <SidebarItem active label="Build Signals" />
+            <SidebarItem label="Commercial Angles" locked={!hasFounderAccess} />
+            <SidebarItem label="Founder Access" locked={!hasFounderAccess} />
           </nav>
 
           <div className="mt-10 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
             <div className="text-sm font-semibold">
-              {hasFounderAccess ? "Founder access" : "Free preview"}
+              {hasFounderAccess ? "Founder Access" : "Free Preview"}
             </div>
             <p className="mt-2 text-xs leading-5 text-zinc-500">
               {hasFounderAccess
-                ? "Code X Prompt is unlocked for this browser."
-                : "Free shows the signal and build idea. Founder unlocks the full prompt."}
+                ? "Full Code X Master Prompts are unlocked for this browser."
+                : "Free users can review the signal and commercial angle. Founder Access unlocks the full build spec."}
             </p>
           </div>
         </aside>
 
         <section className="p-4 md:p-8">
           <header className="mb-8">
-            <div className="inline-flex rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs text-emerald-300">
-              Build Prompt Engine
+            <div className="inline-flex rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-bold uppercase tracking-wide text-zinc-300">
+              Build Intelligence
             </div>
 
             <h1 className="mt-4 max-w-4xl text-4xl font-black tracking-tight md:text-6xl">
-              Turn fresh AI success signals into tools you can build in Code X.
+              Turn real AI use cases into build-ready Code X prompts.
             </h1>
 
             <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-400">
-              Bilion turns practical AI adoption stories into small tool ideas
-              and build-ready prompts.
+              Bilion maps adoption signals to buyers, pains, commercial build
+              angles, and prompt specs for Codex, Cursor, Claude Code, Lovable,
+              and solo builders.
             </p>
           </header>
 
           {!result && (
             <div className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl md:p-8">
               <h2 className="text-2xl font-black tracking-tight">
-                {"Today's Build Signal"}
+                Latest Build Signal
               </h2>
               <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-400">
-                Click to reveal a real AI use case and a buildable Code X
-                prompt.
+                Pull a practical AI adoption pattern and convert it into a
+                commercial product angle.
               </p>
               <button
                 onClick={generateIdea}
                 disabled={loading}
                 className="mt-6 rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {loading ? "Revealing signal..." : "See Today's Signal"}
+                {loading ? "Loading Signal..." : "Analyze Build Signal"}
               </button>
               {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
             </div>
@@ -983,18 +1675,28 @@ export default function BilionAppClient({
 
           {result && (
             <div className="mt-8 grid gap-6">
-              <div className="rounded-3xl border border-emerald-400/20 bg-emerald-400/[0.04] p-6">
-                <div className="mb-4 inline-flex rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300">
-                  Free preview
+              <div className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <div className="inline-flex rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-300">
+                      Latest Build Signal
+                    </div>
+                    <h2 className="mt-4 text-3xl font-black tracking-tight">
+                      Commercial signal extracted from real AI adoption.
+                    </h2>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-xs font-bold uppercase tracking-wide text-zinc-400">
+                    Signal #{signalIndex + 1}
+                  </div>
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="mt-6 grid gap-4 md:grid-cols-2">
                   <InfoBlock
-                    label="Latest Signal"
+                    label="Source Pattern"
                     value={result.free.latest_signal}
                   />
                   <InfoBlock
-                    label="What You Can Build"
+                    label="Product Angle"
                     value={result.free.what_you_can_build}
                   />
                   <InfoBlock label="Buyer" value={result.free.buyer} />
@@ -1006,52 +1708,374 @@ export default function BilionAppClient({
                 </div>
               </div>
 
-              {hasFounderAccess ? (
-                <FounderPromptView
-                  copied={copiedPrompt}
-                  onCopyPrompt={copyFullCodeXPrompt}
-                  onNextSignal={showNextSignal}
-                  pack={result.paid}
+              <section className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl">
+                <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                  <div>
+                    <div className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-wide text-black">
+                      Full Code X Master Prompt
+                    </div>
+                    <h2 className="mt-4 text-3xl font-black tracking-tight">
+                      Generate a commercial build angle from this signal.
+                    </h2>
+                    <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
+                      Founder/Paid users can copy the full Code X Master Prompt.
+                      Free users can inspect the angle without seeing the
+                      complete build spec.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col gap-2 sm:flex-row">
+                    <button
+                      type="button"
+                      onClick={generateMasterPrompt}
+                      disabled={!hasFounderAccess && Boolean(masterPrompt)}
+                      className="rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Generate Master Prompt
+                    </button>
+                    <button
+                      type="button"
+                      onClick={generateAnotherAngle}
+                      disabled={!hasFounderAccess || !masterPrompt}
+                      className="rounded-2xl border border-white/10 px-5 py-4 text-sm font-bold text-white transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Generate Another Angle
+                    </button>
+                  </div>
+                </div>
+
+                {!hasFounderAccess && masterPrompt && (
+                  <div className="mt-5 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-5">
+                    <h3 className="text-lg font-black text-yellow-100">
+                      Full Code X Master Prompt locked
+                    </h3>
+                    <p className="mt-2 text-sm leading-6 text-zinc-400">
+                      Unlock Founder Access to copy the complete build spec and
+                      generate additional commercial angles.
+                    </p>
+                    {CHECKOUT_URL ? (
+                      <a
+                        href={CHECKOUT_URL}
+                        className="mt-4 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
+                      >
+                        Unlock Founder Access
+                      </a>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled
+                        className="mt-4 rounded-2xl border border-white/10 px-5 py-3 text-sm font-bold text-zinc-500"
+                      >
+                        Checkout link not configured
+                      </button>
+                    )}
+                  </div>
+                )}
+              </section>
+
+              {masterPrompt && (
+                <MasterPromptCard
+                  copied={copiedMasterPrompt}
+                  hasFounderAccess={hasFounderAccess}
+                  masterPrompt={masterPrompt}
+                  onCopy={copyMasterPrompt}
+                  angleNumber={masterPromptAngleIndex + 1}
+                  signalNumber={signalIndex + 1}
                 />
-              ) : (
-                <LockedFounderView />
               )}
             </div>
           )}
+
+          <SavedSignalsSection
+            hasFounderAccess={hasFounderAccess}
+            copiedSignalId={copiedSavedSignalId}
+            onCopyPrompt={copySavedSignalPrompt}
+            onDelete={deleteSavedSignal}
+            onView={viewSavedSignal}
+            savedSignals={savedSignals}
+          />
         </section>
 
         {result && (
-        <aside className="border-l border-white/10 bg-[#0b0b0c] p-5">
-          <div className="sticky top-5">
-            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5">
-              <div className="inline-flex rounded-full bg-yellow-400/10 px-3 py-1 text-xs font-medium text-yellow-300">
-                Founder Preview
-              </div>
+          <aside className="border-l border-white/10 bg-[#0b0b0c] p-5">
+            <div className="sticky top-5">
+              <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5">
+                <div className="inline-flex rounded-full bg-yellow-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-yellow-300">
+                  Founder Access
+                </div>
 
-              <h2 className="mt-4 text-2xl font-black">
-                The value is the full Code X Prompt.
-              </h2>
+                <h2 className="mt-4 text-2xl font-black">
+                  The paid asset is the complete build spec.
+                </h2>
 
-              <p className="mt-3 text-sm leading-6 text-zinc-500">
-                Founder access reveals the core features, build steps, and the
-                prompt you can paste into Code X.
-              </p>
+                <p className="mt-3 text-sm leading-6 text-zinc-500">
+                  Founder Access reveals the full Code X Master Prompt, build
+                  steps, pattern matches, and copy workflow.
+                </p>
 
-              <div className="mt-5 space-y-3">
-                <RightPanelItem title="Core features" />
-                <RightPanelItem title="Comparable price" />
-                <RightPanelItem title="Full Code X Prompt" />
-                <RightPanelItem title="Pattern Matches" />
+                <div className="mt-5 space-y-3">
+                  <RightPanelItem title="Core features" />
+                  <RightPanelItem title="Comparable price" />
+                  <RightPanelItem title="Full Code X Master Prompt" />
+                  <RightPanelItem title="Pattern Matches" />
+                </div>
               </div>
             </div>
-          </div>
-        </aside>
+          </aside>
         )}
       </div>
     </main>
   );
 }
 
+function MasterPromptCard({
+  angleNumber,
+  copied,
+  hasFounderAccess,
+  masterPrompt,
+  onCopy,
+  signalNumber,
+}: {
+  angleNumber: number;
+  copied: boolean;
+  hasFounderAccess: boolean;
+  masterPrompt: MasterPrompt;
+  onCopy: () => void;
+  signalNumber: number;
+}) {
+  return (
+    <article className="rounded-3xl border border-emerald-400/20 bg-[#0f1512] p-5 shadow-2xl md:p-6">
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div>
+          <div className="flex flex-wrap gap-2">
+            <div className="inline-flex rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-300">
+              Commercial Angle
+            </div>
+            <div className="inline-flex rounded-full border border-white/10 px-3 py-1 text-xs font-bold text-zinc-400">
+              {masterPrompt.angleLabel}
+            </div>
+          </div>
+          <h2 className="mt-4 text-3xl font-black tracking-tight">
+            {masterPrompt.promptTitle}
+          </h2>
+          <p className="mt-3 text-sm font-bold text-emerald-200">
+            Variant: Signal #{signalNumber} / Angle #{angleNumber} /{" "}
+            {masterPrompt.angleLabel}
+          </p>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
+            Built from the current build signal for Code X, Codex, Cursor,
+            Claude Code, Lovable, and solo builder workflows.
+          </p>
+        </div>
+
+        {hasFounderAccess ? (
+          <button
+            type="button"
+            onClick={onCopy}
+            className="rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200"
+          >
+            {copied ? "Copied" : "Copy to Code X"}
+          </button>
+        ) : (
+          <div className="rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] px-5 py-4 text-sm font-bold text-yellow-200">
+            Founder Access required
+          </div>
+        )}
+      </div>
+
+      <div className="mt-6 grid gap-4 md:grid-cols-2">
+        <MasterPromptField label="Buyer" value={masterPrompt.buyer} />
+        <MasterPromptField label="Pain" value={masterPrompt.pain} />
+        <MasterPromptField
+          label="Product Angle"
+          value={masterPrompt.productAngle}
+        />
+        <MasterPromptField
+          label="First Version"
+          value={masterPrompt.firstVersion}
+        />
+        <MasterPromptField label="Price" value={masterPrompt.price} />
+      </div>
+
+      <div className="mt-4 rounded-2xl border border-white/10 bg-black/40 p-4">
+        <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+          48h Validation Plan
+        </div>
+        <ol className="mt-3 space-y-2 text-sm leading-6 text-zinc-100">
+          {masterPrompt.validationPlan.map((step, index) => (
+            <li key={step} className="flex gap-3">
+              <span className="text-zinc-500">{index + 1}.</span>
+              <span>{step}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 p-4">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+            Full Code X Master Prompt
+          </div>
+          {!hasFounderAccess && (
+            <div className="text-xs font-bold text-yellow-300">
+              Preview only
+            </div>
+          )}
+        </div>
+        {hasFounderAccess ? (
+          <pre className="mt-3 max-h-[520px] overflow-auto whitespace-pre-wrap rounded-xl border border-white/10 bg-black/60 p-4 font-sans text-sm leading-6 text-zinc-100">
+            {masterPrompt.fullCodeXMasterPrompt}
+          </pre>
+        ) : (
+          <div className="mt-3 rounded-xl border border-yellow-400/20 bg-yellow-400/[0.04] p-4">
+            <h3 className="text-base font-black text-yellow-100">
+              Full Code X Master Prompt locked
+            </h3>
+            <p className="mt-2 text-sm leading-6 text-zinc-400">
+              Free preview shows the variant, buyer, pain, product angle, first
+              version, price, and validation plan. Founder access unlocks the
+              complete build spec and copy workflow.
+            </p>
+            {CHECKOUT_URL ? (
+              <a
+                href={CHECKOUT_URL}
+                className="mt-4 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
+              >
+                Unlock Founder Access
+              </a>
+            ) : (
+              <button
+                type="button"
+                disabled
+                className="mt-4 rounded-2xl border border-white/10 px-5 py-3 text-sm font-bold text-zinc-500"
+              >
+                Checkout link not configured
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    </article>
+  );
+}
+
+function MasterPromptField({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-black/40 p-4">
+      <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+        {label}
+      </div>
+      <div className="mt-2 text-sm leading-6 text-zinc-100">{value}</div>
+    </div>
+  );
+}
+
+function SavedSignalsSection({
+  hasFounderAccess,
+  copiedSignalId,
+  onCopyPrompt,
+  onDelete,
+  onView,
+  savedSignals,
+}: {
+  hasFounderAccess: boolean;
+  copiedSignalId: string;
+  onCopyPrompt: (signal: SavedSignal) => void;
+  onDelete: (signalId: string) => void;
+  onView: (signal: SavedSignal) => void;
+  savedSignals: SavedSignal[];
+}) {
+  return (
+    <section className="mt-8 rounded-3xl border border-white/10 bg-[#101011] p-6">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="text-2xl font-black tracking-tight">
+            Saved Build Signals
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-zinc-500">
+            Your latest 10 generated build signals and commercial angle
+            previews are saved in this browser.
+          </p>
+        </div>
+        <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+          {savedSignals.length}/10
+        </div>
+      </div>
+
+      {savedSignals.length === 0 ? (
+        <p className="mt-6 rounded-2xl border border-white/10 bg-black/40 p-4 text-sm text-zinc-500">
+          No saved build signals yet.
+        </p>
+      ) : (
+        <div className="mt-6 grid gap-3">
+          {savedSignals.map((signal) => (
+            <article
+              key={signal.id}
+              className="rounded-2xl border border-white/10 bg-black/40 p-4"
+            >
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                <div className="min-w-0">
+                  <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                    {new Date(signal.createdAt).toLocaleString()}
+                  </div>
+                  <h3 className="mt-2 text-base font-bold text-zinc-100">
+                    {signal.sourceTitle}
+                  </h3>
+                  <p className="mt-2 line-clamp-2 text-sm leading-6 text-zinc-400">
+                    {signal.pain}
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <span className="rounded-full border border-emerald-400/20 bg-emerald-400/[0.04] px-2.5 py-1 text-xs font-bold text-emerald-300">
+                      Saved Angle
+                    </span>
+                    {signal.patternMatches.slice(0, 3).map((match) => (
+                      <span
+                        key={match}
+                        className="rounded-full border border-white/10 px-2.5 py-1 text-xs text-zinc-400"
+                      >
+                        {match}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid shrink-0 grid-cols-3 gap-2 lg:w-36 lg:grid-cols-1">
+                  <button
+                    type="button"
+                    onClick={() => onView(signal)}
+                    className="rounded-xl border border-white/10 px-3 py-2 text-xs font-bold text-white transition hover:bg-white/[0.04]"
+                  >
+                    View
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onCopyPrompt(signal)}
+                    className="rounded-xl bg-white px-3 py-2 text-xs font-bold text-black transition hover:bg-zinc-200"
+                  >
+                    {copiedSignalId === signal.id
+                      ? "Copied"
+                      : hasFounderAccess
+                        ? "Copy to Code X"
+                        : "Copy Preview"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onDelete(signal.id)}
+                    className="rounded-xl border border-red-400/20 px-3 py-2 text-xs font-bold text-red-300 transition hover:bg-red-400/10"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+/*
 function FounderPromptView({
   copied,
   onCopyPrompt,
@@ -1257,6 +2281,7 @@ function LockedFounderView() {
   );
 }
 
+*/
 function SidebarItem({
   label,
   active,
@@ -1288,28 +2313,6 @@ function InfoBlock({ label, value }: { label: string; value: string }) {
         {label}
       </div>
       <div className="mt-2 text-sm leading-6 text-zinc-100">{value}</div>
-    </div>
-  );
-}
-
-function PaidBlock({ label, value }: { label: string; value: string }) {
-  return (
-    <article className="rounded-2xl border border-white/10 bg-black/40 p-4">
-      <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
-        {label}
-      </div>
-      <pre className="mt-3 whitespace-pre-wrap font-sans text-sm leading-6 text-zinc-100">
-        {value}
-      </pre>
-    </article>
-  );
-}
-
-function LockedItem({ text }: { text: string }) {
-  return (
-    <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-black/40 px-4 py-3">
-      <span className="text-sm text-zinc-300">{text}</span>
-      <span className="text-sm text-zinc-500">Locked</span>
     </div>
   );
 }
