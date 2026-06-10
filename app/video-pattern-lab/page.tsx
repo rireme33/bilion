@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type Score = {
   score: number;
@@ -83,6 +83,7 @@ type SavedAnalysis = {
 };
 
 const price = "$19 one-time or $49 creator lab";
+const accessStorageKey = "video-pattern-lab-access-code";
 
 const fallbackAnalysis: VideoPatternAnalysis = {
   summary: {
@@ -236,6 +237,10 @@ function ScoreCard({ label, score }: { label: string; score: Score }) {
 }
 
 export default function VideoPatternLabPage() {
+  const [accessCode, setAccessCode] = useState("");
+  const [accessInput, setAccessInput] = useState("");
+  const [hasAccess, setHasAccess] = useState(false);
+  const [accessError, setAccessError] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState("");
   const [productName, setProductName] = useState("Bilion");
@@ -276,6 +281,38 @@ ${analysis.bilion_rewrite.caption}
 
 CTA:
 ${analysis.bilion_rewrite.cta}`;
+
+  useEffect(() => {
+    const savedCode = window.localStorage.getItem(accessStorageKey) || "";
+
+    if (savedCode) {
+      setAccessCode(savedCode);
+      setAccessInput(savedCode);
+      setHasAccess(true);
+    }
+  }, []);
+
+  function unlockLab() {
+    const nextCode = accessInput.trim();
+
+    if (!nextCode) {
+      setAccessError("Enter your Video Pattern Lab access code.");
+      return;
+    }
+
+    window.localStorage.setItem(accessStorageKey, nextCode);
+    setAccessCode(nextCode);
+    setHasAccess(true);
+    setAccessError("");
+  }
+
+  function lockLab(message = "") {
+    window.localStorage.removeItem(accessStorageKey);
+    setAccessCode("");
+    setAccessInput("");
+    setHasAccess(false);
+    setAccessError(message);
+  }
 
   function handleFile(nextFile: File | null) {
     if (previewUrl) {
@@ -325,12 +362,21 @@ ${analysis.bilion_rewrite.cta}`;
       body.append("niche", niche);
       body.append("offer", offer);
       body.append("frames", JSON.stringify(extractedFrames));
+      body.append("accessCode", accessCode);
 
       const response = await fetch("/api/video-pattern-lab/analyze", {
         method: "POST",
+        headers: {
+          "x-video-lab-access-code": accessCode,
+        },
         body,
       });
       const data = (await response.json()) as AnalyzeResponse;
+
+      if (response.status === 401) {
+        lockLab(data.error || "Access code missing or wrong.");
+        return;
+      }
 
       if (!response.ok || data.error || !data.analysis) {
         throw new Error(data.error || "Video analysis failed.");
@@ -359,6 +405,60 @@ ${analysis.bilion_rewrite.cta}`;
     };
 
     setSavedAnalyses([saved, ...savedAnalyses]);
+  }
+
+  if (!hasAccess) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#070a12] px-4 py-8 text-slate-100">
+        <section className="w-full max-w-xl rounded-lg border border-white/10 bg-[#101827] p-5 shadow-2xl shadow-black/30">
+          <div className="inline-flex rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-cyan-100">
+            Protected Bilion lab
+          </div>
+          <h1 className="mt-5 text-4xl font-black tracking-tight text-white">Video Pattern Lab</h1>
+          <p className="mt-3 text-sm leading-6 text-slate-300">
+            Enter your access code to open the upload, frame extraction, transcription, and video pattern analysis
+            workspace.
+          </p>
+          <div className="mt-5 rounded-lg border border-amber-300/30 bg-amber-300/10 p-4">
+            <div className="text-xs font-black uppercase tracking-[0.14em] text-amber-100">Creator lab access</div>
+            <p className="mt-2 text-sm text-slate-200">{price}</p>
+          </div>
+          <label className="mt-5 block">
+            <span className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Access code</span>
+            <input
+              type="password"
+              value={accessInput}
+              onChange={(event) => {
+                setAccessInput(event.target.value);
+                setAccessError("");
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  unlockLab();
+                }
+              }}
+              className="mt-2 w-full rounded-lg border border-white/10 bg-slate-950 px-3 py-3 text-sm text-white outline-none ring-cyan-300/30 focus:ring-2"
+              autoComplete="current-password"
+            />
+          </label>
+          {accessError ? (
+            <p className="mt-3 rounded-lg border border-rose-300/30 bg-rose-300/10 p-3 text-sm text-rose-100">
+              {accessError}
+            </p>
+          ) : null}
+          <button
+            onClick={unlockLab}
+            className="mt-5 w-full rounded-lg bg-cyan-300 px-4 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-200"
+          >
+            Unlock Video Pattern Lab
+          </button>
+          <p className="mt-4 text-xs leading-5 text-slate-500">
+            Access is stored locally in this browser. The API still verifies the code before any OpenAI transcription or
+            vision analysis runs.
+          </p>
+        </section>
+      </main>
+    );
   }
 
   return (

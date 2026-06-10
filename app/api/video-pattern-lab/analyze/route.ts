@@ -219,6 +219,20 @@ function text(value: FormDataEntryValue | null, fallback = "") {
   return typeof value === "string" ? value.trim() : fallback;
 }
 
+function hasVideoLabAccess(accessCode: string) {
+  const expectedCode = process.env.VIDEO_LAB_ACCESS_CODE?.trim();
+
+  if (expectedCode) {
+    return accessCode === expectedCode;
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    return false;
+  }
+
+  return accessCode.length > 0;
+}
+
 function getFallbackTranscript(fileName: string) {
   return `Fallback transcript for ${fileName}: opening frame shows a short-form video. The creator appears to present a transformation, result, or warning. OpenAI transcription was unavailable, so this analysis uses uploaded frames, optional product context, and deterministic fallback reasoning.`;
 }
@@ -471,8 +485,13 @@ export async function POST(request: Request) {
     const niche = text(formData.get("niche"));
     const offer = text(formData.get("offer"));
     const framePayload = text(formData.get("frames"), "[]");
+    const accessCode = text(formData.get("accessCode")) || text(request.headers.get("x-video-lab-access-code"));
     const frames = JSON.parse(framePayload) as string[];
     const apiKey = process.env.OPENAI_API_KEY;
+
+    if (!hasVideoLabAccess(accessCode)) {
+      return Response.json({ error: "Unauthorized. Enter a valid Video Pattern Lab access code." }, { status: 401 });
+    }
 
     if (!(video instanceof File)) {
       return Response.json({ error: "Upload an MP4, MOV, or short video file." }, { status: 400 });
