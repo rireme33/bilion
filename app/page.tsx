@@ -153,6 +153,50 @@ export default function HomePage() {
           />
         </section>
 
+        <section className="mt-24">
+          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+            <div>
+              <div className="inline-flex rounded-full border border-white/10 px-4 py-2 text-sm text-zinc-400">
+                Showcase preview
+              </div>
+              <h2 className="mt-5 text-4xl font-black tracking-tight">
+                What Bilion Creates
+              </h2>
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-zinc-400">
+                Real AI signals turned into demo products.
+              </p>
+            </div>
+
+            <a
+              href="/showcase"
+              className="rounded-2xl border border-white/10 px-5 py-3 text-center text-sm font-bold text-white transition hover:bg-white/[0.04]"
+            >
+              See all demos
+            </a>
+          </div>
+
+          <div className="mt-8 grid gap-5 lg:grid-cols-3">
+            <ShowcasePreviewCard
+              title="Video Pattern Lab"
+              text="Upload a short-form video and extract why it works."
+              revenue="$19 one-time or $49 creator lab"
+              href="/video-pattern-lab"
+            />
+            <ShowcasePreviewCard
+              title="Review Reply Copilot"
+              text="Turn local customer reviews into reply options and a service offer."
+              revenue="$500 setup + $150/month"
+              href="/done-for-you-local-review-reply-copilot-outputs-setup"
+            />
+            <ShowcasePreviewCard
+              title="Short Video Pattern Analyzer"
+              text="Turn messy video notes into hooks, patterns, and scripts."
+              revenue="$19 pattern pack or $49/month creator lab"
+              href="/short-video-pattern-analyzer"
+            />
+          </div>
+        </section>
+
         <section className="mt-24 rounded-3xl border border-white/10 bg-[#101011] p-8 md:p-10">
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
             <div>
@@ -255,6 +299,47 @@ function FeatureCard({ title, text }: { title: string; text: string }) {
     <div className="rounded-3xl border border-white/10 bg-[#101011] p-6">
       <h3 className="text-xl font-bold">{title}</h3>
       <p className="mt-3 text-sm leading-6 text-zinc-500">{text}</p>
+    </div>
+  );
+}
+
+function ShowcasePreviewCard({
+  title,
+  text,
+  revenue,
+  href,
+}: {
+  title: string;
+  text: string;
+  revenue: string;
+  href: string;
+}) {
+  return (
+    <div className="rounded-3xl border border-white/10 bg-[#101011] p-6">
+      <div className="mb-5 h-24 rounded-2xl border border-white/10 bg-[linear-gradient(135deg,rgba(52,211,153,0.16),rgba(59,130,246,0.12),rgba(250,204,21,0.10))] p-3">
+        <div className="h-3 w-24 rounded-full bg-white/20" />
+        <div className="mt-4 grid grid-cols-3 gap-2">
+          <div className="h-10 rounded-xl bg-white/10" />
+          <div className="h-10 rounded-xl bg-white/15" />
+          <div className="h-10 rounded-xl bg-white/10" />
+        </div>
+      </div>
+      <h3 className="text-xl font-bold">{title}</h3>
+      <p className="mt-3 text-sm leading-6 text-zinc-400">{text}</p>
+      <div className="mt-5 rounded-2xl border border-white/10 bg-black/40 p-3">
+        <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+          Revenue idea
+        </div>
+        <div className="mt-2 text-sm font-semibold text-zinc-100">
+          {revenue}
+        </div>
+      </div>
+      <a
+        href={href}
+        className="mt-5 block rounded-2xl bg-white px-5 py-4 text-center text-sm font-bold text-black transition hover:bg-zinc-200"
+      >
+        Open Demo
+      </a>
     </div>
   );
 }
