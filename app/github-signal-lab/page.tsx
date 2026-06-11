@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 type SignalType = "Repo momentum" | "Issue pain" | "PR workflow" | "Integration gap";
 type Priority = "High" | "Medium" | "Low";
@@ -27,6 +27,12 @@ type GitHubSignal = {
 type SignalReport = {
   classification: SignalType;
   priority: Priority;
+  finalProduct: {
+    name: string;
+    buyer: string;
+    price: string;
+    buildTarget: string;
+  };
   buyerPain: string;
   productOpportunity: string;
   evidence: string[];
@@ -48,6 +54,29 @@ const price = "$49/month signal lab";
 const samples: GitHubSignal[] = [
   {
     id: 1,
+    name: "13k-star AI video automation repo",
+    repo: "moneyprinterturbo-style/ai-video-automation",
+    buyer: "Short-form creators, faceless TikTok operators, and AI content agencies",
+    signalType: "Repo momentum",
+    sourceNotes:
+      "A fast-growing open-source AI video automation repo has 13k+ stars. Builders are using it to generate short-form videos from scripts, assets, subtitles, and templates. The market signal is not the code itself; it is the demand for repeatable short-video production workflows.",
+    stars: "13k+ stars, strong creator interest",
+    issues:
+      "Repeated requests around templates, captions, multi-platform exports, and workflow setup",
+    prs:
+      "Community contributions around automation scripts, video generation, and content pipeline improvements",
+    comments:
+      "Creators and agencies want repeatable video systems instead of random AI tools.",
+    generatedOutput:
+      "Build a Short Video Workflow Pack that turns one winning video pattern into hooks, scripts, scenes, caption prompts, and repost variations.",
+    priority: "High",
+    createdDate: "2026-06-11",
+    revenueIdea: "$19 one-time or $49 setup",
+    notes:
+      "Strong public attention and clear buyer category: creators and agencies who want repeatable short-video workflows.",
+  },
+  {
+    id: 2,
     name: "Open-source analytics setup friction",
     repo: "open-analytics/warehouse-dashboard",
     buyer: "Data consultants and SaaS teams onboarding analytics for clients",
@@ -67,7 +96,7 @@ const samples: GitHubSignal[] = [
     notes: "Strong repeated pain and clear buyer: consultants who implement this stack for clients.",
   },
   {
-    id: 2,
+    id: 3,
     name: "PR review bottleneck for AI coding repos",
     repo: "agent-tools/code-review-bot",
     buyer: "Maintainers of fast-moving AI developer tools",
@@ -87,7 +116,7 @@ const samples: GitHubSignal[] = [
     notes: "Clear workflow pain with buyer urgency around maintainer time.",
   },
   {
-    id: 3,
+    id: 4,
     name: "Integration requests around calendar sync",
     repo: "solo-crm/lightweight-crm",
     buyer: "Solo founder CRM users and small agencies",
@@ -140,6 +169,7 @@ function scoreFromSignals(text: string, base: number) {
 function buildReport(signal: GitHubSignal): SignalReport {
   const sourceText = `${signal.sourceNotes} ${signal.stars} ${signal.issues} ${signal.prs} ${signal.comments}`;
   const classification = classifySignal(sourceText);
+  const isVideoAutomationSignal = signal.repo.includes("ai-video-automation");
   const repeatedPain = includesAny(sourceText, ["repeated", "duplicate", "same", "every week", "keep"]);
   const implementationRisk = includesAny(sourceText, ["oauth", "permissions", "migration", "integration"]);
   const priority: Priority = repeatedPain && !implementationRisk ? "High" : repeatedPain ? "Medium" : signal.priority;
@@ -148,7 +178,9 @@ function buildReport(signal: GitHubSignal): SignalReport {
   const buildability = implementationRisk ? 6 : 8;
   const distribution = scoreFromSignals(signal.stars, 5);
   const buyerPain =
-    classification === "PR workflow"
+    isVideoAutomationSignal
+      ? "Creators and agencies do not need another random AI video repo; they need a repeatable short-video production workflow that turns one winning pattern into scripts, scenes, captions, and repost variations."
+      : classification === "PR workflow"
       ? "Maintainers need compact risk briefs before reviewing large or AI-generated pull requests."
       : classification === "Integration gap"
         ? "Users like the core tool but lose workflow value when adjacent tools are not connected."
@@ -156,7 +188,9 @@ function buildReport(signal: GitHubSignal): SignalReport {
           ? "A fast-growing repo creates demand for implementation help, templates, and onboarding shortcuts."
           : "Users repeatedly hit the same setup or workflow issue and maintainers are answering it manually.";
   const productOpportunity =
-    classification === "PR workflow"
+    isVideoAutomationSignal
+      ? "Build a Short Video Workflow Pack that turns one winning video pattern into hooks, scripts, scene plans, caption prompts, and repost variations."
+      : classification === "PR workflow"
       ? "A PR signal brief workspace that summarizes touched modules, risks, tests, and reviewer next actions."
       : classification === "Integration gap"
         ? "A narrow integration helper that turns missing sync requests into productized workflow automation."
@@ -170,18 +204,56 @@ function buildReport(signal: GitHubSignal): SignalReport {
     signal.comments,
   ];
   const nextActions = [
-    "Open the top 10 related issues and group comments by repeated buyer pain.",
-    "Write a one-page before/after workflow using the repo language.",
-    "DM or comment with a lightweight validation offer before building integrations.",
-    "Ship a static demo that solves one repeated workflow, not the entire repo roadmap.",
+    isVideoAutomationSignal
+      ? "Package one viral-video pattern into hooks, scripts, scenes, captions, and repost variations."
+      : "Open the top 10 related issues and group comments by repeated buyer pain.",
+    isVideoAutomationSignal
+      ? "Create 3 before/after examples for creators and AI content agencies."
+      : "Write a one-page before/after workflow using the repo language.",
+    isVideoAutomationSignal
+      ? "Offer the pack at $19 one-time or $49 setup before building a full tool."
+      : "DM or comment with a lightweight validation offer before building integrations.",
+    isVideoAutomationSignal
+      ? "Turn the best-performing pack into a Code X workflow demo."
+      : "Ship a static demo that solves one repeated workflow, not the entire repo roadmap.",
   ];
   const validationPlan = [
-    "Choose one repeated repo pain and write a before/after signal brief.",
-    "Send the brief to 20 builders, maintainers, or consultants who know the repo category.",
-    "Ask for 3 paid pilots, 5 explicit objections, or one repo-specific workflow they would use this week.",
+    isVideoAutomationSignal
+      ? "Create one public before/after showing a winning short-video pattern turned into hooks, scripts, scenes, captions, and repost variations."
+      : "Choose one repeated repo pain and write a before/after signal brief.",
+    isVideoAutomationSignal
+      ? "Send the sample to 30 short-form creators, faceless TikTok operators, and AI content agencies."
+      : "Send the brief to 20 builders, maintainers, or consultants who know the repo category.",
+    isVideoAutomationSignal
+      ? "Ask for 5 purchases at $19 one-time, 3 setup calls at $49, or explicit objections."
+      : "Ask for 3 paid pilots, 5 explicit objections, or one repo-specific workflow they would use this week.",
   ];
-  const buildPrompt = `Build a GitHub signal product from ${signal.repo}. Buyer: ${signal.buyer}. Signal type: ${classification}. Turn these notes into a narrow workflow product: ${signal.sourceNotes}`;
-  const outreachCopy = `I noticed repeated ${classification.toLowerCase()} pain around ${signal.repo}. I made a small workflow concept that turns the repeated GitHub comments into a productized fix. Want me to send the before/after?`;
+  const finalProduct = isVideoAutomationSignal
+    ? {
+        name: "Short Video Workflow Pack",
+        buyer: "Short-form creators and AI content agencies",
+        price: "$19 one-time or $49 setup",
+        buildTarget: "Prompt pack / workflow tool / Code X demo",
+      }
+    : {
+        name:
+          classification === "PR workflow"
+            ? "PR Risk Brief Generator"
+            : classification === "Integration gap"
+              ? "Workflow Sync Helper"
+              : classification === "Repo momentum"
+                ? "Repo Starter Kit"
+                : "Setup Copilot",
+        buyer: signal.buyer,
+        price: signal.revenueIdea,
+        buildTarget: "Prompt pack / workflow tool / Code X demo",
+      };
+  const buildPrompt = isVideoAutomationSignal
+    ? "Build a Short Video Workflow Pack from the GitHub signal. Input: one winning video pattern. Output: hooks, scripts, scene plan, caption prompts, repost variations, and a Code X demo screen for creators and AI content agencies."
+    : `Build a GitHub signal product from ${signal.repo}. Buyer: ${signal.buyer}. Signal type: ${classification}. Turn these notes into a narrow workflow product: ${signal.sourceNotes}`;
+  const outreachCopy = isVideoAutomationSignal
+    ? "I noticed a 13k-star AI video automation repo is getting attention because creators want repeatable video systems, not more random tools. I made a Short Video Workflow Pack that turns one winning video pattern into hooks, scripts, scenes, captions, and repost variations. Want the before/after sample?"
+    : `I noticed repeated ${classification.toLowerCase()} pain around ${signal.repo}. I made a small workflow concept that turns the repeated GitHub comments into a productized fix. Want me to send the before/after?`;
   const exportText = `GitHub Signal Lab Report
 
 Signal: ${signal.name}
@@ -215,6 +287,7 @@ ${outreachCopy}`;
   return {
     classification,
     priority,
+    finalProduct,
     buyerPain,
     productOpportunity,
     evidence,
@@ -255,6 +328,7 @@ export default function GitHubSignalLabPage() {
   const [savedSignals, setSavedSignals] = useState<GitHubSignal[]>(samples);
   const [generatedAt, setGeneratedAt] = useState("Sample loaded");
   const [copied, setCopied] = useState("");
+  const outputRef = useRef<HTMLDivElement | null>(null);
 
   const report = useMemo(() => buildReport(activeSignal), [activeSignal]);
 
@@ -288,7 +362,8 @@ export default function GitHubSignalLabPage() {
 
   function trySampleSignal() {
     setActiveSignal(samples[0]);
-    setGeneratedAt("Sample signal loaded");
+    setGeneratedAt(new Date().toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }));
+    window.setTimeout(() => outputRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
   }
 
   return (
@@ -341,23 +416,39 @@ export default function GitHubSignalLabPage() {
           </div>
 
           <aside className="rounded-lg border border-white/10 bg-slate-950/80 p-5 shadow-2xl shadow-black/30">
-            <h2 className="text-sm font-black uppercase tracking-[0.16em] text-white">Product angle</h2>
-            <p className="mt-3 text-sm leading-6 text-slate-300">
-              A research workspace that turns public GitHub activity into a commercial signal: who hurts, what they keep
-              asking for, what product could be built, and how to validate it before writing code.
-            </p>
-            <div className="mt-5 rounded-lg bg-cyan-200 p-4 text-slate-950">
-              <div className="text-xs font-black uppercase tracking-[0.14em] text-cyan-900">Validation asset</div>
-              <p className="mt-2 text-sm font-semibold leading-6">
-                Send one before/after GitHub signal brief to 20 builders and ask which repo pain they would pay to solve.
-              </p>
+            <div className="inline-flex rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-cyan-100">
+              One-click demo
             </div>
+            <h2 className="mt-4 text-3xl font-black tracking-tight text-white">
+              13k-star GitHub repo -&gt; product opportunity
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-slate-300">
+              See how Bilion turns a GitHub signal into buyer pain, a product angle, a 48h validation plan, outreach copy,
+              and a Code X build prompt.
+            </p>
+            <button
+              onClick={trySampleSignal}
+              className="mt-5 w-full rounded-lg bg-cyan-300 px-5 py-4 text-sm font-black text-slate-950 transition hover:bg-cyan-200"
+            >
+              Generate Product Opportunity
+            </button>
           </aside>
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-5 px-4 py-5 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
-        <div className="space-y-5">
+      <section className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
+        <div className="grid gap-3 rounded-lg border border-white/10 bg-[#101827] p-4 shadow-xl shadow-black/20 md:grid-cols-4">
+          {["GitHub signal", "Buyer pain", "Product opportunity", "Code X prompt"].map((step, index) => (
+            <div key={step} className="rounded-lg border border-white/10 bg-black/25 p-3">
+              <div className="text-xs font-black uppercase tracking-[0.14em] text-cyan-200">0{index + 1}</div>
+              <div className="mt-2 text-sm font-black text-white">{step}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto grid max-w-7xl gap-5 px-4 py-5 sm:px-6 lg:grid-cols-[0.82fr_1.18fr] lg:px-8">
+        <div className="space-y-5 opacity-90">
           <Panel title="Sample selector">
             <p className="mb-4 text-sm leading-6 text-slate-400">
               Pick a realistic GitHub-style signal to instantly see how Bilion turns repo activity into a buildable
@@ -382,7 +473,7 @@ export default function GitHubSignalLabPage() {
             </div>
           </Panel>
 
-          <Panel title="GitHub signal input">
+          <Panel title="Optional manual input">
             <label className="block">
               <span className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Signal name</span>
               <input
@@ -425,7 +516,16 @@ export default function GitHubSignalLabPage() {
           </Panel>
         </div>
 
-        <div className="space-y-5">
+        <div ref={outputRef} className="scroll-mt-6 space-y-5">
+          <div className="rounded-lg border border-cyan-300/30 bg-cyan-300/10 p-4">
+            <div className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100">
+              Generated product opportunity
+            </div>
+            <p className="mt-2 text-sm leading-6 text-slate-200">
+              This is the commercial output Bilion creates from the selected GitHub signal.
+            </p>
+          </div>
+
           <Panel title="Output panel">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
@@ -445,6 +545,38 @@ export default function GitHubSignalLabPage() {
               >
                 {report.priority}
               </span>
+            </div>
+            <div className="mt-4 rounded-lg border border-cyan-300/30 bg-cyan-300/10 p-4">
+              <div className="text-xs font-black uppercase tracking-[0.14em] text-cyan-100">Final product idea</div>
+              <div className="mt-3 grid gap-3 md:grid-cols-2">
+                <div>
+                  <div className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Product name</div>
+                  <p className="mt-1 text-lg font-black text-white">{report.finalProduct.name}</p>
+                </div>
+                <div>
+                  <div className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Buyer</div>
+                  <p className="mt-1 text-sm font-semibold text-slate-100">{report.finalProduct.buyer}</p>
+                </div>
+                <div>
+                  <div className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Price</div>
+                  <p className="mt-1 text-sm font-semibold text-slate-100">{report.finalProduct.price}</p>
+                </div>
+                <div>
+                  <div className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Build target</div>
+                  <p className="mt-1 text-sm font-semibold text-slate-100">{report.finalProduct.buildTarget}</p>
+                </div>
+              </div>
+              <button
+                onClick={() =>
+                  copyText(
+                    "final-product",
+                    `${report.finalProduct.name}\nBuyer: ${report.finalProduct.buyer}\nPrice: ${report.finalProduct.price}\nBuild target: ${report.finalProduct.buildTarget}`,
+                  )
+                }
+                className="mt-4 rounded-lg bg-white px-4 py-2 text-xs font-black text-slate-950"
+              >
+                {copied === "final-product" ? "Copied" : "Copy final product idea"}
+              </button>
             </div>
             <div className="mt-4 grid gap-3 sm:grid-cols-4">
               <ScoreCard label="Urgency" value={report.scores.urgency} />
@@ -501,15 +633,15 @@ export default function GitHubSignalLabPage() {
             </div>
           </Panel>
 
-          <Panel title="Build prompt and outreach">
+          <Panel title="Code X build prompt and outreach">
             <div className="rounded-lg border border-white/10 bg-black/25 p-4">
-              <h3 className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Build prompt</h3>
+              <h3 className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Code X build prompt</h3>
               <p className="mt-2 text-sm leading-6 text-slate-100">{report.buildPrompt}</p>
               <button
                 onClick={() => copyText("prompt", report.buildPrompt)}
                 className="mt-3 rounded-lg bg-white px-4 py-2 text-xs font-black text-slate-950"
               >
-                {copied === "prompt" ? "Copied" : "Copy build prompt"}
+                {copied === "prompt" ? "Copied" : "Copy Code X prompt"}
               </button>
             </div>
             <div className="mt-3 rounded-lg border border-cyan-300/30 bg-cyan-300/10 p-4">
