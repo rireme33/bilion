@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 
 type ShowcaseItem = {
   name: string;
@@ -10,6 +13,7 @@ type ShowcaseItem = {
   signal: string;
   accent: string;
   metrics: string[];
+  thumbnail: string;
 };
 
 const showcaseItems: ShowcaseItem[] = [
@@ -24,6 +28,7 @@ const showcaseItems: ShowcaseItem[] = [
     signal: "Creators struggle to reverse-engineer viral short videos into repeatable content systems.",
     accent: "from-cyan-300 via-sky-500 to-violet-500",
     metrics: ["Video upload", "Frame extraction", "Rewrite engine"],
+    thumbnail: "/showcase/video-pattern-lab.png",
   },
   {
     name: "Short Video Pattern Analyzer",
@@ -36,6 +41,7 @@ const showcaseItems: ShowcaseItem[] = [
     signal: "Short-form creators need reusable structures, not vague advice.",
     accent: "from-emerald-300 via-teal-500 to-cyan-500",
     metrics: ["Hook map", "Pattern JSON", "Script options"],
+    thumbnail: "/showcase/short-video-pattern-analyzer.png",
   },
   {
     name: "Done-for-You Local Review Reply Copilot",
@@ -48,6 +54,33 @@ const showcaseItems: ShowcaseItem[] = [
     signal: "Local businesses are using AI to respond faster to customer reviews.",
     accent: "from-amber-200 via-orange-400 to-rose-500",
     metrics: ["Reply options", "Owner flags", "Service offer"],
+    thumbnail: "/showcase/review-reply-copilot.png",
+  },
+  {
+    name: "Jobsite Notes to Daily Reports",
+    route: "/jobsite-notes-daily-reports",
+    description:
+      "Turn messy construction notes, weather, crew counts, and blockers into client-ready daily reports.",
+    buyer: "Small contractors and field service teams",
+    revenueIdea: "$49/month",
+    buildTime: "10 minutes",
+    signal: "Construction teams use AI to turn scattered field notes into standard daily reports.",
+    accent: "from-lime-200 via-emerald-500 to-slate-500",
+    metrics: ["Daily report", "Blocker list", "Next actions"],
+    thumbnail: "/showcase/jobsite-notes-daily-reports.png",
+  },
+  {
+    name: "Shift Briefs Prompt System for Independent Restaurants",
+    route: "/app/shift-briefs-prompt-system",
+    description:
+      "Turn messy restaurant manager notes into shift briefs, prep lists, blockers, and handoff summaries.",
+    buyer: "Builders, freelancers, operators, and consultants serving independent restaurants",
+    revenueIdea: "$19 one-time",
+    buildTime: "10 minutes",
+    signal: "Independent restaurant shift notes are scattered, and generic AI prompts create inconsistent handoffs.",
+    accent: "from-yellow-200 via-amber-500 to-red-500",
+    metrics: ["15 prompts", "Before/after", "Copy buttons"],
+    thumbnail: "/showcase/shift-briefs-prompt-system.png",
   },
 ];
 
@@ -86,6 +119,25 @@ function MockPreview({ item, large = false }: { item: ShowcaseItem; large?: bool
   );
 }
 
+function ThumbnailPreview({ item, large = false }: { item: ShowcaseItem; large?: boolean }) {
+  const [imageFailed, setImageFailed] = useState(false);
+
+  if (!item.thumbnail || imageFailed) {
+    return <MockPreview item={item} large={large} />;
+  }
+
+  return (
+    <div className={`overflow-hidden rounded-lg border border-white/10 bg-[#070a12] ${large ? "p-3" : "p-2"}`}>
+      <img
+        src={item.thumbnail}
+        alt={`${item.name} product screenshot`}
+        onError={() => setImageFailed(true)}
+        className="aspect-video w-full rounded-md object-cover"
+      />
+    </div>
+  );
+}
+
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
@@ -98,7 +150,7 @@ function DetailRow({ label, value }: { label: string; value: string }) {
 function GalleryCard({ item }: { item: ShowcaseItem }) {
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-lg border border-white/10 bg-[#101827] shadow-xl shadow-black/20 transition hover:-translate-y-1 hover:border-white/20">
-      <MockPreview item={item} />
+      <ThumbnailPreview item={item} />
       <div className="flex flex-1 flex-col p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h3 className="text-xl font-black tracking-tight text-white">{item.name}</h3>
@@ -149,7 +201,7 @@ export default function ShowcasePage() {
           <div className="mt-12 grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
             <div>
               <div className="inline-flex rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-cyan-100">
-                3 demos
+                {showcaseItems.length} demos
               </div>
               <h1 className="mt-5 text-5xl font-black tracking-tight text-white sm:text-7xl">
                 Built with Bilion
@@ -173,7 +225,7 @@ export default function ShowcasePage() {
                 <div className="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Build time each</div>
               </div>
               <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
-                <div className="text-3xl font-black text-white">3</div>
+                <div className="text-3xl font-black text-white">5</div>
                 <div className="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Buyer markets</div>
               </div>
             </div>
@@ -205,7 +257,7 @@ export default function ShowcasePage() {
                 </Link>
               </div>
               <div className="border-t border-white/10 p-5 lg:border-l lg:border-t-0">
-                <MockPreview item={featured} large />
+                <ThumbnailPreview item={featured} large />
                 <div className="mt-4 grid gap-2">
                   {featured.metrics.map((metric) => (
                     <div key={metric} className="flex items-center justify-between rounded-lg border border-white/10 bg-black/25 px-3 py-2">
