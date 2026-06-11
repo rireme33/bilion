@@ -283,6 +283,24 @@ export default function ShowcasePage() {
                 </div>
               ))}
             </div>
+            <div className="mt-5 rounded-lg border border-cyan-300/30 bg-cyan-300/10 p-4">
+              <div className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100">
+                Featured Signal Lab
+              </div>
+              <h3 className="mt-3 text-2xl font-black tracking-tight text-white">
+                GitHub Signal Lab
+              </h3>
+              <p className="mt-3 text-sm leading-6 text-slate-200">
+                Turn GitHub activity into buyer pain, product opportunities,
+                validation plans, and build-ready prompts.
+              </p>
+              <Link
+                href="/github-signal-lab"
+                className="mt-4 inline-flex w-full items-center justify-center rounded-lg bg-cyan-300 px-4 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-200"
+              >
+                Open Lab
+              </Link>
+            </div>
           </aside>
         </div>
       </section>

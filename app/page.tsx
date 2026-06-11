@@ -197,6 +197,60 @@ export default function HomePage() {
           </div>
         </section>
 
+        <section className="mt-10 overflow-hidden rounded-3xl border border-cyan-400/20 bg-[linear-gradient(135deg,rgba(34,211,238,0.12),rgba(16,16,17,1)_42%,rgba(250,204,21,0.08))] p-6 shadow-2xl md:p-8">
+          <div className="grid gap-6 lg:grid-cols-[1fr_0.8fr] lg:items-center">
+            <div>
+              <div className="inline-flex rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-cyan-200">
+                Featured Signal Lab
+              </div>
+              <h2 className="mt-4 text-4xl font-black tracking-tight">
+                GitHub Signal Lab
+              </h2>
+              <p className="mt-4 max-w-3xl text-sm leading-7 text-zinc-300">
+                Turn GitHub repos, issues, pull requests, and maintainer
+                comments into buyer pain, product opportunities, validation
+                plans, outreach copy, and Code X build prompts.
+              </p>
+              <p className="mt-3 text-sm font-semibold text-cyan-100">
+                Use repo activity as a market signal before deciding what to
+                build.
+              </p>
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                <a
+                  href="/github-signal-lab"
+                  className="rounded-2xl bg-white px-5 py-4 text-center text-sm font-bold text-black transition hover:bg-zinc-200"
+                >
+                  Open GitHub Signal Lab
+                </a>
+                <a
+                  href="/showcase"
+                  className="rounded-2xl border border-white/10 px-5 py-4 text-center text-sm font-bold text-white transition hover:bg-white/[0.04]"
+                >
+                  View Showcase
+                </a>
+              </div>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-black/35 p-4">
+              <div className="grid gap-3">
+                {[
+                  ["Repo signal", "Repeated setup issues, PR bottlenecks, integration gaps"],
+                  ["Buyer pain", "Who hurts, why now, and what keeps repeating"],
+                  ["Code X prompt", "A narrow product build prompt from the signal"],
+                ].map(([label, value]) => (
+                  <div key={label} className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                    <div className="text-xs font-bold uppercase tracking-wide text-cyan-200">
+                      {label}
+                    </div>
+                    <div className="mt-2 text-sm leading-6 text-zinc-200">
+                      {value}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section className="mt-24 rounded-3xl border border-white/10 bg-[#101011] p-8 md:p-10">
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
             <div>

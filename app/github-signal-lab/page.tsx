@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 type SignalType = "Repo momentum" | "Issue pain" | "PR workflow" | "Integration gap";
@@ -29,6 +30,7 @@ type SignalReport = {
   buyerPain: string;
   productOpportunity: string;
   evidence: string[];
+  validationPlan: string[];
   buildPrompt: string;
   outreachCopy: string;
   scores: {
@@ -173,6 +175,11 @@ function buildReport(signal: GitHubSignal): SignalReport {
     "DM or comment with a lightweight validation offer before building integrations.",
     "Ship a static demo that solves one repeated workflow, not the entire repo roadmap.",
   ];
+  const validationPlan = [
+    "Choose one repeated repo pain and write a before/after signal brief.",
+    "Send the brief to 20 builders, maintainers, or consultants who know the repo category.",
+    "Ask for 3 paid pilots, 5 explicit objections, or one repo-specific workflow they would use this week.",
+  ];
   const buildPrompt = `Build a GitHub signal product from ${signal.repo}. Buyer: ${signal.buyer}. Signal type: ${classification}. Turn these notes into a narrow workflow product: ${signal.sourceNotes}`;
   const outreachCopy = `I noticed repeated ${classification.toLowerCase()} pain around ${signal.repo}. I made a small workflow concept that turns the repeated GitHub comments into a productized fix. Want me to send the before/after?`;
   const exportText = `GitHub Signal Lab Report
@@ -199,6 +206,9 @@ ${buildPrompt}
 Next actions:
 ${nextActions.map((item) => `- ${item}`).join("\n")}
 
+48h validation plan:
+${validationPlan.map((item) => `- ${item}`).join("\n")}
+
 Outreach:
 ${outreachCopy}`;
 
@@ -208,6 +218,7 @@ ${outreachCopy}`;
     buyerPain,
     productOpportunity,
     evidence,
+    validationPlan,
     buildPrompt,
     outreachCopy,
     scores: {
@@ -275,37 +286,56 @@ export default function GitHubSignalLabPage() {
     window.setTimeout(() => setCopied(""), 1600);
   }
 
+  function trySampleSignal() {
+    setActiveSignal(samples[0]);
+    setGeneratedAt("Sample signal loaded");
+  }
+
   return (
     <main className="min-h-screen bg-[#070a12] text-slate-100">
       <section className="border-b border-white/10 bg-[radial-gradient(circle_at_top_left,#22d3ee30,transparent_32%),linear-gradient(135deg,#070a12,#0f172a_55%,#111827)]">
         <div className="mx-auto grid max-w-7xl gap-6 px-4 py-7 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:px-8">
           <div>
             <div className="inline-flex rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-cyan-100">
-              Bilion showcase product
+              GitHub Signal Lab
             </div>
             <h1 className="mt-5 max-w-4xl text-4xl font-black tracking-tight text-white sm:text-6xl">
-              GitHub Signal Lab
+              Turn GitHub activity into buildable product opportunities.
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-300">
-              Turn GitHub repos, issues, pull requests, and maintainer comments into ranked product opportunities,
-              buyer pain, build prompts, and validation outreach.
+              Paste or select a GitHub-style signal and Bilion converts it into buyer pain, product opportunity,
+              validation plan, outreach copy, and Code X prompt.
             </p>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <button
+                onClick={trySampleSignal}
+                className="rounded-lg bg-cyan-300 px-5 py-4 text-sm font-black text-slate-950 transition hover:bg-cyan-200"
+              >
+                Try sample signal
+              </button>
+              <Link
+                href="/showcase"
+                className="rounded-lg border border-white/15 px-5 py-4 text-center text-sm font-black text-white transition hover:bg-white/10"
+              >
+                Back to showcase
+              </Link>
+            </div>
             <div className="mt-5 grid gap-3 md:grid-cols-3">
               <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
-                <div className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Buyer</div>
+                <div className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Repo signal</div>
                 <p className="mt-2 text-sm leading-6 text-slate-100">
-                  AI builders, indie hackers, devtool founders, repo maintainers, and technical consultants.
+                  Issues, PRs, labels, duplicate comments, stars, stale requests, and maintainer replies.
                 </p>
               </div>
               <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
-                <div className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Pain</div>
+                <div className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Buyer pain</div>
                 <p className="mt-2 text-sm leading-6 text-slate-100">
-                  GitHub contains buyer pain, but it is scattered across issues, PRs, labels, comments, and roadmap gaps.
+                  Repeated implementation friction, maintainer workload, missing integrations, and workflow gaps.
                 </p>
               </div>
               <div className="rounded-lg border border-cyan-300/30 bg-cyan-300/10 p-4">
-                <div className="text-xs font-black uppercase tracking-[0.14em] text-cyan-100">Offer</div>
-                <p className="mt-2 text-3xl font-black text-white">{price}</p>
+                <div className="text-xs font-black uppercase tracking-[0.14em] text-cyan-100">Build prompt</div>
+                <p className="mt-2 text-sm leading-6 text-white">A narrow Code X prompt from the market signal.</p>
               </div>
             </div>
           </div>
@@ -328,7 +358,11 @@ export default function GitHubSignalLabPage() {
 
       <section className="mx-auto grid max-w-7xl gap-5 px-4 py-5 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
         <div className="space-y-5">
-          <Panel title="Sample signal selector">
+          <Panel title="Sample selector">
+            <p className="mb-4 text-sm leading-6 text-slate-400">
+              Pick a realistic GitHub-style signal to instantly see how Bilion turns repo activity into a buildable
+              product direction.
+            </p>
             <div className="grid gap-3">
               {samples.map((signal) => (
                 <button
@@ -392,10 +426,11 @@ export default function GitHubSignalLabPage() {
         </div>
 
         <div className="space-y-5">
-          <Panel title="Structured signal output">
+          <Panel title="Output panel">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p className="text-xl font-black text-white">{activeSignal.name}</p>
+                <div className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Signal summary</div>
+                <p className="mt-2 text-xl font-black text-white">{activeSignal.name}</p>
                 <p className="mt-1 text-sm text-slate-400">Generated: {generatedAt}</p>
               </div>
               <span
@@ -419,12 +454,22 @@ export default function GitHubSignalLabPage() {
             </div>
             <div className="mt-4 grid gap-3 xl:grid-cols-2">
               <div className="rounded-lg border border-white/10 bg-black/25 p-4">
-                <h3 className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Buyer pain</h3>
+                <h3 className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Buyer</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-100">{activeSignal.buyer}</p>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-black/25 p-4">
+                <h3 className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Pain</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-100">{report.buyerPain}</p>
               </div>
               <div className="rounded-lg border border-white/10 bg-black/25 p-4">
                 <h3 className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Product opportunity</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-100">{report.productOpportunity}</p>
+                <button
+                  onClick={() => copyText("opportunity", report.productOpportunity)}
+                  className="mt-3 rounded-lg bg-white px-4 py-2 text-xs font-black text-slate-950"
+                >
+                  {copied === "opportunity" ? "Copied" : "Copy opportunity"}
+                </button>
               </div>
             </div>
           </Panel>
@@ -440,12 +485,18 @@ export default function GitHubSignalLabPage() {
                 </ul>
               </div>
               <div className="rounded-lg border border-white/10 bg-black/25 p-3">
-                <h3 className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Next actions</h3>
+                <h3 className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">48h validation plan</h3>
                 <ul className="mt-2 space-y-2 text-sm leading-6 text-slate-200">
-                  {report.nextActions.map((item) => (
+                  {report.validationPlan.map((item) => (
                     <li key={item}>{item}</li>
                   ))}
                 </ul>
+                <button
+                  onClick={() => copyText("validation", report.validationPlan.join("\n"))}
+                  className="mt-3 rounded-lg bg-cyan-300 px-4 py-2 text-xs font-black text-slate-950"
+                >
+                  {copied === "validation" ? "Copied" : "Copy validation plan"}
+                </button>
               </div>
             </div>
           </Panel>
@@ -476,6 +527,18 @@ export default function GitHubSignalLabPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8">
+        <Panel title="Next actions">
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+            {report.nextActions.map((item) => (
+              <div key={item} className="rounded-lg border border-white/10 bg-black/25 p-4 text-sm leading-6 text-slate-200">
+                {item}
+              </div>
+            ))}
+          </div>
+        </Panel>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8">
         <Panel title="Saved GitHub signal records">
           <div className="grid gap-3 lg:grid-cols-3">
             {savedSignals.slice(0, 6).map((signal) => (
@@ -495,6 +558,35 @@ export default function GitHubSignalLabPage() {
             ))}
           </div>
         </Panel>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
+        <div className="rounded-lg border border-white/10 bg-[linear-gradient(135deg,#101827,#111827_55%,#0f172a)] p-5 shadow-2xl shadow-black/20 sm:p-8">
+          <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div>
+              <h2 className="text-3xl font-black tracking-tight text-white">
+                Build from real signals, not random ideas.
+              </h2>
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">
+                Bilion turns AI use cases, GitHub activity, and operator workflows into small buildable products.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Link
+                href="/app"
+                className="rounded-lg bg-white px-5 py-4 text-center text-sm font-black text-slate-950 transition hover:bg-slate-200"
+              >
+                Open Bilion
+              </Link>
+              <Link
+                href="/showcase"
+                className="rounded-lg border border-white/15 px-5 py-4 text-center text-sm font-black text-white transition hover:bg-white/10"
+              >
+                View Showcase
+              </Link>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
   );
