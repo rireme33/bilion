@@ -327,6 +327,7 @@ export default function GitHubSignalLabPage() {
   const [activeSignal, setActiveSignal] = useState<GitHubSignal>(samples[0]);
   const [savedSignals, setSavedSignals] = useState<GitHubSignal[]>(samples);
   const [generatedAt, setGeneratedAt] = useState("Sample loaded");
+  const [hasGeneratedDemo, setHasGeneratedDemo] = useState(false);
   const [copied, setCopied] = useState("");
   const outputRef = useRef<HTMLDivElement | null>(null);
 
@@ -338,6 +339,7 @@ export default function GitHubSignalLabPage() {
 
   function generateSignal() {
     setGeneratedAt(new Date().toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }));
+    setHasGeneratedDemo(true);
   }
 
   function saveSignal() {
@@ -363,6 +365,7 @@ export default function GitHubSignalLabPage() {
   function trySampleSignal() {
     setActiveSignal(samples[0]);
     setGeneratedAt(new Date().toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }));
+    setHasGeneratedDemo(true);
     window.setTimeout(() => outputRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
   }
 
@@ -461,6 +464,7 @@ export default function GitHubSignalLabPage() {
                   onClick={() => {
                     setActiveSignal(signal);
                     setGeneratedAt(`${signal.name} loaded`);
+                    setHasGeneratedDemo(false);
                   }}
                   className="rounded-lg border border-white/10 bg-black/25 p-3 text-left transition hover:border-cyan-300/50 hover:bg-cyan-300/10"
                 >
@@ -518,11 +522,18 @@ export default function GitHubSignalLabPage() {
 
         <div ref={outputRef} className="scroll-mt-6 space-y-5">
           <div className="rounded-lg border border-cyan-300/30 bg-cyan-300/10 p-4">
-            <div className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100">
-              Generated product opportunity
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100">
+                {hasGeneratedDemo ? "Generated product opportunity" : "Sample output preview"}
+              </div>
+              <span className="rounded-full border border-cyan-300/30 bg-slate-950/60 px-3 py-1 text-xs font-black text-cyan-100">
+                {hasGeneratedDemo ? "Generated now" : "Sample loaded"}
+              </span>
             </div>
             <p className="mt-2 text-sm leading-6 text-slate-200">
-              This is the commercial output Bilion creates from the selected GitHub signal.
+              {hasGeneratedDemo
+                ? "This is the commercial output Bilion creates from the selected GitHub signal."
+                : "This preview shows the kind of commercial output Bilion creates before you run the one-click demo."}
             </p>
           </div>
 
@@ -531,7 +542,9 @@ export default function GitHubSignalLabPage() {
               <div>
                 <div className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Signal summary</div>
                 <p className="mt-2 text-xl font-black text-white">{activeSignal.name}</p>
-                <p className="mt-1 text-sm text-slate-400">Generated: {generatedAt}</p>
+                <p className="mt-1 text-sm text-slate-400">
+                  {hasGeneratedDemo ? "Generated at" : "Preview status"}: {generatedAt}
+                </p>
               </div>
               <span
                 className={[
