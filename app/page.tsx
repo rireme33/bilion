@@ -21,7 +21,8 @@ export default function HomePage() {
             </div>
           </Link>
 
-          <nav className="hidden items-center gap-3 md:flex">
+          <div className="flex items-center gap-3">
+            <nav className="hidden items-center gap-3 md:flex">
             <a
               href="/products"
               className="rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-zinc-300 transition hover:bg-white/[0.04] hover:text-white"
@@ -42,7 +43,9 @@ export default function HomePage() {
             >
               Unlock Founder Access — $19
             </a>
-          </nav>
+            </nav>
+            <LanguageSwitch />
+          </div>
         </header>
 
         <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
@@ -337,6 +340,17 @@ export default function HomePage() {
         </section>
       </section>
     </main>
+  );
+}
+
+function LanguageSwitch() {
+  return (
+    <div className="flex rounded-full border border-white/10 bg-black/30 p-1 text-xs font-bold text-zinc-500">
+      <span className="rounded-full bg-white px-3 py-1.5 text-black">EN</span>
+      <Link href="/jp" className="rounded-full px-3 py-1.5 transition hover:text-white">
+        JP
+      </Link>
+    </div>
   );
 }
 
