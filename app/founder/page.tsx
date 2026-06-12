@@ -4,22 +4,29 @@ import { redirect } from "next/navigation";
 type FounderPageProps = {
   searchParams: Promise<{
     access?: string | string[];
+    next?: string | string[];
   }>;
 };
 
 export default async function FounderPage({ searchParams }: FounderPageProps) {
   const params = await searchParams;
   const access = Array.isArray(params.access) ? params.access[0] : params.access;
+  const requestedNext = Array.isArray(params.next) ? params.next[0] : params.next;
+  const safeNext = requestedNext === "/jp/app" ? "/jp/app" : "/app";
 
   if (access) {
-    redirect(`/api/founder/access?access=${encodeURIComponent(access)}`);
+    redirect(
+      `/api/founder/access?access=${encodeURIComponent(access)}&next=${encodeURIComponent(safeNext)}`,
+    );
   }
 
+  const cookieStore = await cookies();
   const hasFounderAccess =
-    (await cookies()).get("founder_access")?.value === "1";
+    cookieStore.get("founder_access")?.value === "1" ||
+    cookieStore.get("paid_access")?.value === "1";
 
   if (hasFounderAccess) {
-    redirect("/app");
+    redirect(safeNext);
   }
 
   return (

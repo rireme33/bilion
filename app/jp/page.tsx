@@ -117,7 +117,7 @@ export default function JapaneseLandingPage() {
             </p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <ButtonLink href="/jp/app">今日のシグナルを見る</ButtonLink>
-              <ButtonLink href="/founder" variant="secondary">
+              <ButtonLink href="/jp/founder" variant="secondary">
                 実装プロンプトを見る
               </ButtonLink>
             </div>

@@ -5,6 +5,8 @@ export const runtime = "nodejs";
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const access = url.searchParams.get("access") || "";
+  const requestedNext = url.searchParams.get("next") || "";
+  const safeNext = requestedNext === "/jp/app" ? "/jp/app" : "/app";
   const expected = process.env.BILION_FOUNDER_ACCESS_CODE;
 
   if (!expected) {
@@ -14,12 +16,15 @@ export async function GET(req: Request) {
   }
 
   if (access !== expected) {
-    const deniedUrl = new URL("/founder", req.url);
+    const deniedUrl = new URL(
+      safeNext === "/jp/app" ? "/jp/founder" : "/founder",
+      req.url,
+    );
     deniedUrl.searchParams.set("error", "invalid_access");
     return NextResponse.redirect(deniedUrl);
   }
 
-  const res = NextResponse.redirect(new URL("/app", req.url));
+  const res = NextResponse.redirect(new URL(safeNext, req.url));
 
   res.cookies.set("founder_access", "1", {
     httpOnly: true,

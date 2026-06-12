@@ -12,14 +12,6 @@ const previewFields = [
   ["次の行動", "30秒のデモを投稿し、反応したビルダーにページを送る。"],
 ];
 
-const fullPreviewFields = [
-  ...previewFields,
-  ["痛み", "作れる力はあるが、売れるテーマを選べない。"],
-  ["価格", "$19 買い切り"],
-  ["検証手順", "デモを投稿し、反応したAIビルダーへページを送る。"],
-  ["Code X用プロンプト", "GitHubシグナルから商品案、画面、出力、販売導線を作る仕様。"],
-];
-
 const cards = [
   {
     title: "買う相手",
@@ -34,6 +26,65 @@ const cards = [
     text: "Code X、Codex、Cursor、Claude Code、Lovableに貼れる仕様。",
   },
 ];
+
+const masterPrompt = `Build a standalone new web app from scratch.
+
+Product name:
+GitHub Signal Lab
+
+Buyer:
+Codex and Cursor users who can build software but do not know what AI product is worth building.
+
+Pain:
+The buyer sees GitHub trends, AI repositories, and public builder activity, but cannot convert those signals into a clear product angle, buyer pain, price, validation plan, and implementation prompt.
+
+Product angle:
+A lightweight signal-to-product workspace that turns one GitHub signal into a buyer profile, pain statement, small product idea, pricing hypothesis, 48h validation plan, and build-ready Code X prompt.
+
+First version:
+A single-page web app where the user selects or pastes a GitHub-style signal, reviews the generated commercial brief, and copies the build prompt into Code X, Codex, Cursor, Claude Code, or Lovable.
+
+Price:
+$19 one-time.
+
+48h validation plan:
+1. Record a 30-second demo showing one GitHub signal becoming a product brief.
+2. Post the demo on X with a clear before/after.
+3. DM 20 AI builders who reply, bookmark, or ask what to build next.
+4. Ask for 5 purchases at $19 or 5 explicit objections.
+
+Core workflow:
+1. User opens the app.
+2. User selects a sample GitHub signal.
+3. App shows buyer, pain, product idea, price, and next action.
+4. Paid user unlocks the full Code X Master Prompt.
+5. User copies the prompt into their AI coding tool.
+
+Technical requirements:
+- Use Next.js and React.
+- Use local React state only.
+- Use mock data only.
+- Do not add authentication.
+- Do not add payments.
+- Do not add a database.
+- Do not call external APIs.
+- Do not require environment variables.
+
+UI requirements:
+- Mobile-first layout.
+- Dark, calm SaaS style.
+- Clear preview card.
+- Clear locked paid section.
+- Copy button for the master prompt.
+- No generic AI gradients.
+- No decorative noise.
+
+Acceptance criteria:
+- The page loads successfully.
+- Free users can see the signal preview.
+- Paid users can see the full master prompt.
+- Copy button works.
+- The app clearly communicates buyer, pain, price, validation plan, and build prompt.`;
 
 function getLocalDateKey() {
   const today = new Date();
@@ -90,6 +141,7 @@ export default function JapaneseSignalPreviewPage() {
   const [hasPaidAccess, setHasPaidAccess] = useState(false);
   const [freeSignalUsedToday, setFreeSignalUsedToday] = useState(false);
   const [showSignal, setShowSignal] = useState(false);
+  const [copiedPrompt, setCopiedPrompt] = useState(false);
 
   useEffect(() => {
     const loadAccess = window.setTimeout(() => {
@@ -121,8 +173,13 @@ export default function JapaneseSignalPreviewPage() {
     setShowSignal(true);
   }
 
+  async function copyMasterPrompt() {
+    await navigator.clipboard.writeText(masterPrompt);
+    setCopiedPrompt(true);
+    window.setTimeout(() => setCopiedPrompt(false), 1200);
+  }
+
   const isLocked = !hasPaidAccess && freeSignalUsedToday && !showSignal;
-  const outputFields = hasPaidAccess ? fullPreviewFields : previewFields;
 
   return (
     <main className="min-h-screen bg-[#0b0c0e] text-white">
@@ -142,7 +199,7 @@ export default function JapaneseSignalPreviewPage() {
           <LanguageSwitch />
         </header>
 
-        <section className="grid gap-8 py-14 md:py-18 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+        <section className="grid gap-8 py-14 md:py-18 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
           <div>
             <div className="text-xs font-semibold tracking-[0.18em] text-zinc-500">
               今日のシグナル
@@ -160,15 +217,20 @@ export default function JapaneseSignalPreviewPage() {
                   onClick={viewFreeSignal}
                   className="rounded-xl bg-white px-4 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200"
                 >
-                  今日のシグナルを見る
+                  今日の無料シグナルを見る
                 </button>
               ) : (
-                <ButtonLink href="/founder">実装プロンプトを見る</ButtonLink>
+                <ButtonLink href="/jp/founder">実装プロンプトを見る</ButtonLink>
               )}
               <ButtonLink href="/jp" variant="secondary">
                 トップに戻る
               </ButtonLink>
             </div>
+            {!hasPaidAccess && !freeSignalUsedToday && (
+              <p className="mt-4 max-w-xl text-sm leading-6 text-zinc-500">
+                無料版は1日1回まで。次回以降は実装プロンプトアクセスが必要です。
+              </p>
+            )}
           </div>
 
           {isLocked ? (
@@ -177,9 +239,11 @@ export default function JapaneseSignalPreviewPage() {
                 今日の無料シグナルは使用済みです。
               </h2>
               <p className="mt-3 text-sm leading-7 text-zinc-400">
-                無料版では1日1回までシグナルを確認できます。実装プロンプトアクセスでは、買う相手・痛み・価格・検証手順・Code X用プロンプトまで確認できます。
+                無料版では1日1回までシグナルを確認できます。実装プロンプトアクセスでは、買う相手・痛み・価格・48時間検証手順・Full Code X Master Promptを確認できます。
               </p>
-              <ButtonLink href="/founder">実装プロンプトを見る</ButtonLink>
+              <div className="mt-5">
+                <ButtonLink href="/jp/founder">実装プロンプトを見る</ButtonLink>
+              </div>
             </div>
           ) : (
             <div className="rounded-2xl border border-white/10 bg-[#111214] p-5 shadow-xl shadow-black/20">
@@ -193,7 +257,7 @@ export default function JapaneseSignalPreviewPage() {
               </div>
               {showSignal ? (
                 <div className="mt-4 grid gap-3">
-                  {outputFields.map(([label, value]) => (
+                  {previewFields.map(([label, value]) => (
                     <div key={label} className="rounded-xl border border-white/10 bg-black/25 p-3.5">
                       <div className="text-xs font-semibold tracking-wide text-zinc-500">
                         {label}
@@ -211,6 +275,52 @@ export default function JapaneseSignalPreviewPage() {
           )}
         </section>
 
+        {showSignal && !hasPaidAccess && (
+          <section className="border-t border-white/10 py-10">
+            <div className="rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-6">
+              <h2 className="text-2xl font-semibold tracking-tight text-yellow-100">
+                Master Promptは有料です。
+              </h2>
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-400">
+                無料版ではシグナル、買う相手、商品案、次の行動まで表示します。Full Code X Master Promptは実装プロンプトアクセスで解放されます。
+              </p>
+              <div className="mt-5">
+                <ButtonLink href="/jp/founder">実装プロンプトを見る</ButtonLink>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {hasPaidAccess && (
+          <section className="border-t border-white/10 py-10">
+            <div className="rounded-2xl border border-white/10 bg-[#111214] p-5 md:p-6">
+              <div className="flex flex-col gap-4 border-b border-white/10 pb-4 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <div className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
+                    MASTER PROMPT
+                  </div>
+                  <h2 className="mt-2 text-2xl font-semibold tracking-tight">
+                    Full Code X Master Prompt
+                  </h2>
+                  <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-400">
+                    この英語のプロンプトを Code X / Codex / Cursor / Claude Code / Lovable に貼ってください。
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={copyMasterPrompt}
+                  className="rounded-xl bg-white px-4 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200"
+                >
+                  {copiedPrompt ? "コピー済み" : "Master Promptをコピー"}
+                </button>
+              </div>
+              <pre className="mt-5 max-h-[620px] overflow-auto whitespace-pre-wrap rounded-xl border border-white/10 bg-black/35 p-4 font-sans text-sm leading-6 text-zinc-100">
+                {masterPrompt}
+              </pre>
+            </div>
+          </section>
+        )}
+
         <section className="border-t border-white/10 py-10">
           <div className="mb-5">
             <div className="text-xs font-semibold tracking-[0.18em] text-zinc-500">
@@ -224,15 +334,6 @@ export default function JapaneseSignalPreviewPage() {
                 <p className="mt-2 text-sm leading-6 text-zinc-500">{card.text}</p>
               </div>
             ))}
-          </div>
-        </section>
-
-        <section className="border-t border-white/10 py-12 text-center">
-          <h2 className="mx-auto max-w-2xl text-3xl font-semibold tracking-tight">
-            完成版の実装プロンプトを見る。
-          </h2>
-          <div className="mt-7 flex justify-center">
-            <ButtonLink href="/founder">実装プロンプトを見る</ButtonLink>
           </div>
         </section>
       </section>
