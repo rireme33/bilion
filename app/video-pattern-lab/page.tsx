@@ -285,11 +285,17 @@ ${analysis.bilion_rewrite.cta}`;
   useEffect(() => {
     const savedCode = window.localStorage.getItem(accessStorageKey) || "";
 
-    if (savedCode) {
+    if (!savedCode) {
+      return;
+    }
+
+    const restoreAccess = window.setTimeout(() => {
       setAccessCode(savedCode);
       setAccessInput(savedCode);
       setHasAccess(true);
-    }
+    }, 0);
+
+    return () => window.clearTimeout(restoreAccess);
   }, []);
 
   function unlockLab() {
