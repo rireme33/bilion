@@ -116,7 +116,7 @@ export default function JapaneseLandingPage() {
               Bilionは、実際のAI活用事例とGitHubシグナルから、買う相手、価格、検証手順、実装プロンプトを出します。
             </p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href="/app">今日のシグナルを見る</ButtonLink>
+              <ButtonLink href="/jp/app">今日のシグナルを見る</ButtonLink>
               <ButtonLink href="/founder" variant="secondary">
                 実装プロンプトを見る
               </ButtonLink>
@@ -173,7 +173,7 @@ export default function JapaneseLandingPage() {
             1つのシグナルから、1つ作る。
           </h2>
           <div className="mt-7 flex justify-center">
-            <ButtonLink href="/app">今日のシグナルを見る</ButtonLink>
+            <ButtonLink href="/jp/app">今日のシグナルを見る</ButtonLink>
           </div>
         </section>
       </section>
