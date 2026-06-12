@@ -181,18 +181,21 @@ export default function HomePage() {
               text="Upload a short-form video and extract why it works."
               revenue="$19 one-time or $49 creator lab"
               href="/video-pattern-lab"
+              thumbnail="/showcase/video-pattern-lab.png"
             />
             <ShowcasePreviewCard
               title="Review Reply Copilot"
               text="Turn local customer reviews into reply options and a service offer."
               revenue="$500 setup + $150/month"
               href="/done-for-you-local-review-reply-copilot-outputs-setup"
+              thumbnail="/showcase/review-reply-copilot.png"
             />
             <ShowcasePreviewCard
               title="Short Video Pattern Analyzer"
               text="Turn messy video notes into hooks, patterns, and scripts."
               revenue="$19 pattern pack or $49/month creator lab"
               href="/short-video-pattern-analyzer"
+              thumbnail="/showcase/short-video-pattern-analyzer.png"
             />
           </div>
         </section>
@@ -362,22 +365,21 @@ function ShowcasePreviewCard({
   text,
   revenue,
   href,
+  thumbnail,
 }: {
   title: string;
   text: string;
   revenue: string;
   href: string;
+  thumbnail: string;
 }) {
   return (
     <div className="rounded-3xl border border-white/10 bg-[#101011] p-6">
-      <div className="mb-5 h-24 rounded-2xl border border-white/10 bg-[linear-gradient(135deg,rgba(52,211,153,0.16),rgba(59,130,246,0.12),rgba(250,204,21,0.10))] p-3">
-        <div className="h-3 w-24 rounded-full bg-white/20" />
-        <div className="mt-4 grid grid-cols-3 gap-2">
-          <div className="h-10 rounded-xl bg-white/10" />
-          <div className="h-10 rounded-xl bg-white/15" />
-          <div className="h-10 rounded-xl bg-white/10" />
-        </div>
-      </div>
+      <img
+        src={thumbnail}
+        alt={`${title} screenshot`}
+        className="mb-5 aspect-video w-full rounded-2xl border border-white/10 object-cover"
+      />
       <h3 className="text-xl font-bold">{title}</h3>
       <p className="mt-3 text-sm leading-6 text-zinc-400">{text}</p>
       <div className="mt-5 rounded-2xl border border-white/10 bg-black/40 p-3">
