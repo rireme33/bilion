@@ -155,17 +155,26 @@ export default function HomePage() {
             <div className="grid gap-5 md:grid-cols-[1fr_auto] md:items-center">
               <div>
                 <div className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
-                  Full prompt access
+                  Access
                 </div>
                 <h2 className="mt-3 text-2xl font-semibold tracking-tight">
-                  Unlock the complete build prompt.
+                  Free preview, paid build output.
                 </h2>
-                <p className="mt-3 max-w-2xl text-sm leading-7 text-zinc-500">
-                  Get the buyer, pain, price, validation plan, and full prompt for
-                  building the product.
-                </p>
+                <div className="mt-4 grid gap-3 text-sm leading-6 text-zinc-500 sm:grid-cols-2">
+                  <div className="rounded-xl border border-white/10 bg-black/25 p-4">
+                    <div className="font-semibold text-zinc-100">Free</div>
+                    <div className="mt-1">1 signal per day</div>
+                  </div>
+                  <div className="rounded-xl border border-white/10 bg-black/25 p-4">
+                    <div className="font-semibold text-zinc-100">Full Prompt Access</div>
+                    <div className="mt-1">$19 one-time</div>
+                    <div className="mt-1">
+                      Buyer, pain, price, validation plan, and full build prompt
+                    </div>
+                  </div>
+                </div>
               </div>
-              <ButtonLink href="/founder">See full prompt access</ButtonLink>
+              <ButtonLink href="/app">View today&apos;s signal</ButtonLink>
             </div>
           </div>
         </section>

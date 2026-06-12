@@ -154,16 +154,26 @@ export default function JapaneseLandingPage() {
             <div className="grid gap-5 md:grid-cols-[1fr_auto] md:items-center">
               <div>
                 <div className="text-xs font-semibold tracking-[0.18em] text-zinc-500">
-                  有料アクセス
+                  アクセス
                 </div>
                 <h2 className="mt-3 text-2xl font-semibold tracking-tight">
-                  完成版の実装プロンプトを見る。
+                  無料プレビューと、実装プロンプトアクセス。
                 </h2>
-                <p className="mt-3 max-w-2xl text-sm leading-7 text-zinc-500">
-                  買う相手、痛み、価格、検証手順、実装プロンプトまで確認できます。
-                </p>
+                <div className="mt-4 grid gap-3 text-sm leading-6 text-zinc-500 sm:grid-cols-2">
+                  <div className="rounded-xl border border-white/10 bg-black/25 p-4">
+                    <div className="font-semibold text-zinc-100">無料</div>
+                    <div className="mt-1">1日1回まで</div>
+                  </div>
+                  <div className="rounded-xl border border-white/10 bg-black/25 p-4">
+                    <div className="font-semibold text-zinc-100">実装プロンプトアクセス</div>
+                    <div className="mt-1">$19 買い切り</div>
+                    <div className="mt-1">
+                      買う相手、痛み、価格、検証手順、実装プロンプト
+                    </div>
+                  </div>
+                </div>
               </div>
-              <ButtonLink href="/founder">実装プロンプトを見る</ButtonLink>
+              <ButtonLink href="/jp/app">今日のシグナルを見る</ButtonLink>
             </div>
           </div>
         </section>

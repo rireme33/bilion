@@ -96,6 +96,7 @@ const lockedItems = [
 
 const CHECKOUT_URL = process.env.NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL || "";
 const SAVED_SIGNALS_STORAGE_KEY = "bilion.savedSignals";
+const FREE_SIGNAL_DATE_STORAGE_KEY_EN = "bilion_free_signal_date_en";
 const MAX_SAVED_SIGNALS = 10;
 
 const masterPromptAngles = [
@@ -1523,6 +1524,15 @@ function writeSavedSignals(signals: SavedSignal[]) {
   }
 }
 
+function getLocalDateKey() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
 export default function BilionAppClient({
   hasFounderAccess,
 }: BilionAppClientProps) {
@@ -1536,11 +1546,16 @@ export default function BilionAppClient({
   const [savedSignals, setSavedSignals] = useState<SavedSignal[]>([]);
   const [masterPrompt, setMasterPrompt] = useState<MasterPrompt | null>(null);
   const [masterPromptAngleIndex, setMasterPromptAngleIndex] = useState(0);
+  const [freeSignalUsedToday, setFreeSignalUsedToday] = useState(false);
   const selectedSignal = buildSignals[signalIndex];
 
   useEffect(() => {
     const loadSavedSignals = window.setTimeout(() => {
       setSavedSignals(readSavedSignals());
+      setFreeSignalUsedToday(
+        window.localStorage.getItem(FREE_SIGNAL_DATE_STORAGE_KEY_EN) ===
+          getLocalDateKey(),
+      );
     }, 0);
 
     return () => window.clearTimeout(loadSavedSignals);
@@ -1563,6 +1578,10 @@ export default function BilionAppClient({
   }
 
   function generateIdea() {
+    if (!hasFounderAccess && freeSignalUsedToday) {
+      return;
+    }
+
     setLoading(true);
     setError("");
     const nextResult = buildResult(selectedSignal);
@@ -1571,6 +1590,15 @@ export default function BilionAppClient({
     setCopiedMasterPrompt(false);
     setCopiedSafePrompt(false);
     saveResult(nextResult);
+
+    if (!hasFounderAccess) {
+      window.localStorage.setItem(
+        FREE_SIGNAL_DATE_STORAGE_KEY_EN,
+        getLocalDateKey(),
+      );
+      setFreeSignalUsedToday(true);
+    }
+
     setLoading(false);
   }
 
@@ -1592,7 +1620,7 @@ export default function BilionAppClient({
   }
 
   function generateMasterPrompt() {
-    if (!hasFounderAccess && masterPrompt) {
+    if (!hasFounderAccess) {
       return;
     }
 
@@ -1704,12 +1732,12 @@ export default function BilionAppClient({
 
           <div className="mt-10 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
             <div className="text-sm font-semibold">
-              {hasFounderAccess ? "Founder Access" : "Free Preview"}
+              {hasFounderAccess ? "Full Prompt Access" : "Free Preview"}
             </div>
             <p className="mt-2 text-xs leading-5 text-zinc-500">
               {hasFounderAccess
                 ? "Full Code X Master Prompts are unlocked for this browser."
-                : "Free users can review the signal and commercial angle. Founder Access unlocks the full build spec."}
+                : "Free users can view one signal per day. Full Prompt Access unlocks the complete build output."}
             </p>
           </div>
         </aside>
@@ -1731,21 +1759,41 @@ export default function BilionAppClient({
             </p>
           </header>
 
-          {!result && (
+          {!result && !hasFounderAccess && freeSignalUsedToday && (
+            <div className="rounded-3xl border border-yellow-400/20 bg-yellow-400/[0.04] p-6 shadow-2xl md:p-8">
+              <h2 className="text-2xl font-black tracking-tight">
+                You&apos;ve used today&apos;s free signal.
+              </h2>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
+                Free users can view one signal per day. Full Prompt Access unlocks
+                unlimited access to buyer, pain, price, validation plan, and
+                build-ready prompts.
+              </p>
+              <a
+                href="/founder"
+                className="mt-6 inline-flex rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200"
+              >
+                Unlock Full Prompt Access
+              </a>
+            </div>
+          )}
+
+          {!result && (hasFounderAccess || !freeSignalUsedToday) && (
             <div className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl md:p-8">
               <h2 className="text-2xl font-black tracking-tight">
-                Latest Build Signal
+                Today&apos;s Build Signal
               </h2>
               <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-400">
-                Pull a practical AI adoption pattern and convert it into a
-                commercial product angle.
+                Free users can view one preview signal per day. Full Prompt
+                Access unlocks the buyer, pain, price, validation plan, and
+                complete build prompt.
               </p>
               <button
                 onClick={generateIdea}
                 disabled={loading}
                 className="mt-6 rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {loading ? "Loading Signal..." : "Analyze Build Signal"}
+                {loading ? "Loading Signal..." : "View Today&apos;s Signal"}
               </button>
               {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
             </div>
@@ -1770,22 +1818,19 @@ export default function BilionAppClient({
 
                 <div className="mt-6 grid gap-4 md:grid-cols-2">
                   <InfoBlock
-                    label="Source Pattern"
+                    label="Signal"
                     value={result.free.latest_signal}
                   />
                   <InfoBlock
-                    label="Product Angle"
+                    label="Product idea"
                     value={result.free.what_you_can_build}
                   />
                   <InfoBlock label="Buyer" value={result.free.buyer} />
-                  <InfoBlock label="Pain" value={result.free.pain} />
-                  <InfoBlock
-                    label="Why Now"
-                    value={result.free.why_now}
-                  />
+                  <InfoBlock label="Next action" value={result.free.why_now} />
                 </div>
               </div>
 
+              {hasFounderAccess ? (
               <section className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl">
                 <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                   <div>
@@ -1796,9 +1841,8 @@ export default function BilionAppClient({
                       Generate a commercial build angle from this signal.
                     </h2>
                     <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
-                      Founder/Paid users can copy the full Code X Master Prompt.
-                      Free users can inspect the angle without seeing the
-                      complete build spec.
+                      Paid users can copy the full Code X Master Prompt and
+                      generate additional commercial angles.
                     </p>
                   </div>
 
@@ -1806,7 +1850,7 @@ export default function BilionAppClient({
                     <button
                       type="button"
                       onClick={generateMasterPrompt}
-                      disabled={!hasFounderAccess && Boolean(masterPrompt)}
+                      disabled={false}
                       className="rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       Generate Master Prompt
@@ -1814,7 +1858,7 @@ export default function BilionAppClient({
                     <button
                       type="button"
                       onClick={generateAnotherAngle}
-                      disabled={!hasFounderAccess || !masterPrompt}
+                      disabled={!masterPrompt}
                       className="rounded-2xl border border-white/10 px-5 py-4 text-sm font-bold text-white transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       Generate Another Angle
@@ -1822,34 +1866,27 @@ export default function BilionAppClient({
                   </div>
                 </div>
 
-                {!hasFounderAccess && masterPrompt && (
-                  <div className="mt-5 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-5">
-                    <h3 className="text-lg font-black text-yellow-100">
-                      Full Code X Master Prompt locked
-                    </h3>
-                    <p className="mt-2 text-sm leading-6 text-zinc-400">
-                      Unlock Founder Access to copy the complete build spec and
-                      generate additional commercial angles.
-                    </p>
-                    {CHECKOUT_URL ? (
-                      <a
-                        href={CHECKOUT_URL}
-                        className="mt-4 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
-                      >
-                        Unlock Founder Access
-                      </a>
-                    ) : (
-                      <button
-                        type="button"
-                        disabled
-                        className="mt-4 rounded-2xl border border-white/10 px-5 py-3 text-sm font-bold text-zinc-500"
-                      >
-                        Checkout link not configured
-                      </button>
-                    )}
-                  </div>
-                )}
               </section>
+              ) : (
+                <section className="rounded-3xl border border-yellow-400/20 bg-yellow-400/[0.04] p-6 shadow-2xl">
+                  <div className="inline-flex rounded-full bg-yellow-400/10 px-3 py-1 text-xs font-black uppercase tracking-wide text-yellow-300">
+                    Full Prompt Access
+                  </div>
+                  <h2 className="mt-4 text-3xl font-black tracking-tight">
+                    Unlock the full build output.
+                  </h2>
+                  <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
+                    Full Prompt Access unlocks buyer pain, price, validation plan,
+                    build steps, and the complete Code X prompt for $19 one-time.
+                  </p>
+                  <a
+                    href="/founder"
+                    className="mt-5 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
+                  >
+                    Unlock Full Prompt Access
+                  </a>
+                </section>
+              )}
 
               {masterPrompt && (
                 <MasterPromptCard
