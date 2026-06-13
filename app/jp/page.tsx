@@ -162,7 +162,7 @@ export default function JapaneseLandingPage() {
                 <div className="mt-4 grid gap-3 text-sm leading-6 text-zinc-500 sm:grid-cols-2">
                   <div className="rounded-xl border border-white/10 bg-black/25 p-4">
                     <div className="font-semibold text-zinc-100">無料</div>
-                    <div className="mt-1">1日1回まで</div>
+                    <div className="mt-1">1日1個のFull Master Promptまで</div>
                   </div>
                   <div className="rounded-xl border border-white/10 bg-black/25 p-4">
                     <div className="font-semibold text-zinc-100">実装プロンプトアクセス</div>

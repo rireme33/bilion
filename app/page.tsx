@@ -163,7 +163,7 @@ export default function HomePage() {
                 <div className="mt-4 grid gap-3 text-sm leading-6 text-zinc-500 sm:grid-cols-2">
                   <div className="rounded-xl border border-white/10 bg-black/25 p-4">
                     <div className="font-semibold text-zinc-100">Free</div>
-                    <div className="mt-1">1 signal per day</div>
+                    <div className="mt-1">Free daily Master Prompt</div>
                   </div>
                   <div className="rounded-xl border border-white/10 bg-black/25 p-4">
                     <div className="font-semibold text-zinc-100">Full Prompt Access</div>

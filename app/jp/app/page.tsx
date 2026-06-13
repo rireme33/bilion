@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-const FREE_SIGNAL_DATE_STORAGE_KEY_JP = "bilion_free_signal_date_jp";
+const FREE_MASTER_PROMPT_DATE_STORAGE_KEY = "bilion_free_master_prompt_date";
+const FREE_MASTER_PROMPT_PAYLOAD_STORAGE_KEY = "bilion_free_master_prompt_payload";
 
 const previewFields = [
   ["シグナル", "AIビルダーの間でGitHubプロジェクトが伸びている。"],
@@ -148,11 +149,21 @@ export default function JapaneseSignalPreviewPage() {
       const paid = hasPaidCookie();
 
       setHasPaidAccess(paid);
-      setFreeSignalUsedToday(
-        window.localStorage.getItem(FREE_SIGNAL_DATE_STORAGE_KEY_JP) ===
-          getLocalDateKey(),
-      );
-      setShowSignal(paid);
+      const used = window.localStorage.getItem(FREE_MASTER_PROMPT_DATE_STORAGE_KEY) === getLocalDateKey();
+      setFreeSignalUsedToday(used);
+      setShowSignal(paid || used);
+
+      try {
+        const raw = window.localStorage.getItem(FREE_MASTER_PROMPT_PAYLOAD_STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.date === getLocalDateKey() && parsed.language === "jp") {
+            setShowSignal(true);
+          }
+        }
+      } catch {
+        // ignore
+      }
     }, 0);
 
     return () => window.clearTimeout(loadAccess);
@@ -165,10 +176,34 @@ export default function JapaneseSignalPreviewPage() {
     }
 
     if (freeSignalUsedToday) {
+      setShowSignal(true);
       return;
     }
 
-    window.localStorage.setItem(FREE_SIGNAL_DATE_STORAGE_KEY_JP, getLocalDateKey());
+    const payload = {
+      date: getLocalDateKey(),
+      language: "jp",
+      promptTitle: "GitHub Signal Lab",
+      fullCodeXMasterPrompt: masterPrompt,
+      buyer: "Codex and Cursor users who can build software but do not know what AI product is worth building.",
+      pain: "The buyer sees GitHub trends, AI repositories, and public builder activity, but cannot convert those signals into a clear product angle, buyer pain, price, validation plan, and implementation prompt.",
+      productAngle: "A lightweight signal-to-product workspace that turns one GitHub signal into a buyer profile, pain statement, small product idea, pricing hypothesis, 48h validation plan, and build-ready Code X prompt.",
+      price: "$19 one-time",
+      validationPlan: [
+        "Record a 30-second demo showing one GitHub signal becoming a product brief.",
+        "Post the demo on X with a clear before/after.",
+        "DM 20 AI builders who reply, bookmark, or ask what to build next.",
+        "Ask for 5 purchases at $19 or 5 explicit objections.",
+      ],
+    };
+
+    try {
+      window.localStorage.setItem(FREE_MASTER_PROMPT_DATE_STORAGE_KEY, getLocalDateKey());
+      window.localStorage.setItem(FREE_MASTER_PROMPT_PAYLOAD_STORAGE_KEY, JSON.stringify(payload));
+    } catch {
+      // ignore
+    }
+
     setFreeSignalUsedToday(true);
     setShowSignal(true);
   }
@@ -217,7 +252,7 @@ export default function JapaneseSignalPreviewPage() {
                   onClick={viewFreeSignal}
                   className="rounded-xl bg-white px-4 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200"
                 >
-                  今日の無料シグナルを見る
+                  今日の無料Master Promptを見る
                 </button>
               ) : (
                 <ButtonLink href="/jp/founder">実装プロンプトを見る</ButtonLink>
@@ -228,7 +263,7 @@ export default function JapaneseSignalPreviewPage() {
             </div>
             {!hasPaidAccess && !freeSignalUsedToday && (
               <p className="mt-4 max-w-xl text-sm leading-6 text-zinc-500">
-                無料版は1日1回まで。次回以降は実装プロンプトアクセスが必要です。
+                無料版では1日1個、Full Code X Master Promptまで確認できます。追加のプロンプトは実装プロンプトアクセスで解放されます。
               </p>
             )}
           </div>
@@ -236,10 +271,10 @@ export default function JapaneseSignalPreviewPage() {
           {isLocked ? (
             <div className="rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-5 shadow-xl shadow-black/20">
               <h2 className="text-2xl font-semibold tracking-tight text-yellow-100">
-                今日の無料シグナルは使用済みです。
+                今日の無料Master Promptを使用済みです。
               </h2>
               <p className="mt-3 text-sm leading-7 text-zinc-400">
-                無料版では1日1回までシグナルを確認できます。実装プロンプトアクセスでは、買う相手・痛み・価格・48時間検証手順・Full Code X Master Promptを確認できます。
+                このプロンプトは本日中は確認できます。追加のプロンプト生成は実装プロンプトアクセスで解放されます。
               </p>
               <div className="mt-5">
                 <ButtonLink href="/jp/founder">実装プロンプトを見る</ButtonLink>
@@ -279,10 +314,10 @@ export default function JapaneseSignalPreviewPage() {
           <section className="border-t border-white/10 py-10">
             <div className="rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-6">
               <h2 className="text-2xl font-semibold tracking-tight text-yellow-100">
-                Master Promptは有料です。
+                追加のMaster Promptは有料です
               </h2>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-400">
-                無料版ではシグナル、買う相手、商品案、次の行動まで表示します。Full Code X Master Promptは実装プロンプトアクセスで解放されます。
+                無料版では1日1個までFull Code X Master Promptを確認できます。追加生成・無制限コピー・商用角度の展開は実装プロンプトアクセスで解放されます。
               </p>
               <div className="mt-5">
                 <ButtonLink href="/jp/founder">実装プロンプトを見る</ButtonLink>
@@ -291,7 +326,7 @@ export default function JapaneseSignalPreviewPage() {
           </section>
         )}
 
-        {hasPaidAccess && (
+        {(hasPaidAccess || (showSignal && freeSignalUsedToday)) && (
           <section className="border-t border-white/10 py-10">
             <div className="rounded-2xl border border-white/10 bg-[#111214] p-5 md:p-6">
               <div className="flex flex-col gap-4 border-b border-white/10 pb-4 sm:flex-row sm:items-end sm:justify-between">

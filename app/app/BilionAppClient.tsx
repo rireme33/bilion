@@ -85,6 +85,22 @@ type MasterPrompt = {
   fullCodeXMasterPrompt: string;
 };
 
+type FreeMasterPromptPayload = {
+  date: string;
+  language: string;
+  promptTitle?: string;
+  masterPrompt?: MasterPrompt;
+  result?: ApiResult;
+  signalIndex?: number;
+  angleIndex?: number;
+  buyer?: string;
+  pain?: string;
+  productAngle?: string;
+  price?: string;
+  validationPlan?: string[];
+  fullCodeXMasterPrompt?: string;
+};
+
 /*
 const lockedItems = [
   "Core Features 🔒",
@@ -94,9 +110,10 @@ const lockedItems = [
 ];
 */
 
-const CHECKOUT_URL = process.env.NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL || "";
+const CHECKOUT_URL = process.env.NEXT_PUBLIC_LEMONSQUEZY_CHECKOUT_URL || "";
 const SAVED_SIGNALS_STORAGE_KEY = "bilion.savedSignals";
-const FREE_SIGNAL_DATE_STORAGE_KEY_EN = "bilion_free_signal_date_en";
+const FREE_MASTER_PROMPT_DATE_STORAGE_KEY = "bilion_free_master_prompt_date";
+const FREE_MASTER_PROMPT_PAYLOAD_STORAGE_KEY = "bilion_free_master_prompt_payload";
 const MAX_SAVED_SIGNALS = 10;
 
 const masterPromptAngles = [
@@ -1545,17 +1562,41 @@ export default function BilionAppClient({
   const [copiedSavedSignalId, setCopiedSavedSignalId] = useState("");
   const [savedSignals, setSavedSignals] = useState<SavedSignal[]>([]);
   const [masterPrompt, setMasterPrompt] = useState<MasterPrompt | null>(null);
+  const [restoredFreeMasterPrompt, setRestoredFreeMasterPrompt] = useState<MasterPrompt | null>(null);
   const [masterPromptAngleIndex, setMasterPromptAngleIndex] = useState(0);
-  const [freeSignalUsedToday, setFreeSignalUsedToday] = useState(false);
+  const [freeMasterPromptUsedToday, setFreeMasterPromptUsedToday] = useState(false);
   const selectedSignal = buildSignals[signalIndex];
 
   useEffect(() => {
     const loadSavedSignals = window.setTimeout(() => {
       setSavedSignals(readSavedSignals());
-      setFreeSignalUsedToday(
-        window.localStorage.getItem(FREE_SIGNAL_DATE_STORAGE_KEY_EN) ===
-          getLocalDateKey(),
-      );
+      // restore free master prompt if present for today
+      try {
+        const raw = window.localStorage.getItem(FREE_MASTER_PROMPT_PAYLOAD_STORAGE_KEY);
+
+        if (raw) {
+          const parsed = JSON.parse(raw);
+
+          if (parsed && parsed.date === getLocalDateKey()) {
+            setFreeMasterPromptUsedToday(true);
+            if (parsed.masterPrompt) {
+              setMasterPrompt(parsed.masterPrompt as MasterPrompt);
+              setRestoredFreeMasterPrompt(parsed.masterPrompt as MasterPrompt);
+            }
+            if (parsed.result) {
+              setResult(parsed.result as ApiResult);
+            }
+            if (typeof parsed.signalIndex === "number") {
+              setSignalIndex(parsed.signalIndex);
+            }
+            if (typeof parsed.angleIndex === "number") {
+              setMasterPromptAngleIndex(parsed.angleIndex);
+            }
+          }
+        }
+      } catch {
+        // ignore parse errors
+      }
     }, 0);
 
     return () => window.clearTimeout(loadSavedSignals);
@@ -1578,10 +1619,6 @@ export default function BilionAppClient({
   }
 
   function generateIdea() {
-    if (!hasFounderAccess && freeSignalUsedToday) {
-      return;
-    }
-
     setLoading(true);
     setError("");
     const nextResult = buildResult(selectedSignal);
@@ -1590,14 +1627,6 @@ export default function BilionAppClient({
     setCopiedMasterPrompt(false);
     setCopiedSafePrompt(false);
     saveResult(nextResult);
-
-    if (!hasFounderAccess) {
-      window.localStorage.setItem(
-        FREE_SIGNAL_DATE_STORAGE_KEY_EN,
-        getLocalDateKey(),
-      );
-      setFreeSignalUsedToday(true);
-    }
 
     setLoading(false);
   }
@@ -1620,21 +1649,43 @@ export default function BilionAppClient({
   }
 
   function generateMasterPrompt() {
-    if (!hasFounderAccess) {
+    if (!hasFounderAccess && freeMasterPromptUsedToday) {
       return;
     }
 
     const nextIndexes = getSeededPromptIndexes(masterPrompt?.promptTitle);
     const nextSignal = buildSignals[nextIndexes.signalIndex];
     const nextResult = buildResult(nextSignal);
+    const builtMaster = buildMasterPrompt(nextSignal, nextIndexes.angleIndex);
 
     setCopiedMasterPrompt(false);
     setCopiedSafePrompt(false);
     setSignalIndex(nextIndexes.signalIndex);
     setMasterPromptAngleIndex(nextIndexes.angleIndex);
     setResult(nextResult);
-    setMasterPrompt(buildMasterPrompt(nextSignal, nextIndexes.angleIndex));
+    setMasterPrompt(builtMaster);
     saveResult(nextResult);
+
+    if (!hasFounderAccess) {
+      try {
+        const payload: FreeMasterPromptPayload = {
+          date: getLocalDateKey(),
+          language: window.location.pathname.startsWith("/jp") ? "jp" : "en",
+          promptTitle: builtMaster.promptTitle,
+          masterPrompt: builtMaster,
+          result: nextResult,
+          signalIndex: nextIndexes.signalIndex,
+          angleIndex: nextIndexes.angleIndex,
+        };
+
+        window.localStorage.setItem(FREE_MASTER_PROMPT_DATE_STORAGE_KEY, getLocalDateKey());
+        window.localStorage.setItem(FREE_MASTER_PROMPT_PAYLOAD_STORAGE_KEY, JSON.stringify(payload));
+      } catch {
+        // ignore storage errors
+      }
+
+      setFreeMasterPromptUsedToday(true);
+    }
   }
 
   function generateAnotherAngle() {
@@ -1678,7 +1729,9 @@ export default function BilionAppClient({
   }
 
   async function copyMasterPrompt() {
-    if (!masterPrompt || !hasFounderAccess) {
+    if (!masterPrompt) return;
+
+    if (!hasFounderAccess && !freeMasterPromptUsedToday && !restoredFreeMasterPrompt) {
       return;
     }
 
@@ -1737,7 +1790,7 @@ export default function BilionAppClient({
             <p className="mt-2 text-xs leading-5 text-zinc-500">
               {hasFounderAccess
                 ? "Full Code X Master Prompts are unlocked for this browser."
-                : "Free users can view one signal per day. Full Prompt Access unlocks the complete build output."}
+                : "Free users get one Full Code X Master Prompt per day. Full Prompt Access unlocks unlimited prompts."}
             </p>
           </div>
         </aside>
@@ -1759,34 +1812,13 @@ export default function BilionAppClient({
             </p>
           </header>
 
-          {!result && !hasFounderAccess && freeSignalUsedToday && (
-            <div className="rounded-3xl border border-yellow-400/20 bg-yellow-400/[0.04] p-6 shadow-2xl md:p-8">
-              <h2 className="text-2xl font-black tracking-tight">
-                You&apos;ve used today&apos;s free signal.
-              </h2>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
-                Free users can view one signal per day. Full Prompt Access unlocks
-                unlimited access to buyer, pain, price, validation plan, and
-                build-ready prompts.
-              </p>
-              <a
-                href="/founder"
-                className="mt-6 inline-flex rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200"
-              >
-                Unlock Full Prompt Access
-              </a>
-            </div>
-          )}
-
-          {!result && (hasFounderAccess || !freeSignalUsedToday) && (
+          {!result && (
             <div className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl md:p-8">
               <h2 className="text-2xl font-black tracking-tight">
                 Today&apos;s Build Signal
               </h2>
               <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-400">
-                Free users can view one preview signal per day. Full Prompt
-                Access unlocks the buyer, pain, price, validation plan, and
-                complete build prompt.
+                Free users can view and copy one Full Code X Master Prompt per day. Full Prompt Access unlocks the buyer, pain, price, validation plan, and complete build prompt.
               </p>
               <button
                 onClick={generateIdea}
@@ -1830,7 +1862,7 @@ export default function BilionAppClient({
                 </div>
               </div>
 
-              {hasFounderAccess ? (
+              {hasFounderAccess || !freeMasterPromptUsedToday ? (
               <section className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl">
                 <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                   <div>
@@ -1841,8 +1873,9 @@ export default function BilionAppClient({
                       Generate a commercial build angle from this signal.
                     </h2>
                     <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
-                      Paid users can copy the full Code X Master Prompt and
-                      generate additional commercial angles.
+                      {hasFounderAccess
+                        ? "Paid users can copy the full Code X Master Prompt and generate additional commercial angles."
+                        : "Free users can generate and copy one Full Code X Master Prompt per day. Unlock Full Prompt Access for unlimited prompts."}
                     </p>
                   </div>
 
@@ -1850,7 +1883,7 @@ export default function BilionAppClient({
                     <button
                       type="button"
                       onClick={generateMasterPrompt}
-                      disabled={false}
+                      disabled={!hasFounderAccess && freeMasterPromptUsedToday}
                       className="rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       Generate Master Prompt
@@ -1858,7 +1891,7 @@ export default function BilionAppClient({
                     <button
                       type="button"
                       onClick={generateAnotherAngle}
-                      disabled={!masterPrompt}
+                      disabled={!masterPrompt || !hasFounderAccess}
                       className="rounded-2xl border border-white/10 px-5 py-4 text-sm font-bold text-white transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       Generate Another Angle
@@ -1893,6 +1926,7 @@ export default function BilionAppClient({
                   copied={copiedMasterPrompt}
                   copiedSafe={copiedSafePrompt}
                   hasFounderAccess={hasFounderAccess}
+                  allowFreeAccess={hasFounderAccess || freeMasterPromptUsedToday || Boolean(restoredFreeMasterPrompt)}
                   masterPrompt={masterPrompt}
                   onCopy={copyMasterPrompt}
                   onCopySafe={copySafeBuildPrompt}
@@ -1950,6 +1984,7 @@ function MasterPromptCard({
   copied,
   copiedSafe,
   hasFounderAccess,
+  allowFreeAccess,
   masterPrompt,
   onCopy,
   onCopySafe,
@@ -1959,6 +1994,7 @@ function MasterPromptCard({
   copied: boolean;
   copiedSafe: boolean;
   hasFounderAccess: boolean;
+  allowFreeAccess: boolean;
   masterPrompt: MasterPrompt;
   onCopy: () => void;
   onCopySafe: () => void;
@@ -1998,6 +2034,16 @@ function MasterPromptCard({
             >
               {copiedSafe ? "Copied" : "Copy Safe Build Prompt"}
             </button>
+            <button
+              type="button"
+              onClick={onCopy}
+              className="rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200"
+            >
+              {copied ? "Copied" : "Copy to Code X"}
+            </button>
+          </div>
+        ) : allowFreeAccess ? (
+          <div className="flex flex-col gap-2 sm:flex-row">
             <button
               type="button"
               onClick={onCopy}
@@ -2046,13 +2092,13 @@ function MasterPromptCard({
           <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
             Full Code X Master Prompt
           </div>
-          {!hasFounderAccess && (
+          {!hasFounderAccess && !allowFreeAccess && (
             <div className="text-xs font-bold text-yellow-300">
-              Preview only
+              Locked
             </div>
           )}
         </div>
-        {hasFounderAccess ? (
+        {allowFreeAccess ? (
           <pre className="mt-3 max-h-[520px] overflow-auto whitespace-pre-wrap rounded-xl border border-white/10 bg-black/60 p-4 font-sans text-sm leading-6 text-zinc-100">
             {masterPrompt.fullCodeXMasterPrompt}
           </pre>
