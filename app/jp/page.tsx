@@ -3,11 +3,11 @@ import Link from "next/link";
 const benefits = [
   {
     title: "シグナル",
-    text: "AI活用事例、GitHubトレンド、市場の動き。",
+    text: "実際のAI活用事例、GitHubトレンド、市場の動き。",
   },
   {
     title: "買う相手",
-    text: "誰が困っていて、なぜ買うのか、いくらで出すか。",
+    text: "誰が困っていて、なぜ今買うのか、いくらで売るのか。",
   },
   {
     title: "実装プロンプト",
@@ -16,10 +16,21 @@ const benefits = [
 ];
 
 const previewFields = [
-  ["シグナル", "AIビルダーの間でGitHubプロジェクトが伸びている。"],
-  ["買う相手", "CodexやCursorを使えるが、何を作ればよいかわからない人。"],
-  ["商品案", "GitHub Signal Lab"],
-  ["次の行動", "30秒のデモを投稿し、反応したビルダーにページを送る。"],
+  [
+    "シグナル",
+    "不動産管理会社が、入居者からの修理依頼メッセージをAIで分類し、緊急度を判断し、業者向けの作業指示書に変換している。",
+  ],
+  ["何が金になるか", "入居者修理依頼ルーター"],
+  ["誰が買うか", "20〜300戸を管理する小規模不動産管理会社"],
+  [
+    "どんな痛みを解決するか",
+    "入居者の修理依頼がLINE、メール、電話メモに散らばり、緊急度判断と業者への作業指示作成に毎回10〜20分かかる。",
+  ],
+  ["いくらで売るか", "$299 setup + $29/month"],
+  [
+    "次の行動",
+    "60秒デモを小規模不動産管理会社20社に送り、3社に$99〜$299の有料βを提案する。",
+  ],
 ];
 
 function LanguageSwitch() {
@@ -65,10 +76,10 @@ function OutputPreview() {
           <div className="text-xs font-semibold tracking-[0.16em] text-zinc-500">
             出力例
           </div>
-          <h2 className="mt-1 text-lg font-semibold text-white">今日のシグナル</h2>
+          <h2 className="mt-1 text-lg font-semibold text-white">商売判断</h2>
         </div>
         <div className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300">
-          表示中
+          具体例
         </div>
       </div>
       <div className="mt-4 grid gap-3">
@@ -116,9 +127,9 @@ export default function JapaneseLandingPage() {
               Bilionは、実際のAI活用事例とGitHubシグナルから、買う相手、価格、検証手順、実装プロンプトを出します。
             </p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href="/jp/app">今日のシグナルを見る</ButtonLink>
+              <ButtonLink href="/jp/app">実装プロンプトを生成</ButtonLink>
               <ButtonLink href="/jp/founder" variant="secondary">
-                実装プロンプトを見る
+                実装プロンプトアクセスを見る
               </ButtonLink>
             </div>
           </div>
@@ -157,23 +168,23 @@ export default function JapaneseLandingPage() {
                   アクセス
                 </div>
                 <h2 className="mt-3 text-2xl font-semibold tracking-tight">
-                  無料プレビューと、実装プロンプトアクセス。
+                  無料3回。生成品質は有料版と同じ。
                 </h2>
                 <div className="mt-4 grid gap-3 text-sm leading-6 text-zinc-500 sm:grid-cols-2">
                   <div className="rounded-xl border border-white/10 bg-black/25 p-4">
                     <div className="font-semibold text-zinc-100">無料</div>
-                    <div className="mt-1">1日1個のFull Master Promptまで</div>
+                    <div className="mt-1">1日3回までフル出力</div>
                   </div>
                   <div className="rounded-xl border border-white/10 bg-black/25 p-4">
                     <div className="font-semibold text-zinc-100">実装プロンプトアクセス</div>
                     <div className="mt-1">$19 買い切り</div>
                     <div className="mt-1">
-                      買う相手、痛み、価格、検証手順、実装プロンプト
+                      無制限生成、無制限コピー、追加角度の生成
                     </div>
                   </div>
                 </div>
               </div>
-              <ButtonLink href="/jp/app">今日のシグナルを見る</ButtonLink>
+              <ButtonLink href="/jp/app">実装プロンプトを生成</ButtonLink>
             </div>
           </div>
         </section>
@@ -183,7 +194,7 @@ export default function JapaneseLandingPage() {
             1つのシグナルから、1つ作る。
           </h2>
           <div className="mt-7 flex justify-center">
-            <ButtonLink href="/jp/app">今日のシグナルを見る</ButtonLink>
+            <ButtonLink href="/jp/app">実装プロンプトを生成</ButtonLink>
           </div>
         </section>
       </section>

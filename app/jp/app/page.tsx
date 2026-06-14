@@ -3,14 +3,36 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-const FREE_MASTER_PROMPT_DATE_STORAGE_KEY = "bilion_free_master_prompt_date";
-const FREE_MASTER_PROMPT_PAYLOAD_STORAGE_KEY = "bilion_free_master_prompt_payload";
+const FREE_DAILY_LIMIT_JP = 3;
+const FREE_USAGE_STORAGE_KEY_JP = "bilion_free_usage_jp";
 
-const previewFields = [
-  ["シグナル", "AIビルダーの間でGitHubプロジェクトが伸びている。"],
-  ["買う相手", "CodexやCursorを使えるが、何を作ればよいかわからない人。"],
-  ["商品案", "GitHub Signal Lab"],
-  ["次の行動", "30秒のデモを投稿し、反応したビルダーにページを送る。"],
+const businessFields = [
+  [
+    "シグナル",
+    "不動産管理会社が、入居者からの修理依頼メッセージをAIで分類し、緊急度を判断し、業者向けの作業指示書に変換している。",
+  ],
+  ["何が金になるか", "入居者修理依頼ルーター"],
+  ["誰が買うか", "20〜300戸を管理する小規模不動産管理会社"],
+  [
+    "どんな痛みを解決するか",
+    "入居者の修理依頼がLINE、メール、電話メモに散らばり、緊急度判断と業者への作業指示作成に毎回10〜20分かかる。",
+  ],
+  [
+    "何を売るか",
+    "入居者メッセージを貼ると、緊急度、必要情報、業者向け作業指示、返信文を生成する小型AIツール。",
+  ],
+  ["いくらで売るか", "$299 setup + $29/month"],
+  [
+    "なぜ今買うか",
+    "管理戸数が増えるほど修理依頼の処理が詰まり、対応遅れがクレームや退去リスクになるから。",
+  ],
+];
+
+const validationSteps = [
+  "60秒デモを作る。",
+  "小規模不動産管理会社20社に送る。",
+  "「これがあれば修理依頼処理が楽になるか？」を聞く。",
+  "3社に$99〜$299の有料βを提案する。",
 ];
 
 const cards = [
@@ -31,35 +53,37 @@ const cards = [
 const masterPrompt = `Build a standalone new web app from scratch.
 
 Product name:
-GitHub Signal Lab
+Tenant Maintenance Request Router
 
 Buyer:
-Codex and Cursor users who can build software but do not know what AI product is worth building.
+Small property managers managing 20-300 rental units.
 
 Pain:
-The buyer sees GitHub trends, AI repositories, and public builder activity, but cannot convert those signals into a clear product angle, buyer pain, price, validation plan, and implementation prompt.
+Tenant repair requests arrive through LINE, email, phone notes, and messy messages. Managers waste time identifying urgency, missing information, vendor category, and the next tenant reply.
 
 Product angle:
-A lightweight signal-to-product workspace that turns one GitHub signal into a buyer profile, pain statement, small product idea, pricing hypothesis, 48h validation plan, and build-ready Code X prompt.
+A lightweight AI work-order router that turns tenant repair messages into urgency, missing info, vendor-ready work orders, and tenant reply drafts.
 
 First version:
-A single-page web app where the user selects or pastes a GitHub-style signal, reviews the generated commercial brief, and copies the build prompt into Code X, Codex, Cursor, Claude Code, or Lovable.
+A single-page tool where a property manager pastes a tenant maintenance message, reviews urgency, missing information, vendor category, work-order instructions, and a tenant reply draft, then copies the output.
 
 Price:
-$19 one-time.
+$299 setup + $29/month.
 
 48h validation plan:
-1. Record a 30-second demo showing one GitHub signal becoming a product brief.
-2. Post the demo on X with a clear before/after.
-3. DM 20 AI builders who reply, bookmark, or ask what to build next.
-4. Ask for 5 purchases at $19 or 5 explicit objections.
+1. Create a 60-second demo showing a messy tenant message becoming a vendor-ready work order.
+2. Send the demo to 20 small property managers managing 20-300 rental units.
+3. Ask: "Would this make maintenance request handling easier?"
+4. Offer 3 paid beta slots at $99-$299.
 
 Core workflow:
-1. User opens the app.
-2. User selects a sample GitHub signal.
-3. App shows buyer, pain, product idea, price, and next action.
-4. Paid user unlocks the full Code X Master Prompt.
-5. User copies the prompt into their AI coding tool.
+1. User opens the product.
+2. User pastes a tenant maintenance request.
+3. App classifies urgency and repair category.
+4. App identifies missing information.
+5. App generates a vendor-ready work order.
+6. App generates a tenant reply draft.
+7. User copies or saves the output.
 
 Technical requirements:
 - Use Next.js and React.
@@ -74,18 +98,19 @@ Technical requirements:
 UI requirements:
 - Mobile-first layout.
 - Dark, calm SaaS style.
-- Clear preview card.
-- Clear locked paid section.
-- Copy button for the master prompt.
+- Clear input area for tenant messages.
+- Clear output sections for urgency, missing info, vendor work order, and tenant reply.
+- Copy buttons for each output.
 - No generic AI gradients.
 - No decorative noise.
 
 Acceptance criteria:
 - The page loads successfully.
-- Free users can see the signal preview.
-- Paid users can see the full master prompt.
-- Copy button works.
-- The app clearly communicates buyer, pain, price, validation plan, and build prompt.`;
+- User can paste or select a sample tenant repair request.
+- Generated output appears immediately.
+- Output includes urgency, missing information, vendor-ready work order, and tenant reply.
+- Copy buttons work.
+- The product clearly feels sellable to small property managers.`;
 
 function getLocalDateKey() {
   const today = new Date();
@@ -101,6 +126,40 @@ function hasPaidCookie() {
     .split(";")
     .map((cookie) => cookie.trim())
     .some((cookie) => cookie === "founder_access=1" || cookie === "paid_access=1");
+}
+
+function readFreeUsageCount() {
+  try {
+    const raw = window.localStorage.getItem(FREE_USAGE_STORAGE_KEY_JP);
+
+    if (!raw) {
+      return 0;
+    }
+
+    const parsed = JSON.parse(raw) as { date?: string; count?: number };
+
+    if (parsed.date !== getLocalDateKey()) {
+      return 0;
+    }
+
+    return Math.max(0, Math.min(FREE_DAILY_LIMIT_JP, Number(parsed.count) || 0));
+  } catch {
+    return 0;
+  }
+}
+
+function writeFreeUsageCount(count: number) {
+  try {
+    window.localStorage.setItem(
+      FREE_USAGE_STORAGE_KEY_JP,
+      JSON.stringify({
+        date: getLocalDateKey(),
+        count: Math.max(0, Math.min(FREE_DAILY_LIMIT_JP, count)),
+      }),
+    );
+  } catch {
+    // localStorage can be unavailable in private modes or locked-down browsers.
+  }
 }
 
 function LanguageSwitch() {
@@ -140,72 +199,38 @@ function ButtonLink({
 
 export default function JapaneseSignalPreviewPage() {
   const [hasPaidAccess, setHasPaidAccess] = useState(false);
-  const [freeSignalUsedToday, setFreeSignalUsedToday] = useState(false);
-  const [showSignal, setShowSignal] = useState(false);
+  const [freeUsageCount, setFreeUsageCount] = useState(0);
+  const [showOutput, setShowOutput] = useState(false);
   const [copiedPrompt, setCopiedPrompt] = useState(false);
 
   useEffect(() => {
     const loadAccess = window.setTimeout(() => {
       const paid = hasPaidCookie();
+      const usageCount = readFreeUsageCount();
 
       setHasPaidAccess(paid);
-      const used = window.localStorage.getItem(FREE_MASTER_PROMPT_DATE_STORAGE_KEY) === getLocalDateKey();
-      setFreeSignalUsedToday(used);
-      setShowSignal(paid || used);
-
-      try {
-        const raw = window.localStorage.getItem(FREE_MASTER_PROMPT_PAYLOAD_STORAGE_KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (parsed && parsed.date === getLocalDateKey() && parsed.language === "jp") {
-            setShowSignal(true);
-          }
-        }
-      } catch {
-        // ignore
-      }
+      setFreeUsageCount(usageCount);
+      setShowOutput(paid || usageCount > 0);
     }, 0);
 
     return () => window.clearTimeout(loadAccess);
   }, []);
 
-  function viewFreeSignal() {
+  function generateOutput() {
     if (hasPaidAccess) {
-      setShowSignal(true);
+      setShowOutput(true);
       return;
     }
 
-    if (freeSignalUsedToday) {
-      setShowSignal(true);
+    if (freeUsageCount >= FREE_DAILY_LIMIT_JP) {
+      setShowOutput(true);
       return;
     }
 
-    const payload = {
-      date: getLocalDateKey(),
-      language: "jp",
-      promptTitle: "GitHub Signal Lab",
-      fullCodeXMasterPrompt: masterPrompt,
-      buyer: "Codex and Cursor users who can build software but do not know what AI product is worth building.",
-      pain: "The buyer sees GitHub trends, AI repositories, and public builder activity, but cannot convert those signals into a clear product angle, buyer pain, price, validation plan, and implementation prompt.",
-      productAngle: "A lightweight signal-to-product workspace that turns one GitHub signal into a buyer profile, pain statement, small product idea, pricing hypothesis, 48h validation plan, and build-ready Code X prompt.",
-      price: "$19 one-time",
-      validationPlan: [
-        "Record a 30-second demo showing one GitHub signal becoming a product brief.",
-        "Post the demo on X with a clear before/after.",
-        "DM 20 AI builders who reply, bookmark, or ask what to build next.",
-        "Ask for 5 purchases at $19 or 5 explicit objections.",
-      ],
-    };
-
-    try {
-      window.localStorage.setItem(FREE_MASTER_PROMPT_DATE_STORAGE_KEY, getLocalDateKey());
-      window.localStorage.setItem(FREE_MASTER_PROMPT_PAYLOAD_STORAGE_KEY, JSON.stringify(payload));
-    } catch {
-      // ignore
-    }
-
-    setFreeSignalUsedToday(true);
-    setShowSignal(true);
+    const nextCount = freeUsageCount + 1;
+    writeFreeUsageCount(nextCount);
+    setFreeUsageCount(nextCount);
+    setShowOutput(true);
   }
 
   async function copyMasterPrompt() {
@@ -214,7 +239,10 @@ export default function JapaneseSignalPreviewPage() {
     window.setTimeout(() => setCopiedPrompt(false), 1200);
   }
 
-  const isLocked = !hasPaidAccess && freeSignalUsedToday && !showSignal;
+  const freeRunsRemaining = hasPaidAccess
+    ? Infinity
+    : Math.max(0, FREE_DAILY_LIMIT_JP - freeUsageCount);
+  const canGenerate = hasPaidAccess || freeRunsRemaining > 0;
 
   return (
     <main className="min-h-screen bg-[#0b0c0e] text-white">
@@ -243,90 +271,89 @@ export default function JapaneseSignalPreviewPage() {
               作るものを、ここで決める。
             </h1>
             <p className="mt-5 max-w-xl text-base leading-7 text-zinc-400">
-              実際のAI活用事例やGitHubシグナルから、買う相手・商品案・価格・次の行動を確認できます。
+              実際のAI活用事例やGitHubシグナルから、商売判断とFull Code X Master Promptまで確認できます。
             </p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              {hasPaidAccess || !freeSignalUsedToday ? (
+              {canGenerate ? (
                 <button
                   type="button"
-                  onClick={viewFreeSignal}
+                  onClick={generateOutput}
                   className="rounded-xl bg-white px-4 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200"
                 >
-                  今日の無料Master Promptを見る
+                  実装プロンプトを生成
                 </button>
               ) : (
-                <ButtonLink href="/jp/founder">実装プロンプトを見る</ButtonLink>
+                <ButtonLink href="/jp/founder">実装プロンプトアクセスを見る</ButtonLink>
               )}
               <ButtonLink href="/jp" variant="secondary">
                 トップに戻る
               </ButtonLink>
             </div>
-            {!hasPaidAccess && !freeSignalUsedToday && (
+            {!hasPaidAccess && (
               <p className="mt-4 max-w-xl text-sm leading-6 text-zinc-500">
-                無料版では1日1個、Full Code X Master Promptまで確認できます。追加のプロンプトは実装プロンプトアクセスで解放されます。
+                無料でも有料版と同じ品質の出力を1日3回まで確認できます。Founder Accessでは、無制限生成・無制限コピー・追加角度の生成が使えます。
               </p>
             )}
           </div>
 
-          {isLocked ? (
-            <div className="rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-5 shadow-xl shadow-black/20">
-              <h2 className="text-2xl font-semibold tracking-tight text-yellow-100">
-                今日の無料Master Promptを使用済みです。
+          <div className="rounded-2xl border border-white/10 bg-[#111214] p-5 shadow-xl shadow-black/20">
+            <div className="border-b border-white/10 pb-4">
+              <div className="text-xs font-semibold tracking-[0.16em] text-zinc-500">
+                商売判断
+              </div>
+              <h2 className="mt-1 text-lg font-semibold text-white">
+                入居者修理依頼ルーター
               </h2>
-              <p className="mt-3 text-sm leading-7 text-zinc-400">
-                このプロンプトは本日中は確認できます。追加のプロンプト生成は実装プロンプトアクセスで解放されます。
-              </p>
-              <div className="mt-5">
-                <ButtonLink href="/jp/founder">実装プロンプトを見る</ButtonLink>
-              </div>
             </div>
-          ) : (
-            <div className="rounded-2xl border border-white/10 bg-[#111214] p-5 shadow-xl shadow-black/20">
-              <div className="border-b border-white/10 pb-4">
-                <div className="text-xs font-semibold tracking-[0.16em] text-zinc-500">
-                  {hasPaidAccess ? "実装プロンプトアクセス有効" : "今日の出力例"}
-                </div>
-                <h2 className="mt-1 text-lg font-semibold text-white">
-                  {showSignal ? "GitHub Signal Lab" : "今日のシグナルを表示"}
-                </h2>
-              </div>
-              {showSignal ? (
-                <div className="mt-4 grid gap-3">
-                  {previewFields.map(([label, value]) => (
-                    <div key={label} className="rounded-xl border border-white/10 bg-black/25 p-3.5">
-                      <div className="text-xs font-semibold tracking-wide text-zinc-500">
-                        {label}
-                      </div>
-                      <div className="mt-1.5 text-sm leading-6 text-zinc-100">{value}</div>
+            {showOutput ? (
+              <div className="mt-4 grid gap-3">
+                {businessFields.map(([label, value]) => (
+                  <div key={label} className="rounded-xl border border-white/10 bg-black/25 p-3.5">
+                    <div className="text-xs font-semibold tracking-wide text-zinc-500">
+                      {label}
                     </div>
-                  ))}
+                    <div className="mt-1.5 text-sm leading-6 text-zinc-100">{value}</div>
+                  </div>
+                ))}
+                <div className="rounded-xl border border-white/10 bg-black/25 p-3.5">
+                  <div className="text-xs font-semibold tracking-wide text-zinc-500">
+                    48時間検証
+                  </div>
+                  <ol className="mt-2 space-y-1 text-sm leading-6 text-zinc-100">
+                    {validationSteps.map((step, index) => (
+                      <li key={step} className="flex gap-2">
+                        <span className="text-zinc-500">{index + 1}.</span>
+                        <span>{step}</span>
+                      </li>
+                    ))}
+                  </ol>
                 </div>
-              ) : (
-                <p className="mt-4 text-sm leading-7 text-zinc-400">
-                  無料版では1日1回まで、プレビュー内容を確認できます。
-                </p>
-              )}
-            </div>
-          )}
+              </div>
+            ) : (
+              <p className="mt-4 text-sm leading-7 text-zinc-400">
+                ボタンを押すと、商売判断とFull Code X Master Promptまで表示します。
+              </p>
+            )}
+          </div>
         </section>
 
-        {showSignal && !hasPaidAccess && (
+        {showOutput && !hasPaidAccess && freeUsageCount >= FREE_DAILY_LIMIT_JP && (
           <section className="border-t border-white/10 py-10">
             <div className="rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-6">
               <h2 className="text-2xl font-semibold tracking-tight text-yellow-100">
-                追加のMaster Promptは有料です
+                今日の無料生成は3回使用済みです。
               </h2>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-400">
-                無料版では1日1個までFull Code X Master Promptを確認できます。追加生成・無制限コピー・商用角度の展開は実装プロンプトアクセスで解放されます。
+                無料でも有料版と同じ品質の出力を確認できます。追加の生成、無制限コピー、追加角度の生成は実装プロンプトアクセスで解放されます。
               </p>
               <div className="mt-5">
-                <ButtonLink href="/jp/founder">実装プロンプトを見る</ButtonLink>
+                <ButtonLink href="/jp/founder">実装プロンプトアクセスを見る</ButtonLink>
               </div>
             </div>
           </section>
         )}
 
-        {(hasPaidAccess || (showSignal && freeSignalUsedToday)) && (
+        {showOutput && (
           <section className="border-t border-white/10 py-10">
             <div className="rounded-2xl border border-white/10 bg-[#111214] p-5 md:p-6">
               <div className="flex flex-col gap-4 border-b border-white/10 pb-4 sm:flex-row sm:items-end sm:justify-between">
