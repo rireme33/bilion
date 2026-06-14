@@ -16,10 +16,17 @@ const benefits = [
 ];
 
 const previewFields = [
-  ["Signal", "A GitHub project is getting attention from AI builders."],
-  ["Buyer", "Codex and Cursor users who can build but do not know what to build."],
-  ["Product", "GitHub Signal Lab"],
-  ["Next action", "Post a 30-second demo and send the page to builders who reply."],
+  [
+    "Signal",
+    "Property managers are using AI to classify tenant maintenance messages, identify urgency, and prepare vendor-ready work orders.",
+  ],
+  ["Buyer", "Small property managers and local facility operators."],
+  ["Product", "Tenant Maintenance Request Router."],
+  ["Price", "$299 setup + $29/month."],
+  [
+    "Next action",
+    "Send a 60-second demo to 20 small property managers and ask for 3 paid beta users.",
+  ],
 ];
 
 function LanguageSwitch() {
@@ -117,7 +124,7 @@ export default function HomePage() {
               validation plan, and build-ready prompt.
             </p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href="/app">View today&apos;s signal</ButtonLink>
+              <ButtonLink href="/app">Generate Build Prompt</ButtonLink>
               <ButtonLink href="/founder" variant="secondary">
                 See full prompt access
               </ButtonLink>
@@ -174,7 +181,7 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-              <ButtonLink href="/app">View today&apos;s signal</ButtonLink>
+              <ButtonLink href="/app">Generate Build Prompt</ButtonLink>
             </div>
           </div>
         </section>
@@ -184,7 +191,7 @@ export default function HomePage() {
             Pick one signal. Build one product.
           </h2>
           <div className="mt-7 flex justify-center">
-            <ButtonLink href="/app">View today&apos;s signal</ButtonLink>
+            <ButtonLink href="/app">Generate Build Prompt</ButtonLink>
           </div>
         </section>
       </section>
