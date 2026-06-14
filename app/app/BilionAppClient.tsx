@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 type FreeIdea = {
@@ -1791,8 +1792,11 @@ export default function BilionAppClient({
 
         <section className="p-4 md:p-8">
           <header className="mb-8">
-            <div className="inline-flex rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-bold uppercase tracking-wide text-zinc-300">
-              Build Intelligence
+            <div className="flex items-center justify-between gap-4">
+              <div className="inline-flex rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-bold uppercase tracking-wide text-zinc-300">
+                Build Intelligence
+              </div>
+              <LanguageSwitch />
             </div>
 
             <h1 className="mt-4 max-w-4xl text-4xl font-black tracking-tight md:text-6xl">
@@ -2457,6 +2461,17 @@ function SidebarItem({
     >
       <span className="font-medium">{label}</span>
       {locked && <span className="text-xs opacity-60">Locked</span>}
+    </div>
+  );
+}
+
+function LanguageSwitch() {
+  return (
+    <div className="flex rounded-full border border-white/10 bg-white/[0.03] p-1 text-xs font-medium text-zinc-500">
+      <span className="rounded-full bg-white px-3 py-1.5 text-zinc-950">English</span>
+      <Link href="/jp/app" className="rounded-full px-3 py-1.5 transition hover:text-white">
+        日本語
+      </Link>
     </div>
   );
 }
