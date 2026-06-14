@@ -21,8 +21,132 @@ type JapaneseBilionAppClientProps = {
   hasFounderAccess: boolean;
 };
 
-const sourceOutputs: Record<SourceType, SourceOutput> = {
-  indie: {
+function createSourceOutput({
+  label,
+  proof,
+  title,
+  signal,
+  buyer,
+  pain,
+  product,
+  price,
+  whyNow,
+  validationSteps,
+  masterPrompt,
+}: {
+  label: string;
+  proof: string;
+  title: string;
+  signal: string;
+  buyer: string;
+  pain: string;
+  product: string;
+  price: string;
+  whyNow: string;
+  validationSteps: string[];
+  masterPrompt: string;
+}): SourceOutput {
+  return {
+    label,
+    proof,
+    title,
+    businessFields: [
+      ["シグナル", signal],
+      ["何が金になるか", title],
+      ["誰が買うか", buyer],
+      ["どんな痛みを解決するか", pain],
+      ["何を売るか", product],
+      ["いくらで売るか", price],
+      ["なぜ今買うか", whyNow],
+    ],
+    validationSteps,
+    masterPrompt,
+  };
+}
+
+function createMasterPrompt({
+  productName,
+  buyer,
+  pain,
+  productAngle,
+  firstVersion,
+  price,
+  validationSteps,
+}: {
+  productName: string;
+  buyer: string;
+  pain: string;
+  productAngle: string;
+  firstVersion: string;
+  price: string;
+  validationSteps: string[];
+}) {
+  return `Build a standalone new web app from scratch.
+
+Product name:
+${productName}
+
+Buyer:
+${buyer}
+
+Pain:
+${pain}
+
+Product angle:
+${productAngle}
+
+First version:
+${firstVersion}
+
+Price:
+${price}
+
+48h validation plan:
+${validationSteps.map((step, index) => `${index + 1}. ${step}`).join("\n")}
+
+Core workflow:
+1. User opens the product.
+2. User enters or selects a realistic sample input.
+3. App classifies the input and generates the commercial output.
+4. App shows next actions, status, and copy-ready sections.
+5. User copies the output or uses it as a sales demo.
+
+Technical requirements:
+- Use Next.js and React.
+- Use local React state only.
+- Use mock data only.
+- Do not add authentication.
+- Do not add payments.
+- Do not add a database.
+- Do not call external APIs.
+- Do not require environment variables.
+
+UI requirements:
+- Mobile-first layout.
+- Dark, calm SaaS style.
+- Clear source or input selector.
+- Clear output cards.
+- Copy button for generated sections.
+- No generic AI gradients.
+- No decorative noise.`;
+}
+
+function getNextOutputIndex(poolLength: number, currentIndex: number) {
+  if (poolLength <= 1) {
+    return 0;
+  }
+
+  let nextIndex = Math.floor(Math.random() * poolLength);
+
+  if (nextIndex === currentIndex) {
+    nextIndex = (nextIndex + 1) % poolLength;
+  }
+
+  return nextIndex;
+}
+
+const sourceOutputPools: Record<SourceType, SourceOutput[]> = {
+  indie: [{
     label: "Indie Hackers DB",
     proof: "参照元 IH42kDB / Indie Hackers成功事例",
     title: "入居者修理依頼ルーター",
@@ -115,7 +239,159 @@ Acceptance criteria:
 - Copy buttons work.
 - The product clearly feels sellable to small property managers.`,
   },
-  github: {
+  createSourceOutput({
+    label: "Indie Hackers DB",
+    proof: "参照元 IH42kDB / small restaurant ops pattern",
+    title: "レストラン引き継ぎメモ生成ツール",
+    signal:
+      "Indie Hackersでは、店舗や現場の毎日の手書きメモを標準フォーマットに変換する小型AIワークフローが売れている。飲食店では、シフト交代時の申し送りが口頭、LINE、紙メモに散らばっている。",
+    buyer: "独立系レストラン、カフェ、居酒屋、2〜5店舗の小規模飲食チーム",
+    pain:
+      "欠品、予約注意、クレーム、常連対応、明日の仕込みが人によって書き方が違い、店長が毎日確認と整理に時間を取られる。",
+    product:
+      "閉店後メモを貼ると、明日の引き継ぎ、重要注意、在庫補充、スタッフ向け一言に変換する小型AIツール。",
+    price: "$199 setup + $19/month",
+    whyNow:
+      "人手不足で店長が現場と管理を兼任しており、引き継ぎミスがそのままクレームや機会損失になるから。",
+    validationSteps: [
+      "飲食店向けに閉店メモが引き継ぎ文になる60秒デモを作る。",
+      "独立店20店舗にDMまたはメールで送る。",
+      "店長に実際の匿名メモを1件もらい、その場で変換する。",
+      "3店舗に$99の初期設定を提案する。",
+    ],
+    masterPrompt: createMasterPrompt({
+      productName: "Restaurant Shift Handoff Memo Generator",
+      buyer: "Independent restaurants, cafes, bars, and small multi-location food teams.",
+      pain:
+        "Shift handoff notes are scattered across paper, LINE, and memory. Managers lose time finding missing inventory, guest issues, reservations, and next-day prep.",
+      productAngle:
+        "A lightweight AI handoff tool that turns messy closing notes into a clear next-shift brief, inventory list, guest flags, and manager summary.",
+      firstVersion:
+        "A single-page tool with sample closing notes, a paste box, generated handoff sections, and copy buttons for staff messages.",
+      price: "$199 setup + $19/month.",
+      validationSteps: [
+        "Record a 60-second before/after demo using messy restaurant notes.",
+        "Send it to 20 independent restaurant owners or managers.",
+        "Ask for one anonymized real note and generate a sample handoff.",
+        "Offer 3 paid setup slots at $99.",
+      ],
+    }),
+  }),
+  createSourceOutput({
+    label: "Indie Hackers DB",
+    proof: "参照元 IH42kDB / field service reporting pattern",
+    title: "工事現場日報ジェネレーター",
+    signal:
+      "海外の小型SaaS事例では、現場メモ、天気、人数、進捗を日報に変換する業務ツールが繰り返し検証されている。建設・造園・保守では、報告作成が毎日の負担になっている。",
+    buyer: "小規模工務店、造園会社、設備工事、物件保守チーム",
+    pain:
+      "現場の進捗、遅延理由、資材不足、明日の作業がチャットや記憶に残り、クライアント報告に毎日20〜30分かかる。",
+    product:
+      "現場メモ、天気、作業人数、ブロッカーを入力すると、クライアント向け日報、資材リスト、明日の作業を生成するAIワークフロー。",
+    price: "$49/month",
+    whyNow:
+      "小規模チームでもクライアントへの説明責任が強くなり、写真とメモだけでは報告品質を保てないから。",
+    validationSteps: [
+      "現場メモから日報になるデモを作る。",
+      "小規模施工会社20社に送る。",
+      "実際の匿名メモを1件もらい、出力品質を確認してもらう。",
+      "$49/monthで3社の有料βを提案する。",
+    ],
+    masterPrompt: createMasterPrompt({
+      productName: "Jobsite Notes to Daily Reports AI Workflow",
+      buyer: "Small contractors, landscapers, maintenance teams, and field service operators.",
+      pain:
+        "Daily jobsite updates live in chats, notebooks, photos, and memory. Client reporting is slow, inconsistent, and easy to postpone.",
+      productAngle:
+        "An AI workflow that turns jobsite notes, weather, crew counts, blockers, and materials into client-ready daily reports and next actions.",
+      firstVersion:
+        "A paste/import workflow with sample notes, weather and crew inputs, generated report sections, saved examples, and export buttons.",
+      price: "$49/month.",
+      validationSteps: [
+        "Find 10 contractors who already write manual daily updates.",
+        "Run one anonymized real note through the prototype.",
+        "Ask whether the output is good enough to send to a client.",
+        "Offer paid beta at $49/month.",
+      ],
+    }),
+  }),
+  createSourceOutput({
+    label: "Indie Hackers DB",
+    proof: "参照元 IH42kDB / local service reply workflow",
+    title: "美容室口コミ返信アシスタント",
+    signal:
+      "ローカルビジネス向けAIでは、口コミ返信、クレーム分類、オーナー確認フラグのような小さな運用負担を置き換える商品が売れやすい。",
+    buyer: "美容室、ネイルサロン、整体院、地域密着の予約制店舗",
+    pain:
+      "Google口コミや予約サイトのレビュー返信が後回しになり、低評価への対応や常連への丁寧な返信に毎回迷う。",
+    product:
+      "口コミを貼ると、返信文、要注意フラグ、オーナー確認ポイント、再来店につなげる一言を生成する小型AIツール。",
+    price: "$299 setup + $29/month",
+    whyNow:
+      "地域店舗は口コミが予約数に直結し、返信スピードと丁寧さが見込み客の印象を左右するから。",
+    validationSteps: [
+      "実際のレビュー例を3件使った返信デモを作る。",
+      "近隣サロン20店舗に送る。",
+      "1件の実レビューをその場で変換して見せる。",
+      "月$29または$299セットアップの反応を確認する。",
+    ],
+    masterPrompt: createMasterPrompt({
+      productName: "Salon Review Reply Assistant",
+      buyer: "Hair salons, nail salons, clinics, and local appointment-based service businesses.",
+      pain:
+        "Reviews pile up across Google and booking platforms. Owners delay replies because tone, complaint risk, and next-step wording take mental effort.",
+      productAngle:
+        "A review reply copilot that turns customer reviews into owner-safe reply options, risk flags, and repeat-visit language.",
+      firstVersion:
+        "A one-page tool with review input, tone selector, generated reply options, owner flags, and copy buttons.",
+      price: "$299 setup + $29/month.",
+      validationSteps: [
+        "Create before/after examples for 3 real-looking salon reviews.",
+        "Send the demo to 20 local salons.",
+        "Ask for one anonymized review and generate replies.",
+        "Offer setup at $299 or monthly support at $29/month.",
+      ],
+    }),
+  }),
+  createSourceOutput({
+    label: "Indie Hackers DB",
+    proof: "参照元 IH42kDB / appointment recovery pattern",
+    title: "歯科クリニック予約キャンセル回収ツール",
+    signal:
+      "海外のニッチSaaSでは、予約キャンセル後の再予約メッセージや未処理リストを自動化する小さな運用改善が売れている。",
+    buyer: "歯科クリニック、矯正歯科、整体院、予約枠が売上に直結する医療系店舗",
+    pain:
+      "キャンセル後の再予約連絡がスタッフ任せになり、空き枠が埋まらず、売上と患者フォローが漏れる。",
+    product:
+      "キャンセル理由と患者メモを入れると、再予約候補、LINE文面、電話メモ、優先度を生成するキャンセル回収ツール。",
+    price: "$399 setup + $49/month",
+    whyNow:
+      "人件費が上がる中で、空き枠の回収は新規集客より安く、すぐ売上に戻るから。",
+    validationSteps: [
+      "キャンセル患者リストから再予約文面が出るデモを作る。",
+      "歯科・整体20院に送る。",
+      "空き枠1件あたりの損失を聞く。",
+      "3院に$199初期設定を提案する。",
+    ],
+    masterPrompt: createMasterPrompt({
+      productName: "Clinic Cancellation Recovery Tool",
+      buyer: "Dental clinics, orthodontists, chiropractors, and appointment-based clinics.",
+      pain:
+        "Canceled appointments become lost revenue because follow-up messages, priority, and rescheduling scripts are handled manually by busy staff.",
+      productAngle:
+        "A lightweight recovery tool that turns cancellation notes into reschedule priority, patient-friendly messages, call notes, and next actions.",
+      firstVersion:
+        "A single-page workflow with sample cancellation records, generated recovery scripts, status tags, and copy buttons.",
+      price: "$399 setup + $49/month.",
+      validationSteps: [
+        "Build a demo showing a cancellation list becoming recovery actions.",
+        "Send it to 20 clinics.",
+        "Ask the value of filling one canceled appointment slot.",
+        "Offer 3 paid setup slots at $199.",
+      ],
+    }),
+  })],
+  github: [{
     label: "GitHubシグナル",
     proof: "参照元 GitHubトレンド / AIリポジトリシグナル",
     title: "GitHub Repo Signal Brief Generator",
@@ -209,6 +485,158 @@ Acceptance criteria:
 - Output changes based on selected source.
 - Copy button copies the selected source's Master Prompt.`,
   },
+  createSourceOutput({
+    label: "GitHubシグナル",
+    proof: "参照元 GitHubトレンド / agent workflow repos",
+    title: "AI Agent Workflow Template Generator",
+    signal:
+      "GitHubではAIエージェントのテンプレート、ワークフロー、ツール接続例が伸びている。開発者は試すが、自分の業務や顧客向けに再利用できる型へ整理できていない。",
+    buyer: "Codex、Cursor、Claude Codeを使うAIビルダー、受託開発者、社内自動化担当",
+    pain:
+      "エージェント構成、ツール権限、入力例、失敗時の処理を毎回ゼロから考えるため、デモまでは作れても実運用の型にならない。",
+    product:
+      "目的を選ぶと、AIエージェントの役割、ツール、入力例、制約、テスト手順を含む実装テンプレートを生成するワークフローツール。",
+    price: "$29 one-time または $12/month",
+    whyNow:
+      "AIエージェントを試す人は増えたが、実務で使える設計テンプレートが不足しているから。",
+    validationSteps: [
+      "営業リサーチ、議事録、請求チェックの3テンプレートを作る。",
+      "XでAIビルダー向けに60秒デモを出す。",
+      "Codex/Cursorユーザー30人にDMする。",
+      "5人から購入または明確な反論を取る。",
+    ],
+    masterPrompt: createMasterPrompt({
+      productName: "AI Agent Workflow Template Generator",
+      buyer: "AI builders, automation consultants, Codex users, Cursor users, and internal operators building agent workflows.",
+      pain:
+        "Builders can create quick agent demos, but repeatable production-style workflows require role definitions, tool boundaries, sample inputs, fallback rules, and tests.",
+      productAngle:
+        "A template generator that turns one agent goal into a structured workflow spec, tool map, test checklist, and build-ready AI prompt.",
+      firstVersion:
+        "A single-page app with workflow type selector, generated agent spec, tool checklist, example input, test cases, and copy buttons.",
+      price: "$29 one-time or $12/month.",
+      validationSteps: [
+        "Create 3 public templates for common agent workflows.",
+        "Record a 60-second demo showing one goal becoming a full agent spec.",
+        "DM 30 AI builders using Codex or Cursor.",
+        "Ask for 5 purchases or explicit objections.",
+      ],
+    }),
+  }),
+  createSourceOutput({
+    label: "GitHubシグナル",
+    proof: "参照元 GitHub issues / maintainer comment patterns",
+    title: "PR / Issue Summary Brief Tool",
+    signal:
+      "GitHubのIssue、PR、メンテナーコメントには、ユーザーの不満、未解決ニーズ、導入障壁が集まっている。だが読むだけでは商品判断に変換しづらい。",
+    buyer: "OSSを追うAIビルダー、開発者向けSaaS創業者、DevRel、技術マーケター",
+    pain:
+      "IssueやPRを読んでも、どの不満が買う痛みなのか、どの機能が商品化できるのか、検証すべき相手が誰か整理できない。",
+    product:
+      "IssueやPRメモを貼ると、ユーザー痛み、頻出要望、商品機会、検証メッセージ、Code X用プロンプトに変換する分析ツール。",
+    price: "$19 one-time",
+    whyNow:
+      "OSS周辺のユーザー発言は公開された市場調査データであり、AIビルダーが商品選定に使えるから。",
+    validationSteps: [
+      "人気OSSのIssue 5件を商品ブリーフに変換するデモを作る。",
+      "開発者向けにXへ投稿する。",
+      "Dev tool創業者とAIビルダー30人に送る。",
+      "$19で5件の購入または反論を取る。",
+    ],
+    masterPrompt: createMasterPrompt({
+      productName: "PR / Issue Summary Brief Tool",
+      buyer: "AI builders, developer-tool founders, DevRel teams, and technical marketers using public GitHub activity as market research.",
+      pain:
+        "GitHub issues and PR comments contain buyer pain, but the signal is messy and hard to turn into product ideas, outreach, and build prompts.",
+      productAngle:
+        "A brief generator that turns GitHub issue notes into pain clusters, product opportunities, evidence, outreach copy, and Code X prompts.",
+      firstVersion:
+        "A one-page paste workflow with sample issue notes, generated brief cards, evidence bullets, validation plan, and copy buttons.",
+      price: "$19 one-time.",
+      validationSteps: [
+        "Analyze 5 public issue threads manually and show before/after output.",
+        "Post the demo for dev-tool founders.",
+        "DM 30 AI builders and developer marketers.",
+        "Ask for 5 purchases at $19.",
+      ],
+    }),
+  }),
+  createSourceOutput({
+    label: "GitHubシグナル",
+    proof: "参照元 GitHub local automation repos",
+    title: "Local Automation Command Center",
+    signal:
+      "ローカルPC上でファイル整理、CLI実行、ブラウザ操作、社内ツール連携を自動化するリポジトリが増えている。非エンジニアは何を自動化すべきか整理できない。",
+    buyer: "小規模事業者、業務改善担当、AIで社内作業を減らしたい個人事業主",
+    pain:
+      "日次ファイル整理、CSVチェック、請求前確認、メール下書きなどの作業が散らばり、AI自動化できそうでも設計できない。",
+    product:
+      "業務メモを入力すると、自動化候補、コマンド手順、リスク、実装プロンプトを生成するローカル自動化設計ツール。",
+    price: "$49 setup template",
+    whyNow:
+      "ローカル自動化とAI coding toolsが揃い、非エンジニア業務でも小さな自動化を売りやすくなったから。",
+    validationSteps: [
+      "CSV整理やファイル命名の自動化デモを作る。",
+      "小規模事業者20人に送る。",
+      "毎週繰り返すPC作業を1つ聞く。",
+      "$49の自動化設計テンプレートを提案する。",
+    ],
+    masterPrompt: createMasterPrompt({
+      productName: "Local Automation Command Center",
+      buyer: "Small operators, solo business owners, and internal ops people who want AI-assisted local automation without designing scripts themselves.",
+      pain:
+        "Repeated desktop tasks are scattered across files, folders, CSVs, browser tabs, and email drafts. The buyer knows automation is possible but cannot define the workflow safely.",
+      productAngle:
+        "A local automation planner that turns messy task notes into automation candidates, command steps, risk checks, and build-ready prompts.",
+      firstVersion:
+        "A single-page app with task input, automation classifier, command plan, risk checklist, and prompt output.",
+      price: "$49 setup template.",
+      validationSteps: [
+        "Record a demo turning one repetitive desktop task into an automation plan.",
+        "Send it to 20 small operators.",
+        "Ask for one real weekly task.",
+        "Offer the template at $49.",
+      ],
+    }),
+  }),
+  createSourceOutput({
+    label: "GitHubシグナル",
+    proof: "参照元 GitHub MCP ecosystem / tool server patterns",
+    title: "MCP Tool Idea Generator",
+    signal:
+      "MCPサーバーやツール連携のリポジトリが増え、AIツールが外部データや業務アプリに接続しやすくなっている。だが開発者はどのMCPツールが売れるか判断しづらい。",
+    buyer: "MCPに興味があるAIビルダー、社内ツール開発者、業務SaaSの拡張機能を作る個人開発者",
+    pain:
+      "MCPの技術例は多いが、買う相手、業務痛み、価格、最初のデモに落とせないため、作る対象が決まらない。",
+    product:
+      "業務カテゴリを選ぶと、MCPツール案、接続対象、ユーザー痛み、最初のデモ、実装プロンプトを生成するアイデア発見ツール。",
+    price: "$19 one-time",
+    whyNow:
+      "MCPは開発者の注目が高く、早い段階で業務別テンプレートや商品案を欲しがる層がいるから。",
+    validationSteps: [
+      "Gmail、Notion、GitHub向けMCPアイデア3件を作る。",
+      "AIビルダー向けにXで投稿する。",
+      "MCP関連投稿に反応する30人にDMする。",
+      "$19で5件の購入または待機リスト登録を取る。",
+    ],
+    masterPrompt: createMasterPrompt({
+      productName: "MCP Tool Idea Generator",
+      buyer: "AI builders, MCP experimenters, internal tool developers, and solo founders exploring tool-server products.",
+      pain:
+        "Developers see MCP examples but struggle to turn them into buyer-specific products with a clear workflow, value, price, and demo.",
+      productAngle:
+        "A signal-to-tool workspace that turns one workflow category into MCP tool ideas, buyer pain, connection targets, validation plans, and build prompts.",
+      firstVersion:
+        "A one-page app with workflow category selector, generated MCP tool cards, buyer notes, first-demo checklist, and copyable prompts.",
+      price: "$19 one-time.",
+      validationSteps: [
+        "Generate 3 MCP tool ideas for popular workflow categories.",
+        "Record a 60-second demo.",
+        "Share it with MCP and AI builder audiences.",
+        "Ask for 5 purchases or waitlist signups.",
+      ],
+    }),
+  })],
 };
 
 const cards = [
@@ -311,6 +739,7 @@ export default function JapaneseBilionAppClient({
   const [showOutput, setShowOutput] = useState(false);
   const [copiedPrompt, setCopiedPrompt] = useState(false);
   const [sourceType, setSourceType] = useState<SourceType>("indie");
+  const [currentOutputIndex, setCurrentOutputIndex] = useState(0);
 
   useEffect(() => {
     const loadAccess = window.setTimeout(() => {
@@ -323,7 +752,8 @@ export default function JapaneseBilionAppClient({
     return () => window.clearTimeout(loadAccess);
   }, []);
 
-  const selectedOutput = sourceOutputs[sourceType];
+  const selectedPool = sourceOutputPools[sourceType];
+  const selectedOutput = selectedPool[currentOutputIndex] ?? selectedPool[0]!;
   const freeRunsRemaining = hasFounderAccess
     ? Infinity
     : Math.max(0, FREE_DAILY_LIMIT_JP - freeUsageCount);
@@ -333,6 +763,11 @@ export default function JapaneseBilionAppClient({
     if (!canGenerate) {
       return;
     }
+
+    const nextIndex = showOutput
+      ? getNextOutputIndex(selectedPool.length, currentOutputIndex)
+      : currentOutputIndex;
+    setCurrentOutputIndex(nextIndex);
 
     if (!hasFounderAccess) {
       const nextCount = freeUsageCount + 1;
@@ -384,7 +819,7 @@ export default function JapaneseBilionAppClient({
                 ソースを選択
               </div>
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                {(Object.keys(sourceOutputs) as SourceType[]).map((source) => {
+                {(Object.keys(sourceOutputPools) as SourceType[]).map((source) => {
                   const active = sourceType === source;
 
                   return (
@@ -393,6 +828,7 @@ export default function JapaneseBilionAppClient({
                       type="button"
                       onClick={() => {
                         setSourceType(source);
+                        setCurrentOutputIndex(0);
                         setShowOutput(false);
                         setCopiedPrompt(false);
                       }}
@@ -403,7 +839,7 @@ export default function JapaneseBilionAppClient({
                           : "border-white/10 bg-black/20 text-zinc-300 hover:bg-white/[0.04]",
                       ].join(" ")}
                     >
-                      {sourceOutputs[source].label}
+                      {sourceOutputPools[source][0]!.label}
                     </button>
                   );
                 })}
