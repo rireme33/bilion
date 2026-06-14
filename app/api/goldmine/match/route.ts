@@ -141,22 +141,57 @@ const fallbackSignals: RawSignal[] = [
 ];
 
 async function loadSignals(): Promise<RawSignal[]> {
+  const signals: RawSignal[] = [];
+
   for (const file of ["goldmine_signals.json", "top100_signals.json"]) {
     try {
       const filePath = path.join(process.cwd(), "data", file);
       const raw = await fs.readFile(filePath, "utf8");
       const parsed = JSON.parse(raw);
 
-      if (Array.isArray(parsed)) return parsed;
-      if (Array.isArray(parsed.signals)) return parsed.signals;
-      if (Array.isArray(parsed.items)) return parsed.items;
-      if (Array.isArray(parsed.data)) return parsed.data;
+      if (Array.isArray(parsed)) signals.push(...parsed);
+      else if (Array.isArray(parsed.signals)) signals.push(...parsed.signals);
+      else if (Array.isArray(parsed.items)) signals.push(...parsed.items);
+      else if (Array.isArray(parsed.data)) signals.push(...parsed.data);
     } catch {
       continue;
     }
   }
 
-  return fallbackSignals;
+  if (signals.length === 0) {
+    return fallbackSignals;
+  }
+
+  const seen = new Set<string>();
+
+  return signals.filter((signal) => {
+    const titleKey = [
+      getTitle(signal),
+      signal.source_url || signal.url || signal.source || "",
+    ]
+      .join("|")
+      .toLowerCase();
+    const key = titleKey === "|" ? JSON.stringify(signal).toLowerCase() : titleKey;
+
+    if (seen.has(key)) {
+      return false;
+    }
+
+    seen.add(key);
+    return true;
+  });
+}
+
+function getTitle(signal: RawSignal) {
+  return String(
+    signal.opportunity ||
+      signal.title ||
+      signal.build_this ||
+      signal.product ||
+      signal.idea ||
+      signal.name ||
+      ""
+  );
 }
 
 function asSearchText(signal: RawSignal) {
@@ -188,7 +223,12 @@ function fieldScore(signal: RawSignal) {
 function pickBestSignal(
   signals: RawSignal[],
   buildType: string,
-  audience: string
+  audience: string,
+  options: {
+    seed?: number;
+    offset?: number;
+    excludeTitle?: string;
+  } = {}
 ) {
   const build = buildType.toLowerCase();
   const buyer = audience.toLowerCase();
@@ -217,7 +257,24 @@ function pickBestSignal(
 
   scored.sort((a, b) => b.score - a.score);
 
-  return scored[0]?.signal || fallbackSignals[0];
+  const candidateCount = Math.min(30, scored.length);
+  const candidates = scored
+    .slice(0, candidateCount)
+    .map((item) => item.signal);
+  const filtered = options.excludeTitle
+    ? candidates.filter((signal) => getTitle(signal) !== options.excludeTitle)
+    : candidates;
+  const pool = filtered.length > 0 ? filtered : candidates;
+
+  if (pool.length === 0) {
+    return scored[0]?.signal || fallbackSignals[0];
+  }
+
+  const rawSeed = typeof options.seed === "number" ? options.seed : Date.now();
+  const offset = typeof options.offset === "number" ? options.offset : 0;
+  const index = Math.abs(Math.floor(rawSeed + offset)) % pool.length;
+
+  return pool[index] || scored[0]?.signal || fallbackSignals[0];
 }
 
 function normalize(signal: RawSignal) {
@@ -345,9 +402,17 @@ export async function POST(req: Request) {
 
   const buildType = String(body.buildType || "AI tool");
   const audience = String(body.audience || "founders");
+  const seed = typeof body.seed === "number" ? body.seed : undefined;
+  const offset = typeof body.offset === "number" ? body.offset : undefined;
+  const excludeTitle =
+    typeof body.excludeTitle === "string" ? body.excludeTitle : undefined;
 
   const signals = await loadSignals();
-  const chosen = pickBestSignal(signals, buildType, audience);
+  const chosen = pickBestSignal(signals, buildType, audience, {
+    seed,
+    offset,
+    excludeTitle,
+  });
   const free = normalize(chosen);
 
   return NextResponse.json({

@@ -21,6 +21,46 @@ type JapaneseBilionAppClientProps = {
   hasFounderAccess: boolean;
 };
 
+type GoldmineFreeResult = {
+  title?: string;
+  latest_signal?: string;
+  what_happened?: string;
+  what_you_can_build?: string;
+  why_its_useful?: string;
+  comparable_price?: string;
+  build_steps?: string[];
+  code_x_prompt?: string;
+  pattern_matches?: string[];
+  source_url?: string;
+};
+
+type GoldmineMatchResponse = {
+  free?: GoldmineFreeResult;
+};
+
+const buildTypes = [
+  "AI tool",
+  "Micro SaaS",
+  "Automation",
+  "Local business tool",
+  "Prompt pack",
+  "Agency service",
+  "B2B workflow",
+];
+
+const audiences = [
+  "founders",
+  "local businesses",
+  "agencies",
+  "consultants",
+  "creators",
+  "property managers",
+  "restaurants",
+  "clinics",
+  "contractors",
+  "solo developers",
+];
+
 function createSourceOutput({
   label,
   proof,
@@ -143,6 +183,109 @@ function getNextOutputIndex(poolLength: number, currentIndex: number) {
   }
 
   return nextIndex;
+}
+
+function pickRandom(items: string[]) {
+  return items[Math.floor(Math.random() * items.length)] || items[0]!;
+}
+
+function deriveBuyerFromPatternMatches(patternMatches?: string[]) {
+  if (!patternMatches || patternMatches.length === 0) {
+    return "AIで小型商品を作りたい個人開発者・小規模事業者";
+  }
+
+  return `${patternMatches.slice(0, 3).join(" / ")} 向けの小型AI商品を探している人`;
+}
+
+function buildGoldmineFallbackPrompt(free: GoldmineFreeResult) {
+  const productName =
+    free.what_you_can_build || free.title || "AI Workflow Product";
+
+  return `Build a standalone new web app from scratch.
+
+Product name:
+${productName}
+
+Buyer:
+${deriveBuyerFromPatternMatches(free.pattern_matches)}
+
+Pain:
+${free.why_its_useful || free.what_happened || "The buyer has a repeated workflow, but does not know how to turn it into a small AI product."}
+
+Product angle:
+${free.what_you_can_build || productName}
+
+First version:
+A focused one-page MVP with a specific input, structured output, validation plan, and copy-ready AI build prompt.
+
+Price:
+${free.comparable_price || "$19 one-time or $29/month."}
+
+48h validation plan:
+1. Record a 60-second demo.
+2. Send it to 20 likely buyers.
+3. Ask whether this would save time or make the workflow easier.
+4. Offer 3 paid beta slots.
+
+Technical requirements:
+- Use Next.js and React.
+- Use local React state only.
+- Use mock data only.
+- Do not add authentication.
+- Do not add payments.
+- Do not add a database.
+- Do not call external APIs.
+- Do not require environment variables.`;
+}
+
+function mapGoldmineResultToSourceOutput(free: GoldmineFreeResult): SourceOutput {
+  const title = free.what_you_can_build || free.title || "AI Workflow Product";
+
+  return {
+    label: "Indie Hackers DB",
+    proof: "参照元 Indie Hackers DB / goldmine signals",
+    title,
+    businessFields: [
+      [
+        "シグナル",
+        free.latest_signal ||
+          free.what_happened ||
+          "海外の小型AI商品シグナル",
+      ],
+      ["何が金になるか", title],
+      ["誰が買うか", deriveBuyerFromPatternMatches(free.pattern_matches)],
+      [
+        "どんな痛みを解決するか",
+        free.why_its_useful ||
+          free.what_happened ||
+          "手作業の業務をAIで短縮したいが、何を商品化すべきか分からない。",
+      ],
+      ["何を売るか", free.what_you_can_build || free.title || "小型AIワークフロー商品"],
+      [
+        "いくらで売るか",
+        free.comparable_price || "$19 one-time または $29/month",
+      ],
+      [
+        "なぜ今買うか",
+        free.what_happened ||
+          free.latest_signal ||
+          "AIビルドツールで小型MVPを短時間で作れるようになったから。",
+      ],
+    ],
+    validationSteps:
+      free.build_steps && free.build_steps.length > 0
+        ? free.build_steps
+        : [
+            "60秒デモを作る。",
+            "想定購入者20人に送る。",
+            "「これがあれば今の作業が楽になるか？」を聞く。",
+            "3人に有料βを提案する。",
+          ],
+    masterPrompt:
+      free.code_x_prompt && free.code_x_prompt.trim().length > 0
+        ? free.code_x_prompt
+        : buildGoldmineFallbackPrompt(free),
+  };
 }
 
 const sourceOutputPools: Record<SourceType, SourceOutput[]> = {
@@ -740,6 +883,8 @@ export default function JapaneseBilionAppClient({
   const [copiedPrompt, setCopiedPrompt] = useState(false);
   const [sourceType, setSourceType] = useState<SourceType>("indie");
   const [currentOutputIndex, setCurrentOutputIndex] = useState(0);
+  const [currentOutput, setCurrentOutput] = useState<SourceOutput | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
     const loadAccess = window.setTimeout(() => {
@@ -753,29 +898,82 @@ export default function JapaneseBilionAppClient({
   }, []);
 
   const selectedPool = sourceOutputPools[sourceType];
-  const selectedOutput = selectedPool[currentOutputIndex] ?? selectedPool[0]!;
+  const selectedOutput =
+    currentOutput ?? selectedPool[currentOutputIndex] ?? selectedPool[0]!;
   const freeRunsRemaining = hasFounderAccess
     ? Infinity
     : Math.max(0, FREE_DAILY_LIMIT_JP - freeUsageCount);
   const canGenerate = hasFounderAccess || freeRunsRemaining > 0;
 
-  function generateOutput() {
-    if (!canGenerate) {
+  function incrementFreeUsage() {
+    if (hasFounderAccess) {
       return;
     }
 
+    const nextCount = freeUsageCount + 1;
+    writeFreeUsageCount(nextCount);
+    setFreeUsageCount(nextCount);
+  }
+
+  function generateLocalOutput() {
     const nextIndex = showOutput
       ? getNextOutputIndex(selectedPool.length, currentOutputIndex)
       : currentOutputIndex;
     setCurrentOutputIndex(nextIndex);
+    setCurrentOutput(selectedPool[nextIndex] ?? selectedPool[0]!);
+  }
 
-    if (!hasFounderAccess) {
-      const nextCount = freeUsageCount + 1;
-      writeFreeUsageCount(nextCount);
-      setFreeUsageCount(nextCount);
+  async function generateIndieOutput() {
+    try {
+      const response = await fetch("/api/goldmine/match", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          buildType: pickRandom(buildTypes),
+          audience: pickRandom(audiences),
+          seed: Date.now(),
+          offset: freeUsageCount + currentOutputIndex,
+          excludeTitle: showOutput ? selectedOutput.title : undefined,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Goldmine request failed");
+      }
+
+      const data = (await response.json()) as GoldmineMatchResponse;
+
+      if (!data.free) {
+        throw new Error("Goldmine response missing free result");
+      }
+
+      setCurrentOutput(mapGoldmineResultToSourceOutput(data.free));
+    } catch {
+      generateLocalOutput();
+    }
+  }
+
+  async function generateOutput() {
+    if (!canGenerate || isGenerating) {
+      return;
     }
 
-    setShowOutput(true);
+    setIsGenerating(true);
+
+    try {
+      if (sourceType === "indie") {
+        await generateIndieOutput();
+      } else {
+        generateLocalOutput();
+      }
+
+      incrementFreeUsage();
+      setShowOutput(true);
+    } finally {
+      setIsGenerating(false);
+    }
   }
 
   async function copyMasterPrompt() {
@@ -829,6 +1027,7 @@ export default function JapaneseBilionAppClient({
                       onClick={() => {
                         setSourceType(source);
                         setCurrentOutputIndex(0);
+                        setCurrentOutput(null);
                         setShowOutput(false);
                         setCopiedPrompt(false);
                       }}
@@ -854,7 +1053,8 @@ export default function JapaneseBilionAppClient({
                 <button
                   type="button"
                   onClick={generateOutput}
-                  className="rounded-xl bg-white px-4 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200"
+                  disabled={isGenerating}
+                  className="rounded-xl bg-white px-4 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   商品を作成する
                 </button>
