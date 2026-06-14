@@ -1800,13 +1800,14 @@ export default function BilionAppClient({
             </div>
 
             <h1 className="mt-4 max-w-4xl text-4xl font-black tracking-tight md:text-6xl">
-              Turn real AI use cases into build-ready Code X prompts.
+              Build and launch in 1 hour
             </h1>
 
             <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-400">
-              Bilion maps adoption signals to buyers, pains, commercial build
-              angles, and prompt specs for Codex, Cursor, Claude Code, Lovable,
-              and solo builders.
+              Bilion finds product ideas from GitHub signals and Indie Hackers
+              patterns, then generates the buyer, pain, price, validation plan,
+              and AI build prompt. Paste it into Code X, Codex, Cursor, Claude
+              Code, or Lovable and turn it into an MVP.
             </p>
           </header>
 
@@ -1823,7 +1824,7 @@ export default function BilionAppClient({
                 disabled={loading || !canGenerate}
                 className="mt-6 rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {loading ? "Generating..." : "Generate Build Prompt"}
+                {loading ? "Generating..." : "Generate a product"}
               </button>
               {!canGenerate && (
                 <div className="mt-5 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-5">

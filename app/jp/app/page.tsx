@@ -377,10 +377,10 @@ export default function JapaneseSignalPreviewPage() {
               今日のシグナル
             </div>
             <h1 className="mt-5 max-w-2xl text-4xl font-semibold leading-tight tracking-tight md:text-5xl">
-              作るものを、ここで決める。
+              1時間実装＆リリース
             </h1>
             <p className="mt-5 max-w-xl text-base leading-7 text-zinc-400">
-              海外の成功事例やGitHubシグナルを選び、Bilionが買う相手、痛み、商品案、価格、検証手順、Full Code X Master Promptに変換します。
+              GitHubシグナルとIndie Hackers DBから、需要のある商品ネタを厳選。買う相手・痛み・価格・48時間検証・AIビルド用プロンプトまで生成します。
             </p>
 
             <div className="mt-7 rounded-2xl border border-white/10 bg-[#111214] p-4">
