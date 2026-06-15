@@ -160,8 +160,10 @@ function GalleryCard({ item }: { item: ShowcaseItem }) {
         </div>
         <p className="mt-3 text-sm leading-6 text-slate-300">{item.description}</p>
         <div className="mt-4 grid gap-3">
+          <DetailRow label="Source signal" value={item.signal} />
           <DetailRow label="Buyer" value={item.buyer} />
-          <DetailRow label="Signal" value={item.signal} />
+          <DetailRow label="Pain" value={item.description} />
+          <DetailRow label="Product built" value={item.name} />
           <DetailRow label="Revenue idea" value={item.revenueIdea} />
         </div>
         <Link
@@ -207,11 +209,11 @@ export default function ShowcasePage() {
                 Built with Bilion
               </h1>
               <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-300">
-                Real AI signals turned into demo products.
+                These are products built from Bilion signals.
               </p>
               <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-400">
-                A visual proof gallery for what Bilion can create: buyer pain, signal, product angle, revenue idea, and
-                a working demo route in one place.
+                A visual proof gallery for how Market Signals become buyer pain, product built, revenue idea, and a
+                working demo route in one place.
               </p>
             </div>
 
@@ -244,8 +246,10 @@ export default function ShowcasePage() {
                 <h2 className="mt-5 text-3xl font-black tracking-tight text-white sm:text-4xl">{featured.name}</h2>
                 <p className="mt-4 text-sm leading-7 text-slate-300">{featured.description}</p>
                 <div className="mt-5 grid gap-3">
+                  <DetailRow label="Source signal" value={featured.signal} />
                   <DetailRow label="Buyer" value={featured.buyer} />
-                  <DetailRow label="Signal" value={featured.signal} />
+                  <DetailRow label="Pain" value={featured.description} />
+                  <DetailRow label="Product built" value={featured.name} />
                   <DetailRow label="Revenue idea" value={featured.revenueIdea} />
                   <DetailRow label="Build time" value={featured.buildTime} />
                 </div>

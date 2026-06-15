@@ -272,7 +272,7 @@ ${productOpportunity}
 Evidence:
 ${evidence.map((item) => `- ${item}`).join("\n")}
 
-Build prompt:
+Implementation Prompt:
 ${buildPrompt}
 
 Next actions:
@@ -381,8 +381,7 @@ export default function GitHubSignalLabPage() {
               Turn GitHub activity into buildable product opportunities.
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-300">
-              Paste or select a GitHub-style signal and Bilion converts it into buyer pain, product opportunity,
-              validation plan, outreach copy, and Code X prompt.
+              Paste repo activity. Find what builders are already struggling with. Turn it into a product opportunity.
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <button
@@ -412,8 +411,8 @@ export default function GitHubSignalLabPage() {
                 </p>
               </div>
               <div className="rounded-lg border border-cyan-300/30 bg-cyan-300/10 p-4">
-                <div className="text-xs font-black uppercase tracking-[0.14em] text-cyan-100">Build prompt</div>
-                <p className="mt-2 text-sm leading-6 text-white">A narrow Code X prompt from the market signal.</p>
+                <div className="text-xs font-black uppercase tracking-[0.14em] text-cyan-100">Implementation Prompt</div>
+                <p className="mt-2 text-sm leading-6 text-white">A narrow build prompt from the market signal.</p>
               </div>
             </div>
           </div>
@@ -426,8 +425,8 @@ export default function GitHubSignalLabPage() {
               13k-star GitHub repo -&gt; product opportunity
             </h2>
             <p className="mt-3 text-sm leading-6 text-slate-300">
-              See how Bilion turns a GitHub signal into buyer pain, a product angle, a 48h validation plan, outreach copy,
-              and a Code X build prompt.
+              See how Bilion turns a GitHub signal into buyer pain, a product opportunity, a 48h validation plan,
+              outreach copy, and an Implementation Prompt.
             </p>
             <button
               onClick={trySampleSignal}
@@ -441,7 +440,7 @@ export default function GitHubSignalLabPage() {
 
       <section className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
         <div className="grid gap-3 rounded-lg border border-white/10 bg-[#101827] p-4 shadow-xl shadow-black/20 md:grid-cols-4">
-          {["GitHub signal", "Buyer pain", "Product opportunity", "Code X prompt"].map((step, index) => (
+          {["Repo Signal", "Buyer Pain", "Product Opportunity", "Implementation Prompt"].map((step, index) => (
             <div key={step} className="rounded-lg border border-white/10 bg-black/25 p-3">
               <div className="text-xs font-black uppercase tracking-[0.14em] text-cyan-200">0{index + 1}</div>
               <div className="mt-2 text-sm font-black text-white">{step}</div>
@@ -477,7 +476,7 @@ export default function GitHubSignalLabPage() {
             </div>
           </Panel>
 
-          <Panel title="Optional manual input">
+          <Panel title="Manual GitHub signal input">
             <label className="block">
               <span className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Signal name</span>
               <input
@@ -487,15 +486,49 @@ export default function GitHubSignalLabPage() {
               />
             </label>
             <label className="mt-4 block">
-              <span className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Repo</span>
+              <span className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">GitHub repo URL</span>
               <input
                 value={activeSignal.repo}
                 onChange={(event) => updateSignal("repo", event.target.value)}
                 className="mt-2 w-full rounded-lg border border-white/10 bg-slate-950 px-3 py-3 text-sm text-white outline-none ring-cyan-300/30 focus:ring-2"
               />
             </label>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <label className="block">
+                <span className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Star / momentum signal</span>
+                <input
+                  value={activeSignal.stars}
+                  onChange={(event) => updateSignal("stars", event.target.value)}
+                  className="mt-2 w-full rounded-lg border border-white/10 bg-slate-950 px-3 py-3 text-sm text-white outline-none ring-cyan-300/30 focus:ring-2"
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Repeated issues</span>
+                <input
+                  value={activeSignal.issues}
+                  onChange={(event) => updateSignal("issues", event.target.value)}
+                  className="mt-2 w-full rounded-lg border border-white/10 bg-slate-950 px-3 py-3 text-sm text-white outline-none ring-cyan-300/30 focus:ring-2"
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">PR friction</span>
+                <input
+                  value={activeSignal.prs}
+                  onChange={(event) => updateSignal("prs", event.target.value)}
+                  className="mt-2 w-full rounded-lg border border-white/10 bg-slate-950 px-3 py-3 text-sm text-white outline-none ring-cyan-300/30 focus:ring-2"
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Integration requests</span>
+                <input
+                  value={activeSignal.comments}
+                  onChange={(event) => updateSignal("comments", event.target.value)}
+                  className="mt-2 w-full rounded-lg border border-white/10 bg-slate-950 px-3 py-3 text-sm text-white outline-none ring-cyan-300/30 focus:ring-2"
+                />
+              </label>
+            </div>
             <label className="mt-4 block">
-              <span className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Repo / issue / PR notes</span>
+              <span className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">User comments and repo activity</span>
               <textarea
                 value={activeSignal.sourceNotes}
                 onChange={(event) => updateSignal("sourceNotes", event.target.value)}
@@ -540,7 +573,7 @@ export default function GitHubSignalLabPage() {
           <Panel title="Output panel">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <div className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Signal summary</div>
+                <div className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Repo Signal</div>
                 <p className="mt-2 text-xl font-black text-white">{activeSignal.name}</p>
                 <p className="mt-1 text-sm text-slate-400">
                   {hasGeneratedDemo ? "Generated at" : "Preview status"}: {generatedAt}
@@ -560,7 +593,7 @@ export default function GitHubSignalLabPage() {
               </span>
             </div>
             <div className="mt-4 rounded-lg border border-cyan-300/30 bg-cyan-300/10 p-4">
-              <div className="text-xs font-black uppercase tracking-[0.14em] text-cyan-100">Final product idea</div>
+                  <div className="text-xs font-black uppercase tracking-[0.14em] text-cyan-100">Product Opportunity</div>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
                 <div>
                   <div className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Product name</div>
@@ -607,7 +640,11 @@ export default function GitHubSignalLabPage() {
                 <p className="mt-2 text-sm leading-6 text-slate-100">{report.buyerPain}</p>
               </div>
               <div className="rounded-lg border border-white/10 bg-black/25 p-4">
-                <h3 className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Product opportunity</h3>
+                <h3 className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Revenue Signal</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-100">{report.finalProduct.price}</p>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-black/25 p-4">
+                <h3 className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Product Opportunity</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-100">{report.productOpportunity}</p>
                 <button
                   onClick={() => copyText("opportunity", report.productOpportunity)}
@@ -622,7 +659,7 @@ export default function GitHubSignalLabPage() {
           <Panel title="Evidence and next actions">
             <div className="grid gap-3 xl:grid-cols-2">
               <div className="rounded-lg border border-white/10 bg-black/25 p-3">
-                <h3 className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Evidence</h3>
+                <h3 className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Repo Signal</h3>
                 <ul className="mt-2 space-y-2 text-sm leading-6 text-slate-200">
                   {report.evidence.map((item) => (
                     <li key={item}>{item}</li>
@@ -630,7 +667,7 @@ export default function GitHubSignalLabPage() {
                 </ul>
               </div>
               <div className="rounded-lg border border-white/10 bg-black/25 p-3">
-                <h3 className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">48h validation plan</h3>
+                <h3 className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">48h Validation</h3>
                 <ul className="mt-2 space-y-2 text-sm leading-6 text-slate-200">
                   {report.validationPlan.map((item) => (
                     <li key={item}>{item}</li>
@@ -646,15 +683,21 @@ export default function GitHubSignalLabPage() {
             </div>
           </Panel>
 
-          <Panel title="Code X build prompt and outreach">
+          <Panel title="Build Brief and Implementation Prompt">
             <div className="rounded-lg border border-white/10 bg-black/25 p-4">
-              <h3 className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Code X build prompt</h3>
+              <h3 className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Build Brief</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-100">
+                {report.finalProduct.name} for {report.finalProduct.buyer}. Price: {report.finalProduct.price}. Distribution: validate from the repo audience, issue commenters, maintainers, and builders already discussing the pain.
+              </p>
+            </div>
+            <div className="mt-3 rounded-lg border border-white/10 bg-black/25 p-4">
+              <h3 className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Implementation Prompt</h3>
               <p className="mt-2 text-sm leading-6 text-slate-100">{report.buildPrompt}</p>
               <button
                 onClick={() => copyText("prompt", report.buildPrompt)}
                 className="mt-3 rounded-lg bg-white px-4 py-2 text-xs font-black text-slate-950"
               >
-                {copied === "prompt" ? "Copied" : "Copy Code X prompt"}
+                {copied === "prompt" ? "Copied" : "Copy Implementation Prompt"}
               </button>
             </div>
             <div className="mt-3 rounded-lg border border-cyan-300/30 bg-cyan-300/10 p-4">

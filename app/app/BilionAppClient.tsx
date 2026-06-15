@@ -97,8 +97,8 @@ const lockedItems = [
 
 const CHECKOUT_URL = process.env.NEXT_PUBLIC_LEMONSQUEZY_CHECKOUT_URL || "";
 const SAVED_SIGNALS_STORAGE_KEY = "bilion.savedSignals";
-const FREE_DAILY_LIMIT = 3;
-const FREE_USAGE_STORAGE_KEY_EN = "bilion_free_usage_en";
+const FREE_GENERATION_LIMIT = 3;
+const FREE_USAGE_STORAGE_KEY_EN = "bilion_free_generation_count_en";
 const MAX_SAVED_SIGNALS = 10;
 
 const masterPromptAngles = [
@@ -1526,15 +1526,6 @@ function writeSavedSignals(signals: SavedSignal[]) {
   }
 }
 
-function getLocalDateKey() {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, "0");
-  const day = String(today.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-}
-
 function readFreeUsageCount() {
   try {
     const raw = window.localStorage.getItem(FREE_USAGE_STORAGE_KEY_EN);
@@ -1543,13 +1534,9 @@ function readFreeUsageCount() {
       return 0;
     }
 
-    const parsed = JSON.parse(raw) as { date?: string; count?: number };
+    const parsed = JSON.parse(raw) as { count?: number };
 
-    if (parsed.date !== getLocalDateKey()) {
-      return 0;
-    }
-
-    return Math.max(0, Math.min(FREE_DAILY_LIMIT, Number(parsed.count) || 0));
+    return Math.max(0, Math.min(FREE_GENERATION_LIMIT, Number(parsed.count) || 0));
   } catch {
     return 0;
   }
@@ -1560,8 +1547,7 @@ function writeFreeUsageCount(count: number) {
     window.localStorage.setItem(
       FREE_USAGE_STORAGE_KEY_EN,
       JSON.stringify({
-        date: getLocalDateKey(),
-        count: Math.max(0, Math.min(FREE_DAILY_LIMIT, count)),
+        count: Math.max(0, Math.min(FREE_GENERATION_LIMIT, count)),
       }),
     );
   } catch {
@@ -1585,7 +1571,7 @@ export default function BilionAppClient({
   const [freeUsageCount, setFreeUsageCount] = useState(0);
   const freeRunsRemaining = hasFounderAccess
     ? Infinity
-    : Math.max(0, FREE_DAILY_LIMIT - freeUsageCount);
+    : Math.max(0, FREE_GENERATION_LIMIT - freeUsageCount);
   const canGenerate = hasFounderAccess || freeRunsRemaining > 0;
 
   useEffect(() => {
@@ -1619,7 +1605,7 @@ export default function BilionAppClient({
     }
 
     setFreeUsageCount((currentCount) => {
-      const nextCount = Math.min(FREE_DAILY_LIMIT, currentCount + 1);
+      const nextCount = Math.min(FREE_GENERATION_LIMIT, currentCount + 1);
       writeFreeUsageCount(nextCount);
       return nextCount;
     });
@@ -1780,12 +1766,12 @@ export default function BilionAppClient({
 
           <div className="mt-10 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
             <div className="text-sm font-semibold">
-              {hasFounderAccess ? "Full Prompt Access" : "Free Preview"}
+              {hasFounderAccess ? "Founder Access" : "Free Preview"}
             </div>
             <p className="mt-2 text-xs leading-5 text-zinc-500">
               {hasFounderAccess
-                ? "Unlimited access unlocked."
-                : `Free runs today: ${freeUsageCount} / ${FREE_DAILY_LIMIT}. Founder Access unlocks unlimited generation.`}
+                ? "Unlimited Build Briefs unlocked."
+                : `Free generations used: ${freeUsageCount} / ${FREE_GENERATION_LIMIT}. Founder Access unlocks unlimited generation.`}
             </p>
           </div>
         </aside>
@@ -1800,53 +1786,52 @@ export default function BilionAppClient({
             </div>
 
             <h1 className="mt-4 max-w-4xl text-4xl font-black tracking-tight md:text-6xl">
-              Build and launch in 1 hour
+              Find your next buildable product.
             </h1>
 
             <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-400">
-              Bilion finds product ideas from GitHub signals and Indie Hackers
-              patterns, then generates the buyer, pain, price, validation plan,
-              and AI build prompt. Paste it into Code X, Codex, Cursor, Claude
-              Code, or Lovable and turn it into an MVP.
+              Bilion turns Indie Hacker stories and GitHub signals into Market
+              Signals, Product Opportunities, buyer pain, revenue signals, 48h
+              validation plans, Build Briefs, and Implementation Prompts.
             </p>
           </header>
 
           {!result && (
             <div className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl md:p-8">
               <h2 className="text-2xl font-black tracking-tight">
-                Today&apos;s Build Signal
+                Generate a Build Brief
               </h2>
               <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-400">
-                Free runs today: {freeUsageCount} / {FREE_DAILY_LIMIT}. Free users get 3 full build prompts per day. Founder Access unlocks unlimited generation.
+                Free generations used: {freeUsageCount} / {FREE_GENERATION_LIMIT}. Free users get 3 total Build Brief generations. Founder and paid users get unlimited generations.
               </p>
               <button
                 onClick={generateIdea}
                 disabled={loading || !canGenerate}
                 className="mt-6 rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {loading ? "Generating..." : "Generate a product"}
+                {loading ? "Generating..." : "Generate Build Brief"}
               </button>
               {!canGenerate && (
                 <div className="mt-5 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-5">
                   <h3 className="text-lg font-black text-yellow-100">
-                    You&apos;ve used today&apos;s 3 free build prompts.
+                    You&apos;ve used your 3 free build signals.
                   </h3>
                   <p className="mt-2 text-sm leading-6 text-zinc-400">
-                    Free users get 3 full-quality outputs per day. Founder Access unlocks unlimited generation, unlimited angles, and unlimited copying.
+                    Free users get 3 total Build Brief generations. Founder Access unlocks unlimited Build Briefs, Implementation Prompts, saved signals, and copy actions.
                   </p>
                   {CHECKOUT_URL ? (
                     <a
                       href={CHECKOUT_URL}
                       className="mt-4 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                     >
-                      Unlock Founder Access — $19
+                      Unlock unlimited Build Briefs - $19
                     </a>
                   ) : (
                     <a
                       href="/founder"
                       className="mt-4 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                     >
-                      Unlock Founder Access — $19
+                      Unlock unlimited Build Briefs - $19
                     </a>
                   )}
                 </div>
@@ -1861,10 +1846,10 @@ export default function BilionAppClient({
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                   <div>
                     <div className="inline-flex rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-300">
-                      Latest Build Signal
+                      Market Signal
                     </div>
                     <h2 className="mt-4 text-3xl font-black tracking-tight">
-                      Commercial signal extracted from real AI adoption.
+                      Product opportunity extracted from real market activity.
                     </h2>
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-xs font-bold uppercase tracking-wide text-zinc-400">
@@ -1874,15 +1859,17 @@ export default function BilionAppClient({
 
                 <div className="mt-6 grid gap-4 md:grid-cols-2">
                   <InfoBlock
-                    label="Signal"
+                    label="Original Case"
                     value={result.free.latest_signal}
                   />
                   <InfoBlock
-                    label="Product idea"
+                    label="What to Build"
                     value={result.free.what_you_can_build}
                   />
                   <InfoBlock label="Buyer" value={result.free.buyer} />
-                  <InfoBlock label="Next action" value={result.free.why_now} />
+                  <InfoBlock label="Pain" value={result.free.pain} />
+                  <InfoBlock label="Price" value={result.paid.comparable_price} />
+                  <InfoBlock label="Next Action" value={result.free.why_now} />
                 </div>
               </div>
 
@@ -1891,15 +1878,15 @@ export default function BilionAppClient({
                 <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                   <div>
                     <div className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-wide text-black">
-                      Full Code X Master Prompt
+                      Founder/Paid Build Brief
                     </div>
                     <h2 className="mt-4 text-3xl font-black tracking-tight">
                       Generate a commercial build angle from this signal.
                     </h2>
                     <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
                       {hasFounderAccess
-                        ? "Paid users can copy the full Code X Master Prompt and generate additional commercial angles."
-                        : `Free runs today: ${freeUsageCount} / ${FREE_DAILY_LIMIT}. Free users get 3 full build prompts per day. Founder Access unlocks unlimited generation.`}
+                        ? "Paid users can copy the full Implementation Prompt and generate additional commercial angles."
+                        : `Free generations used: ${freeUsageCount} / ${FREE_GENERATION_LIMIT}. Free users get 3 total Build Brief generations. Founder Access unlocks unlimited generation.`}
                     </p>
                   </div>
 
@@ -1910,7 +1897,7 @@ export default function BilionAppClient({
                       disabled={!canGenerate}
                       className="rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      Generate Master Prompt
+                      Generate Build Brief
                     </button>
                     <button
                       type="button"
@@ -1927,27 +1914,27 @@ export default function BilionAppClient({
               ) : (
                 <section className="rounded-3xl border border-yellow-400/20 bg-yellow-400/[0.04] p-6 shadow-2xl">
                   <div className="inline-flex rounded-full bg-yellow-400/10 px-3 py-1 text-xs font-black uppercase tracking-wide text-yellow-300">
-                    Full Prompt Access
+                    Founder/Paid Access
                   </div>
                   <h2 className="mt-4 text-3xl font-black tracking-tight">
-                    You&apos;ve used today&apos;s 3 free build prompts.
+                    You&apos;ve used your 3 free build signals.
                   </h2>
                   <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
-                    Free users get 3 full-quality outputs per day. Founder Access unlocks unlimited generation, unlimited angles, and unlimited copying.
+                    Free users get 3 total Build Brief generations. Founder Access unlocks unlimited Build Briefs, Implementation Prompts, saved signals, and copy actions.
                   </p>
                   {CHECKOUT_URL ? (
                     <a
                       href={CHECKOUT_URL}
                       className="mt-5 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                     >
-                      Unlock Founder Access — $19
+                      Unlock unlimited Build Briefs - $19
                     </a>
                   ) : (
                     <a
                       href="/founder"
                       className="mt-5 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                     >
-                      Unlock Founder Access — $19
+                      Unlock unlimited Build Briefs - $19
                     </a>
                   )}
                 </section>
@@ -1991,14 +1978,15 @@ export default function BilionAppClient({
                 </h2>
 
                 <p className="mt-3 text-sm leading-6 text-zinc-500">
-                  Founder Access reveals the full Code X Master Prompt, build
-                  steps, pattern matches, and copy workflow.
+                  Founder Access reveals Revenue Signal, Distribution, Full 48h
+                  Validation, Build Brief, Implementation Prompt, and copy workflow.
                 </p>
 
                 <div className="mt-5 space-y-3">
-                  <RightPanelItem title="Core features" />
-                  <RightPanelItem title="Comparable price" />
-                  <RightPanelItem title="Full Code X Master Prompt" />
+                  <RightPanelItem title="Revenue Signal" />
+                  <RightPanelItem title="Distribution" />
+                  <RightPanelItem title="Build Brief" />
+                  <RightPanelItem title="Implementation Prompt" />
                   <RightPanelItem title="Pattern Matches" />
                 </div>
               </div>
@@ -2073,10 +2061,18 @@ function MasterPromptCard({
       </div>
 
       <div className="mt-6 grid gap-4 md:grid-cols-2">
+        <MasterPromptField
+          label="Revenue Signal"
+          value={`${masterPrompt.price}. This angle is priced from the buyer pain and narrow workflow scope.`}
+        />
+        <MasterPromptField
+          label="Distribution"
+          value={masterPrompt.validationPlan[1] || "Send the before/after demo to the narrow buyer segment and ask for paid pilot objections."}
+        />
         <MasterPromptField label="Buyer" value={masterPrompt.buyer} />
         <MasterPromptField label="Pain" value={masterPrompt.pain} />
         <MasterPromptField
-          label="Product Angle"
+          label="Build Brief"
           value={masterPrompt.productAngle}
         />
         <MasterPromptField
@@ -2088,7 +2084,7 @@ function MasterPromptCard({
 
       <div className="mt-4 rounded-2xl border border-white/10 bg-black/40 p-4">
         <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
-          48h Validation Plan
+          Full 48h Validation
         </div>
         <ol className="mt-3 space-y-2 text-sm leading-6 text-zinc-100">
           {masterPrompt.validationPlan.map((step, index) => (
@@ -2103,7 +2099,7 @@ function MasterPromptCard({
       <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 p-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
-            Full Code X Master Prompt
+            Implementation Prompt
           </div>
           {!hasFounderAccess && (
             <div className="text-xs font-bold text-yellow-300">
@@ -2416,7 +2412,7 @@ function LockedFounderView() {
       <div className="mt-6 rounded-2xl border border-white/10 bg-black/40 p-5">
         <h4 className="text-xl font-black">Unlock Founder Access</h4>
         <p className="mt-2 text-sm leading-6 text-zinc-400">
-          Get the full Code X prompt, build steps, comparable price, and pattern
+          Get the full Implementation Prompt, build steps, comparable price, and pattern
           matches.
         </p>
 
