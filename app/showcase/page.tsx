@@ -1,7 +1,4 @@
-"use client";
-
 import Link from "next/link";
-import { useState } from "react";
 
 type ShowcaseItem = {
   name: string;
@@ -120,9 +117,7 @@ function MockPreview({ item, large = false }: { item: ShowcaseItem; large?: bool
 }
 
 function ThumbnailPreview({ item, large = false }: { item: ShowcaseItem; large?: boolean }) {
-  const [imageFailed, setImageFailed] = useState(false);
-
-  if (!item.thumbnail || imageFailed) {
+  if (!item.thumbnail) {
     return <MockPreview item={item} large={large} />;
   }
 
@@ -131,7 +126,6 @@ function ThumbnailPreview({ item, large = false }: { item: ShowcaseItem; large?:
       <img
         src={item.thumbnail}
         alt={`${item.name} product screenshot`}
-        onError={() => setImageFailed(true)}
         className="aspect-video w-full rounded-md object-cover"
       />
     </div>

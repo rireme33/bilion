@@ -77,12 +77,22 @@ type SavedSignal = {
 type MasterPrompt = {
   angleLabel: string;
   promptTitle: string;
+  originalCase: string;
   buyer: string;
   pain: string;
+  revenueSignal: string;
+  distributionChannel: string;
   productAngle: string;
+  whatToBuild: string;
   firstVersion: string;
   price: string;
+  coreFeatures: string[];
   validationPlan: string[];
+  buildSteps: string[];
+  uxStructure: string[];
+  dataModel: string[];
+  copyExportBehavior: string[];
+  constraints: string[];
   fullCodeXMasterPrompt: string;
 };
 
@@ -1234,9 +1244,9 @@ package files
 global CSS
 layout files
 
-The goal is to create a screenshot-worthy demo product generated from this Bilion master prompt without breaking Bilion itself.
+The goal is to create a screenshot-worthy demo product generated from this Bilion Implementation Prompt without breaking Bilion itself.
 
---- FULL CODE X MASTER PROMPT ---
+--- FULL IMPLEMENTATION PROMPT ---
 
 ${masterPrompt.fullCodeXMasterPrompt}`;
 }
@@ -1291,79 +1301,142 @@ function buildMasterPrompt(signal: BuildSignal, angleIndex: number): MasterPromp
         "Build the primary workflow.",
         "Add generated output and copy buttons.",
       ];
+  const originalCase = signal.latestSignal || signal.sourceTitle;
+  const revenueSignal = `${price}. ${signal.comparablePrice || "The buyer has a repeated workflow pain and can justify a small paid tool or setup offer."}`;
+  const distributionChannel = validationPlan[1] || `Reach ${compactBuyer(signal)} with a before/after demo and ask for paid pilot objections.`;
+  const uxStructure = [
+    `Header with ${promptTitle}, buyer, pain, product angle, and ${price} offer.`,
+    `Primary workflow panel for ${workflowInput(signal)} with sample input selectors and editable fields.`,
+    `Generated output panel that turns the input into ${workflowOutcome(signal)}.`,
+    "Saved records panel with status, created date, buyer context, notes, and copy/export actions.",
+    "48h validation panel with outreach copy, proof asset checklist, and next actions.",
+  ];
+  const dataModel = [
+    "Use local React state only.",
+    "Create a source input record with id, title, raw input, buyer, pain, status, createdAt, and notes.",
+    "Create generated output records with id, sourceId, summary, sections, nextActions, price, and copied/saved state.",
+    "Create sample records grounded in the original case so the app works immediately.",
+    "Persist nothing to a database; saved records can live in local component state for the demo.",
+  ];
+  const copyExportBehavior = [
+    "Add copy buttons for the generated output, buyer-facing summary, validation outreach, and full report.",
+    "Add a save button that stores the current generated record in local React state.",
+    "Show copied/saved feedback without changing layout size.",
+    "Use navigator.clipboard when available and keep the UI usable if copying fails.",
+  ];
+  const constraints = [
+    "Mobile-first.",
+    "No auth.",
+    "No database.",
+    "No external API.",
+    "Mock data/local React state only.",
+    "No payments.",
+    "No environment variables.",
+  ];
 
   const fullCodeXMasterPrompt = `Build a standalone new web app from scratch.
 
-Product name:
+1. Product name:
 ${promptTitle}
 
-Source Signal:
-${signal.latestSignal || signal.sourceTitle}
+2. Buyer:
+${buyer}
 
-Source Context:
+3. Pain:
+${pain}
+
+4. Product angle:
+${productAngle}
+
+5. First version scope:
+${firstVersion}
+
+6. Original case:
+${originalCase}
+
+Source context:
 - Title: ${signal.sourceTitle || "Practical AI adoption signal"}
 - Type: ${signal.sourceType || "Founder Story"}
 - Note: ${signal.sourceNote || signal.whyNow}
 ${signal.sourceUrl ? `- URL: ${signal.sourceUrl}` : ""}
 
-Buyer:
-${buyer}
+7. Revenue signal:
+${revenueSignal}
 
-Pain:
-${pain}
+8. Distribution channel:
+${distributionChannel}
 
-Product Angle:
-${productAngle}
+9. What to build:
+${signal.whatYouCanBuild || productAngle}
 
-First Version:
-${firstVersion}
+10. Core screens:
+${uxStructure.map((section) => `- ${section}`).join("\n")}
 
-Price:
-Show this exact price in the product: ${price}
+11. Core features:
+${features.map((feature) => `- ${feature}`).join("\n")}
 
-48h Validation Plan:
+12. Input fields:
+- Raw ${workflowInput(signal)} input textarea or structured form.
+- Buyer or account name.
+- Pain severity or urgency selector.
+- Status selector.
+- Notes field.
+- Sample input buttons using realistic mock records.
+
+13. Output sections:
+- Product opportunity summary.
+- Buyer pain and why it matters now.
+- Generated ${workflowOutcome(signal)}.
+- Next actions.
+- Revenue signal and price.
+- 48h validation plan.
+- Copy-ready outreach or client-facing summary.
+- Saved records list.
+
+14. State/data model:
+${dataModel.map((item) => `- ${item}`).join("\n")}
+
+15. UI direction:
+- Mobile-first layout.
+- Screenshot-worthy, premium SaaS-style interface.
+- Clear sections for the workflow, generated output, saved examples, and next action.
+- Include sample data so the app works immediately.
+- Avoid generic startup copy. Make every label specific to this product.
+- Show the price ${price} consistently wherever pricing appears.
+
+16. Copy/export buttons:
+${copyExportBehavior.map((item) => `- ${item}`).join("\n")}
+
+17. Validation plan:
 ${validationPlan.map((step, index) => `${index + 1}. ${step}`).join("\n")}
 
-Commercial Build Instructions:
+18. Build steps:
+${buildSteps.map((step, index) => `${index + 1}. ${step}`).join("\n")}
+
+19. Constraints:
+${constraints.map((item) => `- ${item}`).join("\n")}
+
+20. Commercial build instructions:
 ${angle.buildInstruction}
 
-Core workflow:
+21. Core workflow:
 1. The user opens the product and sees the product name, buyer, pain, and ${price} pricing.
 2. The user enters or selects realistic sample input related to ${workflowInput(signal)}.
 3. The app transforms that input into a structured commercial output.
 4. The user reviews recommended next actions, status, and saved records.
 5. The user can copy or export the output and see a clear validation asset for selling the product.
 
-Required pages or sections:
-- Main generator/workflow screen
-- Sample data selector
-- Structured output preview
-- Saved records or examples
-- Pricing/offer panel showing ${price}
-- 48h validation asset section with outreach copy or sample proof
-
-Data model:
-- Use local React state only.
-- Create mock records for source input, generated output, status, created date, buyer, price, and notes.
-- Include at least 3 realistic sample records grounded in the source signal.
-
-AI behavior:
+22. Mock AI behavior:
 - Use deterministic mock AI behavior.
 - Classify the input, extract key details, generate the structured output, and recommend next actions.
 - Do not call external AI APIs.
 
-Core Features:
-${features.map((feature) => `- ${feature}`).join("\n")}
-
-Build Steps:
-${buildSteps.map((step, index) => `${index + 1}. ${step}`).join("\n")}
-
-Pattern Matches:
+23. Pattern matches:
 ${(signal.patternMatches.length ? signal.patternMatches : ["AI workflow", "Local operations"])
   .map((match) => `- ${match}`)
   .join("\n")}
 
-Technical Requirements:
+24. Technical requirements:
 - Use Next.js and React.
 - Use mock data only.
 - Use local React state only.
@@ -1377,32 +1450,34 @@ Technical Requirements:
 - Prioritize a working demo over perfect architecture.
 - Keep the scope narrow, commercial, and shippable.
 
-UI Requirements:
-- Mobile-first layout.
-- Screenshot-worthy, premium SaaS-style interface.
-- Clear sections for the workflow, generated output, saved examples, and next action.
-- Include sample data so the app works immediately.
-- Include obvious buttons for generate, save, and copy.
-- Avoid generic startup copy. Make every label specific to this product.
-- Show the price ${price} consistently wherever pricing appears.
-
-Acceptance Criteria:
+25. Acceptance criteria:
 - The app loads successfully.
 - The main workflow works from sample data.
 - Generated output appears immediately.
 - Copy buttons work where relevant.
 - The product name, buyer, pain, product angle, price, and validation plan are visible.
+- The core screens, input fields, output sections, local state model, and copy/export behavior are implemented.
 - The result feels ready to paste into Code X and build now.`;
 
   return {
     angleLabel: angle.label,
     promptTitle,
+    originalCase,
     buyer,
     pain,
+    revenueSignal,
+    distributionChannel,
     productAngle,
+    whatToBuild: signal.whatYouCanBuild || productAngle,
     firstVersion,
     price,
+    coreFeatures: features,
     validationPlan,
+    buildSteps,
+    uxStructure,
+    dataModel,
+    copyExportBehavior,
+    constraints,
     fullCodeXMasterPrompt,
   };
 }
@@ -1424,6 +1499,30 @@ ${signal.whatYouCanBuild}
 
 Why Now:
 ${signal.whyNow}`;
+}
+
+function buildFreeMasterPromptCopy(masterPrompt: MasterPrompt) {
+  return `Bilion Build Brief preview
+
+Product:
+${masterPrompt.promptTitle}
+
+Buyer:
+${masterPrompt.buyer}
+
+Pain:
+${masterPrompt.pain}
+
+What to build:
+${masterPrompt.whatToBuild}
+
+Price:
+${masterPrompt.price}
+
+Next action:
+${masterPrompt.validationPlan[0] || "Create a before/after demo and validate with the buyer segment."}
+
+Unlock Founder Access for the full Build Brief and long Implementation Prompt.`;
 }
 
 function buildSavedSignal(result: ApiResult): SavedSignal {
@@ -1716,7 +1815,11 @@ export default function BilionAppClient({
   async function copyMasterPrompt() {
     if (!masterPrompt) return;
 
-    await navigator.clipboard.writeText(masterPrompt.fullCodeXMasterPrompt);
+    await navigator.clipboard.writeText(
+      hasFounderAccess
+        ? masterPrompt.fullCodeXMasterPrompt
+        : buildFreeMasterPromptCopy(masterPrompt),
+    );
     setCopiedMasterPrompt(true);
     window.setTimeout(() => setCopiedMasterPrompt(false), 1000);
   }
@@ -1726,7 +1829,11 @@ export default function BilionAppClient({
       return;
     }
 
-    await navigator.clipboard.writeText(buildSafeCodeXPrompt(masterPrompt));
+    await navigator.clipboard.writeText(
+      hasFounderAccess
+        ? buildSafeCodeXPrompt(masterPrompt)
+        : buildFreeMasterPromptCopy(masterPrompt),
+    );
     setCopiedSafePrompt(true);
     window.setTimeout(() => setCopiedSafePrompt(false), 1000);
   }
@@ -2048,39 +2155,74 @@ function MasterPromptCard({
             onClick={onCopySafe}
             className="rounded-2xl bg-emerald-300 px-5 py-4 text-sm font-bold text-black transition hover:bg-emerald-200"
           >
-            {copiedSafe ? "Copied" : "Copy Safe Build Prompt"}
+            {copiedSafe
+              ? "Copied"
+              : hasFounderAccess
+                ? "Copy Safe Build Prompt"
+                : "Copy Preview"}
           </button>
           <button
             type="button"
             onClick={onCopy}
             className="rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200"
           >
-            {copied ? "Copied" : "Copy to Code X"}
+            {copied
+              ? "Copied"
+              : hasFounderAccess
+                ? "Copy Implementation Prompt"
+                : "Copy Preview"}
           </button>
         </div>
       </div>
 
+      {!hasFounderAccess && (
+        <div className="mt-6 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-5">
+          <div className="text-xs font-bold uppercase tracking-wide text-yellow-300">
+            Free preview
+          </div>
+          <p className="mt-2 text-sm leading-6 text-zinc-300">
+            Free users can preview the buyer, pain, what to build, price, and next action.
+            Founder/Paid access unlocks the full Build Brief and long Code X-ready
+            Implementation Prompt.
+          </p>
+        </div>
+      )}
+
       <div className="mt-6 grid gap-4 md:grid-cols-2">
+        <MasterPromptField label="Product Name" value={masterPrompt.promptTitle} />
+        <MasterPromptField label="Original Case" value={masterPrompt.originalCase} />
         <MasterPromptField
           label="Revenue Signal"
-          value={`${masterPrompt.price}. This angle is priced from the buyer pain and narrow workflow scope.`}
+          value={masterPrompt.revenueSignal}
         />
         <MasterPromptField
-          label="Distribution"
-          value={masterPrompt.validationPlan[1] || "Send the before/after demo to the narrow buyer segment and ask for paid pilot objections."}
+          label="Distribution Channel"
+          value={masterPrompt.distributionChannel}
         />
         <MasterPromptField label="Buyer" value={masterPrompt.buyer} />
         <MasterPromptField label="Pain" value={masterPrompt.pain} />
         <MasterPromptField
-          label="Build Brief"
-          value={masterPrompt.productAngle}
-        />
-        <MasterPromptField
-          label="First Version"
-          value={masterPrompt.firstVersion}
+          label="What to Build"
+          value={masterPrompt.whatToBuild}
         />
         <MasterPromptField label="Price" value={masterPrompt.price} />
       </div>
+
+      {hasFounderAccess && (
+        <div className="mt-4 rounded-2xl border border-white/10 bg-black/40 p-4">
+          <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+            Build Brief Details
+          </div>
+          <div className="mt-4 grid gap-5 md:grid-cols-2">
+            <MasterPromptList label="Core Features" items={masterPrompt.coreFeatures} />
+            <MasterPromptList label="Build Steps" items={masterPrompt.buildSteps} ordered />
+            <MasterPromptList label="UX Structure" items={masterPrompt.uxStructure} />
+            <MasterPromptList label="Data Model / Local State" items={masterPrompt.dataModel} />
+            <MasterPromptList label="Copy/Export Behavior" items={masterPrompt.copyExportBehavior} />
+            <MasterPromptList label="Constraints" items={masterPrompt.constraints} />
+          </div>
+        </div>
+      )}
 
       <div className="mt-4 rounded-2xl border border-white/10 bg-black/40 p-4">
         <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
@@ -2096,21 +2238,25 @@ function MasterPromptCard({
         </ol>
       </div>
 
-      <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 p-4">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      {hasFounderAccess ? (
+        <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 p-4">
           <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
             Implementation Prompt
           </div>
-          {!hasFounderAccess && (
-            <div className="text-xs font-bold text-yellow-300">
-              Free generated output
-            </div>
-          )}
+          <pre className="mt-3 max-h-[640px] overflow-auto whitespace-pre-wrap rounded-xl border border-white/10 bg-black/60 p-4 font-sans text-sm leading-6 text-zinc-100">
+            {masterPrompt.fullCodeXMasterPrompt}
+          </pre>
         </div>
-        <pre className="mt-3 max-h-[520px] overflow-auto whitespace-pre-wrap rounded-xl border border-white/10 bg-black/60 p-4 font-sans text-sm leading-6 text-zinc-100">
-          {masterPrompt.fullCodeXMasterPrompt}
-        </pre>
-      </div>
+      ) : (
+        <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 p-4">
+          <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+            Implementation Prompt
+          </div>
+          <p className="mt-3 text-sm leading-6 text-zinc-400">
+            The full long Implementation Prompt is available with Founder/Paid access.
+          </p>
+        </div>
+      )}
     </article>
   );
 }
@@ -2122,6 +2268,34 @@ function MasterPromptField({ label, value }: { label: string; value: string }) {
         {label}
       </div>
       <div className="mt-2 text-sm leading-6 text-zinc-100">{value}</div>
+    </div>
+  );
+}
+
+function MasterPromptList({
+  label,
+  items,
+  ordered = false,
+}: {
+  label: string;
+  items: string[];
+  ordered?: boolean;
+}) {
+  const ListTag = ordered ? "ol" : "ul";
+
+  return (
+    <div className="min-w-0">
+      <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+        {label}
+      </div>
+      <ListTag className="mt-3 space-y-2 text-sm leading-6 text-zinc-100">
+        {items.map((item, index) => (
+          <li key={`${label}-${item}`} className="flex gap-3">
+            <span className="text-zinc-500">{ordered ? `${index + 1}.` : "-"}</span>
+            <span>{item}</span>
+          </li>
+        ))}
+      </ListTag>
     </div>
   );
 }
