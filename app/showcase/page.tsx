@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 type ShowcaseItem = {
   name: string;
@@ -123,9 +124,11 @@ function ThumbnailPreview({ item, large = false }: { item: ShowcaseItem; large?:
 
   return (
     <div className={`overflow-hidden rounded-lg border border-white/10 bg-[#070a12] ${large ? "p-3" : "p-2"}`}>
-      <img
+      <Image
         src={item.thumbnail}
         alt={`${item.name} product screenshot`}
+        width={1200}
+        height={675}
         className="aspect-video w-full rounded-md object-cover"
       />
     </div>

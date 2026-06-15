@@ -55,6 +55,8 @@ type BilionAppClientProps = {
   hasFounderAccess: boolean;
 };
 
+type SourceMode = "indie" | "github";
+
 type SavedSignal = {
   id: string;
   createdAt: string;
@@ -110,6 +112,8 @@ const SAVED_SIGNALS_STORAGE_KEY = "bilion.savedSignals";
 const FREE_GENERATION_LIMIT = 3;
 const FREE_USAGE_STORAGE_KEY_EN = "bilion_free_generation_count_en";
 const MAX_SAVED_SIGNALS = 10;
+const GITHUB_SAMPLE_ACTIVITY =
+  "Repo: open-analytics/warehouse-dashboard. 8.4k stars, +420 this month. Repeated issues ask for setup help around environment variables, warehouse permissions, first dashboard import, and missing onboarding docs. Maintainers answer duplicate setup questions every week. Consultants mention trial users dropping before first dashboard.";
 
 const masterPromptAngles = [
   {
@@ -1525,6 +1529,103 @@ ${masterPrompt.validationPlan[0] || "Create a before/after demo and validate wit
 Unlock Founder Access for the full Build Brief and long Implementation Prompt.`;
 }
 
+function buildGitHubSignalFromInput(input: string): BuildSignal {
+  const sourceText = input.trim() || GITHUB_SAMPLE_ACTIVITY;
+  const compactText = sourceText.replace(/\s+/g, " ").trim();
+  const repoMatch =
+    compactText.match(/https?:\/\/github\.com\/[^\s)]+/i) ||
+    compactText.match(/Repo:\s*([^.;\n]+)/i);
+  const repoName = repoMatch?.[1] || repoMatch?.[0] || "sample GitHub repo activity";
+  const hasIntegrationSignal = /integration|sync|oauth|calendar|api/i.test(compactText);
+  const hasPrSignal = /\bpr\b|pull request|review|diff|patch/i.test(compactText);
+  const buyer = hasPrSignal
+    ? "Maintainers of fast-moving developer tools"
+    : hasIntegrationSignal
+      ? "Solo SaaS teams and implementation consultants"
+      : "Builders, maintainers, and consultants working around the repo";
+  const pain = hasPrSignal
+    ? "Large or AI-generated PRs create review bottlenecks, unclear risk, and repeated maintainer follow-up."
+    : hasIntegrationSignal
+      ? "Users like the core tool but lose workflow value when missing integrations force manual copy-paste work."
+      : "Users repeatedly hit the same setup or workflow friction, while maintainers answer the same questions manually.";
+  const whatYouCanBuild = hasPrSignal
+    ? "A PR risk brief generator that summarizes touched modules, risks, test needs, and reviewer next actions."
+    : hasIntegrationSignal
+      ? "A narrow workflow sync helper that turns missing integration requests into productized setup guidance."
+      : "A repo setup copilot that turns repeated issue pain into checklists, templates, and support-ready answers.";
+
+  return {
+    id: `github-signal-${Date.now()}`,
+    latestSignal: compactText,
+    sourceTitle: `GitHub signal: ${repoName}`,
+    sourceUrl: repoName.startsWith("http") ? repoName : "",
+    sourceType: "GitHub Signal Lab",
+    sourceNote:
+      "Manual GitHub repo activity signal using stars, repeated issues, PR friction, integration requests, and user comments.",
+    buyer,
+    pain,
+    whyNow:
+      "Open-source activity exposes repeated workflow pain before a polished product exists, making it useful for fast validation.",
+    whatYouCanBuild,
+    coreFeatures: [
+      "Paste repo activity or issue notes",
+      "Classify the repeated pain",
+      "Generate buyer-ready product opportunity",
+      "Create validation outreach",
+      "Save and copy the Build Brief",
+    ],
+    comparablePrice:
+      "Start with $19 one-time for a repo-specific pack, $49/month for a workflow helper, or $299 setup for implementation help.",
+    buildSteps: [
+      "Create local mock records for repo activity, issues, PRs, comments, and generated briefs.",
+      "Build a paste-in GitHub activity input with sample buttons.",
+      "Generate Repo Signal, Buyer, Pain, Revenue Signal, Product Opportunity, Distribution, and 48h Validation sections.",
+      "Add saved Build Brief records using local React state.",
+      "Add copy/export buttons for the Build Brief and Implementation Prompt.",
+    ],
+    patternMatches: [
+      "GitHub activity",
+      "Open-source support",
+      "Developer tools",
+      "Implementation services",
+    ],
+    codeXPrompt: `Build a standalone new web app from scratch.
+
+Product:
+GitHub Signal Build Brief Console
+
+Goal:
+Help builders turn pasted GitHub repo activity, repeated issues, PR friction, integration requests, and user comments into a product opportunity, Build Brief, and Implementation Prompt.
+
+Target user:
+Builders, maintainers, consultants, and AI product operators looking for real market pain inside public repo activity.
+
+Core workflow:
+1. The user pastes GitHub repo activity or selects the included sample.
+2. The app classifies the signal type.
+3. The app extracts buyer, pain, revenue signal, distribution channel, product opportunity, and price.
+4. The app generates a 48h validation plan and a full Build Brief.
+5. The user saves the brief and copies the Implementation Prompt.
+
+Technical requirements:
+- Use Next.js and React.
+- Use mock data only.
+- Use local React state only.
+- Do not add authentication.
+- Do not add payments.
+- Do not add a database.
+- Do not use external APIs.
+- Do not require environment variables.
+
+Acceptance criteria:
+- The app loads successfully.
+- Sample GitHub activity generates immediately.
+- Pasted GitHub activity generates a product opportunity.
+- Build Brief and Implementation Prompt are copyable.
+- Saved records stay in local state for the demo.`,
+  };
+}
+
 function buildSavedSignal(result: ApiResult): SavedSignal {
   return {
     id:
@@ -1625,6 +1726,15 @@ function writeSavedSignals(signals: SavedSignal[]) {
   }
 }
 
+function getLocalDateKey() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
 function readFreeUsageCount() {
   try {
     const raw = window.localStorage.getItem(FREE_USAGE_STORAGE_KEY_EN);
@@ -1633,7 +1743,11 @@ function readFreeUsageCount() {
       return 0;
     }
 
-    const parsed = JSON.parse(raw) as { count?: number };
+    const parsed = JSON.parse(raw) as { count?: number; date?: string };
+
+    if (parsed.date !== getLocalDateKey()) {
+      return 0;
+    }
 
     return Math.max(0, Math.min(FREE_GENERATION_LIMIT, Number(parsed.count) || 0));
   } catch {
@@ -1646,6 +1760,7 @@ function writeFreeUsageCount(count: number) {
     window.localStorage.setItem(
       FREE_USAGE_STORAGE_KEY_EN,
       JSON.stringify({
+        date: getLocalDateKey(),
         count: Math.max(0, Math.min(FREE_GENERATION_LIMIT, count)),
       }),
     );
@@ -1668,6 +1783,8 @@ export default function BilionAppClient({
   const [masterPrompt, setMasterPrompt] = useState<MasterPrompt | null>(null);
   const [masterPromptAngleIndex, setMasterPromptAngleIndex] = useState(0);
   const [freeUsageCount, setFreeUsageCount] = useState(0);
+  const [sourceMode, setSourceMode] = useState<SourceMode>("indie");
+  const [githubInput, setGithubInput] = useState("");
   const freeRunsRemaining = hasFounderAccess
     ? Infinity
     : Math.max(0, FREE_GENERATION_LIMIT - freeUsageCount);
@@ -1677,6 +1794,11 @@ export default function BilionAppClient({
     const loadSavedSignals = window.setTimeout(() => {
       setSavedSignals(readSavedSignals());
       setFreeUsageCount(readFreeUsageCount());
+
+      const source = new URLSearchParams(window.location.search).get("source");
+      if (source === "github") {
+        setSourceMode("github");
+      }
     }, 0);
 
     return () => window.clearTimeout(loadSavedSignals);
@@ -1718,11 +1840,14 @@ export default function BilionAppClient({
     setLoading(true);
     setError("");
     const nextIndexes = getSeededPromptIndexes(masterPrompt?.promptTitle);
-    const nextSignal = buildSignals[nextIndexes.signalIndex];
+    const nextSignal =
+      sourceMode === "github"
+        ? buildGitHubSignalFromInput(githubInput)
+        : buildSignals[nextIndexes.signalIndex];
     const nextResult = buildResult(nextSignal);
     const builtMaster = buildMasterPrompt(nextSignal, nextIndexes.angleIndex);
 
-    setSignalIndex(nextIndexes.signalIndex);
+    setSignalIndex(sourceMode === "github" ? 0 : nextIndexes.signalIndex);
     setMasterPromptAngleIndex(nextIndexes.angleIndex);
     setResult(nextResult);
     setMasterPrompt(builtMaster);
@@ -1878,7 +2003,7 @@ export default function BilionAppClient({
             <p className="mt-2 text-xs leading-5 text-zinc-500">
               {hasFounderAccess
                 ? "Unlimited Build Briefs unlocked."
-                : `Free generations used: ${freeUsageCount} / ${FREE_GENERATION_LIMIT}. Founder Access unlocks unlimited generation.`}
+                : `Free generations today: ${freeUsageCount} / ${FREE_GENERATION_LIMIT}. Founder Access unlocks unlimited generation.`}
             </p>
           </div>
         </aside>
@@ -1886,20 +2011,19 @@ export default function BilionAppClient({
         <section className="p-4 md:p-8">
           <header className="mb-8">
             <div className="flex items-center justify-between gap-4">
-              <div className="inline-flex rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-bold uppercase tracking-wide text-zinc-300">
-                Build Intelligence
-              </div>
+              <div />
               <LanguageSwitch />
             </div>
 
             <h1 className="mt-4 max-w-4xl text-4xl font-black tracking-tight md:text-6xl">
-              Find your next buildable product.
+              Bilion
             </h1>
+            <div className="mt-2 text-xl font-bold text-zinc-200">
+              Build Decision
+            </div>
 
             <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-400">
-              Bilion turns Indie Hacker stories and GitHub signals into Market
-              Signals, Product Opportunities, buyer pain, revenue signals, 48h
-              validation plans, Build Briefs, and Implementation Prompts.
+              Turn market signals into buildable product opportunities.
             </p>
           </header>
 
@@ -1909,8 +2033,57 @@ export default function BilionAppClient({
                 Generate a Build Brief
               </h2>
               <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-400">
-                Free generations used: {freeUsageCount} / {FREE_GENERATION_LIMIT}. Free users get 3 total Build Brief generations. Founder and paid users get unlimited generations.
+                Free generations today: {freeUsageCount} / {FREE_GENERATION_LIMIT}. Founder and paid users get unlimited generations.
               </p>
+
+              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                <button
+                  type="button"
+                  onClick={() => setSourceMode("indie")}
+                  className={[
+                    "rounded-2xl border px-4 py-4 text-left transition",
+                    sourceMode === "indie"
+                      ? "border-white/30 bg-white/[0.08] text-white"
+                      : "border-white/10 bg-black/30 text-zinc-400 hover:bg-white/[0.04]",
+                  ].join(" ")}
+                >
+                  <span className="block text-sm font-bold">Indie Hacker Signal</span>
+                  <span className="mt-1 block text-xs leading-5">
+                    Use the existing curated signal engine.
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSourceMode("github")}
+                  className={[
+                    "rounded-2xl border px-4 py-4 text-left transition",
+                    sourceMode === "github"
+                      ? "border-white/30 bg-white/[0.08] text-white"
+                      : "border-white/10 bg-black/30 text-zinc-400 hover:bg-white/[0.04]",
+                  ].join(" ")}
+                >
+                  <span className="block text-sm font-bold">GitHub Signal</span>
+                  <span className="mt-1 block text-xs leading-5">
+                    Paste activity or use the sample signal.
+                  </span>
+                </button>
+              </div>
+
+              {sourceMode === "github" && (
+                <label className="mt-5 block">
+                  <span className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                    GitHub repo/activity text
+                  </span>
+                  <textarea
+                    value={githubInput}
+                    onChange={(event) => setGithubInput(event.target.value)}
+                    placeholder={GITHUB_SAMPLE_ACTIVITY}
+                    rows={5}
+                    className="mt-2 w-full resize-y rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm leading-6 text-white outline-none ring-white/10 placeholder:text-zinc-600 focus:ring-2"
+                  />
+                </label>
+              )}
+
               <button
                 onClick={generateIdea}
                 disabled={loading || !canGenerate}
@@ -1921,24 +2094,24 @@ export default function BilionAppClient({
               {!canGenerate && (
                 <div className="mt-5 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-5">
                   <h3 className="text-lg font-black text-yellow-100">
-                    You&apos;ve used your 3 free build signals.
+                    You&apos;ve used your 3 free build signals today.
                   </h3>
                   <p className="mt-2 text-sm leading-6 text-zinc-400">
-                    Free users get 3 total Build Brief generations. Founder Access unlocks unlimited Build Briefs, Implementation Prompts, saved signals, and copy actions.
+                    Founder Access unlocks unlimited Build Briefs, Implementation Prompts, saved signals, and copy actions.
                   </p>
                   {CHECKOUT_URL ? (
                     <a
                       href={CHECKOUT_URL}
                       className="mt-4 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                     >
-                      Unlock unlimited Build Briefs - $19
+                      Unlock unlimited Build Briefs — $19
                     </a>
                   ) : (
                     <a
                       href="/founder"
                       className="mt-4 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                     >
-                      Unlock unlimited Build Briefs - $19
+                      Unlock unlimited Build Briefs — $19
                     </a>
                   )}
                 </div>
@@ -1993,7 +2166,7 @@ export default function BilionAppClient({
                     <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
                       {hasFounderAccess
                         ? "Paid users can copy the full Implementation Prompt and generate additional commercial angles."
-                        : `Free generations used: ${freeUsageCount} / ${FREE_GENERATION_LIMIT}. Free users get 3 total Build Brief generations. Founder Access unlocks unlimited generation.`}
+                        : `Free generations today: ${freeUsageCount} / ${FREE_GENERATION_LIMIT}. Founder Access unlocks unlimited generation.`}
                     </p>
                   </div>
 
@@ -2024,24 +2197,24 @@ export default function BilionAppClient({
                     Founder/Paid Access
                   </div>
                   <h2 className="mt-4 text-3xl font-black tracking-tight">
-                    You&apos;ve used your 3 free build signals.
+                    You&apos;ve used your 3 free build signals today.
                   </h2>
                   <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
-                    Free users get 3 total Build Brief generations. Founder Access unlocks unlimited Build Briefs, Implementation Prompts, saved signals, and copy actions.
+                    Founder Access unlocks unlimited Build Briefs, Implementation Prompts, saved signals, and copy actions.
                   </p>
                   {CHECKOUT_URL ? (
                     <a
                       href={CHECKOUT_URL}
                       className="mt-5 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                     >
-                      Unlock unlimited Build Briefs - $19
+                      Unlock unlimited Build Briefs — $19
                     </a>
                   ) : (
                     <a
                       href="/founder"
                       className="mt-5 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                     >
-                      Unlock unlimited Build Briefs - $19
+                      Unlock unlimited Build Briefs — $19
                     </a>
                   )}
                 </section>
@@ -2320,11 +2493,11 @@ function SavedSignalsSection({
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="text-2xl font-black tracking-tight">
-            Saved Build Signals
+            Past Prompts
           </h2>
           <p className="mt-2 text-sm leading-6 text-zinc-500">
-            Your latest 10 generated build signals and commercial angle
-            previews are saved in this browser.
+            Your latest 3 saved Build Briefs are shown here. Saved Signals still keep
+            up to 10 records in this browser.
           </p>
         </div>
         <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
@@ -2338,7 +2511,7 @@ function SavedSignalsSection({
         </p>
       ) : (
         <div className="mt-6 grid gap-3">
-          {savedSignals.map((signal) => (
+          {savedSignals.slice(0, 3).map((signal) => (
             <article
               key={signal.id}
               className="rounded-2xl border border-white/10 bg-black/40 p-4"

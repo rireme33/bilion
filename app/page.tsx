@@ -1,11 +1,7 @@
-import Link from "next/link";
+"use client";
 
-const proofItems = [
-  "20 curated signals",
-  "100 candidate signals",
-  "5 product demos",
-  "GitHub Signal Lab",
-];
+import Link from "next/link";
+import { useState } from "react";
 
 const showcasePreview = [
   {
@@ -69,6 +65,8 @@ function ButtonLink({
   );
 }
 
+type SourceMode = "indie" | "github";
+
 function ShowcaseCard({ item }: { item: (typeof showcasePreview)[number] }) {
   return (
     <article className="rounded-lg border border-white/10 bg-[#111214] p-5">
@@ -106,6 +104,8 @@ function ShowcaseCard({ item }: { item: (typeof showcasePreview)[number] }) {
 }
 
 export default function HomePage() {
+  const [sourceMode, setSourceMode] = useState<SourceMode>("indie");
+
   return (
     <main className="min-h-screen bg-[#0b0c0e] text-white">
       <section className="mx-auto max-w-6xl px-5 py-5 sm:px-6 md:py-7">
@@ -127,35 +127,48 @@ export default function HomePage() {
         <section className="py-14 md:py-18">
           <div className="max-w-3xl">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
-              Market Signal to Build Brief
+              Build Decision
             </div>
             <h1 className="mt-5 text-4xl font-semibold leading-tight tracking-tight md:text-6xl">
-              Find a product worth building.
+              Bilion
             </h1>
+            <div className="mt-2 text-xl font-semibold text-zinc-200">Build Decision</div>
             <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-400">
-              Bilion turns Indie Hacker stories and GitHub signals into buyer pain, revenue
-              signals, validation plans, Build Briefs, and implementation prompts.
+              Turn market signals into buildable product opportunities.
             </p>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href="/app">Generate Build Brief</ButtonLink>
-              <ButtonLink href="/showcase" variant="secondary">
-                View Showcase
-              </ButtonLink>
-            </div>
-            <Link
-              href="/github-signal-lab"
-              className="mt-5 inline-flex text-sm font-semibold text-cyan-200 transition hover:text-cyan-100"
-            >
-              Open GitHub Signal Lab
-            </Link>
-          </div>
 
-          <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {proofItems.map((item) => (
-              <div key={item} className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
-                <div className="text-sm font-semibold text-zinc-100">{item}</div>
-              </div>
-            ))}
+            <div className="mt-7 grid gap-3 sm:grid-cols-2">
+              <button
+                type="button"
+                onClick={() => setSourceMode("indie")}
+                className={[
+                  "rounded-lg border px-4 py-4 text-left transition",
+                  sourceMode === "indie"
+                    ? "border-white/30 bg-white/[0.08] text-white"
+                    : "border-white/10 bg-white/[0.03] text-zinc-400 hover:bg-white/[0.04]",
+                ].join(" ")}
+              >
+                <span className="block text-sm font-semibold">Indie Hacker Signal</span>
+                <span className="mt-1 block text-xs leading-5">Generate from curated market stories.</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setSourceMode("github")}
+                className={[
+                  "rounded-lg border px-4 py-4 text-left transition",
+                  sourceMode === "github"
+                    ? "border-white/30 bg-white/[0.08] text-white"
+                    : "border-white/10 bg-white/[0.03] text-zinc-400 hover:bg-white/[0.04]",
+                ].join(" ")}
+              >
+                <span className="block text-sm font-semibold">GitHub Signal</span>
+                <span className="mt-1 block text-xs leading-5">Generate from repo activity or sample data.</span>
+              </button>
+            </div>
+
+            <div className="mt-6 max-w-sm">
+              <ButtonLink href={`/app?source=${sourceMode}`}>Generate Build Brief</ButtonLink>
+            </div>
           </div>
         </section>
 
@@ -191,7 +204,7 @@ export default function HomePage() {
                   Three free generations. Unlimited with Founder Access.
                 </h2>
                 <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-500">
-                  Free users can generate 3 total Build Briefs. Founder and paid users get unlimited
+                  Free users can generate 3 Build Briefs per calendar day. Founder and paid users get unlimited
                   Market Signal, Product Opportunity, Build Brief, and Implementation Prompt output.
                 </p>
               </div>
