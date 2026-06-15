@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
@@ -782,21 +782,6 @@ Acceptance criteria:
   })],
 };
 
-const cards = [
-  {
-    title: "買う相手",
-    text: "誰が困っていて、なぜ今買うのか。",
-  },
-  {
-    title: "商品案",
-    text: "小型AIツール、Prompt Pack、Agency serviceなどに変換。",
-  },
-  {
-    title: "実装プロンプト",
-    text: "Code X、Codex、Cursor、Claude Code、Lovableに貼れる仕様。",
-  },
-];
-
 function getLocalDateKey() {
   const today = new Date();
   const year = today.getFullYear();
@@ -1174,21 +1159,6 @@ export default function JapaneseBilionAppClient({
           </section>
         )}
 
-        <section className="border-t border-white/10 py-10">
-          <div className="mb-5">
-            <div className="text-xs font-semibold tracking-[0.18em] text-zinc-500">
-              Bilionで確認できること
-            </div>
-          </div>
-          <div className="grid gap-3 md:grid-cols-3">
-            {cards.map((card) => (
-              <div key={card.title} className="rounded-2xl border border-white/10 bg-[#111214] p-5">
-                <h2 className="text-base font-semibold text-white">{card.title}</h2>
-                <p className="mt-2 text-sm leading-6 text-zinc-500">{card.text}</p>
-              </div>
-            ))}
-          </div>
-        </section>
       </section>
     </main>
   );

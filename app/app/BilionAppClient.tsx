@@ -1980,35 +1980,9 @@ export default function BilionAppClient({
       <div
         className={[
           "grid min-h-screen grid-cols-1",
-          result ? "lg:grid-cols-[260px_1fr_340px]" : "lg:grid-cols-[260px_1fr]",
+          result ? "lg:grid-cols-[1fr_340px]" : "lg:grid-cols-1",
         ].join(" ")}
       >
-        <aside className="hidden border-r border-white/10 bg-[#0b0b0c] p-5 lg:block">
-          <div className="mb-8">
-            <div className="text-2xl font-black tracking-tight">Bilion</div>
-            <div className="mt-1 text-xs text-zinc-500">
-              Build Intelligence Console
-            </div>
-          </div>
-
-          <nav className="space-y-2">
-            <SidebarItem active label="Build Signals" />
-            <SidebarItem label="Commercial Angles" locked={!hasFounderAccess} />
-            <SidebarItem label="Founder Access" locked={!hasFounderAccess} />
-          </nav>
-
-          <div className="mt-10 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-            <div className="text-sm font-semibold">
-              {hasFounderAccess ? "Founder Access" : "Free Preview"}
-            </div>
-            <p className="mt-2 text-xs leading-5 text-zinc-500">
-              {hasFounderAccess
-                ? "Unlimited Build Briefs unlocked."
-                : `Free generations today: ${freeUsageCount} / ${FREE_GENERATION_LIMIT}. Founder Access unlocks unlimited generation.`}
-            </p>
-          </div>
-        </aside>
-
         <section className="p-4 md:p-8">
           <header className="mb-8">
             <div className="flex items-center justify-between gap-4">
