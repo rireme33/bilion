@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { showcaseItems } from "../showcase/showcase-data";
 
 type FreeIdea = {
   latest_signal: string;
@@ -2243,6 +2244,8 @@ export default function BilionAppClient({
             onView={viewSavedSignal}
             savedSignals={savedSignals}
           />
+
+          <InlineShowcaseSection />
         </section>
 
         {result && (
@@ -2574,6 +2577,69 @@ function SavedSignalsSection({
           ))}
         </div>
       )}
+    </section>
+  );
+}
+
+function InlineShowcaseSection() {
+  return (
+    <section className="mt-8 rounded-3xl border border-white/10 bg-[#101011] p-6">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="text-2xl font-black tracking-tight">Showcase</h2>
+          <p className="mt-2 text-sm leading-6 text-zinc-500">
+            Products built from Bilion signals.
+          </p>
+        </div>
+        <Link
+          href="/showcase"
+          className="text-sm font-bold text-zinc-400 transition hover:text-white"
+        >
+          Open full showcase
+        </Link>
+      </div>
+
+      <div className="mt-6 grid gap-3 lg:grid-cols-3">
+        {showcaseItems.slice(0, 5).map((item) => (
+          <article
+            key={item.route}
+            className="rounded-2xl border border-white/10 bg-black/40 p-4"
+          >
+            <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+              Product built
+            </div>
+            <h3 className="mt-2 text-base font-bold text-zinc-100">
+              {item.name}
+            </h3>
+            <div className="mt-4 grid gap-3 text-sm leading-6">
+              <div>
+                <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                  Source signal
+                </div>
+                <p className="mt-1 text-zinc-300">{item.signal}</p>
+              </div>
+              <div>
+                <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                  Buyer
+                </div>
+                <p className="mt-1 text-zinc-300">{item.buyer}</p>
+              </div>
+              <div>
+                <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                  Revenue idea
+                </div>
+                <p className="mt-1 text-zinc-300">{item.revenueIdea}</p>
+              </div>
+            </div>
+            <Link
+              href={item.route}
+              className="mt-5 inline-flex rounded-xl border border-white/10 px-3 py-2 text-xs font-bold text-white transition hover:bg-white/[0.04]"
+            >
+              Open demo route
+            </Link>
+          </article>
+        ))}
+      </div>
     </section>
   );
 }
