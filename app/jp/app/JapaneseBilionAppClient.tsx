@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
+import { showcaseItems } from "../../showcase/showcase-data";
 
 const FREE_DAILY_LIMIT_JP = 3;
 const FREE_USAGE_STORAGE_KEY_JP = "bilion_free_usage_jp";
@@ -1159,7 +1160,67 @@ export default function JapaneseBilionAppClient({
           </section>
         )}
 
+        <JapaneseInlineShowcaseSection />
       </section>
     </main>
+  );
+}
+
+function JapaneseInlineShowcaseSection() {
+  return (
+    <section className="border-t border-white/10 py-10">
+      <div className="mb-5">
+        <h2 className="text-2xl font-semibold tracking-tight text-white">
+          展示場
+        </h2>
+        <p className="mt-2 text-sm leading-6 text-zinc-500">
+          Bilionのシグナルから作ったデモ商品です。
+        </p>
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-3">
+        {showcaseItems.slice(0, 5).map((item) => (
+          <article
+            key={item.route}
+            className="rounded-2xl border border-white/10 bg-[#111214] p-5"
+          >
+            <div className="text-xs font-semibold tracking-wide text-zinc-500">
+              作った商品
+            </div>
+            <h3 className="mt-2 text-base font-semibold text-white">
+              {item.name}
+            </h3>
+
+            <div className="mt-4 grid gap-3 text-sm leading-6">
+              <div>
+                <div className="text-xs font-semibold tracking-wide text-zinc-500">
+                  元シグナル
+                </div>
+                <p className="mt-1 text-zinc-300">{item.signal}</p>
+              </div>
+              <div>
+                <div className="text-xs font-semibold tracking-wide text-zinc-500">
+                  買う相手
+                </div>
+                <p className="mt-1 text-zinc-300">{item.buyer}</p>
+              </div>
+              <div>
+                <div className="text-xs font-semibold tracking-wide text-zinc-500">
+                  収益案
+                </div>
+                <p className="mt-1 text-zinc-300">{item.revenueIdea}</p>
+              </div>
+            </div>
+
+            <Link
+              href={item.route}
+              className="mt-5 inline-flex rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-white transition hover:bg-white/[0.04]"
+            >
+              デモを見る
+            </Link>
+          </article>
+        ))}
+      </div>
+    </section>
   );
 }
