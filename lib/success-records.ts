@@ -2,6 +2,19 @@ import goldmineSignals from "@/data/goldmine_signals.json";
 
 const NOT_EXTRACTED = "Not extracted yet";
 
+export type SuccessRecordQualityLabel =
+  | "Ready to post"
+  | "Needs enrichment"
+  | "Weak record";
+
+export type SuccessRecordQualitySignals = {
+  hasGrowthChannel: boolean;
+  hasWhyItWorked: boolean;
+  hasRevenueSignal: boolean;
+  hasBuildPrompt: boolean;
+  hasDistributionAssets: boolean;
+};
+
 export type SuccessRecord = {
   id: string;
   sourceUrl: string;
@@ -28,6 +41,10 @@ export type SuccessRecord = {
   aiLeverageScore: number;
   monetizationClarity: number;
   buildDifficulty: number;
+  qualitySignals: SuccessRecordQualitySignals;
+  qualityLabel: SuccessRecordQualityLabel;
+  postCard: string;
+  enrichmentNotes: string[];
 };
 
 type GoldmineSignal = {
@@ -50,6 +67,10 @@ function cleanText(value: unknown) {
   return typeof value === "string" && value.trim().length > 0
     ? value.trim()
     : NOT_EXTRACTED;
+}
+
+function hasExtracted(value: string) {
+  return value.trim().length > 0 && value !== NOT_EXTRACTED;
 }
 
 function slugify(value: string, index: number) {
@@ -77,11 +98,17 @@ function buildXPost(record: {
   starterProduct: string;
 }) {
   return [
-    `${record.businessName} shows a simple pattern:`,
-    `${record.buyer} will pay when ${record.pain.toLowerCase()}`,
+    "I studied this indie business pattern:",
+    "",
+    `Business: ${record.businessName}`,
+    `Buyer: ${record.buyer}`,
+    `Pain: ${record.pain}`,
+    "",
+    "The interesting part is not the product. It's the buyer-pain-offer fit.",
+    "",
     `AI remake: ${record.starterProduct}`,
-    "Start with one painful workflow, one buyer, and one paid validation test.",
-  ].join("\n\n");
+    "Smallest starter version: one focused workflow, one clear output, one paid validation test.",
+  ].join("\n");
 }
 
 function buildShortScript(record: {
@@ -91,10 +118,13 @@ function buildShortScript(record: {
   starterProduct: string;
 }) {
   return [
-    `Hook: ${record.businessName} is not just a story. It is a repeatable success pattern.`,
-    `Pain: ${record.buyer} deal with this: ${record.pain}`,
-    `Remake: Build ${record.starterProduct}.`,
-    "Close: Validate the smallest paid version before adding features.",
+    "Hook: I studied this indie business pattern.",
+    `Context: ${record.businessName}`,
+    `Buyer: ${record.buyer}`,
+    `Pain: ${record.pain}`,
+    "Turn: The product matters less than the buyer-pain-offer fit.",
+    `AI remake: ${record.starterProduct}`,
+    "Close: Validate the smallest starter version before adding features.",
   ].join("\n");
 }
 
@@ -118,6 +148,117 @@ function buildMonetizationPath(record: {
   ].join(" ");
 }
 
+function buildPostCard(record: {
+  businessName: string;
+  revenueSignal: string;
+  buyer: string;
+  pain: string;
+  offer: string;
+  whyItWorked: string;
+  aiNativeRemake: string;
+  starterProduct: string;
+}) {
+  return [
+    "Business Pattern:",
+    record.businessName,
+    "",
+    "Revenue:",
+    record.revenueSignal,
+    "",
+    "Buyer:",
+    record.buyer,
+    "",
+    "Pain:",
+    record.pain,
+    "",
+    "Offer:",
+    record.offer,
+    "",
+    "Why it worked:",
+    record.whyItWorked,
+    "",
+    "AI remake:",
+    record.aiNativeRemake,
+    "",
+    "Starter product:",
+    record.starterProduct,
+  ].join("\n");
+}
+
+function buildQualitySignals(record: {
+  growthChannel: string;
+  whyItWorked: string;
+  revenueSignal: string;
+  buildPrompt: string;
+  xPost: string;
+  shortScript: string;
+  imagePrompt: string;
+}): SuccessRecordQualitySignals {
+  return {
+    hasGrowthChannel: hasExtracted(record.growthChannel),
+    hasWhyItWorked: hasExtracted(record.whyItWorked),
+    hasRevenueSignal: hasExtracted(record.revenueSignal),
+    hasBuildPrompt: hasExtracted(record.buildPrompt),
+    hasDistributionAssets:
+      hasExtracted(record.xPost) &&
+      hasExtracted(record.shortScript) &&
+      hasExtracted(record.imagePrompt),
+  };
+}
+
+function getQualityLabel(record: {
+  buyer: string;
+  pain: string;
+  offer: string;
+  qualitySignals: SuccessRecordQualitySignals;
+}): SuccessRecordQualityLabel {
+  const hasBuyer = hasExtracted(record.buyer);
+  const hasPain = hasExtracted(record.pain);
+  const hasOffer = hasExtracted(record.offer);
+
+  if (!hasBuyer || !hasPain || !hasOffer || !record.qualitySignals.hasBuildPrompt) {
+    return "Weak record";
+  }
+
+  if (
+    record.qualitySignals.hasRevenueSignal &&
+    record.qualitySignals.hasWhyItWorked &&
+    record.qualitySignals.hasBuildPrompt &&
+    record.qualitySignals.hasDistributionAssets
+  ) {
+    return "Ready to post";
+  }
+
+  return "Needs enrichment";
+}
+
+function buildEnrichmentNotes(record: {
+  growthChannel: string;
+  whyItWorked: string;
+  sourceUrl: string;
+  qualitySignals: SuccessRecordQualitySignals;
+}) {
+  const notes: string[] = [];
+
+  if (!record.qualitySignals.hasGrowthChannel) {
+    notes.push("Growth channel missing");
+  }
+
+  if (!record.qualitySignals.hasWhyItWorked || record.whyItWorked.length < 80) {
+    notes.push("Why it worked too generic");
+  }
+
+  notes.push("Distribution assets are placeholder");
+
+  if (!hasExtracted(record.sourceUrl)) {
+    notes.push("Needs source evidence");
+  } else {
+    notes.push("Needs source evidence review");
+  }
+
+  return notes;
+}
+
 export function mapGoldmineSignalToSuccessRecord(
   signal: GoldmineSignal,
   index: number,
@@ -132,6 +273,61 @@ export function mapGoldmineSignalToSuccessRecord(
   const revenueSignal = cleanText(signal.why_money);
   const whyItWorked = cleanText(signal.why_money);
   const buildPrompt = cleanText(signal.codex_prompt || signal.nocode_prompt);
+  const growthChannel = NOT_EXTRACTED;
+  const distributionNotes = NOT_EXTRACTED;
+  const aiNativeRemake =
+    starterProduct === NOT_EXTRACTED
+      ? NOT_EXTRACTED
+      : `Turn the success pattern into an AI-native workflow that helps ${buyer} get the outcome faster.`;
+  const validationPlan48h = cleanText(signal.validation_48h);
+  const xPost = buildXPost({
+    businessName,
+    buyer,
+    pain,
+    starterProduct,
+  });
+  const shortScript = buildShortScript({
+    businessName,
+    buyer,
+    pain,
+    starterProduct,
+  });
+  const imagePrompt = buildImagePrompt({
+    businessName,
+    buyer,
+    starterProduct,
+  });
+  const qualitySignals = buildQualitySignals({
+    growthChannel,
+    whyItWorked,
+    revenueSignal,
+    buildPrompt,
+    xPost,
+    shortScript,
+    imagePrompt,
+  });
+  const qualityLabel = getQualityLabel({
+    buyer,
+    pain,
+    offer,
+    qualitySignals,
+  });
+  const postCard = buildPostCard({
+    businessName,
+    revenueSignal,
+    buyer,
+    pain,
+    offer,
+    whyItWorked,
+    aiNativeRemake,
+    starterProduct,
+  });
+  const enrichmentNotes = buildEnrichmentNotes({
+    growthChannel,
+    whyItWorked,
+    sourceUrl,
+    qualitySignals,
+  });
 
   const baseRecord = {
     businessName,
@@ -162,38 +358,25 @@ export function mapGoldmineSignalToSuccessRecord(
     pain,
     offer,
     pricingModel,
-    growthChannel: NOT_EXTRACTED,
-    distributionNotes: NOT_EXTRACTED,
+    growthChannel,
+    distributionNotes,
     whyItWorked,
-    aiNativeRemake:
-      starterProduct === NOT_EXTRACTED
-        ? NOT_EXTRACTED
-        : `Turn the success pattern into an AI-native workflow that helps ${buyer} get the outcome faster.`,
+    aiNativeRemake,
     starterProduct,
-    validationPlan48h: cleanText(signal.validation_48h),
-    xPost: buildXPost({
-      businessName,
-      buyer,
-      pain,
-      starterProduct,
-    }),
-    shortScript: buildShortScript({
-      businessName,
-      buyer,
-      pain,
-      starterProduct,
-    }),
-    imagePrompt: buildImagePrompt({
-      businessName,
-      buyer,
-      starterProduct,
-    }),
+    validationPlan48h,
+    xPost,
+    shortScript,
+    imagePrompt,
     buildPrompt,
     monetizationPath: buildMonetizationPath(baseRecord),
     replicationScore: clampScore(replicationInputs * 2),
     aiLeverageScore: starterProduct === NOT_EXTRACTED ? 0 : 6,
     monetizationClarity: clampScore(monetizationInputs * 3),
     buildDifficulty: buildPrompt === NOT_EXTRACTED ? 0 : 4,
+    qualitySignals,
+    qualityLabel,
+    postCard,
+    enrichmentNotes,
   };
 }
 
