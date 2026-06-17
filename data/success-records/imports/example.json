@@ -1,0 +1,21 @@
+{
+  "businessName": "Clinic Cancellation Recovery Tool",
+  "sourceUrl": "https://example.com/glasp/clinic-cancellation-recovery",
+  "sourceType": "Glasp Import",
+  "industry": "Local healthcare",
+  "revenueSignal": "Appointment-based clinics lose revenue when canceled slots are not recovered quickly.",
+  "buyer": "Dental clinics, orthodontists, chiropractors, and appointment-based clinics",
+  "pain": "Canceled appointments leave open slots, staff follow-up is inconsistent, and revenue leaks from the calendar.",
+  "offer": "A cancellation recovery workflow that turns cancellation notes into priority, suggested rebooking windows, and follow-up messages.",
+  "pricingModel": "$399 setup + $49/month",
+  "growthChannel": "Direct outreach to clinic owners with a before/after cancellation recovery demo",
+  "distributionNotes": "Show one canceled appointment becoming a rebooking message and revenue recovery checklist.",
+  "whyItWorked": "The buyer already feels the revenue loss from empty appointment slots, and the workflow is narrow enough to demonstrate with one realistic before/after example.",
+  "aiNativeRemake": "An AI-native cancellation recovery assistant that ranks open slots, drafts patient follow-ups, and tracks rebooking attempts.",
+  "starterProduct": "Paste cancellation reason and patient notes to generate a rebooking plan, SMS draft, call note, and priority score.",
+  "validationPlan48h": "Create a 60-second demo, send it to 20 appointment-based clinics, ask for one anonymized cancellation scenario, and offer 3 paid beta setups.",
+  "xPost": "I studied this indie business pattern:\n\nCanceled appointments are not just admin work. They are lost revenue.\n\nBuyer: appointment-based clinics\nPain: open slots do not get recovered consistently\nOffer: AI rebooking workflow\n\nAI remake: cancellation recovery assistant\nSmallest starter version: paste a cancellation note and get the follow-up plan.",
+  "shortScript": "Hook: Empty appointment slots are a revenue leak.\nContext: clinics already know the pain.\nTurn: the useful product is not a big CRM, it is one recovery workflow.\nAI remake: cancellation recovery assistant.\nClose: validate with one canceled appointment example.",
+  "imagePrompt": "Dark SaaS dashboard for a clinic cancellation recovery assistant showing canceled appointments, priority scores, suggested rebooking windows, SMS follow-up drafts, and recovered revenue.",
+  "buildPrompt": "Build a standalone web app for appointment-based clinics. The user pastes a cancellation reason and patient note. The app generates a priority score, suggested rebooking windows, an SMS follow-up draft, a phone call note, and a recovery checklist. Use mock data and local state only."
+}

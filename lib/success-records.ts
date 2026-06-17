@@ -63,10 +63,22 @@ type GoldmineSignal = {
   score?: number;
 };
 
-function cleanText(value: unknown) {
-  return typeof value === "string" && value.trim().length > 0
-    ? value.trim()
-    : NOT_EXTRACTED;
+export type ImportedSuccessRecordInput = Record<string, unknown>;
+
+function cleanText(value: unknown): string {
+  if (typeof value === "string" && value.trim().length > 0) {
+    return value.trim();
+  }
+
+  if (Array.isArray(value)) {
+    const items = value
+      .map((item) => cleanText(item))
+      .filter((item) => item !== NOT_EXTRACTED);
+
+    return items.length > 0 ? items.join("\n") : NOT_EXTRACTED;
+  }
+
+  return NOT_EXTRACTED;
 }
 
 function hasExtracted(value: string) {
@@ -81,6 +93,28 @@ function slugify(value: string, index: number) {
     .slice(0, 72);
 
   return slug || `success-record-${index + 1}`;
+}
+
+function getField(input: ImportedSuccessRecordInput, keys: string[]) {
+  const normalized = new Map<string, unknown>();
+
+  for (const [key, value] of Object.entries(input)) {
+    normalized.set(key.toLowerCase().replace(/[^a-z0-9]/g, ""), value);
+  }
+
+  for (const key of keys) {
+    const value = normalized.get(key.toLowerCase().replace(/[^a-z0-9]/g, ""));
+
+    if (value !== undefined) {
+      return value;
+    }
+  }
+
+  return undefined;
+}
+
+function getInputId(input: ImportedSuccessRecordInput) {
+  return cleanText(getField(input, ["id", "recordId", "record_id"]));
 }
 
 function scorePresence(...values: string[]) {
@@ -259,6 +293,127 @@ function buildEnrichmentNotes(record: {
   return notes;
 }
 
+function completeSuccessRecord({
+  aiNativeRemake,
+  buildPrompt,
+  businessName,
+  distributionNotes,
+  growthChannel,
+  id,
+  imagePrompt,
+  industry,
+  offer,
+  pain,
+  pricingModel,
+  revenueSignal,
+  shortScript,
+  sourceType,
+  sourceUrl,
+  starterProduct,
+  validationPlan48h,
+  whyItWorked,
+  xPost,
+  buyer,
+}: {
+  aiNativeRemake: string;
+  buildPrompt: string;
+  businessName: string;
+  distributionNotes: string;
+  growthChannel: string;
+  id: string;
+  imagePrompt: string;
+  industry: string;
+  offer: string;
+  pain: string;
+  pricingModel: string;
+  revenueSignal: string;
+  shortScript: string;
+  sourceType: string;
+  sourceUrl: string;
+  starterProduct: string;
+  validationPlan48h: string;
+  whyItWorked: string;
+  xPost: string;
+  buyer: string;
+}): SuccessRecord {
+  const qualitySignals = buildQualitySignals({
+    growthChannel,
+    whyItWorked,
+    revenueSignal,
+    buildPrompt,
+    xPost,
+    shortScript,
+    imagePrompt,
+  });
+  const qualityLabel = getQualityLabel({
+    buyer,
+    pain,
+    offer,
+    qualitySignals,
+  });
+  const postCard = buildPostCard({
+    businessName,
+    revenueSignal,
+    buyer,
+    pain,
+    offer,
+    whyItWorked,
+    aiNativeRemake,
+    starterProduct,
+  });
+  const enrichmentNotes = buildEnrichmentNotes({
+    growthChannel,
+    whyItWorked,
+    sourceUrl,
+    qualitySignals,
+  });
+
+  const replicationInputs = scorePresence(
+    buyer,
+    pain,
+    offer,
+    starterProduct,
+    validationPlan48h,
+  );
+  const monetizationInputs = scorePresence(revenueSignal, pricingModel, buyer);
+
+  return {
+    id,
+    sourceUrl,
+    sourceType,
+    businessName,
+    industry,
+    revenueSignal,
+    buyer,
+    pain,
+    offer,
+    pricingModel,
+    growthChannel,
+    distributionNotes,
+    whyItWorked,
+    aiNativeRemake,
+    starterProduct,
+    validationPlan48h,
+    xPost,
+    shortScript,
+    imagePrompt,
+    buildPrompt,
+    monetizationPath: buildMonetizationPath({
+      pricingModel,
+      offer,
+      buyer,
+    }),
+    replicationScore: clampScore(replicationInputs * 2),
+    aiLeverageScore: starterProduct === NOT_EXTRACTED ? 0 : 6,
+    monetizationClarity: clampScore(monetizationInputs * 3),
+    buildDifficulty: buildPrompt === NOT_EXTRACTED ? 0 : 4,
+    qualitySignals,
+    qualityLabel,
+    postCard,
+    enrichmentNotes,
+  };
+}
+
 export function mapGoldmineSignalToSuccessRecord(
   signal: GoldmineSignal,
   index: number,
@@ -297,57 +452,7 @@ export function mapGoldmineSignalToSuccessRecord(
     buyer,
     starterProduct,
   });
-  const qualitySignals = buildQualitySignals({
-    growthChannel,
-    whyItWorked,
-    revenueSignal,
-    buildPrompt,
-    xPost,
-    shortScript,
-    imagePrompt,
-  });
-  const qualityLabel = getQualityLabel({
-    buyer,
-    pain,
-    offer,
-    qualitySignals,
-  });
-  const postCard = buildPostCard({
-    businessName,
-    revenueSignal,
-    buyer,
-    pain,
-    offer,
-    whyItWorked,
-    aiNativeRemake,
-    starterProduct,
-  });
-  const enrichmentNotes = buildEnrichmentNotes({
-    growthChannel,
-    whyItWorked,
-    sourceUrl,
-    qualitySignals,
-  });
-
-  const baseRecord = {
-    businessName,
-    buyer,
-    pain,
-    offer,
-    pricingModel,
-    starterProduct,
-  };
-
-  const replicationInputs = scorePresence(
-    buyer,
-    pain,
-    offer,
-    starterProduct,
-    cleanText(signal.validation_48h),
-  );
-  const monetizationInputs = scorePresence(revenueSignal, pricingModel, buyer);
-
-  return {
+  return completeSuccessRecord({
     id: slugify(businessName, index),
     sourceUrl,
     sourceType: "Indie Hackers",
@@ -368,22 +473,196 @@ export function mapGoldmineSignalToSuccessRecord(
     shortScript,
     imagePrompt,
     buildPrompt,
-    monetizationPath: buildMonetizationPath(baseRecord),
-    replicationScore: clampScore(replicationInputs * 2),
-    aiLeverageScore: starterProduct === NOT_EXTRACTED ? 0 : 6,
-    monetizationClarity: clampScore(monetizationInputs * 3),
-    buildDifficulty: buildPrompt === NOT_EXTRACTED ? 0 : 4,
-    qualitySignals,
-    qualityLabel,
-    postCard,
-    enrichmentNotes,
+  });
+}
+
+export function mapImportedJsonToSuccessRecord(
+  input: ImportedSuccessRecordInput,
+  index = 0,
+): SuccessRecord {
+  const inputId = getInputId(input);
+  const businessName = cleanText(
+    getField(input, ["businessName", "business", "business_name", "name", "title"]),
+  );
+  const sourceUrl = cleanText(getField(input, ["sourceUrl", "source_url", "url"]));
+  const sourceType = cleanText(getField(input, ["sourceType", "source_type", "source"])) ===
+    NOT_EXTRACTED
+    ? "Glasp Import"
+    : cleanText(getField(input, ["sourceType", "source_type", "source"]));
+  const buyer = cleanText(getField(input, ["buyer", "customer", "targetBuyer", "target_user"]));
+  const pain = cleanText(getField(input, ["pain", "problem", "customerPain"]));
+  const offer = cleanText(getField(input, ["offer", "product", "productAngle", "product_angle"]));
+  const starterProduct = cleanText(
+    getField(input, ["starterProduct", "starter_product", "mvp", "aiStarterProduct"]),
+  );
+  const pricingModel = cleanText(
+    getField(input, ["pricingModel", "pricing_model", "price", "priceSignal"]),
+  );
+  const revenueSignal = cleanText(
+    getField(input, ["revenueSignal", "revenue_signal", "revenue", "whyMoney"]),
+  );
+  const whyItWorked = cleanText(
+    getField(input, ["whyItWorked", "why_it_worked", "whyWorked", "successPattern"]),
+  );
+  const aiNativeRemake = cleanText(
+    getField(input, ["aiNativeRemake", "ai_native_remake", "aiRemake", "remake"]),
+  );
+  const growthChannel = cleanText(
+    getField(input, ["growthChannel", "growth_channel", "channel", "growth"]),
+  );
+  const xPost = cleanText(getField(input, ["xPost", "x_post", "xPostIdeas", "x_post_ideas"]));
+  const shortScript = cleanText(
+    getField(input, ["shortScript", "short_script", "shortScriptIdeas", "short_script_ideas"]),
+  );
+  const imagePrompt = cleanText(
+    getField(input, ["imagePrompt", "image_prompt", "visualPrompt"]),
+  );
+  const buildPrompt = cleanText(
+    getField(input, ["buildPrompt", "build_prompt", "codexPrompt", "implementationPrompt"]),
+  );
+
+  return completeSuccessRecord({
+    id:
+      inputId === NOT_EXTRACTED
+        ? `glasp-${slugify(businessName, index)}`
+        : `glasp-${slugify(inputId, index)}`,
+    sourceUrl,
+    sourceType,
+    businessName,
+    industry: cleanText(getField(input, ["industry", "category", "market"])),
+    revenueSignal,
+    buyer,
+    pain,
+    offer,
+    pricingModel,
+    growthChannel,
+    distributionNotes: cleanText(
+      getField(input, ["distributionNotes", "distribution_notes", "distribution"]),
+    ),
+    whyItWorked,
+    aiNativeRemake:
+      aiNativeRemake === NOT_EXTRACTED && starterProduct !== NOT_EXTRACTED
+        ? `Turn the success pattern into an AI-native workflow around ${starterProduct}.`
+        : aiNativeRemake,
+    starterProduct,
+    validationPlan48h: cleanText(
+      getField(input, ["validationPlan48h", "validation_plan_48h", "validation", "validation48h"]),
+    ),
+    xPost:
+      xPost === NOT_EXTRACTED
+        ? buildXPost({ businessName, buyer, pain, starterProduct })
+        : xPost,
+    shortScript:
+      shortScript === NOT_EXTRACTED
+        ? buildShortScript({ businessName, buyer, pain, starterProduct })
+        : shortScript,
+    imagePrompt:
+      imagePrompt === NOT_EXTRACTED
+        ? buildImagePrompt({ businessName, buyer, starterProduct })
+        : imagePrompt,
+    buildPrompt,
+  });
+}
+
+function isImportedRecordInput(value: unknown): value is ImportedSuccessRecordInput {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function getServerBuiltins() {
+  if (typeof window !== "undefined") {
+    return undefined;
+  }
+
+  const processWithBuiltins = process as typeof process & {
+    getBuiltinModule?: (id: string) => unknown;
+  };
+
+  if (!processWithBuiltins.getBuiltinModule) {
+    return undefined;
+  }
+
+  return {
+    fs: processWithBuiltins.getBuiltinModule("fs") as {
+      existsSync: (filePath: string) => boolean;
+      readdirSync: (dirPath: string) => string[];
+      readFileSync: (filePath: string, encoding: "utf8") => string;
+    },
+    path: processWithBuiltins.getBuiltinModule("path") as {
+      extname: (filePath: string) => string;
+      join: (...segments: string[]) => string;
+    },
   };
 }
 
+function loadImportedSuccessRecords(): SuccessRecord[] {
+  const builtins = getServerBuiltins();
+
+  if (!builtins) {
+    return [];
+  }
+
+  try {
+    const { fs, path } = builtins;
+    // Imported Glasp/Bilion records live in data/success-records/imports/*.json
+    const importsDir = path.join(
+      process.cwd(),
+      "data",
+      "success-records",
+      "imports",
+    );
+
+    if (!fs.existsSync(importsDir)) {
+      return [];
+    }
+
+    return fs
+      .readdirSync(importsDir)
+      .filter((fileName) => path.extname(fileName).toLowerCase() === ".json")
+      .sort((a, b) => b.localeCompare(a))
+      .flatMap((fileName, index) => {
+        try {
+          const filePath = path.join(importsDir, fileName);
+          const parsed = JSON.parse(fs.readFileSync(filePath, "utf8")) as unknown;
+
+          if (!isImportedRecordInput(parsed)) {
+            return [];
+          }
+
+          return [mapImportedJsonToSuccessRecord(parsed, index)];
+        } catch {
+          return [];
+        }
+      });
+  } catch {
+    return [];
+  }
+}
+
+function withUniqueRecordIds(records: SuccessRecord[]) {
+  const seen = new Map<string, number>();
+
+  return records.map((record) => {
+    const count = seen.get(record.id) || 0;
+    seen.set(record.id, count + 1);
+
+    if (count === 0) {
+      return record;
+    }
+
+    return {
+      ...record,
+      id: `${record.id}-${count + 1}`,
+    };
+  });
+}
+
 export function getSuccessRecords(): SuccessRecord[] {
-  return (goldmineSignals as GoldmineSignal[]).map(
+  const importedRecords = loadImportedSuccessRecords();
+  const goldmineRecords = (goldmineSignals as GoldmineSignal[]).map(
     mapGoldmineSignalToSuccessRecord,
   );
+
+  return withUniqueRecordIds([...importedRecords, ...goldmineRecords]);
 }
 
 export function getSuccessRecordPlaceholder() {
