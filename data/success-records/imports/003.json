@@ -1,0 +1,292 @@
+{
+"sourceType": "YouTube",
+"source": {
+"videoTitle": "I Built Two Apps That Make $120K/Month",
+"creator": "Starter Story",
+"speaker": "Kyle Fowler / Pat Walls",
+"sourceUrl": "https://www.youtube.com/watch?v=xWnqY2Mav4s",
+"genre": "Founder interview / App business case study",
+"language": "English"
+},
+"oneLinePattern": "自分の趣味領域で発生する『価値が分からない・管理できない』問題を、スマホカメラ＋データベース＋サブスク課金アプリに変換したコレクター向けAI/スキャン型アプリ事例。",
+"business": {
+"businessName": "Cardstock / Scanon",
+"productOrService": "スポーツカードやポケモンカードをスマホカメラで識別し、市場価値・最近の売買履歴・コレクション価値を管理できるアプリ",
+"industry": "Collectibles / Sports cards / Pokemon cards / Mobile app / Subscription",
+"targetMarket": "スポーツカード収集家、ポケモンカード収集家、カード転売・保有価値管理をしたい個人",
+"customer": "自分のカードの価値を知りたいコレクター、コレクションをデジタル管理したいユーザー、売買時に損をしたくないカード保有者",
+"problemSolved": "カードの正確な種類・市場価値・最近の販売価格が分からず、保有カードを整理・評価・追跡できない問題",
+"valueProvided": "カードの識別、価格確認、コレクション登録、価値推移管理、最近の販売実績確認をスマホで簡単にできる",
+"price": "不明",
+"revenue": "Cardstockは約75KドルMRR、Scanonは約17KドルMRR、合計で月120Kドル超と説明",
+"period": "Cardstockは約6年前にローンチ、Scanonは2025年にローンチ",
+"usersOrSubscribers": "Cardstockは約15,000アクティブサブスク、月13,000ダウンロード。Scanonは約3,400アクティブサブスク、月16,000新規顧客"
+},
+"buyer": {
+"whoBuys": "カード収集家、カード投資家、カード転売者、ポケモンカード・スポーツカードの価値確認を頻繁に行うユーザー",
+"whyTheyBuy": "カードの価値をすぐ知りたい、売買で損をしたくない、保有コレクションの総額を管理したい、手作業検索が面倒だから",
+"urgency": "中〜高。売買前、カード整理時、掘り出し物確認時には即時性がある",
+"willingnessToPay": "中〜高。カード売買で数十〜数百ドル以上の損得が出るため、価値確認ツールに継続課金する理由がある",
+"existingAlternatives": "App Store上の既存アプリ、eBay検索、PriceCharting系サイト、Google検索、手動スプレッドシート管理",
+"alternativeProblems": "手動検索が遅い、カード特定が難しい、価格情報が散らばる、コレクション全体の価値推移を追いにくい"
+},
+"painDesireFear": {
+"pain": "保有カードの価値が分からない。カードを物理的に整理しても、外出先で何を持っているか分からない。最近の販売価格を毎回調べるのが面倒。",
+"desire": "スマホで一瞬でカードを識別し、価値を確認し、コレクション全体を資産のように管理したい。",
+"fear": "価値あるカードを安く売ってしまう。重複購入する。コレクションの価値を把握できず機会損失する。",
+"reasonsNotToBuy": "無料検索で十分だと思われる、識別精度への不安、価格データの信頼性への疑問、カード収集頻度が低いユーザーには月額課金理由が弱い"
+},
+"offer": {
+"whatIsSold": "カード識別・価格確認・コレクション管理アプリのサブスクリプション",
+"realBenefitSold": "カードコレクターが『自分のカードはいくらか』『売るべきか』『何を持っているか』を即判断できる安心感と時間短縮",
+"minimumProduct": "スマホでカード写真を撮る→候補カードを表示→市場価格と最近の売買履歴を表示→コレクションに追加できるMVP",
+"subscriptionReason": "カード価格は変動し、コレクション管理・価格追跡・新カード追加・売買履歴確認が継続的に必要だから",
+"upsellPotential": "プレミアム価格データ、売買アラート、ポートフォリオ分析、保険用レポート、店舗向け在庫管理、転売者向け一括スキャン、カード鑑定連携"
+},
+"growthDistribution": {
+"initialAcquisition": "Redditで完成報告のアップデート投稿を行い、初期ダウンロードを得た",
+"mainGrowthChannel": "TikTok slideshows",
+"postingFrequency": "不明",
+"winningContentFormat": "TikTokスライドショー。テンプレ化しやすく、繰り返し投稿・UGC配布しやすい形式",
+"scaleMethod": "NoiseというプラットフォームでTikTokスライドショーをクリエイターに配布し、テンプレ投稿してもらい、再生数に応じて支払う",
+"adsUgcSeoCommunity": "UGC寄りのTikTokスライドショー配布、Reddit初期投稿、App Store流入",
+"whyItSpread": "カード価値確認は視覚的に分かりやすく、ビフォーアフター・掘り出し物・高額カード発見のショート動画と相性が良い"
+},
+"monetization": {
+"monetizationPath": "無料ダウンロード→カードスキャン体験→価値確認ニーズ発生→RevenueCat/Superwall等でサブスク課金",
+"freeOffer": "不明。アプリ自体はダウンロード可能で、無料範囲がある可能性はあるが詳細不明",
+"paidProduct": "カード識別・価格確認・コレクション管理の有料サブスクリプション",
+"pricingModel": "Subscription / MRR。具体月額は不明",
+"whyLtvCanGrow": "コレクションが増えるほど管理データが蓄積し、解約しにくくなる。カード価格変動を追う用途も継続性がある",
+"whyRecurringRevenueWorks": "価格データ更新、カードDB更新、コレクション価値推移、売買履歴確認が継続利用の理由になる"
+},
+"whyItWorked": {
+"reason1": "創業者自身がカード収集家で、問題の解像度が高かった",
+"reason2": "スマホカメラでカード識別する体験が、明確で分かりやすい価値を持っていた",
+"reason3": "TikTokスライドショーという再現性の高い獲得チャネルを見つけ、UGC的に拡散できた",
+"marketTiming": "AI・画像認識・モバイル課金・コレクター市場の成熟が重なり、2025年にはAIエージェントでMVPを1日で作れる環境になった",
+"founderStrength": "iOS開発経験、趣味領域への深い理解、過度に複雑化せず作って市場に出す実行力",
+"highlyReplicableElements": "趣味領域の面倒な価値確認作業をアプリ化する、最小機能から作る、TikTokスライドショーで検証する、RevenueCat/Superwallで課金する",
+"lowReplicabilityElements": "大規模なカードDB、画像識別精度、価格データ取得、App Store上の蓄積、既存ユーザーベース、6年分の運用ノウハウ"
+},
+"toolsStack": {
+"toolsUsed": [
+"Swift",
+"SwiftUI",
+"Core Data",
+"Stack Overflow",
+"RevenueCat",
+"AWS EC2",
+"Notion",
+"Cursor",
+"Slack",
+"Framer",
+"Supabase",
+"Railway",
+"CodeRabbit",
+"WhisperFlow",
+"Granola",
+"Noise"
+],
+"aiTools": [
+"ChatGPT",
+"Cursor Agent",
+"Claude"
+],
+"payment": "RevenueCat / Superwallが言及されたが、実際の決済構成の詳細は不明",
+"database": "Core Data、カードDB用バックエンドはAWS EC2。Supabaseもツールスタックとして言及",
+"hosting": "AWS EC2、Railway、Framerが言及されたが用途の詳細は不明",
+"analytics": "不明",
+"other": [
+"TikTok slideshows",
+"Reddit",
+"App Store"
+]
+},
+"evidence": {
+"evidenceQuotes": [
+"two apps that make 120K a month",
+"Cardstock is a sports card value scanner",
+"15,000 active subscriptions",
+"75k monthly recurring revenue",
+"13,000 downloads a month",
+"3,400 active subscriptions",
+"17K monthly recurring revenue",
+"16,000 new customers a month",
+"The MVP for Scanon I made in a day",
+"We've had so much success with Tik Tok slideshows",
+"Use Noise"
+],
+"numberEvidence": "Cardstock: 約15,000アクティブサブスク、約75KドルMRR、月13,000ダウンロード。Scanon: 約3,400アクティブサブスク、約17KドルMRR、月16,000新規顧客。動画冒頭では2アプリ合計で月120Kドル超と説明。",
+"priceEvidence": "具体的な月額価格は不明。サブスクリプション収益であること、RevenueCat/Superwallが言及されたことは確認可能。",
+"growthChannelEvidence": "TikTok slideshowsで大きな成果があったと発言。NoiseでTikTokスライドショーをクリエイターに配布し、ビュー数に応じて支払うと説明。",
+"ambiguousPoints": [
+"75K MRR + 17K MRRは92Kであり、タイトルや冒頭の120K/monthとの差分の内訳は不明",
+"Cardstockの正確な表記は書き起こし上でCardstock/Card stock/cards stockが混在",
+"Scanonの正確なアプリ名表記は書き起こし由来のため不確実",
+"アプリの具体的な月額価格は不明",
+"価格データの取得元、データライセンス、画像認識モデルの詳細は不明",
+"TikTok施策の投稿数、CAC、ROAS、継続率は不明"
+]
+},
+"facts": [
+"Kyle Fowlerは2つのアプリで月120Kドル規模の収益があると紹介された",
+"Cardstockはスポーツカードの価値スキャナーとして説明された",
+"Scanonはポケモンカード向けの類似アプリとして説明された",
+"Cardstockは約15,000アクティブサブスク、約75KドルMRRと説明された",
+"Scanonは約3,400アクティブサブスク、約17KドルMRRと説明された",
+"Cardstockは約6年前にローンチされた",
+"Scanonは2025年にローンチされ、MVPは1日で作ったと説明された",
+"初期にはRedditで完成報告を投稿し、すぐに初期ダウンロードを得た",
+"マーケティングではTikTok slideshowsが成功したと説明された",
+"Noiseを使ってTikTokスライドショーをクリエイターに配布する手法が紹介された"
+],
+"inferences": [
+"この事例の本質は『趣味市場の価値判定作業』をスマホアプリ化し、サブスク化するパターンである",
+"AI時代の再現版では、画像認識・OCR・価格DB連携・自動レポート生成で小型化できる",
+"カード市場以外にも、スニーカー、古着、時計、フィギュア、レコード、釣具、カメラ、楽器などの価値確認領域に横展開できる",
+"初期検証は完全な画像認識アプリより、手動/半自動の査定レポート、LINE/フォーム受付、Notion DBでも可能",
+"日本版ではポケカ、遊戯王、ワンピースカード、古着、フィギュア、中古カメラ領域が候補になる"
+],
+"risks": {
+"legalRisk": "価格データや販売履歴データの取得元によってはスクレイピング規約、データ利用権、商標・画像利用のリスクがある",
+"platformDependency": "App Store、TikTok、Reddit、Noise、RevenueCat/Superwallへの依存がある",
+"competitionRisk": "カードスキャン・価格確認アプリは競合が増えやすく、AIでMVP構築が容易になるほど差別化が難しくなる",
+"replicabilityRisk": "見た目のMVPは作れても、正確なカードDB、識別精度、価格履歴、継続課金理由の構築は難しい",
+"exaggerationOrSuspiciousPoints": [
+"動画タイトルの120K/monthと、本文中の75K MRR + 17K MRRの合計に差がある",
+"収益ダッシュボードの詳細数値は書き起こし上では完全確認できない",
+"TikTokスライドショーの成功要因が簡単に聞こえるが、実際のテンプレ検証・投稿量・クリエイター管理は不明",
+"ScanonのMVPを1日で作った発言は、既存のCardstock資産や経験が前提の可能性が高い",
+"『誰でも同じようにできる』ように見えるが、創業者のiOS開発経験と市場理解の蓄積が大きい"
+]
+},
+"aiNativeRemake": {
+"howToRebuildWithAI": "趣味領域の画像・名前・状態・相場をAIで解析し、価値確認と保有管理を行う小型アプリとして再構築する。最初は画像認識100%自動化ではなく、写真アップロード＋AI候補抽出＋手動修正＋価格リンク表示でよい。",
+"smallerStart": "カード1ジャンルに絞った『写真を送ると相場・売り時・保管メモを返す診断ツール』から開始する",
+"forSoloDevelopers": "Next.js、Supabase、Stripe、OpenAI Vision、外部相場リンク、手動レビューを組み合わせたWeb版MVPで開始可能",
+"forNonEngineers": "Googleフォーム/Typeformで写真受付→ChatGPT Visionで候補判定→スプレッドシートで価格管理→PDF/メールで査定レポート納品から始める",
+"japanLocalization": "ポケカ、遊戯王、ワンピースカード、トレカショップ在庫、メルカリ相場、カードラッシュ等の公開価格参照を使った日本向け相場診断にする",
+"englishMarketVersion": "Pokemon, sports cards, sneakers, vintage toys, vinyl recordsなどのコレクター向け『scan + value + collection tracker』として展開"
+},
+"starterProduct": {
+"minimumVersionIn48h": "『ポケカ相場クイック診断』。ユーザーがカード写真をアップロードすると、AIがカード名候補・状態確認ポイント・相場調査リンク・売却判断メモを生成し、コレクションリストに保存できるWebアプリ",
+"requiredFeatures": [
+"画像アップロード",
+"カード名候補のAI抽出",
+"手動修正フィールド",
+"相場確認リンク生成",
+"最近の販売価格メモ欄",
+"コレクション登録",
+"合計推定価値表示",
+"有料診断または月額ロック"
+],
+"unnecessaryFeatures": [
+"完全自動の高精度画像認識",
+"ネイティブiOSアプリ",
+"巨大カードDBの初期構築",
+"リアルタイム価格API",
+"ユーザー間売買機能",
+"鑑定会社連携",
+"SNS機能"
+],
+"firstPrice": "初回は500円〜1,980円の単発診断、または月額980円〜1,980円の小型サブスク",
+"howToGetFirst10Customers": "X、TikTok、カード系コミュニティ、メルカリ出品者、カードショップ来店者向けに『このカードいくら？AIで10秒診断』の投稿を出し、無料3枚診断→有料一括診断へ誘導する",
+"validationMethod": "48時間でカード写真を10〜30枚集め、AI診断結果を返し、ユーザーが価格・売却判断に価値を感じるか、500円以上払うかを確認する"
+},
+"contentAngles": {
+"xPostIdeas": [
+"6年前、彼は自分のカードの価値が分からなかった。今、その問題を解く2つのアプリが月120Kドルを生む。次のアプリ案は市場調査ではなく、自分の趣味の面倒ごとの中にある。",
+"AI時代の勝ち筋は『巨大SaaS』ではない。カード、古着、釣具、フィギュアみたいな趣味市場の“価値が分からない”を、スマホカメラ＋DB＋月額課金に変えること。",
+"Cardstockの学び：1. 自分の問題から作る 2. 最小機能で出す 3. Redditで初期反応を見る 4. TikTokスライドショーで伸ばす 5. RevenueCatでサブスク化する。",
+"ScanonのMVPは1日で作られた。でも本当にコピーすべきは『1日で作った』ではない。既存の勝ちパターンを、隣の熱狂市場に横展開したこと。",
+"ポケカ、古着、中古カメラ、釣具、レコード。日本にも“価値が分からない趣味資産”は山ほどある。AIで最初に作るべきは、SNSっぽいアプリではなく査定と管理の道具。"
+],
+"shortVideoIdeas": [
+"冒頭: 『この人、カードの価値が分からない問題をアプリにして月120Kドルです』→ Cardstock/Scanonの数字 → 日本なら何に置き換えるか → Bilionで作る",
+"冒頭: 『AIで作るべきアプリは、あなたの趣味の中にあります』→ カード管理の面倒 → スキャン/価格/管理 → 48時間MVP案",
+"冒頭: 『ScanonのMVPは1日。でも重要なのはAIではなく横展開です』→ スポーツカードからポケカ → 日本ならポケカ/遊戯王/古着 → 小型商品案",
+"冒頭: 『TikTokで売れるアプリの特徴』→ 視覚的に変化が分かる → 高額発見の驚き → スライドショー量産 → ダウンロード導線",
+"冒頭: 『次の月額アプリ案を探すなら、価値が分からない物を探せ』→ コレクション市場の不安 → AI査定 → サブスク理由"
+],
+"imageCardIdea": "『趣味 × 価値不明 × スマホカメラ × 相場DB × サブスク = 月120Kドル級アプリの型』という図解カード"
+},
+"bilionJudgment": {
+"worthAddingToBilion": "追加すべき。趣味市場の個人課題をスキャン型サブスクアプリに変える再現可能パターンとして強い。ただし完全コピーではなく、48時間検証では半自動診断から始めるべき。",
+"replicationScore": 7,
+"aiLeverageScore": 8,
+"monetizationClarityScore": 8,
+"buildDifficultyScore": 7,
+"whatToCopyNow": "自分や特定コミュニティの『価値が分からない物』を写真入力で診断し、相場・管理・売却判断を返す小型ツール化。TikTokスライドショーで高額発見コンテンツを量産する導線。",
+"whatNotToCopy": "最初からネイティブアプリ、大規模カードDB、完全自動スキャン、高精度価格APIを作ること。120K/monthの数字だけを見て広すぎる市場に突っ込むこと。"
+},
+"bilionRecordJson": {
+"sourceType": "YouTube",
+"sourceUrl": "https://www.youtube.com/watch?v=xWnqY2Mav4s",
+"businessName": "Cardstock / Scanon",
+"industry": "Collectibles / Card scanning / Mobile subscription app",
+"revenueSignal": "2つのアプリで月120Kドル超と紹介。Cardstockは約75KドルMRR、Scanonは約17KドルMRRと説明。",
+"buyer": "スポーツカード・ポケモンカードの価値を知りたいコレクター、転売者、カード保有者",
+"pain": "カードの種類や価値が分からない。保有コレクションを管理できない。売買時に損をする不安がある。",
+"desire": "スマホでカードをスキャンし、価値・最近の売買履歴・コレクション総額をすぐ把握したい。",
+"fear": "価値あるカードを安く売る、重複購入する、コレクション価値を見逃す。",
+"offer": "カードスキャン、価格確認、コレクション管理、価値追跡を行うサブスクアプリ",
+"pricingModel": "Subscription / MRR。具体価格は不明。",
+"growthChannel": "Reddit初期投稿、TikTok slideshows、Noise経由のクリエイター配布",
+"distributionNotes": "TikTokスライドショーはテンプレ化・反復・UGC配布に向いており、カード価値発見という視覚的コンテンツと相性が良い",
+"whyItWorked": "創業者自身の趣味課題、明確な価値確認ニーズ、スマホカメラによる直感的UX、TikTokで伝わりやすいビジュアル、サブスクに向いた継続的価格追跡",
+"toolsUsed": [
+"Swift",
+"SwiftUI",
+"Core Data",
+"RevenueCat",
+"AWS EC2",
+"Cursor",
+"ChatGPT",
+"Claude",
+"Supabase",
+"Railway",
+"Framer",
+"CodeRabbit",
+"WhisperFlow",
+"Granola",
+"Noise"
+],
+"evidence": [
+"two apps that make 120K a month",
+"15,000 active subscriptions",
+"75k monthly recurring revenue",
+"3,400 active subscriptions",
+"17K monthly recurring revenue",
+"The MVP for Scanon I made in a day",
+"We've had so much success with Tik Tok slideshows"
+],
+"risks": [
+"収益合計の数字に差分があり内訳不明",
+"カードDBと価格データの取得元が不明",
+"データ利用規約・商標・画像利用リスクがある",
+"画像認識精度と価格精度が低いと解約される",
+"TikTok依存とApp Store依存がある"
+],
+"aiNativeRemake": "写真アップロード＋AI候補判定＋相場リンク＋コレクション管理＋売却判断メモを返す趣味資産診断ツールとして再構築する",
+"starterProduct": "ポケカ/遊戯王/古着/中古カメラなど1ジャンルに絞った『写真で相場診断＋管理リスト』Webアプリまたは手動診断サービス",
+"validationPlan48h": "X/TikTok/コミュニティで『あなたのカード3枚をAI相場診断します』と募集→10人から写真を集める→AI＋手動で診断レポート返却→500円〜1,980円の一括診断または月額利用意向を確認",
+"xPostIdeas": [
+"カードの価値が分からない問題を解いたら月120Kドル。AI時代のアプリ案は、趣味の中の面倒な価値確認にある。",
+"Scanonの本質はAIで1日開発ではなく、勝ちパターンを隣の熱狂市場に横展開したこと。",
+"日本ならポケカ、遊戯王、古着、中古カメラ。価値が分からない物をAIで診断するだけで小型サブスクになる。"
+],
+"shortScriptIdeas": [
+"このカード、いくら？から月120Kドルのアプリが生まれた",
+"AIで作るべきアプリは、あなたの趣味の中にある",
+"ポケカ相場診断を48時間で作るならこうする"
+],
+"imagePrompt": "Dark professional SaaS-style infographic showing a simple formula: Hobby collection + Unknown value + Phone camera + Market data + Subscription = AI-native app business. Include examples: sports cards, Pokemon cards, vintage items, sneakers.",
+"buildPromptSeed": "Build a mobile-first web app called Collectible Value Scanner. Users upload a collectible item photo, AI suggests the item name/category, shows editable fields, generates market research links, lets users enter recent sale prices, adds the item to a collection, and displays estimated total collection value. No auth, no external paid APIs, local state or Supabase-ready structure, Stripe/RevenueCat-style paywall placeholder, TikTok validation landing section.",
+"monetizationPath": "無料診断または無料スキャン数制限→有料サブスクで無制限診断・コレクション管理・価格追跡・一括レポートを解放",
+"replicationScore": 7,
+"aiLeverageScore": 8,
+"monetizationClarity": 8,
+"buildDifficulty": 7
+}
+}

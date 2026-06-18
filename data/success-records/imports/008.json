@@ -1,0 +1,289 @@
+{
+"sourceType": "YouTube",
+"source": {
+"videoTitle": "My Two Apps Make $150K/Month Each",
+"creator": "Starter Story",
+"speaker": "Pat Walls、Nicole",
+"sourceUrl": "https://www.youtube.com/watch?v=32vqaJa90kw",
+"genre": "起業家インタビュー / モバイルアプリ成長戦略 / Consumer App Growth",
+"language": "英語"
+},
+"oneLinePattern": "AIで作った消費者向けアプリを、プロダクト内にSNSで拡散されやすい体験を組み込み、UGCクリエイターを大量採用・教育・管理することで、月数億回規模の視聴からサブスク課金へ変換するパターン。",
+"business": {
+"businessName": "Glam Mob / Glam Up（表記揺れあり）、Sprout（旧PrepearAI）、その他ステルスアプリ2本",
+"productOrService": "美容・メイク改善アプリ、就活自動応募アプリ、その他未公開の消費者向けモバイルアプリ",
+"industry": "Consumer Mobile Apps / BeautyTech / CareerTech / AI Apps",
+"targetMarket": "美容改善に関心がある女性、就活中の大学生・卒業後の若手、消費者向けAIアプリ利用者",
+"customer": "Glam Mobはメイク・スキンケアルーティンを改善したい女性。Sproutは就職活動中の大学生・ポストカレッジ層。",
+"problemSolved": "美容では自分に合うメイク・色・商品選びが分からない問題。就活では求人探し、応募、履歴書調整が面倒な問題。",
+"valueProvided": "顔写真解析によるカラー分析・メイク提案・商品推薦、オンボーディング回答に基づく求人推薦・自動応募・履歴書調整。",
+"price": "具体金額は不明。週額または月額サブスクリプション。ハードペイウォール。",
+"revenue": "Glam Mobはピーク150k MRR。Sproutは8か月で250k MRR、現在は約200k MRRで推移。ステルスアプリ2本は約200k MRRと発言。冒頭では3M ARRに到達した投稿が紹介されている。",
+"period": "Glam Mobは最初の6か月で100万ユーザー。Sproutは8か月で250k MRR。ステルスアプリ2本は過去3か月で構築。",
+"usersOrSubscribers": "Glam Mobは合計約200万ダウンロード、最初の6か月で100万ユーザー。Sproutのユーザー数は不明。"
+},
+"buyer": {
+"whoBuys": "自分の外見改善、メイク改善、就活効率化に強い関心があり、スマホアプリ内で即時の個別提案を受けたい個人ユーザー。Bilion向けに再利用するなら、消費者向けアプリ創業者、AIアプリ開発者、TikTok/InstagramでUGCを回したいモバイルアプリ運営者。",
+"whyTheyBuy": "個別化された診断・推薦・自動化により、自分で調べる手間を減らし、外見改善や就活成功という強い欲求に近づけるから。",
+"urgency": "美容改善は自己改善欲求、就活は応募期限・内定獲得プレッシャーにより緊急度が高い。UGC運用支援商品としては、アプリを作っても集客できない創業者にとって緊急度が高い。",
+"willingnessToPay": "動画内の具体価格は不明だが、週額・月額サブスクで150k〜250k MRRを達成しているため、一定の支払い意欲は確認できる。ただし単価・継続率は不明。",
+"existingAlternatives": "美容ではYouTube/TikTokの美容動画、パーソナルカラー診断、メイクサロン、商品レビュー。就活では求人サイト、LinkedIn、Indeed、大学キャリアセンター、履歴書添削サービス。UGC運用では広告代理店、インフルエンサーマーケ代理店、CreatorIQ系ツール、手作業のDM採用。",
+"alternativeProblems": "既存代替は汎用的で個別化が弱い、行動まで自動化しない、初期費用が高い、運用が属人的、UGCクリエイターの教育・品質管理が難しい。"
+},
+"painDesireFear": {
+"pain": "アプリを作っても誰にも届かない。美容や就活のユーザーは自分に合う答えが分からない。創業者はTikTokやIGに投稿しても再現性ある成長システムがない。",
+"desire": "自分専用の美容・就活提案をすぐ得たい。創業者側は数億回のSNS視聴、月100k MRR超、複数アプリへの横展開を実現したい。",
+"fear": "競合に先を越される、アプリを作っても課金されない、SNS投稿が単発で終わる、UGCクリエイターを大量に雇っても品質が崩壊する。",
+"reasonsNotToBuy": "サブスク価格が不明、ハードペイウォールへの抵抗、診断精度への不信、求人自動応募への不安、UGC運用支援側では成果保証が難しい。"
+},
+"offer": {
+"whatIsSold": "消費者には美容改善・就活自動化アプリの週額/月額サブスク。Bilionで再構築するなら、UGCクリエイター採用・教育・管理・分析システム、または消費者向けAIアプリ用のバイラルUGC運用キット。",
+"realBenefitSold": "アプリ本体ではなく、自己改善・内定獲得・面倒な選択の自動化・SNSで勝てる集客システムを売っている。",
+"minimumProduct": "最小版は、アプリ創業者向けのUGC Creator Training Kit。内容はクリエイター募集フォーム、面接チェックリスト、動画台本バンク、オンボーディング講座、投稿管理シート、週次改善テンプレ。",
+"subscriptionReason": "UGC素材、台本、分析、クリエイター管理、勝ちフォーマット更新が継続的に必要なため。消費者アプリ側は美容・求人推薦の継続利用が理由。",
+"upsellPotential": "UGC運用代行、クリエイター採用代行、バイラル動画台本生成、投稿分析ダッシュボード、アプリ内オンボーディング改善診断、Superwall/RevenueCat設定支援。"
+},
+"growthDistribution": {
+"initialAcquisition": "Nicole自身がTikTokでポッドキャストを始め10日で1万フォロワーを得た経験があり、Glam MobやSproutではTikTok/InstagramのUGCとfaceless contentを活用。",
+"mainGrowthChannel": "TikTok、Instagram、YouTube Shorts。特にTikTokとInstagramが中心。",
+"postingFrequency": "具体的な投稿頻度は不明。ただしピーク時には約200人以上のアクティブクリエイターを同時管理していたため、高頻度・大量投稿である可能性が高い。",
+"winningContentFormat": "faceless UGC、スライドショー、動画、CTA違い、face UGC、AI UGC、実クリエイターUGC、リアクション動画、talking head。",
+"scaleMethod": "2〜10人のクリエイターで検証し、勝ちフォーマットが見つかったら採用・教育・管理・分析をシステム化し、200人規模まで拡大。",
+"adsUgcSeoCommunity": "主軸はUGCとSNS。資本があればpaid adsとinfluencer marketingも選択肢。Reddit marketingも検証候補として挙げられている。SEOについては動画内で不明。",
+"whyItSpread": "アプリ体験自体がSNSで見せやすく、診断結果・変身・求人自動応募のように短尺動画で理解できる結果があるため。さらにクリエイター教育によって勝ちパターンを再現し続けた。"
+},
+"monetization": {
+"monetizationPath": "大量SNS視聴 → アプリインストール → オンボーディング → ハードペイウォール → 週額/月額サブスク → 継続課金。",
+"freeOffer": "動画内では無料オファーの詳細は不明。Starter Story側はMobile App Growth Cheat Sheetを無料配布。アプリ側はオンボーディングや診断前体験が無料導線の可能性。",
+"paidProduct": "Glam Mob、Sproutの週額/月額サブスクリプション。",
+"pricingModel": "Hard paywall + weekly/monthly subscription。具体価格は不明。",
+"whyLtvCanGrow": "美容は継続的な改善・商品推薦・新しいメイク提案、就活は応募活動の継続により継続利用余地がある。ただし実際の継続率は不明。",
+"whyRecurringRevenueWorks": "ユーザーの課題が一回限りではなく、改善・応募・推薦・更新が継続するため。加えてモバイルアプリの週額課金は高MRR化しやすい。"
+},
+"whyItWorked": {
+"reason1": "AIアプリの機能そのものより、SNSで見せやすい体験をプロダクト設計に組み込んだ。",
+"reason2": "UGCを単発投稿ではなく、採用・教育・管理・分析のプロセスに変換した。",
+"reason3": "美容と就活という、自己改善・不安・即時性が強い市場を選んだ。",
+"marketTiming": "AIでアプリ開発やコンテンツ制作が容易になった一方、配信・集客の重要性が増しているタイミング。2026年の消費者向けアプリ成長ではdistributionがより重要という文脈で語られている。",
+"founderStrength": "Nicoleはコード以外、特にデザイン、オンボーディング、配信、UGCシステム構築に強い。過去にTikTokで短期間にバズった経験もある。",
+"highlyReplicableElements": "UGC採用フォーム、クリエイター講座、台本バンク、クイズ付きオンボーディング、投稿分析、勝ちフォーマットの横展開、ハードペイウォール設計。",
+"lowReplicabilityElements": "数億回視聴、200人以上のクリエイター管理、初期バズ経験、YC/HF0周辺ネットワーク、消費者アプリでの高MRR再現。"
+},
+"toolsStack": {
+"toolsUsed": [
+"React Native",
+"RevenueCat",
+"Superwall",
+"PostHog",
+"Sideshift",
+"Attio",
+"Typeform",
+"Discord chats",
+"creator course",
+"UGC group chats",
+"Instagram",
+"Reddit",
+"TikTok",
+"Instagram Reels",
+"YouTube Shorts"
+],
+"aiTools": [
+"AI UGCは選択肢として言及",
+"Glam Mobの顔スキャン/カラー分析/メイク提案はAI活用の可能性が高いが詳細ツールは不明",
+"Sproutの求人推薦・自動応募・履歴書調整はAI活用の可能性が高いが詳細ツールは不明"
+],
+"payment": "RevenueCat、Superwall。決済基盤の詳細は不明。",
+"database": "不明",
+"hosting": "不明",
+"analytics": "RevenueCat、PostHog",
+"other": [
+"UGC creator course",
+"application forms",
+"bi-weekly feedback calls",
+"monthly feedback calls",
+"dashboards"
+]
+},
+"evidence": {
+"evidenceQuotes": [
+"My first app, Glamour, got a million users in 6 months",
+"we were at peak 150k MRR",
+"I grew it to around 250k MRR in 8 months",
+"we hard paywall all of our apps",
+"we do a weekly or monthly subscription",
+"around 4 to 500 million monthly views",
+"around 200, maybe a bit more active creators",
+"More than 50% of the creators that go through this course go viral within the first 2 weeks",
+"We use React Native for app building",
+"RevenueCat for revenue tracking",
+"Superwall for paywall"
+],
+"numberEvidence": "100万ユーザー/6か月、150k MRR、250k MRR/8か月、200k MRR、約200万ダウンロード、100M monthly views、7日間で400M views、4〜500M monthly views、約200人以上のアクティブクリエイター。",
+"priceEvidence": "具体価格は不明。週額または月額サブスク、ハードペイウォールのみ確認。",
+"growthChannelEvidence": "TikTok、Instagram、YouTube Shorts、UGC、faceless content、face UGC、Reddit marketing、paid ads、influencer marketingに言及。",
+"ambiguousPoints": [
+"Glamour / Glam Mob / Glam Upの名称表記が書き起こし内で揺れている。",
+"3M ARRの投稿がどのアプリを指すか不明。",
+"ステルスアプリ2本の詳細、証拠画面、継続率、利益率は不明。",
+"150k MRRが売上総額か手取りかはGlam Mobでは不明。Sproutはrevenue cutと発言。",
+"具体的なサブスク価格、解約率、広告費、クリエイター報酬は不明。"
+]
+},
+"facts": [
+"Nicoleは過去2年で4つのアプリを作ったと発言。",
+"Glam Mob / Glam Upは最初の6か月で100万ユーザー、合計約200万ダウンロードと発言。",
+"Glam Mob / Glam Upはピーク150k MRRと発言。",
+"Sproutは旧PrepearAIで、8か月で250k MRR、自分たちのrevenue cutとして語られている。",
+"現在Sproutは約200k MRRで推移していると発言。",
+"過去3か月で作ったステルスアプリ2本は約200k MRRと発言。",
+"成長チャネルはTikTok、Instagram、YouTube Shortsが中心。",
+"Sproutは7日間で合計400M viewsを得た期間があったと発言。",
+"スケール期には約200人以上のアクティブクリエイターを同時管理していたと発言。",
+"React Native、RevenueCat、Superwall、PostHog、Sideshift、Attioが使用ツールとして挙げられている。"
+],
+"inferences": [
+"この事例の本質はアプリ開発力ではなく、アプリ体験をSNSで拡散しやすく設計し、UGCを工場化するdistribution systemである。",
+"Bilionで再現するなら、消費者向けアプリそのものよりUGC運用システムをB2B小型商品化する方が48時間検証に向く。",
+"日本市場では美容AIアプリや就活AIアプリを直接作るより、既存のAIアプリ開発者向けにUGC台本・採用・教育テンプレを売る方が初速が速い。",
+"ハードペイウォールと週額課金は高MRR化しやすい一方、ユーザー反発や解約率リスクも高い。"
+],
+"risks": {
+"legalRisk": "美容診断では顔写真・個人情報・広告表現・化粧品推薦の責任が発生する可能性。就活自動応募では求人サイト規約、個人情報、応募代行の適法性に注意が必要。",
+"platformDependency": "TikTok、Instagram、YouTube Shortsのアルゴリズム依存が極めて高い。アカウント停止、リーチ低下、広告規制の影響を受けやすい。",
+"competitionRisk": "美容AI、就活AI、AIアプリ、UGC運用は競争が激しい。プロダクト機能はAIで模倣されやすい。",
+"replicabilityRisk": "200人規模のUGC運用、数億回視聴、月100k MRR超は初心者には再現難度が高い。小型化しないとBilionユーザーには重すぎる。",
+"exaggerationOrSuspiciousPoints": [
+"MRRやview数は本人発言ベースで、外部監査された数値か不明。",
+"ステルスアプリ2本の詳細が非公開で検証不能。",
+"More than 50% of creators go viral within 2 weeksという発言は定義次第で誇張の可能性。",
+"Revenue cutという表現があり、総売上と実取りの差が不明。",
+"視聴数から課金へのCVR、広告費、クリエイター報酬、粗利が不明。"
+]
+},
+"aiNativeRemake": {
+"howToRebuildWithAI": "AIを使って、消費者向けアプリ創業者のためのUGC Growth OSを作る。機能はアプリ説明入力、ターゲット選択、バイラル角度生成、UGC台本生成、クリエイター募集文、オンボーディング講座、クイズ、投稿管理、週次改善レポート。",
+"smallerStart": "最初はSaaSを作らず、Notion/Google Sheets/Typeform/ChatGPTプロンプトで『UGC Creator Training Kit for AI Apps』として販売する。",
+"forSoloDevelopers": "1人開発者向けには、アプリURLを入れるとTikTok/IG用のUGC台本30本、募集DM、クリエイター教育資料、検証計画を出すツールにする。",
+"forNonEngineers": "非エンジニア向けには、スプレッドシートとプロンプト集だけでUGC運用を始められるテンプレ商品にする。",
+"japanLocalization": "日本では『AIアプリを作ったが売れない個人開発者・AI副業者向けUGC台本生成キット』として出す。美容、就活、診断、学習、婚活など短尺動画に向くカテゴリに絞る。",
+"englishMarketVersion": "英語圏では『UGC Growth OS for AI Consumer Apps』として、vibe coders、Lovable/Cursor/Claude Code builders、mobile app founders向けに売る。"
+},
+"starterProduct": {
+"minimumVersionIn48h": "『UGC Growth Kit for AI Apps』。入力フォームにアプリ概要、ターゲット、課金モデル、主要機能を入れると、UGC角度20個、台本30本、クリエイター募集DM、オンボーディング講座構成、投稿管理表、2週間検証計画を生成する。",
+"requiredFeatures": [
+"アプリ概要入力",
+"ターゲットユーザー選択",
+"TikTok/IG用UGC角度生成",
+"faceless/face UGC/AI UGC別の台本生成",
+"クリエイター募集DMテンプレ",
+"Typeform用募集質問テンプレ",
+"オンボーディング講座テンプレ",
+"投稿管理シート",
+"週次レビュー項目",
+"コピー出力"
+],
+"unnecessaryFeatures": [
+"ネイティブアプリ開発",
+"決済連携",
+"アカウント機能",
+"自動投稿機能",
+"高度な分析ダッシュボード",
+"クリエイターマーケットプレイス",
+"AI動画生成までの完全自動化"
+],
+"firstPrice": "初回は$19〜$49のテンプレ/プロンプト商品、または日本向け4,980円〜9,800円。運用レビュー付きなら29,800円〜49,800円。",
+"howToGetFirst10Customers": "Xで『AIアプリは作れるが売れない』層に向け、Glam Mob/Sprout事例を分解した投稿を連投。Lovable/Cursor/Claude Codeでアプリを作った人へDM。無料で3本UGC台本を作り、続き30本と運用テンプレを有料販売。",
+"validationMethod": "48時間以内に、AIアプリ開発者20人へDM、X投稿5本、無料診断フォーム1本を出す。10件返信、3件無料診断、1件以上の有料購入または個別相談予約があれば続行。"
+},
+"contentAngles": {
+"xPostIdeas": [
+"AIでアプリを作れる時代に、勝敗を決めるのはコードではなくdistribution。Nicoleは4アプリを月100k MRR超へ伸ばしたが、やったことは『UGCを運用ではなく工場にした』ことだった。",
+"月150k MRRの消費者アプリは、機能がすごいから伸びたのではない。TikTok/IGで拡散される体験をアプリ内に設計し、200人のUGCクリエイターを教育していた。ここが初心者との差。",
+"アプリを作って売れない人へ。投稿を1本作って祈るのはdistributionではない。勝ちフォーマットを見つけ、2〜10人で検証し、教育コース化し、200人まで増やす。これが本物のUGCシステム。",
+"Glam Mob: 6か月で100万ユーザー、ピーク150k MRR。Sprout: 8か月で250k MRR。共通点はAI機能ではなく、短尺動画で説明できる欲望を売っていること。美容改善と就活自動化は強い。",
+"Consumer AI appで勝ちたいなら、最初に作るべきは機能一覧ではなく『投稿される理由』。診断結果、Before/After、自動応募、ランキング、反応。SNSで見せられない機能は拡散しにくい。"
+],
+"shortVideoIdeas": [
+"冒頭: AIでアプリを作っても売れない理由。中盤: Nicoleは4アプリを月100k MRR超にした。結論: 彼女が作ったのはアプリではなくUGC工場。",
+"冒頭: 1本投稿して伸びないと諦める人へ。中盤: 月250k MRRアプリは200人以上のUGCクリエイターを管理。結論: distributionは気合いではなくシステム。",
+"冒頭: 次に作るAIアプリは機能から考えるな。中盤: Glam Mobは美容改善、Sproutは就活自動化。どちらも短尺で欲しくなる。結論: SNSで見せられる欲望から逆算しろ。",
+"冒頭: Consumer appで月1000万円を狙うなら。中盤: TikTok、IG、Shortsで月4〜5億回視聴。結論: アプリ内体験をバズる素材に変える必要がある。",
+"冒頭: Bilionに入れるべき成功パターン発見。中盤: UGC採用、教育、台本、分析をテンプレ化。結論: AIアプリ創業者向けUGC Growth OSにできる。"
+],
+"imageCardIdea": "『AIアプリの勝ち筋 = Build App → Design Viral Moment → Recruit UGC Creators → Train with Course → Track Winners → Scale Creators → Hard Paywall Subscription』という7ステップ図解。"
+},
+"bilionJudgment": {
+"worthAddingToBilion": "追加すべき。理由は、AI時代にプロダクト開発よりdistributionが差別化になるという強い市場信号であり、UGC運用システムをAIツール/スターター商品へ変換しやすいから。",
+"replicationScore": 7,
+"aiLeverageScore": 8,
+"monetizationClarityScore": 8,
+"buildDifficultyScore": 6,
+"whatToCopyNow": "消費者アプリそのものではなく、UGC Creator Training Kit、バイラル台本生成、クリエイター募集・教育・管理テンプレ、アプリ内バイラルモーメント診断をコピーする。",
+"whatNotToCopy": "最初から美容AIアプリや就活AIアプリを本格開発すること、200人クリエイター体制を真似ること、数億回再生を前提にした計画、ハードペイウォールだけを表面的に真似ること。"
+},
+"bilionRecordJson": {
+"sourceType": "YouTube",
+"sourceUrl": "https://www.youtube.com/watch?v=32vqaJa90kw",
+"businessName": "Glam Mob / Glam Up、Sprout、ステルスアプリ2本",
+"industry": "Consumer Mobile Apps / BeautyTech / CareerTech / UGC Growth",
+"revenueSignal": "Glam Mobはピーク150k MRR、Sproutは8か月で250k MRR、現在約200k MRR、ステルスアプリ2本は約200k MRRと発言。",
+"buyer": "美容改善したい女性、就活中の大学生・若手、またはAI消費者アプリを伸ばしたい創業者。",
+"pain": "アプリを作っても集客できない。美容や就活で自分に合う答えが分からない。SNS投稿が単発で終わり再現性がない。",
+"desire": "月100k MRR超、数億回視聴、AIアプリの短期スケール、自己改善・内定獲得。",
+"fear": "競合に埋もれる、アプリが売れない、UGC運用が属人化する、SNSアルゴリズムに負ける。",
+"offer": "週額/月額の消費者向けアプリサブスク。Bilion向けにはUGC Growth OS / Creator Training Kitとして再構築可能。",
+"pricingModel": "Hard paywall + weekly/monthly subscription。具体価格は不明。",
+"growthChannel": "TikTok、Instagram、YouTube Shorts、faceless UGC、face UGC、AI UGC、Reddit、influencer marketing。",
+"distributionNotes": "2〜10人でUGCを検証し、勝ちパターンが見つかったらクリエイター採用、講座、クイズ、管理、分析でシステム化。ピーク時に約200人以上のアクティブクリエイター。",
+"whyItWorked": "プロダクト体験をSNSで見せやすく設計し、UGCを単発ではなく教育・管理・分析の仕組みにしたため。美容と就活という強い欲望市場を選んだことも大きい。",
+"toolsUsed": [
+"React Native",
+"RevenueCat",
+"Superwall",
+"PostHog",
+"Sideshift",
+"Attio",
+"Typeform",
+"Discord",
+"TikTok",
+"Instagram",
+"YouTube Shorts",
+"Reddit"
+],
+"evidence": [
+"My first app, Glamour, got a million users in 6 months",
+"we were at peak 150k MRR",
+"I grew it to around 250k MRR in 8 months",
+"we hard paywall all of our apps",
+"around 4 to 500 million monthly views",
+"around 200, maybe a bit more active creators"
+],
+"risks": [
+"MRRや視聴数は本人発言ベースで外部検証不明",
+"具体価格、利益率、解約率、広告費、クリエイター報酬が不明",
+"SNSアルゴリズム依存が高い",
+"初心者が200人UGC体制を再現するのは難しい",
+"ステルスアプリの詳細は検証不能"
+],
+"aiNativeRemake": "AIアプリ創業者向けに、UGC角度、台本、採用DM、オンボーディング講座、投稿管理、改善レポートを生成するUGC Growth OSを作る。",
+"starterProduct": "48時間で作る最小商品は『UGC Growth Kit for AI Apps』。アプリ概要を入力するとUGC台本30本、募集DM、教育講座、投稿管理表、2週間検証計画を出力する。",
+"validationPlan48h": "AIアプリ開発者20人にDM、X投稿5本、無料UGC診断フォームを公開。3件診断、1件有料購入または相談予約で続行。",
+"xPostIdeas": [
+"AIでアプリを作れる時代に、勝敗を決めるのはコードではなくdistribution。Nicoleは4アプリを月100k MRR超へ伸ばしたが、やったことはUGCを工場化することだった。",
+"月150k MRRの消費者アプリは、機能がすごいから伸びたのではない。SNSで拡散される体験と200人規模のUGC教育システムがあった。",
+"投稿を1本作って祈るのはdistributionではない。勝ちフォーマットを見つけ、教育コース化し、クリエイターを増やす。これが本物のUGCシステム。"
+],
+"shortScriptIdeas": [
+"AIアプリを作っても売れない理由は、機能ではなく配信設計がないから。Nicoleのアプリは月100k MRR超。共通点はUGCをシステム化していること。",
+"月250k MRRのSproutは、就活の面倒を自動化し、SNSで見せやすい体験にした。Consumer AI appはバズる瞬間から逆算しろ。",
+"美容AIアプリGlam Mobは6か月で100万ユーザー。秘密はAI機能ではなく、TikTok/IGで拡散されるBefore/After型の欲望設計。"
+],
+"imagePrompt": "Dark SaaS style infographic showing a viral consumer app growth machine: app idea, viral in-app moment, faceless UGC, creator recruitment, creator training course, analytics dashboard, hard paywall subscription, recurring MRR. Use clean arrows and concise labels.",
+"buildPromptSeed": "Build a standalone web app called UGC Growth OS for AI App Founders. The app lets a founder paste their app idea, target user, pricing model, and core feature. It generates viral content angles, TikTok/Instagram UGC scripts, faceless slideshow ideas, creator recruitment DMs, onboarding course modules, quiz questions, a posting tracker, and a 14-day validation plan. Use mock data, local state, no auth, no database, no external APIs, mobile-first UI, and copy buttons for every output.",
+"monetizationPath": "無料UGC診断 → $19〜$49テンプレ/プロンプトキット → $29/月の台本・分析サブスク → $499〜$2,000のUGC運用設計代行。",
+"replicationScore": 7,
+"aiLeverageScore": 8,
+"monetizationClarity": 8,
+"buildDifficulty": 6
+}
+}

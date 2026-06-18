@@ -1,0 +1,284 @@
+{
+"sourceType": "YouTube",
+"source": {
+"videoTitle": "I'm 14 And I Built A $14K/Month App",
+"creator": "Starter Story",
+"speaker": "Evan",
+"sourceUrl": "https://www.youtube.com/watch?v=dWeoSKLt_fc",
+"genre": "起業家インタビュー / モバイルアプリ成長事例 / インフルエンサー集客",
+"language": "英語"
+},
+"oneLinePattern": "シンプルなゲーミフィケーション習慣アプリを、RPMを把握したうえでCPMを抑えたニッチ系インフルエンサー投稿に乗せ、短期間で月間1.4万ドル規模まで伸ばしたパターン。",
+"business": {
+"businessName": "Locked",
+"productOrService": "ゲーミフィケーション型の健康・フィットネス・集中支援モバイルアプリ",
+"industry": "iOSアプリ / 習慣化 / 生産性 / フィットネス / モチベーション",
+"targetMarket": "集中力を高めたい若年層、自己改善・フィットネス・習慣化に興味があるスマホユーザー",
+"customer": "タスク管理、習慣化、集中、モチベーション維持に課題がある個人ユーザー",
+"problemSolved": "タスクや習慣が続かない、既存の習慣トラッカーが退屈でモチベーションが続かない問題",
+"valueProvided": "XP、レベル、バッジ、キャラクター、ランキングによって、タスク継続をゲーム感覚に変える",
+"price": "$40/年、$7/週、離脱時の割引オファー$20/年、年額プランに3日間無料トライアル",
+"revenue": "$14,000/月",
+"period": "ローンチから約4か月で$14,000/月。構築はアイデアからApp Store公開まで約1.5か月",
+"usersOrSubscribers": "単一動画から約1,800ダウンロード。総ユーザー数は不明"
+},
+"buyer": {
+"whoBuys": "自己改善、集中、習慣化、フィットネス、勉強、作業継続に興味がある若年層スマホユーザー",
+"whyTheyBuy": "タスク管理をゲーム化することで、退屈な習慣化を楽しく続けられそうに見えるから",
+"urgency": "中程度。今すぐ解決しないと大損する課題ではないが、自己改善欲求とSNS上の憧れで衝動課金が起きやすい",
+"willingnessToPay": "中程度。$40/年または$7/週を支払う層が存在するが、継続率やLTVは不明",
+"existingAlternatives": "Habit tracker、ToDoアプリ、Notionテンプレート、Appleリマインダー、Streaks、Habitify、Forest、Duolingo的ゲーミフィケーション体験",
+"alternativeProblems": "既存ツールは退屈、自己改善コンテンツとの接続が弱い、若年層に刺さるキャラクター性やランキング要素が不足しやすい"
+},
+"painDesireFear": {
+"pain": "タスクが続かない、集中できない、習慣化アプリを入れても飽きる、モチベーション維持が難しい",
+"desire": "ゲーム感覚で成長したい、ランキングで競いたい、自己改善している感覚を得たい、スマホで簡単に集中状態を作りたい",
+"fear": "周囲より怠けている、自分だけ成長できていない、集中力が低くて成果が出ない、習慣が続かないまま終わる",
+"reasonsNotToBuy": "習慣化アプリは無料代替が多い、$7/週は高く感じる可能性がある、実際の継続効果が不明、ゲーム化が浅いと飽きられる"
+},
+"offer": {
+"whatIsSold": "LockedというiOS向けのゲーミフィケーション習慣・集中支援アプリ",
+"realBenefitSold": "集中している自分、習慣を続けられる自分、ランキングやXPで成長を可視化できる体験",
+"minimumProduct": "タスク追加、XP付与、レベル表示、ランキング、バッジ、キャラクター選択、シンプルなペイウォール",
+"subscriptionReason": "習慣化・タスク管理は継続利用前提であり、毎日開く理由をXP、ランキング、連続記録、モチベーション画面で作れるため",
+"upsellPotential": "プレミアムキャラクター、追加チャレンジ、友達対戦、学校・チーム向けランキング、インフルエンサー別限定コンテンツ、AIコーチ機能"
+},
+"growthDistribution": {
+"initialAcquisition": "ニッチに合うインフルエンサーへ有料プロモーションを依頼",
+"mainGrowthChannel": "TikTok、Instagram Reels、YouTube Shortsなどのショート動画系インフルエンサー投稿",
+"postingFrequency": "具体的な自社投稿頻度は不明。インフルエンサーには1週間以内に最初の動画を出す期限を設定",
+"winningContentFormat": "インフルエンサーが『stay locked in』『集中する方法』の文脈で、最初の15秒以内にアプリを自然に見せる短尺動画",
+"scaleMethod": "RPMを把握し、それより低いCPMでクリエイターを獲得。成果が出た投稿者とはより大きい契約に進む",
+"adsUgcSeoCommunity": "主にインフルエンサーUGC風の有料投稿。ASOの可能性にも触れられているが、この事例の中心は短尺動画インフルエンサー",
+"whyItSpread": "アプリのテーマと投稿者のコンテンツ軸が一致し、広告感が弱く、自己改善系の視聴者に自然な推薦として見えたため"
+},
+"monetization": {
+"monetizationPath": "インフルエンサー投稿 → App Storeダウンロード → オンボーディング → ペイウォール → 年額/週額課金 → 離脱時割引オファー",
+"freeOffer": "年額プランに3日間無料トライアル",
+"paidProduct": "Lockedの有料サブスクリプション",
+"pricingModel": "$40/年、$7/週、離脱時$20/年の割引オファー",
+"whyLtvCanGrow": "習慣化アプリは毎日利用されれば継続課金に向き、キャラクター、ランキング、チャレンジ、AIコーチなどで追加価値を作れる",
+"whyRecurringRevenueWorks": "集中や習慣化は一度きりの課題ではなく、毎日発生する行動課題だから。ただし実際の継続率は動画内では不明"
+},
+"whyItWorked": {
+"reason1": "商品とクリエイターの視聴者属性が一致していた。集中・自己改善系コンテンツの中でLockedが自然に紹介された",
+"reason2": "RPMが$2〜$3と把握できており、それ以下のCPMで契約することで広告費の回収可能性を管理していた",
+"reason3": "アプリがシンプルで、短尺動画内で価値が伝わりやすかった。XP、ランキング、キャラクターなど視覚的に説明しやすい機能があった",
+"marketTiming": "AIコーディングやモバイルアプリ開発の敷居が下がり、短期間でiOSアプリを作って短尺動画で拡散できる環境が整っている",
+"founderStrength": "若年層の感覚を理解しており、Roblox開発や複数の失敗事業を通じて、アプリ開発とネット起業に慣れていた",
+"highlyReplicableElements": "ニッチ選定、インフルエンサー選定、CPM<RPMの契約設計、最初の15秒でアプリを見せる条件、割引ペイウォール",
+"lowReplicabilityElements": "14歳というストーリー性、若年層コミュニティへの感覚、実際に成果の出るインフルエンサーを見極める経験、App Store課金最適化"
+},
+"toolsStack": {
+"toolsUsed": [
+"Figma",
+"Xcode",
+"YouTube tutorials",
+"Superwall",
+"Supabase"
+],
+"aiTools": [
+"Claude Code"
+],
+"payment": "App Store内課金と推測されるが、動画内で明示は不明",
+"database": "Supabase",
+"hosting": "iOS App Store。バックエンドのホスティング詳細は不明",
+"analytics": "SuperwallでペイウォールABテスト。その他の分析ツールは不明",
+"other": [
+"インフルエンサー契約",
+"最低再生数保証",
+"ペイウォールABテスト",
+"離脱時割引オファー"
+]
+},
+"evidence": {
+"evidenceQuotes": [
+"I scaled an app called Locked to $14,000 per month",
+"Locked is a gamified health fitness app",
+"we charge $40 a year or $7 a week",
+"only $20 a year",
+"it took about a month and a half",
+"I partner with influencers to promote my app",
+"my RPM was around 2 to 3 dollars",
+"between the dollar and dollar 50 range",
+"around $3,000 and about 1,800 downloads",
+"approximately 1 million views",
+"We pay them something like $800",
+"600,000 minimum view clause",
+"we use Figma",
+"we used Cloud Code",
+"Superwall",
+"Superbase for our database"
+],
+"numberEvidence": "$14,000/月、約4か月、構築1.5か月、単一動画約1,800ダウンロード、約100万再生、約$3,000売上、日次売上$300から$728、$600、$700、最大約$1,000近くに上昇",
+"priceEvidence": "$40/年、$7/週、離脱時$20/年、Claude Code $200/月、Superwall 1%手数料、インフルエンサー例$800、別例$500/1動画、$1,200/4動画",
+"growthChannelEvidence": "インフルエンサー投稿、TikTok/Instagram/YouTube Shorts、最初の15秒以内にアプリを見せる、最低再生数保証付き契約",
+"ambiguousPoints": [
+"App Storeの実際の課金スクリーンやStripe等の決済明細は動画書き起こし上では確認できない",
+"継続率、解約率、LTV、CACの詳細は不明",
+"総インフルエンサー数、総広告費、利益率は不明",
+"日次売上スパイクが完全に該当動画だけに起因するかは不明",
+"創業者の年齢14歳はタイトル上の訴求だが、書き起こし内で本人年齢の詳細確認は限定的"
+]
+},
+"facts": [
+"Lockedはゲーミフィケーション型の健康・フィットネス・集中支援アプリとして説明されている",
+"収益は月$14,000と説明されている",
+"価格は$40/年、$7/週、離脱時割引$20/年と説明されている",
+"年額プランには3日間無料トライアルがある",
+"アプリ構築にはFigma、Xcode、YouTube tutorials、Claude Codeが使われたと説明されている",
+"アイデアからApp Store公開まで約1.5か月と説明されている",
+"主な成長戦略はインフルエンサーとの提携と説明されている",
+"EvanはRPMが$2〜$3程度で、CPMをそれ以下に抑える必要があると説明している",
+"Jeremiahの投稿は約100万再生、約1,800ダウンロード、約$3,000の売上につながったと説明されている",
+"SuperwallはペイウォールABテストに使い、1%の手数料がかかると説明されている",
+"Supabaseはデータベースとして使われ、無料と説明されている"
+],
+"inferences": [
+"この事例の本質はアプリの独自技術よりも、短尺動画インフルエンサーを利益が出る単価で買う広告運用にある",
+"若年層向けの自己改善アプリは、機能の深さよりも見た目、ゲーム性、SNSでの見せやすさが重要になりやすい",
+"CPM<RPMの条件を守れるなら、個人開発アプリでも有料インフルエンサー投稿で初期成長を作れる可能性がある",
+"Bilion向けには、Lockedそのものよりも『アプリ創業者向けインフルエンサー契約・ROI判定ツール』に変換する方が即収益化しやすい",
+"日本向けでは、習慣化アプリ単体よりも、受験勉強、資格勉強、副業作業、ジム継続など具体用途に絞った方が売りやすい"
+],
+"risks": {
+"legalRisk": "インフルエンサー広告ではPR表記や広告表示規制の確認が必要。未成年創業者の契約・決済・税務も実務上の注意が必要",
+"platformDependency": "TikTok、Instagram、YouTube Shorts、App Storeのアルゴリズムと審査、アプリ内課金ルールに強く依存する",
+"competitionRisk": "習慣化アプリ、タスク管理アプリ、ゲーミフィケーションアプリは競合が多く、差別化が弱いと埋もれやすい",
+"replicabilityRisk": "成果の出るクリエイター選定、交渉、最低再生数保証、投稿内容の自然な統合には経験が必要で、単純模倣では赤字化しやすい",
+"exaggerationOrSuspiciousPoints": [
+"月$14,000の売上は提示されているが、利益、広告費、継続率、返金、手数料差引後の金額は不明",
+"単一動画の売上貢献は推定であり、他チャネルや同時施策の影響は排除できない",
+"$7/週は高単価で、短期売上は伸びても解約率が高い可能性がある",
+"14歳創業者というストーリーが強いため、再現性よりも話題性が上乗せされている可能性がある"
+]
+},
+"aiNativeRemake": {
+"howToRebuildWithAI": "習慣化アプリ本体をAIで作るより、まずは『アプリ創業者向けインフルエンサーROI判定・契約テンプレ生成ツール』に変換する。ニッチ、RPM、目標CPM、候補クリエイターURL、平均再生数、エンゲージメント、想定報酬を入力すると、採算判定、契約条件、DM文、投稿要件、48時間検証計画を出す",
+"smallerStart": "Google SheetsまたはNotionテンプレート＋GPTプロンプトで、CPM/RPM計算、候補クリエイター評価、DMテンプレ、契約条件案を出すミニ商品から開始",
+"forSoloDevelopers": "自作アプリやAIツールを持つ個人開発者向けに、広告費を無駄にしないインフルエンサー選定システムとして売る",
+"forNonEngineers": "アプリを持たない人向けには、『売れる習慣化アプリ企画診断』や『ショート動画で売りやすいアプリ案レポート』として提供できる",
+"japanLocalization": "日本では、資格勉強、英語学習、副業作業、筋トレ、受験勉強、朝活などに特化した習慣化アプリ案と、TikTok/Instagramのマイクロインフルエンサー起用戦略に翻訳する",
+"englishMarketVersion": "英語圏では、App Founder Influencer Deal Desk、Creator CPM Under RPM Calculator、UGC Launch Playbook for iOS Appsとして販売可能"
+},
+"starterProduct": {
+"minimumVersionIn48h": "『Influencer Deal Desk for App Founders』として、候補クリエイターの評価、CPM/RPM採算判定、DM文、投稿要件、最低再生数保証案、契約条件案を1画面で生成するWebツールまたはテンプレート",
+"requiredFeatures": [
+"RPM入力",
+"目標CPM自動計算",
+"候補クリエイター名・URL・平均再生数・想定報酬入力",
+"CPMと損益判定",
+"おすすめ契約形式の提案",
+"DMテンプレ生成",
+"動画要件生成",
+"最低再生数保証案",
+"48時間テスト計画",
+"結果記録欄"
+],
+"unnecessaryFeatures": [
+"自動スクレイピング",
+"本格的なCRM",
+"決済連携",
+"インフルエンサー自動契約",
+"AI動画生成",
+"マルチユーザー権限",
+"高度な分析ダッシュボード"
+],
+"firstPrice": "$19〜$49のテンプレート/ミニツール、または$99の個別診断",
+"howToGetFirst10Customers": "X、Indie Hackers、Redditのr/SaaSやr/SideProject、App Store開発者コミュニティで『$800の投稿が$3,000を生む条件はCPM<RPM』という切り口で投稿し、希望者に無料スプレッドシートを配布して、有料版または個別診断へ誘導する",
+"validationMethod": "48時間で10人のアプリ開発者にDMし、RPM、過去の広告失敗、インフルエンサー起用経験を聞く。3人以上が候補クリエイター診断に$19以上払うなら継続"
+},
+"contentAngles": {
+"xPostIdeas": [
+"14歳が月$14kアプリを作った話、本質はアプリではなくCPM<RPMのインフルエンサー調達だった",
+"アプリを作っても売れない人へ。Evanは広告を『感覚』で買っていない。RPM $2〜$3、CPM $1〜$1.5で買っていた",
+"習慣化アプリはレッドオーシャン。でも短尺動画で一瞬で価値が伝わるUIなら、まだ勝ち筋がある",
+"インフルエンサー投稿で赤字になる人は、契約前にこの3つを見ていない。視聴者一致、平均再生数、CPM上限",
+"Bilion視点で見ると、Lockedからコピーすべきは『習慣化アプリ』ではなく『クリエイター契約プレイブック』"
+],
+"shortVideoIdeas": [
+"『14歳が月200万円アプリ』の裏側は、天才開発ではなくインフルエンサー広告の単価設計だった",
+"アプリを売るなら広告費をこう決めろ。RPMが$3なら、CPMは$1.5以下で買う",
+"1本の動画で約1,800DL。なぜ売れた？最初の15秒でアプリを見せ、投稿者のテーマと完全一致していたから",
+"習慣化アプリを今から作るなら、機能より先に『誰の動画に自然に出せるか』を決めろ",
+"この事例をAIツール化するなら、インフルエンサーROI計算機が最小商品になる"
+],
+"imageCardIdea": "左に『$14k/mo App』、中央に『RPM $2-3 > CPM $1-1.5』、右に『Influencer Deal Desk』を配置し、習慣化アプリ本体ではなく集客構造を抜き出す図解"
+},
+"bilionJudgment": {
+"worthAddingToBilion": "追加価値あり。ただし『14歳が作った習慣化アプリ』としてではなく、『CPMをRPM以下に抑えるインフルエンサー獲得プレイブック』として登録すべき",
+"replicationScore": 7,
+"aiLeverageScore": 7,
+"monetizationClarityScore": 8,
+"buildDifficultyScore": 5,
+"whatToCopyNow": "RPM基準のインフルエンサー契約設計、最低再生数保証、最初の15秒で商品を出す投稿要件、離脱時割引ペイウォール",
+"whatNotToCopy": "習慣化アプリをそのまま作ること、若年創業者ストーリーに依存すること、LTV不明のまま高額インフルエンサー契約を結ぶこと"
+},
+"bilionRecordJson": {
+"sourceType": "YouTube",
+"sourceUrl": "https://www.youtube.com/watch?v=dWeoSKLt_fc",
+"businessName": "Locked",
+"industry": "iOSアプリ / 習慣化 / 生産性 / フィットネス",
+"revenueSignal": "$14,000/月",
+"buyer": "集中、習慣化、自己改善、フィットネス、勉強、作業継続に興味があるスマホユーザー",
+"pain": "タスクや習慣が続かず、既存の習慣化アプリが退屈でモチベーションが保てない",
+"desire": "ゲーム感覚でタスクをこなし、XP、ランキング、バッジで成長を感じたい",
+"fear": "集中できないまま周囲に遅れ、自分だけ成長できないこと",
+"offer": "ゲーミフィケーション型の集中・習慣化アプリ",
+"pricingModel": "$40/年、$7/週、離脱時$20/年、3日間無料トライアル",
+"growthChannel": "TikTok、Instagram Reels、YouTube Shortsのインフルエンサー投稿",
+"distributionNotes": "RPM $2〜$3に対し、CPM $1〜$1.5程度でクリエイターを獲得。最低再生数保証付き契約を多用し、最初の15秒以内にアプリを見せる要件を設定",
+"whyItWorked": "商品テーマと投稿者の視聴者が一致し、広告感が弱く、短尺動画で価値が一瞬で伝わった。さらにCPMをRPM未満に抑えることで獲得採算を管理していた",
+"toolsUsed": [
+"Figma",
+"Xcode",
+"Claude Code",
+"YouTube tutorials",
+"Superwall",
+"Supabase"
+],
+"evidence": [
+"$14,000/月",
+"$40/年",
+"$7/週",
+"$20/年",
+"約1.5か月で構築",
+"約100万再生",
+"約1,800ダウンロード",
+"約$3,000売上",
+"RPM $2〜$3",
+"CPM $1〜$1.5"
+],
+"risks": [
+"利益率、LTV、解約率が不明",
+"単一動画の売上貢献は推定",
+"インフルエンサー広告のPR表記や契約リスク",
+"習慣化アプリ市場は競合が多い",
+"TikTok/Instagram/YouTube ShortsとApp Storeに依存"
+],
+"aiNativeRemake": "アプリ創業者向けに、RPMと候補クリエイター情報から採算の合うインフルエンサー契約条件、DM文、投稿要件、最低再生数保証案を生成するAI Deal Deskへ変換する",
+"starterProduct": "Influencer Deal Desk for App Founders：CPM/RPM計算、候補評価、DM文、投稿要件、契約条件案、48時間検証計画を出すミニWebツールまたはテンプレート",
+"validationPlan48h": "アプリ開発者・AIツール制作者10人にDMし、過去の集客課題とRPMを聞く。3件の無料診断を作成し、$19〜$49で有料テンプレまたは$99診断に転換できるか検証する",
+"xPostIdeas": [
+"14歳が月$14kアプリを作った話の本質は、アプリではなくCPM<RPMのインフルエンサー調達だった",
+"Evanは広告を感覚で買っていない。RPM $2〜$3、CPM $1〜$1.5で買っていた",
+"習慣化アプリはレッドオーシャン。でも短尺動画で一瞬で価値が伝わるUIならまだ勝ち筋がある",
+"インフルエンサー投稿で赤字になる人は、契約前に視聴者一致、平均再生数、CPM上限を見ていない",
+"Bilion視点では、Lockedからコピーすべきは習慣化アプリではなくクリエイター契約プレイブック"
+],
+"shortScriptIdeas": [
+"14歳が月200万円アプリ。その裏側は天才開発ではなく、インフルエンサー広告の単価設計",
+"アプリを売るなら広告費をこう決めろ。RPMが$3ならCPMは$1.5以下で買う",
+"1本の動画で約1,800DL。理由は最初の15秒でアプリを見せ、投稿者のテーマと完全一致していたから",
+"習慣化アプリを作る前に、誰のショート動画で自然に紹介できるかを決めろ",
+"この事例をAIツール化するなら、インフルエンサーROI計算機が最小商品になる"
+],
+"imagePrompt": "Dark SaaS style infographic showing: '$14K/mo iOS App' → 'RPM $2-3' → 'Buy creators below CPM $1-1.5' → '1M views / 1,800 downloads / $3K revenue'. Use clean dashboard cards, creator deal calculator, and mobile app preview.",
+"buildPromptSeed": "Build a standalone web app called Influencer Deal Desk for App Founders. It helps solo app founders decide whether a creator promotion deal is profitable. The user enters app RPM, target CAC, creator handle, niche fit, average views, proposed fee, minimum view clause, platform, and expected conversion. The app calculates CPM, compares it against RPM, labels the deal as profitable/risky/bad, recommends one of four deal structures: flat rate, CPM deal, minimum view clause, or bonus deal, then generates a DM script, video requirements, contract checklist, and 48-hour launch plan. Use mock data, local state, no auth, no database, mobile-first UI.",
+"monetizationPath": "無料のCPM/RPM計算機 → $19テンプレート → $49創業者向けDeal Desk → $99個別診断 → 月額$19〜$49のクリエイター候補管理・投稿結果記録ツール",
+"replicationScore": 7,
+"aiLeverageScore": 7,
+"monetizationClarity": 8,
+"buildDifficulty": 5
+}
+}

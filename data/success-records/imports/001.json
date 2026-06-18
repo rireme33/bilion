@@ -1,0 +1,28 @@
+{
+  "sourceType": "YouTube",
+  "sourceUrl": "https://www.youtube.com/watch?v=Q4k8JNYKJT0",
+  "businessName": "Tone Adapt",
+  "industry": "音楽テック / ギター / 趣味特化SaaS",
+  "revenueSignal": "月$25,000と発言。ただし収益数字に不整合あり。",
+  "buyer": "好きな曲のギター音色を自分の機材で再現したい初心者〜中級者ギタリスト",
+  "pain": "好きな曲の音を再現したいが、自分の機材に合う設定が分からない。",
+  "offer": "曲名と所有機材を入力すると、自分の機材向けのアンプ・エフェクト設定を返すAIアプリ",
+  "pricingModel": "週額$10、年額約$60",
+  "growthChannel": "Instagram、TikTok、YouTube、Facebookへの短尺動画。1日3投稿。",
+  "whyItWorked": "好きな曲の音色再現という狭く強い欲求に絞り、結果が動画で一瞬で伝わった。",
+  "aiNativeRemake": "趣味ごとの『自分の環境に合わせた最適設定AI』に横展開できる。",
+  "starterProduct": "曲名、所有ギター、アンプ、ペダルを入力すると音作り設定を返す1画面Webツール。",
+  "validationPlan48h": "簡易LPとデモを作り、短尺動画を10本投稿。無料で5人に設定を返し、2人以上が$9〜$19を払う意思を見せたら継続。",
+  "buildPromptSeed": "Build a simple web app for guitarists that turns a song title and the user's guitar, amp, and pedals into recommended tone settings.",
+  "monetizationPath": "数回無料生成から週額$5〜$10、年額$49〜$60のサブスクへ誘導。",
+  "risks": [
+    "収益数字に不整合がある",
+    "SNSバイラル依存",
+    "権利・商標リスク",
+    "顔出しやUGC経験が成功要因に含まれる"
+  ],
+  "replicationScore": 8,
+  "aiLeverageScore": 8,
+  "monetizationClarity": 8,
+  "buildDifficulty": 4
+}

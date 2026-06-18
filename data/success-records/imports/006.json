@@ -1,0 +1,289 @@
+{
+"sourceType": "YouTube",
+"source": {
+"videoTitle": "I Built A $30K/Month in 35 Days",
+"creator": "Starter Story",
+"speaker": "Cedric（Pepai創業者） / Pat Walls",
+"sourceUrl": "https://www.youtube.com/watch?v=vbEKEWtnndU",
+"genre": "創業者インタビュー / iOSアプリ事例 / AIバイブコーディング",
+"language": "英語"
+},
+"oneLinePattern": "TikTokで急伸中の健康・美容ニッチを見つけ、既存アプリのレビュー不満をClaudeに分析させ、AIコーディングで2週間でiOSサブスクアプリを作り、インフルエンサー投稿とApp Store検索需要で初速売上を作るパターン。",
+"business": {
+"businessName": "Pepai",
+"productOrService": "ペプチド利用者向けの安全管理・投与量計算・記録・学習アプリ",
+"industry": "ヘルスケア / ウェルネス / iOSサブスクリプションアプリ",
+"targetMarket": "ペプチドに関心がある米国中心の健康・美容・回復・減量・スキンケア層",
+"customer": "ペプチドを使っている、または使おうとしている個人ユーザー",
+"problemSolved": "ペプチドの量、注射部位、記録、情報収集を自己管理できず、安全面に不安がある問題",
+"valueProvided": "投与量計算、投与ログ、注射部位管理、ペプチド情報ライブラリ、クイズ、PubMed系ソース参照、生活習慣記録をまとめて提供",
+"price": "月額10ドル、年額45ドル、3日間無料トライアル",
+"revenue": "ローンチ7週間で総収益約51,000ドル、直近28日で約33,000ドル、MRR約11,000ドル",
+"period": "ローンチから7週間。開発は約2週間。Apple審査対応は約1週間",
+"usersOrSubscribers": "アクティブサブスクリプション約2,000件、ローンチ前ウェイトリスト約300人"
+},
+"buyer": {
+"whoBuys": "ペプチド、減量、美容、日焼け、スキンケア、回復目的で自己管理したい消費者",
+"whyTheyBuy": "ペプチドがSNSで話題化しているが、使い方や量、注射部位、記録方法が不安だから",
+"urgency": "中〜高。すでに使っている人は投与量や注射部位の管理をすぐ必要とする。話題化直後の新規関心層も検索行動を起こしやすい",
+"willingnessToPay": "月額10ドル程度なら支払い可能性がある。安全管理・記録・教育という不安解消系なので継続課金に向きやすい",
+"existingAlternatives": "既存のペプチド関連アプリ、スプレッドシート、メモアプリ、Reddit、TikTok、YouTube、医療系記事、PubMed検索",
+"alternativeProblems": "既存アプリは成功していない、機能不足、マーケ不足、レビュー上の不満がある。SNS情報は断片的で危険な可能性がある"
+},
+"painDesireFear": {
+"pain": "ペプチドを使いたいが、量や注射部位や安全情報がわからず、毎回の記録も面倒",
+"desire": "流行の健康・美容・回復トレンドを安全そうに試したい。自分の体調・見た目・回復を改善したい",
+"fear": "間違った量を使う、同じ部位に打ち続ける、怪しい情報を信じる、Appleや医療規制上のリスクがあるアプリを使う",
+"reasonsNotToBuy": "医療助言への不信、ペプチド自体への不安、無料情報で十分、アプリの正確性が不明、継続利用の必要性を感じない"
+},
+"offer": {
+"whatIsSold": "ペプチド管理用iOSアプリの月額・年額サブスクリプション",
+"realBenefitSold": "ペプチド利用の不安を減らし、量・部位・記録・学習を一つのアプリで管理できる安心感",
+"minimumProduct": "投与量計算、ペプチド登録、投与ログ、注射部位メモ、基本情報ライブラリ、サブスク課金",
+"subscriptionReason": "ペプチドの利用は継続的な記録・学習・体重/写真/栄養トラッキングと相性が良いため",
+"upsellPotential": "高度な健康ログ、専門家監修コンテンツ、個別プラン、Apple Health連携、食事スキャン、進捗写真、コミュニティ、B2Bクリニック連携。ただし医療規制に注意"
+},
+"growthDistribution": {
+"initialAcquisition": "TikTok・Instagramで流行を観察し、ニッチのインフルエンサーへ事前接触。Reddit投稿とウェイトリストでローンチ前に約300人獲得",
+"mainGrowthChannel": "App Store検索、Instagramインフルエンサー投稿、TikTokトレンド、Reddit",
+"postingFrequency": "不明。ただし創業者は毎日TikTokやInstagramを見てトレンドを探すべきと述べている",
+"winningContentFormat": "ニッチインフルエンサーのInstagramストーリー投稿・通常投稿、トレンド関連の検索流入、Reddit投稿",
+"scaleMethod": "トレンド初期にSEO/ASOポジションを取り、インフルエンサー投稿で信頼と検索需要を増幅する",
+"adsUgcSeoCommunity": "主にUGC/インフルエンサーとApp Store検索。広告についての具体的実績は不明",
+"whyItSpread": "ペプチドがSNS上で急速に話題化し、ユーザーが情報不足と安全不安を持っていた。競合が弱く、検索時に上位表示された"
+},
+"monetization": {
+"monetizationPath": "無料トライアルから月額10ドルまたは年額45ドルのiOSサブスクリプションへ転換",
+"freeOffer": "3日間無料トライアル",
+"paidProduct": "Pepaiの月額・年額サブスクリプション",
+"pricingModel": "B2Cサブスクリプション。月額10ドル、年額45ドル",
+"whyLtvCanGrow": "健康・美容・減量・回復の継続ログと教育コンテンツを追加でき、長期利用の理由を作りやすい",
+"whyRecurringRevenueWorks": "ペプチドの利用は一回限りではなく、投与・記録・学習・体重管理が反復するため"
+},
+"whyItWorked": {
+"reason1": "SNS上で急伸しているニッチを早期に見つけ、検索需要が増える前にアプリを投入した",
+"reason2": "既存アプリのレビューを見て、ユーザーの不満と欲しい機能を抽出してから作った",
+"reason3": "Claude、Replit、Firebase、RevenueCatなどを使い、2週間で実用レベルまで構築した",
+"marketTiming": "ペプチドがTikTokやInstagramで話題化し、App Store検索需要が増え始めたタイミング",
+"founderStrength": "SNSトレンド観察、ニッチ選定、レビュー分析、AIコーディング、インフルエンサー開拓を高速に実行した点",
+"highlyReplicableElements": "トレンド発見、競合レビュー分析、AIでMVP開発、事前ウェイトリスト、インフルエンサー投稿、App Store検索狙い",
+"lowReplicabilityElements": "ペプチドという危険・規制寄りのニッチ、医療助言を避けるApple審査対応、トレンド初期のタイミング、インフルエンサー投稿の当たり"
+},
+"toolsStack": {
+"toolsUsed": [
+"Replit",
+"Claude",
+"Firebase",
+"RevenueCat",
+"Resend",
+"App Store",
+"TikTok",
+"Instagram",
+"Reddit",
+"PubMed",
+"Apple Health"
+],
+"aiTools": [
+"Claude",
+"ChatGPT"
+],
+"payment": "RevenueCatによるiOSアプリ内課金",
+"database": "Firebase",
+"hosting": "不明",
+"analytics": "RevenueCat dashboard",
+"other": [
+"Apple expedited review",
+"App Store検索",
+"Instagramインフルエンサー投稿"
+]
+},
+"evidence": {
+"evidenceQuotes": [
+"We launched just 7 weeks ago",
+"we've already hit $50,000 in total revenue",
+"tracking peptides for safety",
+"33,000 revenue",
+"almost 2,000 active subscriptions",
+"Our MRR is 11K",
+"a yearly subscription that's $45",
+"a monthly subscription for $10",
+"with a 3-day free trial",
+"using Claude and Replet, it took about 2 weeks",
+"I used Firebase for the back end",
+"Apple rejected it like a million times",
+"we had a wait list with like 300 people",
+"one story post and from that we did $1,000",
+"we did like $4,000 in revenue just from that day",
+"I think marketing and distribution matters way more"
+],
+"numberEvidence": "7週間、総収益約50,000〜51,000ドル、直近28日約33,000ドル、MRR約11,000ドル、約2,000アクティブサブスク、ウェイトリスト約300人、開発約2週間、Apple審査約1週間、1ストーリー投稿で約1,000ドル、1通常投稿の初日で約4,000ドル、合計約10,000ドル寄与と発言",
+"priceEvidence": "月額10ドル、年額45ドル、3日間無料トライアルと発言",
+"growthChannelEvidence": "TikTokでトレンド発見、Instagramインフルエンサー投稿、Reddit投稿、App Store検索上位流入について発言",
+"ambiguousPoints": [
+"タイトルは30K/monthだが、動画内ではMRR 11K、直近28日収益33K、総収益51Kと複数指標が混在している",
+"RevenueCat画面を見せたとされるが、書き起こしだけでは画面の真偽は検証できない",
+"インフルエンサー投稿から合計10,000ドルの帰属は本人も完全には断定していない",
+"ペプチドの安全性や法的適法性は動画内だけでは判断できない",
+"既存競合が本当に弱かったかは外部検証が必要"
+]
+},
+"facts": [
+"Pepaiはペプチド利用者向けのトラッキング・計算・学習アプリとして説明されている",
+"ローンチ7週間で総収益約50,000〜51,000ドルと語られている",
+"直近28日で約33,000ドル収益、MRR約11,000ドル、約2,000アクティブサブスクリプションと語られている",
+"価格は月額10ドル、年額45ドル、3日間無料トライアルと語られている",
+"ReplitとClaudeを使って約2週間で構築し、Firebaseをバックエンドに使ったと語られている",
+"RevenueCatをアプリ内課金に使い、Resendをメール送信に使ったと語られている",
+"Apple審査では医療助言に見える機能が問題となり、承認まで約1週間かかったと語られている",
+"TikTok、Instagram、Reddit、App Store検索、インフルエンサー投稿が成長経路として語られている",
+"ローンチ前に約300人のウェイトリストがあったと語られている"
+],
+"inferences": [
+"この事例の本質はアプリの高度さではなく、SNSトレンド初期の検索需要を早く掴んだことにある",
+"健康・美容・自己改善系の不安が強いニッチでは、記録・計算・教育を束ねるだけでも課金理由を作りやすい",
+"競合レビューをClaudeに入れてMVP仕様に変換する手法は、他のニッチアプリにも転用しやすい",
+"医療・健康系は売上ポテンシャルが高い一方で、審査・法規制・誤情報リスクが高い",
+"日本でそのままペプチドアプリを作るより、規制リスクの低い美容・セルフケア・習慣記録領域に変換した方が現実的"
+],
+"risks": {
+"legalRisk": "高い。ペプチド、投与量、注射部位、健康効果に関わるため、医療助言・薬機法・FDA/Apple規約・安全責任のリスクがある",
+"platformDependency": "高い。App Store審査、iOS課金、App Store検索順位、TikTok/Instagramトレンドに依存する",
+"competitionRisk": "高い。動画内でも競合がコピーし始めていると語られている。トレンドアプリは模倣が速い",
+"replicabilityRisk": "中〜高。トレンド発見とAI開発は再現可能だが、ペプチド特有のタイミング、検索上位、インフルエンサー当たり、Apple承認は再現性が低い",
+"exaggerationOrSuspiciousPoints": [
+"タイトルの30K/monthと動画内のMRR 11K・直近28日33Kの指標が混同されやすい",
+"健康・医療寄りなのに安全性や監修体制の説明が十分ではない",
+"RevenueCat画面の提示はあるが、書き起こしだけでは第三者検証できない",
+"一部収益のインフルエンサー帰属は推定が含まれている",
+"トレンド初期の偶然性が高く、後追い参入では同じ成果になりにくい"
+]
+},
+"aiNativeRemake": {
+"howToRebuildWithAI": "TikTok/Instagram/Reddit/App Storeレビューから急伸ニッチを抽出し、既存アプリレビューをClaude/ChatGPTに投入して、痛み・欲しい機能・価格・MVP仕様・ASOキーワード・インフルエンサー候補を生成する。実装はReplit/Cursor/Claude CodeでMVP化する",
+"smallerStart": "医療リスクの高い投与量アプリではなく、トレンド商品の使用記録・習慣ログ・注意点チェックリスト・教育カードアプリから始める",
+"forSoloDevelopers": "単一ニッチに絞り、計算機能、記録、リマインダー、情報カード、レビュー分析で見つけた1〜2機能だけを実装する",
+"forNonEngineers": "No-code/AIコーディングでWeb版またはPWAを作り、App Store前にLP、Notionテンプレ、診断、PDFレポートで検証する",
+"japanLocalization": "日本ではペプチド直球は避け、美容施術後ケア記録、サプリ服用ログ、ダイエット注射情報整理、肌治療メモ、ジム回復ログなど規制リスクを下げた形にする",
+"englishMarketVersion": "TikTokで伸びているbiohacking、looksmaxing、supplement stack、sleep stack、GLP-1 lifestyle、longevity routineなどの管理アプリに展開できる"
+},
+"starterProduct": {
+"minimumVersionIn48h": "App Storeアプリではなく、TikTokトレンド・競合レビュー・インフルエンサー候補を入力すると、ニッチアプリMVP仕様、課金案、ASOキーワード、投稿台本、48時間検証手順を出す『Trend App Blueprint Generator』を作る",
+"requiredFeatures": [
+"トレンド名入力",
+"対象ユーザー入力",
+"競合アプリレビュー貼り付け欄",
+"ユーザー不満の自動分類",
+"MVP機能案生成",
+"価格案生成",
+"インフルエンサーDM文生成",
+"App Store検索キーワード案",
+"48時間検証プラン生成"
+],
+"unnecessaryFeatures": [
+"ログイン",
+"本格DB",
+"ネイティブiOS化",
+"決済",
+"医療助言機能",
+"自動スクレイピング",
+"高度な分析ダッシュボード"
+],
+"firstPrice": "9〜29ドルの買い切り、または日本向けなら1,980〜4,980円のテンプレ/診断商品",
+"howToGetFirst10Customers": "Xで『TikTokトレンドから月額アプリ案を作る』実例を毎日投稿し、AIビルダー、vibe coder、個人開発者、App Store副業層にDM。Reddit/Indie Hackersには実例ベースで投稿。無料で3件だけ診断し、結果を実績化する",
+"validationMethod": "48時間以内に3つの急伸トレンドを選び、各トレンドで競合レビュー20件を分析し、MVP案を1枚にしてX/Reddit/DMで提示。10人にDMして2人以上が9ドル以上で買うか、5人以上がメール登録すれば継続"
+},
+"contentAngles": {
+"xPostIdeas": [
+"大学生が7週間で$50K売ったアプリの本質は『AIで作った』ではない。TikTokで伸びるニッチを見つけ、競合レビューを読んで、インフルエンサーに先に配ったこと。",
+"AI時代のアプリ開発は、コード力より『何が今検索され始めているか』を見つける力が勝つ。Pepaiはペプチド検索需要の初期にApp Storeへ入った。",
+"一番強いMVP設計法：競合アプリのレビューを全部Claudeに入れる。好きな点、不満、欲しい機能を抽出して、最小機能に変換する。",
+"『良いアイデアを探す』より『SNSで人が急に執着し始めたものを管理アプリ化する』方が速い。ペプチド、looksmaxing、GLP-1、sleep stack、全部同じ構造。",
+"初回売上は広告ではなく、ニッチインフルエンサー1投稿。1ストーリーで$1K、通常投稿で初日$4K。トレンド初期の配信者は安くて強い。"
+],
+"shortVideoIdeas": [
+"冒頭：『大学生がAIで作ったアプリが7週間で$50K。理由はアプリの品質じゃない』→トレンド発見→競合レビュー分析→インフルエンサー→App Store検索の順に解説",
+"冒頭：『次に作るアプリを探すなら、Product Huntを見るな。TikTokで人が急に執着しているものを見ろ』→Pepai事例→48時間検証法",
+"冒頭：『Claudeにコードを書かせる前に、競合レビューを読ませろ』→レビュー分析→MVP機能→価格→DM文まで作る流れを画面収録",
+"冒頭：『この学生は医療アプリを作ったんじゃない。不安を記録機能に変えて売った』→ペイン・デザイア・課金理由を分解",
+"冒頭：『AI副業で稼げない人は、作るものを間違えてる』→成長トレンド×サブスク×インフルエンサーの型を紹介"
+],
+"imageCardIdea": "中央に『Trend → Reviews → AI Build → Influencer → App Store Revenue』の5ステップ図。左にTikTokトレンド、右に$50K/7 weeks、下に『作る前に配れる導線があるか？』というチェック項目を置く"
+},
+"bilionJudgment": {
+"worthAddingToBilion": "追加価値あり。Bilionの『海外成功事例→AI-native小型商品』変換に非常に相性が良い。ただし医療・健康領域をそのまま模倣するのは危険なので、トレンド発見・レビュー分析・高速MVP・インフルエンサー検証の型として登録すべき",
+"replicationScore": 7,
+"aiLeverageScore": 8,
+"monetizationClarityScore": 8,
+"buildDifficultyScore": 6,
+"whatToCopyNow": "TikTok/Instagramで急伸するニッチを見つけ、既存アプリレビューをAIで分析し、48時間でMVP仕様・LP・インフルエンサーDM・価格を作る流れ",
+"whatNotToCopy": "ペプチドの投与量や医療助言に踏み込むこと。Apple審査や法的リスクの高い機能を初心者がそのまま作ること。トレンド後追いで同じ売上を期待すること"
+},
+"bilionRecordJson": {
+"sourceType": "YouTube",
+"sourceUrl": "https://www.youtube.com/watch?v=vbEKEWtnndU",
+"businessName": "Pepai",
+"industry": "ヘルスケア / ウェルネス / iOSサブスクリプションアプリ",
+"revenueSignal": "ローンチ7週間で総収益約50,000〜51,000ドル、直近28日約33,000ドル、MRR約11,000ドル",
+"buyer": "ペプチドを使う、または使おうとしている健康・美容・回復・減量系の個人ユーザー",
+"pain": "ペプチドの量、注射部位、記録、安全情報がわからず不安",
+"desire": "流行のペプチドを安全そうに使い、見た目・健康・回復を改善したい",
+"fear": "間違った量、危険な使い方、情報不足、注射部位ミス、怪しいSNS情報",
+"offer": "ペプチドの投与量計算、記録、注射部位管理、研究ライブラリ、クイズ、生活ログを備えたiOSアプリ",
+"pricingModel": "月額10ドル、年額45ドル、3日間無料トライアル",
+"growthChannel": "TikTokトレンド、Instagramインフルエンサー、Reddit投稿、App Store検索",
+"distributionNotes": "ローンチ前にReddit投稿とインフルエンサー接触で約300人のウェイトリストを作成。1ストーリー投稿で約1,000ドル、1通常投稿で初日約4,000ドル、合計約10,000ドル寄与と発言",
+"whyItWorked": "成長中のペプチドトレンドを早期に発見し、競合レビューから不満を抽出してAIで高速開発。App Store検索需要とインフルエンサー信頼を利用した",
+"toolsUsed": [
+"Replit",
+"Claude",
+"Firebase",
+"RevenueCat",
+"Resend",
+"TikTok",
+"Instagram",
+"Reddit",
+"App Store",
+"PubMed",
+"Apple Health"
+],
+"evidence": [
+"We launched just 7 weeks ago",
+"we've already hit $50,000 in total revenue",
+"33,000 revenue",
+"Our MRR is 11K",
+"almost 2,000 active subscriptions",
+"a yearly subscription that's $45",
+"a monthly subscription for $10",
+"with a 3-day free trial",
+"using Claude and Replet, it took about 2 weeks",
+"we had a wait list with like 300 people"
+],
+"risks": [
+"医療助言・薬機法・FDA・Apple審査リスクが高い",
+"App Store検索順位とSNSトレンド依存が強い",
+"競合コピーが速い",
+"収益の一部はトレンド初期タイミングとインフルエンサー当たりに依存",
+"書き起こしだけでは収益画面の真偽を検証できない"
+],
+"aiNativeRemake": "SNSで急伸するニッチを検出し、既存アプリレビューをAIで分析して、MVP機能・価格・ASO・インフルエンサーDM・検証計画を生成するTrend App Blueprintツールに変換する",
+"starterProduct": "Trend App Blueprint Generator：トレンド名と競合レビューを入れると、48時間で作れるニッチアプリ案、MVP機能、価格、投稿台本、DM文、検証手順を出す",
+"validationPlan48h": "1日目：TikTok/Instagramで急伸ニッチを3つ選び、App Store競合レビューを各20件集めてAI分析。2日目：MVP案とLPを作り、X投稿5本、Reddit投稿1本、インフルエンサー/個人開発者DM20件を送り、9〜29ドルで先行販売または診断販売を試す",
+"xPostIdeas": [
+"7週間で$50K売れたPepaiの本質はAI開発ではなく、TikTokトレンド初期に検索需要を取ったこと。",
+"競合レビューをClaudeに読ませるだけで、ユーザーが本当に欲しいMVP機能が見える。",
+"AIアプリで稼ぐなら、作る前に『誰が広めるか』を決めろ。Pepaiはインフルエンサー1投稿で大きく伸びた。"
+],
+"shortScriptIdeas": [
+"大学生が7週間で$50K売ったアプリを5ステップで分解：トレンド発見、競合レビュー、AI開発、事前ウェイトリスト、インフルエンサー投稿。",
+"AIコーディングで稼げない理由は、コードではなく市場選び。Pepaiはペプチドという検索需要の波に乗った。",
+"次のアプリ案は机で考えるな。TikTokで人が急にハマっているものを探せ。"
+],
+"imagePrompt": "Create a dark professional SaaS-style infographic showing a 5-step business pattern: TikTok Trend Signal, App Store Review Mining, AI Vibe Coding, Influencer Validation, Subscription Revenue. Include small metrics: $50K in 7 weeks, $10/month, $45/year, 300 waitlist, 2 weeks build. No medical claims.",
+"buildPromptSeed": "Build a standalone web app called Trend App Blueprint Generator. The user enters a trending niche, target buyer, competitor app names, and pasted App Store reviews. The app analyzes pains, desired features, pricing clues, influencer angles, ASO keywords, and outputs a 48-hour MVP plan, first offer, validation checklist, X posts, short video scripts, and influencer DM templates. Use mock data, local state, no auth, no database, mobile-first UI.",
+"monetizationPath": "無料サンプル診断1件→9〜29ドルのトレンドアプリ設計レポート→月額19〜49ドルの継続トレンドDB/レビュー分析ツール→上位プランで個別ビルドプロンプトやDMリスト提供",
+"replicationScore": 7,
+"aiLeverageScore": 8,
+"monetizationClarity": 8,
+"buildDifficulty": 6
+}
+}

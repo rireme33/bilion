@@ -1,0 +1,266 @@
+{
+"sourceType": "YouTube",
+"source": {
+"videoTitle": "I Built a $20K/Month App in 83 Days",
+"creator": "Starter Story",
+"speaker": "Brian Shin / Pat Walls",
+"sourceUrl": "https://www.youtube.com/watch?v=r4R_Hlw7sbo",
+"genre": "モバイルアプリ創業事例 / インディーハッキング / B2Cアプリ",
+"language": "英語"
+},
+"oneLinePattern": "イベント主催者に『当日みんなで使う』という強いコミットメントを事前獲得してから、使い捨てカメラ体験をスマホアプリ化し、結婚式・誕生日・企業イベントで課金するB2Cイベントアプリパターン",
+"business": {
+"businessName": "Once",
+"productOrService": "イベント用のデジタル使い捨てカメラアプリ",
+"industry": "イベントテック / 写真共有 / モバイルアプリ",
+"targetMarket": "結婚式、誕生日パーティー、企業イベント、ネットワーキングイベントなど、複数人が集まるイベント",
+"customer": "イベント主催者、結婚式の新郎新婦、誕生日会の主催者、企業イベント担当者",
+"problemSolved": "イベント参加者の自然な写真がバラバラに散らばり、後から集めにくい問題",
+"valueProvided": "参加者全員が同じアルバムに写真を残せる、使い捨てカメラ風の制限と後日公開による楽しい体験",
+"price": "小規模イベントは約$2、150人規模の結婚式は約$50",
+"revenue": "ローンチ後83日以内に月間売上$20,000超、動画内では当月$22,000前後と言及",
+"period": "2025年12月ローンチ、83日以内に月間売上$20,000到達",
+"usersOrSubscribers": "週間アクティブユーザー約10,000〜12,000、2月に300件超のイベント、3月に約700件の予定イベント"
+},
+"buyer": {
+"whoBuys": "イベントを主催する人。特に結婚式、誕生日、パーティー、企業イベントのホスト",
+"whyTheyBuy": "ゲストの自然な写真を一箇所に集めたい、イベント体験を楽しくしたい、プロ写真では拾えないカジュアルな瞬間を残したいから",
+"urgency": "イベント日が決まっているため、開催前に導入判断が必要で緊急性が高い",
+"willingnessToPay": "人数比例課金で$2〜$50のため、結婚式やイベント予算の中では小さく、支払い抵抗は比較的低い",
+"existingAlternatives": "使い捨てカメラ、Google Photos共有アルバム、AirDrop、Instagram、LINEグループ、結婚式写真共有アプリ",
+"alternativeProblems": "普通の共有アルバムは体験が弱い、写真が集まらない、参加者が投稿し忘れる、イベント感がない、使い捨てカメラは現像や回収が面倒"
+},
+"painDesireFear": {
+"pain": "イベントの写真が各参加者のスマホに散らばり、後から回収できない。プロ写真だけでは自然な瞬間が残らない",
+"desire": "ゲスト全員の視点から、イベントのリアルで楽しい思い出を簡単に集めたい",
+"fear": "一生に一度の結婚式や大切なイベントの自然な瞬間を失うこと。ゲストが写真を送ってくれないこと",
+"reasonsNotToBuy": "既存の無料アルバムで十分と思われる、ゲストにアプリ利用を頼む心理的負担、写真プライバシーへの不安、類似アプリとの差別化が伝わらない"
+},
+"offer": {
+"whatIsSold": "イベントごとの写真共有フィルム作成機能。参加人数に応じた課金",
+"realBenefitSold": "イベント参加者全員の思い出を、楽しい体験として自然に集めること",
+"minimumProduct": "イベント名、終了日、写真公開タイミング、招待コード、参加人数、1人あたり撮影枚数、共通アルバムだけを持つWebアプリ",
+"subscriptionReason": "動画内ではサブスクではなくイベント単位または使用量ベース課金に近い。継続利用はイベント業者・企業イベント担当者なら成立する可能性がある",
+"upsellPotential": "高解像度ダウンロード、アルバム印刷、結婚式向けテンプレート、ブランドロゴ削除、企業イベント用管理画面、フォトブック、AIハイライト生成"
+},
+"growthDistribution": {
+"initialAcquisition": "個人ネットワークの洗い出しと、Instagramのハッシュタグ検索によるイベント主催者へのコールドDM",
+"mainGrowthChannel": "初期はInstagramコールドDM。今後の主成長チャネルはイベント参加者への自然拡散、SNS投稿、結婚式・イベント系コミュニティの可能性",
+"postingFrequency": "不明",
+"winningContentFormat": "イベント主催者に直接刺さる短いDM、実際のイベントで使える招待コード、使い捨てカメラ風の体験デモ",
+"scaleMethod": "イベント1件ごとに複数ゲストがアプリを体験し、次の主催者候補に露出する構造",
+"adsUgcSeoCommunity": "Instagramハッシュタグ検索、コールドメッセージ、イベント内UGC、将来的にはWedding SEOやTikTok/Instagram Reelsが有効な可能性",
+"whyItSpread": "結婚式や誕生日は写真共有ニーズが強く、ゲスト全員を巻き込むため、1顧客が複数人にアプリを見せる自然な配布構造がある"
+},
+"monetization": {
+"monetizationPath": "無料または低価格で小規模イベントに使わせ、参加人数に応じて課金額を上げる使用量ベース課金",
+"freeOffer": "不明。初期検証では友人やイベント主催者に試用してもらった可能性が高いが、無料提供か有料提供かは不明",
+"paidProduct": "イベント参加人数に応じたOnce利用プラン",
+"pricingModel": "参加人数ベースの段階課金。例：10人程度で$2、150人程度で$50",
+"whyLtvCanGrow": "結婚式以外に誕生日、企業イベント、ネットワーキングイベント、学校行事など横展開できる。イベント業者や企業顧客を掴めば複数回利用があり得る",
+"whyRecurringRevenueWorks": "通常の個人イベント主催者は単発利用になりやすい。企業イベント担当者、イベントプランナー、結婚式場、フォトグラファー向けなら継続契約化できる可能性がある"
+},
+"whyItWorked": {
+"reason1": "作る前に10件の実イベント利用コミットメントを取る『commitment metric』を置き、需要の弱いアイデアを排除した",
+"reason2": "イベント日という期限があるため、ユーザーの行動コミットメントが強く、単なる『興味あります』より検証精度が高かった",
+"reason3": "使い捨てカメラの制限をデジタル化し、機能ではなく体験価値として差別化した",
+"marketTiming": "AIでアプリ構築が容易になった時代に、逆に『作る前の顧客コミットメント』が差別化になっている",
+"founderStrength": "元B2Bスタートアップ創業者で、プロダクト構築と事業検証の経験がある。Figma、Claude Code、Supabaseなどを使える技術力もある",
+"highlyReplicableElements": "事前コミットメント獲得、イベント主催者へのDM、Web版MVP、参加人数課金、体験型アルバムの設計",
+"lowReplicabilityElements": "消費者向けアプリのデザイン品質、イベント体験の細部、初期ネットワーク、創業者の実装力、App Storeでの完成度"
+},
+"toolsStack": {
+"toolsUsed": [
+"Figma",
+"Claude Code",
+"Conductor",
+"Supabase",
+"Vercel"
+],
+"aiTools": [
+"Claude Code"
+],
+"payment": "不明",
+"database": "Supabase",
+"hosting": "Vercel。Web部分は現在も稼働していると言及",
+"analytics": "内部ダッシュボードを表示したが、具体ツール名は不明",
+"other": [
+"Instagram",
+"X",
+"LinkedIn",
+"Facebook"
+]
+},
+"evidence": {
+"evidenceQuotes": [
+"we built a disposable camera app called Once",
+"hit 20K in monthly revenue within 83 days of launch",
+"our weekly active users is around 10,000 to 12,000",
+"in February, there are around more than 300 events",
+"for March, we got around 700 events",
+"Before writing a single line of code, I needed 10 events",
+"we got around 12 events fixed for that single month",
+"the first version took around a week or two",
+"I basically live on cloud code",
+"we use superbase for our database and backend"
+],
+"numberEvidence": "83日、月間売上$20,000超、当月$22,000、WAU10,000〜12,000、2月300件超イベント、3月約700件予定、250〜300人にDM、15人返信、12件イベント確定、10件コミットメント目標",
+"priceEvidence": "10人程度の小規模イベントは$2、150人規模の結婚式は$50と言及",
+"growthChannelEvidence": "X、LinkedIn、Instagram/Facebookの個人ネットワークを洗い出し、Instagramで#wedding #birthdaypartyを検索して250〜300人にコールドメッセージ",
+"ambiguousPoints": [
+"売上ダッシュボードは動画内で表示されたとされるが、書き起こしだけでは詳細検証できない",
+"月間売上$20,000が粗利か売上かは不明",
+"継続率、解約率、広告費、App Store流入、課金転換率は不明",
+"アプリ名が書き起こし上ではOnce / ones / once filmのように揺れている",
+"支払い方法と決済手数料は不明"
+]
+},
+"facts": [
+"Brian ShinとガールフレンドがOnceという使い捨てカメラ風イベントアプリを構築した",
+"2025年12月にローンチし、83日以内に月間売上$20,000超に到達したと語っている",
+"価格はイベント参加人数に応じて変動し、小規模イベントで$2、150人規模で$50という例が出ている",
+"週間アクティブユーザーは約10,000〜12,000と語っている",
+"初期検証では個人ネットワークから4件、Instagram等の外部リーチから約12件のイベント利用コミットメントを得た",
+"Figma、Claude Code、Conductor、Supabase、Vercelを使っていると語っている"
+],
+"inferences": [
+"本質的な勝ち筋はアプリ機能そのものより、イベント日付きの使用コミットメントを作る検証プロセスにある",
+"結婚式やイベントは単価を上げやすく、写真・思い出・失敗したくない心理が購入理由になる",
+"参加者がアプリを体験するため、1イベントが複数の将来顧客への露出になる可能性がある",
+"日本ではLINE共有やQRコード参加に寄せると導入摩擦が下がる可能性が高い",
+"B2C単発イベント課金だけだと売上が不安定なため、式場・イベント会社・企業向けプランが重要になる"
+],
+"risks": {
+"legalRisk": "写真・顔画像・未成年・イベント参加者の同意・保存期間・削除依頼・プライバシーポリシー対応が必要",
+"platformDependency": "Instagram DM、App Store、Google Play、SNS拡散に依存する可能性がある",
+"competitionRisk": "写真共有アプリ、結婚式写真アプリ、Google Photos、LINE、Instagram、使い捨てカメラ代替サービスと競合する",
+"replicabilityRisk": "表面機能は作りやすいが、消費者向けのデザイン品質、楽しさ、イベント当日の安定性、口コミ導線の再現は難しい",
+"exaggerationOrSuspiciousPoints": [
+"83日で$20K/月は強いが、広告費・返金・手数料・継続率が不明",
+"ダッシュボード表示があると言及されているが、書き起こしだけでは数値の真正性は検証できない",
+"『今後大きく伸びる』というホスト側コメントは推測であり、実績ではない",
+"AIツールで簡単に作れるように見えるが、本人はデザインにAIを使わずクラフト性を重視している"
+]
+},
+"aiNativeRemake": {
+"howToRebuildWithAI": "イベント主催者がイベント名・日付・人数・公開タイミングを入れると、QR招待ページ、共有アルバム、AIハイライト、SNS投稿文、フォトブック案まで自動生成するイベント写真回収ツールとして再構築する",
+"smallerStart": "アプリではなく、WebだけでQRコード付きイベント写真投稿フォームと後日公開アルバムを作る。最初は1イベント単位で手動運用する",
+"forSoloDevelopers": "Next.js、Supabase Storage、QR招待、イベント単位アルバム、参加人数制限、Stripe決済だけで48時間MVPを作る",
+"forNonEngineers": "Tally/Typeform、Google Drive、Notion、Canva、LINEオープンチャット、手動アルバム納品で代替し、イベント写真回収代行として売る",
+"japanLocalization": "結婚式二次会、成人式、同窓会、推し活イベント、企業懇親会向けに『QRで参加、LINE感覚で写真投稿、後日まとめて共有』として売る",
+"englishMarketVersion": "Disposable camera style QR photo album for weddings, birthdays and corporate events. Sell to hosts before building by requiring dated event commitments"
+},
+"starterProduct": {
+"minimumVersionIn48h": "QRコードで参加できるイベント写真回収Webページ。主催者がイベントを作成し、ゲストが写真をアップロードし、指定日時にアルバム公開される簡易版",
+"requiredFeatures": [
+"イベント作成",
+"イベント名と開催日入力",
+"QR招待リンク生成",
+"ゲスト写真アップロード",
+"写真の後日公開設定",
+"共通アルバム表示",
+"参加人数上限",
+"主催者用ダウンロード"
+],
+"unnecessaryFeatures": [
+"ネイティブモバイルアプリ",
+"高度なフィルター",
+"SNSログイン",
+"リアルタイムチャット",
+"AI画像編集",
+"複雑な管理画面",
+"多言語対応",
+"サブスク課金"
+],
+"firstPrice": "日本向け初回は1イベント980円〜2,980円、結婚式・企業イベント向けは5,000円〜15,000円で検証",
+"howToGetFirst10Customers": "Instagramで『結婚式準備』『二次会準備』『誕生日会』『同窓会』『企業懇親会』関連投稿を検索し、開催日が近い主催者に短いDMを100〜300件送る。さらに自分の知人からイベント予定者を10人洗い出す",
+"validationMethod": "コードを書く前に、開催日・人数・用途が明確な10イベントから『当日使う』コミットメントを取る。支払いが取れれば最強だが、最低でも日付付きの利用約束を取る"
+},
+"contentAngles": {
+"xPostIdeas": [
+"AI時代の罠：アプリは1時間で作れる。でも売れる証拠は作れない。Onceはコードを書く前に10イベントの使用コミットを取って、83日で$20K/月まで伸びた。",
+"『作ってから売る』では遅い。結婚式・誕生日・企業イベントの主催者に先にDMして、日付付きで使う約束を取る。これがAI時代の新しいMVP。",
+"Onceの勝ち筋は使い捨てカメラアプリではない。勝ち筋は『イベント日が決まっている人』に売ったこと。期限のある顧客は買う理由が強い。",
+"AIで作れる時代ほど、作る前に売れ。250〜300人にDM、15返信、12イベント確定。これが$20K/月アプリの本当の初期検証。",
+"プロ写真より、友達が撮ったブレた写真の方がSNSに載る。Onceはその欲望をアプリにした。機能ではなく、思い出の回収を売っている。"
+],
+"shortVideoIdeas": [
+"冒頭：『このアプリ、83日で月300万円。でも凄いのはアプリじゃない』→ コード前に10イベントの使用約束 → 250〜300人DM → 12イベント確定 → 作る前に売る教訓",
+"冒頭：『AIで作る前に、これをやらない人は負けます』→ commitment metric解説 → 支払い以外の強い検証指標 → イベント日付きコミットの例",
+"冒頭：『結婚式の写真共有アプリがなぜ売れたか』→ プロ写真はSNSに載らない → ゲストの自然写真が欲しい → QRアルバムMVP案",
+"冒頭：『Claude Codeで作るより先にDMしろ』→ 個人ネットワーク洗い出し → Instagramハッシュタグ検索 → 2〜3文DM → 10件コミット",
+"冒頭：『日本でパクるならこれ』→ 結婚式二次会/同窓会/推し活イベント向けQR写真回収 → 48時間MVP → 1イベント2,980円検証"
+],
+"imageCardIdea": "『$20K/月アプリの本質』という見出しで、左に表面：使い捨てカメラアプリ、右に本質：イベント日付き10件コミットメント、下に250〜300DM→15返信→12イベント→83日で$20K/月の流れを図解"
+},
+"bilionJudgment": {
+"worthAddingToBilion": "追加価値あり。AI時代に特に重要な『作る前にコミットメントを取る』パターンで、BilionのBuild Decision思想と相性が強い",
+"replicationScore": 8,
+"aiLeverageScore": 7,
+"monetizationClarityScore": 8,
+"buildDifficultyScore": 5,
+"whatToCopyNow": "アプリ機能ではなく、イベント主催者に日付付き使用コミットメントを取る検証方法、参加人数ベース課金、QR招待型のイベント写真回収MVP",
+"whatNotToCopy": "いきなりネイティブアプリを作ること、デザインの作り込みから入ること、無料共有アルバムとの差別化が弱いまま一般消費者向けに広く出すこと"
+},
+"bilionRecordJson": {
+"sourceType": "YouTube",
+"sourceUrl": "https://www.youtube.com/watch?v=r4R_Hlw7sbo",
+"businessName": "Once",
+"industry": "イベントテック / 写真共有 / モバイルアプリ",
+"revenueSignal": "ローンチ83日以内に月間売上$20,000超、当月$22,000前後、WAU10,000〜12,000",
+"buyer": "結婚式、誕生日、企業イベント、パーティーなどのイベント主催者",
+"pain": "イベント参加者の自然な写真がバラバラに散らばり、後から集めにくい",
+"desire": "ゲスト全員の視点から、楽しい思い出を一箇所に残したい",
+"fear": "大切なイベントの自然な瞬間を撮り逃すこと、写真が回収できないこと",
+"offer": "参加人数に応じて課金する、使い捨てカメラ風のイベント写真共有アプリ",
+"pricingModel": "人数ベース課金。小規模イベント$2、150人規模$50の例",
+"growthChannel": "個人ネットワーク、Instagramハッシュタグ検索、コールドDM、イベント参加者経由の自然拡散",
+"distributionNotes": "X、LinkedIn、Instagram/Facebookで知人を洗い出し、Instagramで#weddingや#birthdaypartyを検索して250〜300人に短文DM。15返信、12イベント確定",
+"whyItWorked": "イベント日という明確な期限があり、主催者の写真回収ニーズが強い。作る前に10件のイベント利用コミットメントを取り、需要を確認してから構築した",
+"toolsUsed": [
+"Figma",
+"Claude Code",
+"Conductor",
+"Supabase",
+"Vercel",
+"Instagram",
+"X",
+"LinkedIn",
+"Facebook"
+],
+"evidence": [
+"hit 20K in monthly revenue within 83 days of launch",
+"our weekly active users is around 10,000 to 12,000",
+"Before writing a single line of code, I needed 10 events",
+"we got around 12 events fixed for that single month",
+"we use superbase for our database and backend"
+],
+"risks": [
+"写真プライバシーと同意管理が必要",
+"競合の写真共有アプリや無料共有アルバムが多い",
+"B2C単発課金は売上が不安定になりやすい",
+"デザイン品質とイベント当日の安定性が重要",
+"売上数値の詳細な検証は書き起こしだけでは不十分"
+],
+"aiNativeRemake": "AIでQRイベント写真回収ページ、公開日時設定、AIハイライト生成、SNS投稿文、フォトブック案を自動生成する軽量Webサービスにする",
+"starterProduct": "48時間で作るなら、QR参加型のイベント写真アップロードWebページと後日公開アルバム。最初は1イベント980円〜2,980円で手動オンボーディング",
+"validationPlan48h": "1日目にFigmaまたは簡易LPでデモを作り、知人とInstagram検索でイベント予定者100〜300人にDM。2日目に日付・人数・用途が明確な10イベントの利用コミットメント、できれば3件の事前決済を取る",
+"xPostIdeas": [
+"AI時代のMVPは『先に作る』ではなく『先に使う約束を取る』。Onceはコード前に10イベントのコミットを取り、83日で$20K/月に到達した。",
+"250〜300人にDMして15返信、12イベント確定。これが売れるアプリの裏側。Claude Codeより先に、顧客の予定表を押さえろ。",
+"結婚式の写真共有は機能ではなく恐怖を売っている。『一生に一度の自然な瞬間を失いたくない』から、主催者は払う。"
+],
+"shortScriptIdeas": [
+"『83日で月$20Kのアプリ。でも成功理由はAI開発じゃない』→ 10イベント事前コミット → 250〜300DM → 12イベント確定 → 48時間で真似るならQR写真回収",
+"『AIで作る前に売れ』→ commitment metricとは何か → 支払い以外の強い検証指標 → イベント日付き利用約束を取る",
+"『日本でやるなら結婚式二次会と同窓会』→ 写真が散らばる痛み → QRで集める → 後日公開 → 1イベント2,980円"
+],
+"imagePrompt": "Dark SaaS style infographic showing a business pattern: left side 'Surface: disposable camera app', right side 'Real pattern: commitment metric before code'. Include flow: 250-300 cold DMs → 15 replies → 12 events booked → 10 committed events → $20K/month in 83 days. Use event photos, QR invite, shared album, wedding/birthday icons.",
+"buildPromptSeed": "Build a standalone mobile-first web app called Event Film Desk. It lets an event host create a disposable-camera-style photo album for a wedding, birthday, or corporate event. Include mock data only, no auth, no external API. Features: create event, set event date, reveal time, participant limit, shots per guest, generate QR invite link, guest upload mock photos, locked album until reveal time, host dashboard with participant count and download button. Add pricing examples: 10 guests $2, 150 guests $50. Include a 48-hour validation panel that tells the founder to get 10 dated event commitments before building further.",
+"monetizationPath": "最初は1イベント単位の人数課金。日本では980円〜2,980円で小規模検証し、結婚式・企業イベントは5,000円〜15,000円へ上げる。継続化するなら式場、イベント会社、企業総務向け月額プランにする",
+"replicationScore": 8,
+"aiLeverageScore": 7,
+"monetizationClarity": 8,
+"buildDifficulty": 5
+}
+}

@@ -1,0 +1,292 @@
+{
+"sourceType": "YouTube",
+"source": {
+"videoTitle": "My App Makes $20K/Month: How I Found A Simple Idea And Turned It Into A Profitable Business",
+"creator": "Starter Story",
+"speaker": "Pat Walls、Ethan",
+"sourceUrl": "https://www.youtube.com/watch?v=PIXXEAfo6MY",
+"genre": "起業家インタビュー、ニッチアプリ、AI開発、モバイルアプリ",
+"language": "英語"
+},
+"oneLinePattern": "自分が深く理解している競技・趣味の中にある高緊急度の小さな痛みを、AI開発ツールでモバイルアプリ化し、ニッチSNS投稿と小規模インフルエンサー経由で収益化するパターン",
+"business": {
+"businessName": "Cut Coach",
+"productOrService": "格闘技・レスリング選手向けの減量計画アプリ",
+"industry": "スポーツテック、フィットネス、栄養管理、競技者向けモバイルアプリ",
+"targetMarket": "レスリング、柔道、格闘技など試合前に体重調整が必要な競技者",
+"customer": "高校生・大学生・若手格闘技選手、レスラー、親、競技チーム関係者",
+"problemSolved": "試合前の短期間減量を安全かつ計画的に行う方法が分からないこと",
+"valueProvided": "競技日までに体重を落とすための科学ベースのプロトコル、栄養目標、食事ログ、体重推移管理、推奨食事を提供する",
+"price": "不明。終盤で「体重を作るために$30払う意思がある」という例示はあるが、実際の価格は明言されていない",
+"revenue": "月$20,000、累計$60,000超",
+"period": "ローンチは9月。約6か月で$0から累計$60,000超",
+"usersOrSubscribers": "約38,000〜39,000ダウンロード"
+},
+"buyer": {
+"whoBuys": "試合前に規定体重を作る必要があるレスラー、格闘技選手、またはその親",
+"whyTheyBuy": "計量失敗は試合出場、評価、チーム内立場、親やコーチからの信頼に直結するため",
+"urgency": "高い。競技シーズン中、試合日・計量日が近づくほど緊急度が上がる",
+"willingnessToPay": "中〜高。動画内では「体重を作るためなら$30を払う」という文脈がある。ただし実際の課金率・単価は不明",
+"existingAlternatives": "コーチからの減量計画、一般的なカロリー計算アプリ、食事管理アプリ、自己流の水抜き・減量法",
+"alternativeProblems": "一般的な食事管理アプリは競技計量日から逆算したプロトコルに特化していない。コーチ依存は個別管理が面倒で、自己流は失敗や健康リスクがある"
+},
+"painDesireFear": {
+"pain": "競技日前にどう減量すればよいか分からず、体重管理・食事管理が不安定になる",
+"desire": "計量を確実に通過し、試合に万全の状態で出たい",
+"fear": "計量失敗、試合に出られない、コーチや親を失望させる、競技成績を落とす、危険な減量をして体調を崩す",
+"reasonsNotToBuy": "健康・医療面の不安、コーチの指示と矛盾する可能性、アプリの計算精度への不信、競技者が未成年の場合の親の判断、減量アプリに課金する習慣がない"
+},
+"offer": {
+"whatIsSold": "競技者向けの減量プロトコル生成・食事ログ・体重トラッキングアプリ",
+"realBenefitSold": "計量日に失敗しない安心感と、試合に向けて何を食べればよいか迷わない実行計画",
+"minimumProduct": "競技日、現在体重、目標体重、日数、食事ログ、毎日の栄養上限、体重推移を入力できるシンプルな減量プランナー",
+"subscriptionReason": "競技シーズン中に継続利用する。複数試合、体重変動、食事記録、進捗管理が継続的に発生するため",
+"upsellPotential": "チーム向け管理画面、コーチ向けプラン作成、競技別テンプレート、専門家監修プラン、親向け安全レポート、食事提案、サプリ・栄養士提携"
+},
+"growthDistribution": {
+"initialAcquisition": "自分のレスリングクラブでベータテスト、その後TikTokやInstagram Reelsでニッチ向けオーガニック投稿",
+"mainGrowthChannel": "ニッチSNS投稿、小規模インフルエンサー提携、インフルエンサー動画を広告素材化した有料広告",
+"postingFrequency": "不明",
+"winningContentFormat": "減量前後の比較、UFC選手の減量ビジュアル、競技者が直感的に痛みを理解できるショート動画",
+"scaleMethod": "最初は200〜500再生の投稿で10〜15ダウンロード/日を確認し、その後1,000〜10,000再生規模の小規模クリエイター、さらに20,000再生以上のクリエイターへ拡大。効果があった動画を広告に転用",
+"adsUgcSeoCommunity": "UGC風インフルエンサー動画と有料広告。SEOやコミュニティ運営は動画内では不明",
+"whyItSpread": "視聴数は大きくなくても、見る人の多くが体重調整に強い関心を持つ高意図ユーザーだったため、低再生数でも高コンバージョンした"
+},
+"monetization": {
+"monetizationPath": "無料または低摩擦でダウンロードさせ、アプリ内課金またはサブスクリプションで収益化していると推測される",
+"freeOffer": "不明。ダウンロード導線は確認できるが、無料範囲は不明",
+"paidProduct": "Cut Coachの有料プランまたはアプリ内課金と推測。実際の課金内容は不明",
+"pricingModel": "不明。RevenueCatとSuperwallを使っているためサブスクリプションまたはアプリ内課金の可能性が高い",
+"whyLtvCanGrow": "競技シーズンごと、試合ごと、階級変更ごとに再利用される可能性がある。チーム・コーチ・親への展開でLTVを伸ばせる",
+"whyRecurringRevenueWorks": "体重管理は単発ではなく、シーズン中に継続的に記録・調整が必要なため。ただしオフシーズンの解約リスクは高い"
+},
+"whyItWorked": {
+"reason1": "創業者自身が柔道・レスリング経験者で、減量の痛みと文脈を深く理解していた",
+"reason2": "一般的な健康アプリではなく、競技者の計量という極端に具体的なユースケースに絞った",
+"reason3": "バズに依存せず、高意図の少数視聴者から高いダウンロード率を得た",
+"marketTiming": "AI開発ツールにより、19歳の個人でも短期間でモバイルアプリMVPを作れるようになったタイミング。さらにレスリングシーズン開始時にローンチした",
+"founderStrength": "競技経験、問題への当事者性、CursorとChatGPTを使った実装速度、マーケティング学習への切り替え",
+"highlyReplicableElements": "自分の趣味・競技・仕事の中の小さな痛みを探す、既存アプリのUIを参考にする、MVPを1か月で作る、小規模クリエイターをDMで開拓する、UGC動画を広告化する",
+"lowReplicabilityElements": "創業者の競技実績と当事者性、減量プロトコルの安全性・専門性、競技シーズンとのタイミング、米国スポーツ文化への適合"
+},
+"toolsStack": {
+"toolsUsed": [
+"Figma",
+"Cursor",
+"ChatGPT",
+"Supabase",
+"Vercel",
+"RevenueCat",
+"Mixpanel",
+"Superwall",
+"Cron Job",
+"TikTok",
+"Instagram Reels"
+],
+"aiTools": [
+"Cursor",
+"ChatGPT",
+"OpenAI API"
+],
+"payment": "RevenueCat。詳細な決済設計は不明",
+"database": "Supabase",
+"hosting": "Vercel",
+"analytics": "Mixpanel、RevenueCat、Superwall",
+"other": [
+"OpenAI API",
+"Figma",
+"小規模インフルエンサーDM",
+"有料広告"
+]
+},
+"evidence": {
+"evidenceQuotes": [
+"I built a mobile app that makes me $20,000 per month.",
+"my product solved a very specific pain point",
+"I launched it September",
+"over $60,000 in total revenue",
+"around 38,000 downloads",
+"This is my app, Cut Coach.",
+"It helps combat sport athletes cut weight",
+"I started building the Cut Coach app in June",
+"using Cursor and ChatGPT",
+"It took me around a month to build the MVP",
+"I use OpenAI API",
+"10 to 15 downloads per day",
+"200 to 500 views",
+"I switched over to influencer marketing"
+],
+"numberEvidence": "月$20,000、累計$60,000超、約38,000〜39,000ダウンロード、MVP構築約1か月、投稿200〜500再生で10〜15ダウンロード/日、小規模インフルエンサーは1,000〜10,000再生、後に20,000再生以上",
+"priceEvidence": "実際の価格は不明。終盤で「体重を作るために$30払う」という例示のみ",
+"growthChannelEvidence": "TikTok・Instagram Reelsのオーガニック投稿、小規模インフルエンサーDM、インフルエンサー動画の広告転用",
+"ambiguousPoints": [
+"アプリの実際の価格・月額・課金率は不明",
+"月$20,000が純利益か売上かは売上として語られているが利益率は不明",
+"健康・安全性の監修体制は不明",
+"広告費、CAC、ROAS、解約率は不明",
+"アプリストア上のランキングやレビュー数は書き起こし内では不明",
+"減量プロトコルの科学的根拠の詳細は不明"
+]
+},
+"facts": [
+"Ethanは19歳で、大学を中退してアプリ開発に取り組んだと語っている",
+"Cut Coachは格闘技選手の減量を支援するモバイルアプリである",
+"2024年6月にCut Coachの開発を開始し、MVP構築に約1か月かかったと語っている",
+"最初のコンセプトはコーチが選手に減量計画を渡すアプリだったが、利用摩擦があり、アプリが直接選手にプランを出す形へ変更した",
+"9月にローンチし、約6か月で累計$60,000超、約38,000ダウンロードに到達したと語っている",
+"Cursor、ChatGPT、Figma、Supabase、Vercel、OpenAI API、RevenueCat、Mixpanel、Superwallを使っていると語っている",
+"最初のSNS投稿では、200〜500再生でも10〜15ダウンロード/日が発生したと語っている",
+"オーガニック投稿後、小規模インフルエンサー提携に移行し、後にその動画を有料広告に転用したと語っている"
+],
+"inferences": [
+"この事例の本質は、巨大市場ではなく、高単価化しやすい高緊急度ニッチに絞ったこと",
+"Cut Coachは健康管理アプリというより、競技日前の失敗回避アプリとして売れている可能性が高い",
+"視聴数よりも視聴者の意図の濃さが重要で、低再生数でも収益化できるニッチの好例",
+"日本向けならレスリング単体より、格闘技、柔道、ボクシング、キックボクシング、フィジーク大会などに広げた方が初期検証しやすい",
+"医療・栄養安全性が絡むため、AIだけで断定的な減量指示を出すとリスクが高い",
+"Bilion向けには「趣味内の高緊急度イベント逆算ツール」という抽象パターンとして保存価値が高い"
+],
+"risks": {
+"legalRisk": "高い。減量、栄養、水分、体重管理は健康被害リスクがあり、医療・栄養助言として扱われる可能性がある。国や地域によって表示義務・免責・専門家監修が必要になる可能性がある",
+"platformDependency": "中。App Store、TikTok、Instagram、広告プラットフォーム、小規模インフルエンサーに依存する",
+"competitionRisk": "中。一般的なカロリー管理アプリやAIフィットネスアプリが競技特化機能を追加する可能性がある",
+"replicabilityRisk": "中。アプリ自体はAI開発で再現可能だが、競技理解、信頼性、専門性、シーズンタイミング、健康安全面が難しい",
+"exaggerationOrSuspiciousPoints": [
+"月$20,000の内訳、利益、広告費、解約率が不明",
+"ダウンロード数と有料会員数の関係が不明",
+"科学ベースのプロトコルと説明されているが、監修者や根拠の詳細が不明",
+"Starter Storyの文脈上、iOS bootcampの宣伝要素も含まれている",
+"再現性は高く見えるが、当事者性と競技文脈がない人がコピーすると信頼を得にくい"
+]
+},
+"aiNativeRemake": {
+"howToRebuildWithAI": "ChatGPTで特定競技・大会・締切・目標値から逆算するプロトコル設計を作り、CursorでモバイルファーストWebアプリまたはPWAを構築する。Figmaで既存健康アプリのUI構造を参考にし、食事ログ、進捗トラッキング、日別タスク、警告表示を実装する",
+"smallerStart": "アプリではなく、Googleフォーム入力から48時間の個別減量・大会準備プランPDFを生成する診断商品として開始する",
+"forSoloDevelopers": "Next.js、Supabase、OpenAI API、StripeでWeb版を構築し、最初は競技別テンプレートとAI要約に限定する",
+"forNonEngineers": "Typeform、Notion、ChatGPT、スプレッドシート、Canva PDFで、手動生成の『大会前7日間プラン』として売る",
+"japanLocalization": "日本ではレスリング、柔道、ボクシング、キックボクシング、MMA、フィジーク、ボディメイク大会向けに展開。ただし健康リスクが高いため、医療行為ではない免責と専門家監修が必要",
+"englishMarketVersion": "High school and college wrestlers向けに、Make Weight Planner、Fight Week Nutrition Planner、Combat Sports Cut Trackerとして展開可能"
+},
+"starterProduct": {
+"minimumVersionIn48h": "『試合前7日間の体重調整プラン診断』。入力項目は競技、現在体重、目標体重、計量日、練習頻度、食事制限、過去の減量経験。出力は日別目標、食事例、記録表、注意点、コーチに確認すべき項目のPDF",
+"requiredFeatures": [
+"現在体重・目標体重・計量日入力",
+"日別の体重目標表示",
+"食事ログ入力",
+"栄養上限または目安表示",
+"体重推移グラフ",
+"危険な減量を避ける警告表示",
+"PDFまたは共有可能なプラン出力",
+"免責表示"
+],
+"unnecessaryFeatures": [
+"完全なネイティブアプリ",
+"チーム管理画面",
+"ウェアラブル連携",
+"複雑なAIチャット",
+"SNS機能",
+"細かい食品データベース",
+"コーチ用管理SaaS"
+],
+"firstPrice": "初回は$9〜$29、または日本向けなら980円〜2,980円の診断PDF。アプリ化後は月額$9〜$19程度を検証",
+"howToGetFirst10Customers": "X、TikTok、Instagramで『計量失敗が怖い選手向け』の短尺投稿を10本出す。格闘技ジム、柔道部、レスリング部、MMA練習生、小規模競技者アカウントにDMし、無料診断3名、有料モニター10名を募集する",
+"validationMethod": "48時間でLP、フォーム、サンプルPDF、決済リンクを作り、30件DM、10本投稿、3件以上の有料または予約が取れるか確認する"
+},
+"contentAngles": {
+"xPostIdeas": [
+"月$20Kのアプリは巨大市場ではなく『レスラーの減量』という超ニッチだった。バズより強いのは、200再生でも10DLされる高意図市場。",
+"AIでアプリを作れる時代に狙うべきは『みんなの悩み』ではない。計量日、締切、試験日、提出日みたいな失敗コストが高い小さな悩み。",
+"Cut Coachの勝因は機能ではなく文脈。レスラーは体重を作れないと試合に出られない。だから$30の支払い理由がある。",
+"ニッチすぎると思った市場ほど、ユーザーの痛みが濃い。AIアプリの勝ち筋は『小さい市場 × 高い緊急度 × 明確な失敗コスト』。",
+"最初から広告で勝つ必要はない。200〜500再生で10〜15DL出るなら、その市場は薄いバズより濃い購買意図を持っている。"
+],
+"shortVideoIdeas": [
+"『月300万円アプリの正体、レスラーの減量管理です』から始め、巨大市場ではなく高緊急度ニッチを狙う話に展開する",
+"『再生数500で10ダウンロード。なぜ？』というフックで、高意図ニッチ市場の強さを説明する",
+"『AI副業で狙うべきはChatGPTツールではなく、試合前に困っている1万人』という切り口",
+"『体重を作れないと試合に出られない。この恐怖に課金が発生する』という失敗コスト訴求",
+"『Cut Coachを日本向けに作り替えるなら？』として柔道、格闘技、フィジーク、受験、資格試験などに横展開する"
+],
+"imageCardIdea": "中央に『$20K/month from a tiny wrestling problem』、下に『Tiny niche / High urgency / Clear failure cost / AI-built MVP / Creator-led growth』を並べるダークSaaS風カード"
+},
+"bilionJudgment": {
+"worthAddingToBilion": "追加すべき。AI開発時代のニッチアプリ成功パターンとして再現性が高く、Bilionの『何を作るべきか』に直結する",
+"replicationScore": 8,
+"aiLeverageScore": 8,
+"monetizationClarityScore": 7,
+"buildDifficultyScore": 5,
+"whatToCopyNow": "自分の趣味・競技・業務から『締切日があり、失敗コストが高く、既存アプリが一般的すぎる問題』を見つけ、48時間で診断PDFまたはWebプロトタイプにすること",
+"whatNotToCopy": "減量アプリをそのまま無監修でコピーすること。健康リスクが高く、専門性と信頼がないと危険。最初からネイティブアプリを作り込むことも不要"
+},
+"bilionRecordJson": {
+"sourceType": "YouTube",
+"sourceUrl": "https://www.youtube.com/watch?v=PIXXEAfo6MY",
+"businessName": "Cut Coach",
+"industry": "スポーツテック、競技者向け減量管理アプリ",
+"revenueSignal": "月$20,000、累計$60,000超、約38,000〜39,000ダウンロード",
+"buyer": "試合前に規定体重を作る必要があるレスラー、格闘技選手、親、競技チーム関係者",
+"pain": "計量日までにどう安全に体重を落とせばよいか分からない",
+"desire": "計量を通過して試合に出たい。競技成績を落とさずに減量したい",
+"fear": "計量失敗、試合欠場、コーチや親を失望させる、危険な減量で体調を崩す",
+"offer": "競技日から逆算した減量プロトコル、食事ログ、栄養目標、体重推移管理を提供するモバイルアプリ",
+"pricingModel": "不明。RevenueCatとSuperwall利用からアプリ内課金またはサブスクリプションと推測",
+"growthChannel": "TikTok、Instagram Reels、小規模インフルエンサー、有料広告",
+"distributionNotes": "最初は200〜500再生でも10〜15ダウンロード/日。小規模クリエイターへDMし、1,000〜10,000再生規模から20,000再生以上へ拡大。効果のある動画を広告化",
+"whyItWorked": "競技経験者が自分の深い痛みをアプリ化し、レスリングシーズン開始時の需要に合わせてローンチした。巨大市場ではなく、失敗コストが明確な高意図ニッチを狙った",
+"toolsUsed": [
+"Cursor",
+"ChatGPT",
+"Figma",
+"Supabase",
+"Vercel",
+"OpenAI API",
+"RevenueCat",
+"Mixpanel",
+"Superwall",
+"Cron Job",
+"TikTok",
+"Instagram Reels"
+],
+"evidence": [
+"I built a mobile app that makes me $20,000 per month.",
+"over $60,000 in total revenue",
+"around 38,000 downloads",
+"It helps combat sport athletes cut weight",
+"It took me around a month to build the MVP",
+"10 to 15 downloads per day",
+"200 to 500 views",
+"I switched over to influencer marketing"
+],
+"risks": [
+"健康・減量領域の法的リスク",
+"価格、利益、広告費、解約率が不明",
+"専門家監修の有無が不明",
+"競技文脈のない人がコピーすると信頼獲得が難しい",
+"シーズン需要に偏る可能性"
+],
+"aiNativeRemake": "AIで競技日・締切日・目標値から逆算するニッチプランナーを作る。最初はアプリではなく、診断フォームとPDF生成で検証する",
+"starterProduct": "試合前7日間の体重調整プラン診断。現在体重、目標体重、計量日、競技、練習頻度を入力すると日別プランPDFを出す",
+"validationPlan48h": "LP、入力フォーム、サンプルPDF、決済リンクを作成。格闘技・柔道・レスリング・フィジーク系の小規模アカウントに30件DMし、短尺投稿10本を出す。3件以上の有料購入または予約で継続",
+"xPostIdeas": [
+"月$20KのAIアプリは、レスラーの減量という超ニッチから生まれた。",
+"AI時代に狙うべきは巨大市場ではなく、失敗コストが高い小さな市場。",
+"200再生で10DLされるなら、バズより濃い購買意図がある。",
+"Cut Coachの本質は減量アプリではなく、計量失敗の恐怖を消す保険。",
+"趣味の中の小さな痛みは、AIで商品化できる。"
+],
+"shortScriptIdeas": [
+"月$20K稼ぐアプリの正体は、レスラーの減量管理でした。",
+"なぜ500再生で10ダウンロードされるのか？答えは高意図ニッチです。",
+"AIで作るべきアプリは、みんな向けではなく、締切に追われる少人数向けです。",
+"計量に失敗したら試合に出られない。この恐怖が課金理由になります。",
+"日本で作るなら、柔道・格闘技・フィジーク向け大会前プランナーです。"
+],
+"imagePrompt": "Dark SaaS style image card. Big headline: "$20K/month from a tiny wrestling problem". Subtext: "High urgency niche app built with AI tools". Visual elements: wrestling mat, weight scale, mobile app dashboard, growth arrow, creator video icons. Clean, premium, minimal.",
+"buildPromptSeed": "Build a mobile-first web app called Make Weight Planner. It helps combat sport athletes create a safe, non-medical competition prep checklist from current weight, target weight, weigh-in date, sport, training frequency, and food preferences. Include onboarding, daily target view, meal log mock input, weight progress chart, warning disclaimer, sample plan generation, and exportable PDF-style summary. Use mock data, local state, no auth, no external API, dark premium UI.",
+"monetizationPath": "無料診断または無料プレビューから、個別PDF $9〜$29、月額アプリ $9〜$19、チーム・コーチ向けプラン、専門家監修アップセルへ展開",
+"replicationScore": 8,
+"aiLeverageScore": 8,
+"monetizationClarity": 7,
+"buildDifficulty": 5
+}
+}

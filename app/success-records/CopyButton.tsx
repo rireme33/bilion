@@ -3,10 +3,16 @@
 import { useState } from "react";
 
 type CopyButtonProps = {
+  copiedLabel?: string;
+  label?: string;
   value: string;
 };
 
-export default function CopyButton({ value }: CopyButtonProps) {
+export default function CopyButton({
+  copiedLabel = "Copied",
+  label = "Copy",
+  value,
+}: CopyButtonProps) {
   const [copied, setCopied] = useState(false);
 
   async function copyValue() {
@@ -21,7 +27,7 @@ export default function CopyButton({ value }: CopyButtonProps) {
       onClick={copyValue}
       className="rounded-lg border border-white/10 px-3 py-2 text-xs font-bold text-zinc-300 transition hover:bg-white/[0.04] hover:text-white"
     >
-      {copied ? "Copied" : "Copy"}
+      {copied ? copiedLabel : label}
     </button>
   );
 }
