@@ -3,6 +3,28 @@ import Image from "next/image";
 import { showcaseItems, type ShowcaseItem } from "./showcase-data";
 
 const featured = showcaseItems[0];
+const galleryItems: ShowcaseCardItem[] = [
+  ...showcaseItems,
+  {
+    name: "Invoice Follow-up Prompt System",
+    route: "/invoice-follow-up-outputs-prompt-system-for-freelancers",
+    description:
+      "Messy invoice notes → polite follow-up outputs for freelancers",
+    buyer: "Freelancers and solo agencies",
+    revenueIdea: "$29/month",
+    buildTime: "10 minutes",
+    signal:
+      "Freelancers and solo agencies are using AI to turn unpaid invoice context into polite follow-up messages and next-step reminders.",
+    accent: "from-emerald-200 via-green-500 to-yellow-400",
+    metrics: ["Invoice notes", "Follow-up outputs", "Saved drafts"],
+    thumbnail: "",
+    badge: "Built from Bilion Signal",
+  },
+];
+
+type ShowcaseCardItem = ShowcaseItem & {
+  badge?: string;
+};
 
 function MockPreview({ item, large = false }: { item: ShowcaseItem; large?: boolean }) {
   return (
@@ -64,7 +86,7 @@ function DetailRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function GalleryCard({ item }: { item: ShowcaseItem }) {
+function GalleryCard({ item }: { item: ShowcaseCardItem }) {
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-lg border border-white/10 bg-[#101827] shadow-xl shadow-black/20 transition hover:-translate-y-1 hover:border-white/20">
       <ThumbnailPreview item={item} />
@@ -75,6 +97,11 @@ function GalleryCard({ item }: { item: ShowcaseItem }) {
             {item.buildTime}
           </span>
         </div>
+        {item.badge && (
+          <div className="mt-3 w-fit rounded-full border border-emerald-300/30 bg-emerald-300/10 px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-emerald-100">
+            {item.badge}
+          </div>
+        )}
         <p className="mt-3 text-sm leading-6 text-slate-300">{item.description}</p>
         <div className="mt-4 grid gap-3">
           <DetailRow label="Source signal" value={item.signal} />
@@ -120,7 +147,7 @@ export default function ShowcasePage() {
           <div className="mt-12 grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
             <div>
               <div className="inline-flex rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-cyan-100">
-                {showcaseItems.length} demos
+                {galleryItems.length} demos
               </div>
               <h1 className="mt-5 text-5xl font-black tracking-tight text-white sm:text-7xl">
                 Built with Bilion
@@ -136,7 +163,7 @@ export default function ShowcasePage() {
 
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
-                <div className="text-3xl font-black text-white">{showcaseItems.length}</div>
+                <div className="text-3xl font-black text-white">{galleryItems.length}</div>
                 <div className="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Demo products</div>
               </div>
               <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
@@ -233,12 +260,12 @@ export default function ShowcasePage() {
             <p className="mt-2 text-sm text-slate-400">All products built from Bilion signals.</p>
           </div>
           <div className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-slate-300">
-            {showcaseItems.length} demos
+            {galleryItems.length} demos
           </div>
         </div>
 
         <div className="grid gap-5 lg:grid-cols-3">
-          {showcaseItems.map((item) => (
+          {galleryItems.map((item) => (
             <GalleryCard key={item.route} item={item} />
           ))}
         </div>
