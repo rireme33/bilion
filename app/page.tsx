@@ -264,6 +264,19 @@ export default function HomePage() {
                 See example briefs
               </ButtonLink>
             </div>
+            <div className="mt-4 max-w-xl rounded-lg border border-white/10 bg-white/[0.03] p-4">
+              <p className="text-sm leading-6 text-zinc-400">
+                30 proven business patterns from a private research database.
+              </p>
+              <a
+                href="https://rireme33.gumroad.com/l/30-proven-business-ideas"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-3 inline-flex w-full items-center justify-center rounded-xl border border-emerald-300/30 bg-emerald-300/10 px-4 py-3 text-sm font-semibold text-emerald-100 transition hover:bg-emerald-300/15 sm:w-auto"
+              >
+                Download Free PDF
+              </a>
+            </div>
           </div>
         </section>
 
