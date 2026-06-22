@@ -1,291 +1,359 @@
 import Link from "next/link";
-import Image from "next/image";
-import { showcaseItems, type ShowcaseItem } from "./showcase-data";
 
-const featured = showcaseItems[0];
-const galleryItems: ShowcaseCardItem[] = [
-  ...showcaseItems,
+type ShowcaseBrief = {
+  category: string;
+  pattern: string;
+  buyer: string;
+  firstPaidOffer: string;
+  price: string;
+  xPost: string;
+  dmScript: string;
+  validationPlan: string[];
+};
+
+const patternLibrary = [
   {
-    name: "Invoice Follow-up Prompt System",
-    route: "/invoice-follow-up-outputs-prompt-system-for-freelancers",
-    description:
-      "Messy invoice notes → polite follow-up outputs for freelancers",
-    buyer: "Freelancers and solo agencies",
-    revenueIdea: "$29/month",
-    buildTime: "10 minutes",
-    signal:
-      "Freelancers and solo agencies are using AI to turn unpaid invoice context into polite follow-up messages and next-step reminders.",
-    accent: "from-emerald-200 via-green-500 to-yellow-400",
-    metrics: ["Invoice notes", "Follow-up outputs", "Saved drafts"],
-    thumbnail: "",
-    badge: "Built from Bilion Signal",
+    slug: "chat-product",
+    title: "$300K/year chat product",
+    revenueSignal: "$300K/year",
+    buyer: "Support-heavy SaaS teams",
+    pain: "Repetitive customer questions slow the team down.",
+    channel: "X posts and support communities",
+  },
+  {
+    slug: "discord-tool",
+    title: "$30K MRR Discord tool",
+    revenueSignal: "$30K MRR",
+    buyer: "Paid communities and course creators",
+    pain: "Members miss answers, resources, and onboarding context.",
+    channel: "Discord and creator referrals",
+  },
+  {
+    slug: "mobile-app",
+    title: "$20K/month mobile app",
+    revenueSignal: "$20K/month",
+    buyer: "Consumers with daily repeat workflows",
+    pain: "A small annoying job happens often enough to pay for.",
+    channel: "Short-form content and app store search",
+  },
+  {
+    slug: "demo-saas",
+    title: "$250K MRR demo SaaS",
+    revenueSignal: "$250K MRR",
+    buyer: "B2B sales and marketing teams",
+    pain: "Generic demos do not match each prospect's use case.",
+    channel: "LinkedIn, outbound, and demo pages",
+  },
+  {
+    slug: "analytics-tool",
+    title: "$1M ARR analytics tool",
+    revenueSignal: "$1M ARR",
+    buyer: "Revenue operators and founders",
+    pain: "Metrics are split across tools and spreadsheets.",
+    channel: "SEO, founder content, and integrations",
   },
 ];
 
-type ShowcaseCardItem = ShowcaseItem & {
-  badge?: string;
-};
+const showcaseBriefs: ShowcaseBrief[] = [
+  {
+    category: "AI agent workflow",
+    pattern:
+      "Ops-heavy teams pay for small AI agents that turn scattered inputs into clean daily decisions.",
+    buyer: "Solo operators, agency owners, and fractional COOs",
+    firstPaidOffer:
+      "A done-for-you workflow agent that converts Slack notes, client requests, and task lists into a daily action brief.",
+    price: "$49 setup + $19/month",
+    xPost:
+      "Most AI agent ideas are too broad.\n\nA better first offer:\nTurn messy team updates into one daily action brief for operators.\n\nBuyer: agency owners\nOffer: workflow agent setup\nPrice: $49 + $19/mo\n48h test: DM 20 operators with a before/after sample.",
+    dmScript:
+      "Quick idea: I am testing a small AI workflow agent that turns messy Slack notes and client requests into a daily action brief. Want me to run one messy example for your team?",
+    validationPlan: [
+      "Create one before/after sample using fake but realistic ops notes.",
+      "DM 20 agency owners or operators who complain about task chaos.",
+      "Validate if 3 ask for a sample, 2 send real notes, or 1 pays for setup.",
+    ],
+  },
+  {
+    category: "Local restaurant tool",
+    pattern:
+      "Local restaurants buy simple tools that save time on repeat customer-facing work.",
+    buyer: "Independent restaurant owners and managers",
+    firstPaidOffer:
+      "A weekly review-reply and specials-post generator for one local restaurant.",
+    price: "$29/month",
+    xPost:
+      "Local restaurants do not need another dashboard.\n\nThey need repeat work removed.\n\nOffer: AI review replies + weekly specials posts\nBuyer: independent restaurants\nPrice: $29/mo\n48h test: send 10 owners a free sample using their latest reviews.",
+    dmScript:
+      "I made a quick sample for your restaurant: polite replies to recent reviews plus a weekly specials post. Want me to send it over?",
+    validationPlan: [
+      "Pick 10 restaurants with recent unanswered Google reviews.",
+      "Generate 2 review replies and 1 specials post for each.",
+      "Validate if 3 owners reply, 1 asks for weekly help, or 1 pays $29.",
+    ],
+  },
+  {
+    category: "Creator monetization tool",
+    pattern:
+      "Creators pay when their existing content can be repackaged into paid offers faster.",
+    buyer: "Newsletter writers, X creators, and niche educators",
+    firstPaidOffer:
+      "A content-to-mini-product brief that turns 10 posts into one lead magnet, one paid offer, and launch copy.",
+    price: "$19/report",
+    xPost:
+      "Creators already have the raw material.\n\nThe missing piece is packaging.\n\nOffer: turn 10 posts into a paid mini-product angle\nBuyer: niche creators\nPrice: $19/report\n48h test: roast 5 creator feeds and pitch the strongest offer.",
+    dmScript:
+      "I looked at your content and think there is a small paid offer hiding in it. Want me to send a free mini-brief with the angle, price, and launch post?",
+    validationPlan: [
+      "Choose 5 creators with clear audience pain and consistent posting.",
+      "Write one free product angle from their recent content.",
+      "Validate if 2 request the full brief or 1 pays $19.",
+    ],
+  },
+  {
+    category: "SaaS churn/revenue tool",
+    pattern:
+      "SaaS teams pay for tools that reveal churn risk, expansion signals, or revenue leaks from existing customer data.",
+    buyer: "Bootstrapped SaaS founders and customer success leads",
+    firstPaidOffer:
+      "A churn-risk teardown that turns cancellation notes and support tickets into retention actions.",
+    price: "$99 one-time",
+    xPost:
+      "Small SaaS teams do not need more analytics.\n\nThey need to know why users are leaving.\n\nOffer: churn-risk teardown from support tickets + cancel notes\nBuyer: bootstrapped SaaS founders\nPrice: $99\n48h test: offer 3 free teardowns, sell the next one.",
+    dmScript:
+      "I am testing a churn-risk teardown for small SaaS teams. If you send 10 anonymized support or cancellation notes, I will show the top retention fixes. Want a free sample?",
+    validationPlan: [
+      "Find 15 SaaS founders discussing churn, activation, or retention.",
+      "Offer 3 free anonymized teardowns with a clear before/after output.",
+      "Validate if 2 send data or 1 agrees to pay $99 for the full report.",
+    ],
+  },
+  {
+    category: "Freelancer client-getting tool",
+    pattern:
+      "Freelancers pay for client-getting systems that turn vague outreach into specific, buyer-ready messages.",
+    buyer: "Freelancers, consultants, and solo agencies",
+    firstPaidOffer:
+      "A client-getting prompt system that creates niche-specific cold DMs, follow-ups, and offer angles.",
+    price: "$29/month",
+    xPost:
+      "Freelancers do not need 100 generic leads.\n\nThey need one sharper offer and better first messages.\n\nOffer: niche cold DM + follow-up prompt system\nBuyer: freelancers\nPrice: $29/mo\n48h test: rewrite 10 bad pitches and sell the template.",
+    dmScript:
+      "I am testing a small client-getting prompt system for freelancers. Send me your niche and current pitch, and I will rewrite it into a sharper buyer-specific DM.",
+    validationPlan: [
+      "Find 20 freelancers posting about slow leads or weak outreach.",
+      "Rewrite 5 pitches for free as proof assets.",
+      "Validate if 3 ask for the template or 1 pays $29 for the system.",
+    ],
+  },
+];
 
-function MockPreview({ item, large = false }: { item: ShowcaseItem; large?: boolean }) {
+function DetailBlock({ label, value }: { label: string; value: string }) {
   return (
-    <div className={`overflow-hidden rounded-lg border border-white/10 bg-[#070a12] ${large ? "p-4" : "p-3"}`}>
-      <div className={`h-2 rounded-full bg-gradient-to-r ${item.accent}`} />
-      <div className="mt-4 grid gap-3">
-        <div className="flex items-center justify-between gap-3">
-          <div className="h-3 w-28 rounded-full bg-white/20" />
-          <div className="h-7 w-20 rounded-md bg-white/10" />
-        </div>
-        <div className={`rounded-lg bg-gradient-to-br ${item.accent} p-px`}>
-          <div className="rounded-lg bg-slate-950/90 p-4">
-            <div className="h-4 w-3/4 rounded-full bg-white/25" />
-            <div className="mt-3 h-3 w-1/2 rounded-full bg-white/10" />
-            <div className="mt-5 grid grid-cols-3 gap-2">
-              {item.metrics.map((metric) => (
-                <div key={metric} className="rounded-md border border-white/10 bg-white/[0.04] p-2">
-                  <div className="h-8 rounded bg-white/10" />
-                  <div className="mt-2 h-2 rounded-full bg-white/20" />
-                </div>
-              ))}
+    <div className="rounded-lg border border-white/10 bg-black/25 p-4">
+      <div className="text-[11px] font-black uppercase tracking-[0.16em] text-zinc-500">
+        {label}
+      </div>
+      <p className="mt-2 text-sm leading-6 text-zinc-100">{value}</p>
+    </div>
+  );
+}
+
+function BriefCard({ brief, index }: { brief: ShowcaseBrief; index: number }) {
+  return (
+    <article className="overflow-hidden rounded-lg border border-white/10 bg-[#101110] shadow-2xl shadow-black/25">
+      <div className="border-b border-white/10 bg-white/[0.03] p-5">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="inline-flex rounded-full border border-emerald-300/25 bg-emerald-300/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-emerald-200">
+              Example {index + 1}
+            </div>
+            <h2 className="mt-4 text-2xl font-black tracking-tight text-white">
+              {brief.category}
+            </h2>
+          </div>
+          <div className="rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-right">
+            <div className="text-[11px] font-black uppercase tracking-[0.14em] text-zinc-500">
+              Price
+            </div>
+            <div className="mt-1 text-sm font-black text-emerald-200">
+              {brief.price}
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-2">
-          <div className="h-14 rounded-md bg-white/[0.06]" />
-          <div className="h-14 rounded-md bg-white/[0.09]" />
-          <div className="h-14 rounded-md bg-white/[0.06]" />
-        </div>
       </div>
-    </div>
-  );
-}
 
-function ThumbnailPreview({ item, large = false }: { item: ShowcaseItem; large?: boolean }) {
-  if (!item.thumbnail) {
-    return <MockPreview item={item} large={large} />;
-  }
+      <div className="grid gap-3 p-5">
+        <DetailBlock label="Pattern" value={brief.pattern} />
+        <DetailBlock label="Buyer" value={brief.buyer} />
+        <DetailBlock label="First paid offer" value={brief.firstPaidOffer} />
+        <DetailBlock label="X post" value={brief.xPost} />
+        <DetailBlock label="DM script" value={brief.dmScript} />
 
-  return (
-    <div className={`overflow-hidden rounded-lg border border-white/10 bg-[#070a12] ${large ? "p-3" : "p-2"}`}>
-      <Image
-        src={item.thumbnail}
-        alt={`${item.name} product screenshot`}
-        width={1200}
-        height={675}
-        className="aspect-video w-full rounded-md object-cover"
-      />
-    </div>
-  );
-}
-
-function DetailRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
-      <div className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">{label}</div>
-      <p className="mt-2 text-sm leading-6 text-slate-200">{value}</p>
-    </div>
-  );
-}
-
-function GalleryCard({ item }: { item: ShowcaseCardItem }) {
-  return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-lg border border-white/10 bg-[#101827] shadow-xl shadow-black/20 transition hover:-translate-y-1 hover:border-white/20">
-      <ThumbnailPreview item={item} />
-      <div className="flex flex-1 flex-col p-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 className="text-xl font-black tracking-tight text-white">{item.name}</h3>
-          <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-bold text-slate-300">
-            {item.buildTime}
-          </span>
-        </div>
-        {item.badge && (
-          <div className="mt-3 w-fit rounded-full border border-emerald-300/30 bg-emerald-300/10 px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-emerald-100">
-            {item.badge}
+        <div className="rounded-lg border border-white/10 bg-black/25 p-4">
+          <div className="text-[11px] font-black uppercase tracking-[0.16em] text-zinc-500">
+            48h validation plan
           </div>
-        )}
-        <p className="mt-3 text-sm leading-6 text-slate-300">{item.description}</p>
-        <div className="mt-4 grid gap-3">
-          <DetailRow label="Source signal" value={item.signal} />
-          <DetailRow label="Buyer" value={item.buyer} />
-          <DetailRow label="Pain" value={item.description} />
-          <DetailRow label="Product built" value={item.name} />
-          <DetailRow label="Revenue idea" value={item.revenueIdea} />
+          <ol className="mt-3 space-y-2 text-sm leading-6 text-zinc-100">
+            {brief.validationPlan.map((step, stepIndex) => (
+              <li key={step} className="flex gap-3">
+                <span className="text-zinc-500">{stepIndex + 1}.</span>
+                <span>{step}</span>
+              </li>
+            ))}
+          </ol>
         </div>
+
         <Link
-          href={item.route}
-          className="mt-5 inline-flex items-center justify-center rounded-lg bg-white px-4 py-3 text-sm font-black text-slate-950 transition hover:bg-slate-200"
+          href="/app"
+          className="mt-1 inline-flex min-h-12 items-center justify-center rounded-lg bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-zinc-200"
         >
-          Open Demo
+          Generate your own brief
         </Link>
       </div>
     </article>
   );
 }
 
+function CompactPatternCard({ pattern }: { pattern: (typeof patternLibrary)[number] }) {
+  return (
+    <article className="min-w-[260px] rounded-lg border border-white/10 bg-black/25 p-4 sm:min-w-0">
+      <h3 className="text-base font-black leading-6 text-white">{pattern.title}</h3>
+      <div className="mt-3 grid gap-2 text-sm leading-5">
+        <div className="flex justify-between gap-3">
+          <span className="text-zinc-500">Revenue</span>
+          <span className="font-bold text-emerald-200">{pattern.revenueSignal}</span>
+        </div>
+        <div>
+          <div className="text-xs font-black uppercase tracking-[0.14em] text-zinc-500">
+            Buyer
+          </div>
+          <p className="mt-1 text-zinc-300">{pattern.buyer}</p>
+        </div>
+        <div>
+          <div className="text-xs font-black uppercase tracking-[0.14em] text-zinc-500">
+            Pain
+          </div>
+          <p className="mt-1 text-zinc-300">{pattern.pain}</p>
+        </div>
+        <div>
+          <div className="text-xs font-black uppercase tracking-[0.14em] text-zinc-500">
+            Channel
+          </div>
+          <p className="mt-1 text-zinc-300">{pattern.channel}</p>
+        </div>
+      </div>
+      <Link
+        href={`/app?pattern=${pattern.slug}`}
+        className="mt-4 inline-flex w-full items-center justify-center rounded-lg border border-white/10 px-4 py-3 text-sm font-black text-white transition hover:bg-white/[0.04]"
+      >
+        Generate my version
+      </Link>
+    </article>
+  );
+}
+
 export default function ShowcasePage() {
   return (
-    <main className="min-h-screen bg-[#070a12] text-slate-100">
-      <section className="border-b border-white/10 bg-[radial-gradient(circle_at_20%_0%,#22d3ee2b,transparent_32%),radial-gradient(circle_at_80%_10%,#f59e0b1f,transparent_28%),linear-gradient(135deg,#070a12,#0f172a_55%,#111827)]">
-        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-          <header className="flex flex-wrap items-center justify-between gap-4">
-            <Link href="/" className="group inline-flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white text-base font-black text-black">
+    <main className="min-h-screen bg-[#070707] text-zinc-100">
+      <section className="border-b border-white/10 bg-[radial-gradient(circle_at_18%_0%,rgba(16,185,129,0.18),transparent_30%),linear-gradient(180deg,#101110,#070707)]">
+        <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
+          <header className="flex items-center justify-between gap-4">
+            <Link href="/" className="inline-flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-base font-black text-black">
                 B
               </div>
               <div>
-                <div className="text-lg font-black text-white transition group-hover:text-slate-200">Bilion</div>
-                <div className="text-xs text-slate-500">showcase gallery</div>
+                <div className="text-lg font-black text-white">Bilion</div>
+                <div className="text-xs text-zinc-500">Opportunity Briefs</div>
               </div>
             </Link>
             <Link
               href="/app"
               className="rounded-lg border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-bold text-white transition hover:bg-white/10"
             >
-              Open Bilion
+              Open app
             </Link>
           </header>
 
-          <div className="mt-12 grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
-            <div>
-              <div className="inline-flex rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-cyan-100">
-                {galleryItems.length} demos
-              </div>
-              <h1 className="mt-5 text-5xl font-black tracking-tight text-white sm:text-7xl">
-                Built with Bilion
-              </h1>
-              <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-300">
-                These are products built from Bilion signals.
-              </p>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-400">
-                A visual proof gallery for how Market Signals become buyer pain, product built, revenue idea, and a
-                working demo route in one place.
-              </p>
+          <div className="py-12 sm:py-16">
+            <div className="inline-flex rounded-full border border-emerald-300/25 bg-emerald-300/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-emerald-200">
+              5 example briefs
             </div>
-
-            <div className="grid gap-3 sm:grid-cols-3">
-              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
-                <div className="text-3xl font-black text-white">{galleryItems.length}</div>
-                <div className="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Demo products</div>
-              </div>
-              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
-                <div className="text-3xl font-black text-white">10m</div>
-                <div className="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Build time each</div>
-              </div>
-              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
-                <div className="text-3xl font-black text-white">5</div>
-                <div className="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Buyer markets</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr] lg:items-stretch">
-          <article className="overflow-hidden rounded-lg border border-cyan-300/30 bg-[#101827] shadow-2xl shadow-cyan-950/20">
-            <div className="grid gap-0 lg:grid-cols-[1fr_0.95fr]">
-              <div className="p-5">
-                <div className="inline-flex rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-cyan-100">
-                  Featured demo
-                </div>
-                <h2 className="mt-5 text-3xl font-black tracking-tight text-white sm:text-4xl">{featured.name}</h2>
-                <p className="mt-4 text-sm leading-7 text-slate-300">{featured.description}</p>
-                <div className="mt-5 grid gap-3">
-                  <DetailRow label="Source signal" value={featured.signal} />
-                  <DetailRow label="Buyer" value={featured.buyer} />
-                  <DetailRow label="Pain" value={featured.description} />
-                  <DetailRow label="Product built" value={featured.name} />
-                  <DetailRow label="Revenue idea" value={featured.revenueIdea} />
-                  <DetailRow label="Build time" value={featured.buildTime} />
-                </div>
-                <Link
-                  href={featured.route}
-                  className="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-cyan-300 px-4 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-200 sm:w-auto"
-                >
-                  Open Demo
-                </Link>
-              </div>
-              <div className="border-t border-white/10 p-5 lg:border-l lg:border-t-0">
-                <ThumbnailPreview item={featured} large />
-                <div className="mt-4 grid gap-2">
-                  {featured.metrics.map((metric) => (
-                    <div key={metric} className="flex items-center justify-between rounded-lg border border-white/10 bg-black/25 px-3 py-2">
-                      <span className="text-sm font-bold text-slate-200">{metric}</span>
-                      <span className="h-2 w-16 rounded-full bg-cyan-300/60" />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <aside className="rounded-lg border border-white/10 bg-[#101827] p-5 shadow-xl shadow-black/20">
-            <h2 className="text-lg font-black text-white">What this proves</h2>
-            <div className="mt-5 space-y-3">
-              {[
-                "Bilion signals can become concrete products, not just idea lists.",
-                "Each demo includes a buyer, pain, revenue angle, and working route.",
-                "The gallery lets visitors inspect the product shape before opening every demo.",
-              ].map((item) => (
-                <div key={item} className="rounded-lg border border-white/10 bg-white/[0.03] p-4 text-sm leading-6 text-slate-300">
-                  {item}
-                </div>
-              ))}
-            </div>
-            <div className="mt-5 rounded-lg border border-cyan-300/30 bg-cyan-300/10 p-4">
-              <div className="text-xs font-black uppercase tracking-[0.16em] text-cyan-100">
-                Featured Signal Lab
-              </div>
-              <h3 className="mt-3 text-2xl font-black tracking-tight text-white">
-                GitHub Signal Lab
-              </h3>
-              <p className="mt-3 text-sm leading-6 text-slate-200">
-                Turn GitHub activity into buyer pain, product opportunities,
-                validation plans, and build-ready prompts.
-              </p>
+            <h1 className="mt-5 max-w-4xl text-4xl font-black tracking-tight text-white sm:text-6xl">
+              Know what sells before you build.
+            </h1>
+            <p className="mt-5 max-w-2xl text-base leading-8 text-zinc-300">
+              Bilion turns proven success patterns into concrete offers, launch
+              copy, DM scripts, validation plans, and build prompts.
+            </p>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Link
-                href="/github-signal-lab"
-                className="mt-4 inline-flex w-full items-center justify-center rounded-lg bg-cyan-300 px-4 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-200"
+                href="/app"
+                className="inline-flex min-h-12 items-center justify-center rounded-lg bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-zinc-200"
               >
-                Open Lab
+                Generate your own brief
               </Link>
+              <div className="rounded-lg border border-white/10 bg-black/25 px-4 py-3 text-sm font-bold text-zinc-300">
+                Built for AI builders, indie hackers, and people selling before
+                they ship.
+              </div>
             </div>
-          </aside>
+          </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8">
-        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h2 className="text-2xl font-black tracking-tight text-white">Gallery</h2>
-            <p className="mt-2 text-sm text-slate-400">All products built from Bilion signals.</p>
+      <section className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
+        <div className="rounded-lg border border-white/10 bg-[#101110] p-5">
+          <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+            <div>
+              <div className="text-[11px] font-black uppercase tracking-[0.18em] text-zinc-500">
+                Pattern Library
+              </div>
+              <h2 className="mt-3 text-2xl font-black tracking-tight text-white">
+                Browse proven business patterns
+              </h2>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
+                Bilion turns real success stories into sell-before-you-build
+                briefs.
+              </p>
+            </div>
+            <Link href="/app" className="text-sm font-black text-zinc-400 hover:text-white">
+              Generate my version
+            </Link>
           </div>
-          <div className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-slate-300">
-            {galleryItems.length} demos
+          <div className="-mx-5 flex gap-3 overflow-x-auto px-5 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:px-0 lg:grid-cols-5">
+            {patternLibrary.map((pattern) => (
+              <CompactPatternCard key={pattern.title} pattern={pattern} />
+            ))}
           </div>
         </div>
+      </section>
 
-        <div className="grid gap-5 lg:grid-cols-3">
-          {galleryItems.map((item) => (
-            <GalleryCard key={item.route} item={item} />
+      <section className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
+        <div className="grid gap-5 lg:grid-cols-2">
+          {showcaseBriefs.map((brief, index) => (
+            <BriefCard key={brief.category} brief={brief} index={index} />
           ))}
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
-        <div className="overflow-hidden rounded-lg border border-white/10 bg-[linear-gradient(135deg,#101827,#111827_55%,#0f172a)] p-5 shadow-2xl shadow-black/20 sm:p-8">
-          <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
+      <section className="mx-auto max-w-6xl px-4 pb-10 sm:px-6 lg:px-8">
+        <div className="rounded-lg border border-emerald-300/20 bg-emerald-300/[0.06] p-5 sm:p-7">
+          <div className="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
-              <h2 className="text-3xl font-black tracking-tight text-white">Want to build products like these?</h2>
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">
-                Open Bilion, start from a real AI signal, and turn it into a product demo with a buyer, pain, offer, and
-                route you can share.
+              <h2 className="text-2xl font-black tracking-tight text-white">
+                Stop collecting ideas. Start testing offers.
+              </h2>
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-zinc-300">
+                Use Bilion to turn a success pattern into a first paid offer,
+                sales copy, and a 48-hour validation plan.
               </p>
             </div>
             <Link
               href="/app"
-              className="inline-flex items-center justify-center rounded-lg bg-white px-5 py-4 text-sm font-black text-slate-950 transition hover:bg-slate-200"
+              className="inline-flex min-h-12 items-center justify-center rounded-lg bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-zinc-200"
             >
-              Open Bilion
+              Generate your own brief
             </Link>
           </div>
         </div>

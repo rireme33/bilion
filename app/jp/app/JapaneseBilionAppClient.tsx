@@ -92,13 +92,14 @@ function createSourceOutput({
     proof,
     title,
     businessFields: [
-      ["シグナル", signal],
-      ["何が金になるか", title],
-      ["誰が買うか", buyer],
-      ["どんな痛みを解決するか", pain],
-      ["何を売るか", product],
-      ["いくらで売るか", price],
-      ["なぜ今買うか", whyNow],
+      ["売れた型", signal],
+      ["なぜ売れたか", whyNow],
+      ["誰が払うか", buyer],
+      ["あなたの商品角度", product],
+      ["最初の有料オファー", title],
+      ["価格", price],
+      ["リードマグネット", `${product}のBefore/After例を1つ無料で見せる。`],
+      ["ローンチコピー", `X投稿: ${buyer}向けに、${pain}を解決する${product}を検証中。LP見出し: ${title}。DM: Before/Afterサンプルを送ってもいいですか？`],
     ],
     validationSteps,
     masterPrompt,
@@ -248,29 +249,31 @@ function mapGoldmineResultToSourceOutput(free: GoldmineFreeResult): SourceOutput
     title,
     businessFields: [
       [
-        "シグナル",
+        "売れた型",
         free.latest_signal ||
           free.what_happened ||
           "海外の小型AI商品シグナル",
       ],
-      ["何が金になるか", title],
-      ["誰が買うか", deriveBuyerFromPatternMatches(free.pattern_matches)],
       [
-        "どんな痛みを解決するか",
+        "なぜ売れたか",
         free.why_its_useful ||
           free.what_happened ||
           "手作業の業務をAIで短縮したいが、何を商品化すべきか分からない。",
       ],
-      ["何を売るか", free.what_you_can_build || free.title || "小型AIワークフロー商品"],
+      ["誰が払うか", deriveBuyerFromPatternMatches(free.pattern_matches)],
+      ["あなたの商品角度", free.what_you_can_build || free.title || "小型AIワークフロー商品"],
+      ["最初の有料オファー", title],
       [
-        "いくらで売るか",
+        "価格",
         free.comparable_price || "$19 one-time または $29/month",
       ],
       [
-        "なぜ今買うか",
-        free.what_happened ||
-          free.latest_signal ||
-          "AIビルドツールで小型MVPを短時間で作れるようになったから。",
+        "リードマグネット",
+        `${title}のBefore/After例、LP見出し、検証DMを無料で1セット見せる。`,
+      ],
+      [
+        "ローンチコピー",
+        `X投稿: 売れた型を${title}に変換する。LP見出し: ${title}。DM: Before/Afterサンプルを送ってもいいですか？`,
       ],
     ],
     validationSteps:
@@ -287,6 +290,171 @@ function mapGoldmineResultToSourceOutput(free: GoldmineFreeResult): SourceOutput
         ? free.code_x_prompt
         : buildGoldmineFallbackPrompt(free),
   };
+}
+
+function opportunityLabelJa(label: string) {
+  const labels: Record<string, string> = {
+    "シグナル": "売れた型",
+    "何が金になるか": "最初の有料オファー",
+    "誰が買うか": "誰が払うか",
+    "どんな痛みを解決するか": "なぜ売れたか",
+    "何を売るか": "あなたの商品角度",
+    "いくらで売るか": "価格",
+    "なぜ今買うか": "48時間検証の理由",
+  };
+
+  return labels[label] || label;
+}
+
+function opportunityValueJa(label: string, value: string, title: string) {
+  if (label === "ローンチコピー" || label === "リードマグネット") {
+    return value;
+  }
+
+  if (label === "何が金になるか") {
+    return `${value}。まず小さな有料オファーとして売る。`;
+  }
+
+  if (label === "なぜ今買うか") {
+    return `${value} これを48時間で検証する。`;
+  }
+
+  if (label === "何を売るか") {
+    return `${value}。LP見出し、X投稿、DM文まで一緒に作る。`;
+  }
+
+  return value || title;
+}
+
+function getFieldValueJa(
+  output: SourceOutput,
+  labels: string[],
+  fallback: string,
+) {
+  const field = output.businessFields.find(([label]) => labels.includes(label));
+  return field?.[1] || fallback;
+}
+
+function getOpportunityFieldsJa(output: SourceOutput): [string, string][] {
+  const pattern = getFieldValueJa(
+    output,
+    ["売れた型", "シグナル"],
+    output.proof,
+  );
+  const whySold = getFieldValueJa(
+    output,
+    ["なぜ売れたか", "どんな痛みを解決するか", "なぜ今買うか"],
+    "買い手の既存業務に痛みがあり、短時間で改善できるため。",
+  );
+  const whoPays = getFieldValueJa(
+    output,
+    ["誰が払うか", "誰が買うか"],
+    "この業務をすでに手作業で行っている小規模事業者",
+  );
+  const productAngle = getFieldValueJa(
+    output,
+    ["あなたの商品角度", "何を売るか"],
+    output.title,
+  );
+  const firstOffer = getFieldValueJa(
+    output,
+    ["最初の有料オファー", "何が金になるか"],
+    output.title,
+  );
+  const price = getFieldValueJa(
+    output,
+    ["価格", "いくらで売るか"],
+    "$19 one-time または $29/month",
+  );
+  const marketProof = [
+    `類似ビジネス/比較パターン: ${output.title}`,
+    `収益または価格シグナル: ${price}`,
+    `買い手が払う理由: ${whySold}`,
+    `効いた配布チャネル: ${output.proof}`,
+    "信頼度: Medium",
+    "Proof is directional, not guaranteed.",
+  ].join("\n");
+  const leadMagnet = getFieldValueJa(
+    output,
+    ["リードマグネット"],
+    `${output.title}のBefore/After例を1つ無料で見せて、購入者の反応を取る。`,
+  );
+  const launchCopy = getFieldValueJa(
+    output,
+    ["ローンチコピー"],
+    `X投稿: 売れた型を${output.title}に変換しました。\nLP見出し: ${output.title}\nDM文: Before/Afterサンプルを送ってもいいですか？`,
+  );
+  const firstCustomerPlan = [
+    `最初に連絡する相手: ${whoPays}`,
+    `見つける場所: ${output.proof}`,
+    `言うこと: Before/Afterサンプルを送ってもいいですか？`,
+    `提案するもの: ${price}の初回有料オファー`,
+    "48時間以内の検証: 3件の有効返信、1件の予約/購入、または2件の実データ提供。",
+  ].join("\n");
+
+  return [
+    ["売れた型", pattern],
+    ["なぜ売れたか", whySold],
+    ["市場の証拠", marketProof],
+    ["誰が払うか", whoPays],
+    ["あなた向けの商品角度", productAngle],
+    ["初回有料オファー", firstOffer],
+    ["価格", price],
+    ["リードマグネット", leadMagnet],
+    ["ローンチコピー", launchCopy],
+    ["最初の顧客獲得プラン", firstCustomerPlan],
+  ];
+}
+
+function getOpportunityValueByLabelJa(output: SourceOutput, targetLabel: string) {
+  return (
+    getOpportunityFieldsJa(output).find(([label]) => label === targetLabel)?.[1] ||
+    ""
+  );
+}
+
+function buildJapaneseMobileXPost(output: SourceOutput) {
+  return `Bilionで売れた型を商品化してみた。
+
+売れた型：
+${getOpportunityValueByLabelJa(output, "売れた型")}
+
+誰が払うか：
+${getOpportunityValueByLabelJa(output, "誰が払うか")}
+
+初回商品：
+${getOpportunityValueByLabelJa(output, "初回有料オファー")}
+
+価格：
+${getOpportunityValueByLabelJa(output, "価格")}
+
+48時間検証：
+${output.validationSteps.map((step, index) => `${index + 1}. ${step}`).join("\n")}
+
+作る前に、売れるかを見ろ。`;
+}
+
+const japaneseMobileReplyCopy = `売りたい相手・自分の強み・考えてる案を送ってください。
+Bilionで無料Roastして、最初に何を売るべきか返します。`;
+
+const japaneseMobileDmCopy = `Bilionを検証中です。売れたビジネスの型から、初回商品・価格・投稿文・48時間検証まで出します。
+あなたの案で1回無料診断しましょうか？`;
+
+const japaneseMobileSalesCtaCopy = `完全版Personal Product Briefを見る — $19
+
+3つの商品角度、LPコピー、X投稿10本、DMスクリプト、価格、Codex用Build Promptを含みます。`;
+
+async function writeClipboardTextJa(text: string) {
+  if (!navigator.clipboard?.writeText) {
+    return false;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 const sourceOutputPools: Record<SourceType, SourceOutput[]> = {
@@ -1057,6 +1225,10 @@ export default function JapaneseBilionAppClient({
                 Accessでは、無制限生成・無制限コピー・追加角度の生成が使えます。
               </p>
             )}
+            <p className="mt-3 max-w-xl text-xs leading-5 text-zinc-500">
+              Bilionは、伸びた投稿のスワイプファイルが投稿作成を助けたように、
+              売れたビジネスパターンを次に検証できる商品オファーへ変換します。
+            </p>
             {hasFounderAccess && (
               <p className="mt-4 max-w-xl text-sm leading-6 text-zinc-500">
                 Unlimited access unlocked. 何度でも商品案とMaster Promptを生成できます。
@@ -1067,7 +1239,7 @@ export default function JapaneseBilionAppClient({
           <div className="rounded-2xl border border-white/10 bg-[#111214] p-5 shadow-xl shadow-black/20">
             <div className="border-b border-white/10 pb-4">
               <div className="text-xs font-semibold tracking-[0.16em] text-zinc-500">
-                {showOutput ? "商売判断" : "未生成"}
+                {showOutput ? "商品化ブリーフ" : "未生成"}
               </div>
               {showOutput ? (
                 <>
@@ -1088,17 +1260,19 @@ export default function JapaneseBilionAppClient({
 
             {showOutput && (
               <div className="mt-4 grid gap-3">
-                {selectedOutput.businessFields.map(([label, value]) => (
+                {getOpportunityFieldsJa(selectedOutput).map(([label, value]) => (
                   <div key={label} className="rounded-xl border border-white/10 bg-black/25 p-3.5">
                     <div className="text-xs font-semibold tracking-wide text-zinc-500">
                       {label}
                     </div>
-                    <div className="mt-1.5 text-sm leading-6 text-zinc-100">{value}</div>
+                    <div className="mt-1.5 whitespace-pre-wrap text-sm leading-6 text-zinc-100">
+                      {value}
+                    </div>
                   </div>
                 ))}
                 <div className="rounded-xl border border-white/10 bg-black/25 p-3.5">
                   <div className="text-xs font-semibold tracking-wide text-zinc-500">
-                    48時間検証
+                    48時間検証プラン
                   </div>
                   <ol className="mt-2 space-y-1 text-sm leading-6 text-zinc-100">
                     {selectedOutput.validationSteps.map((step, index) => (
@@ -1109,6 +1283,20 @@ export default function JapaneseBilionAppClient({
                     ))}
                   </ol>
                 </div>
+                {!hasFounderAccess && (
+                  <div className="rounded-xl border border-emerald-400/20 bg-emerald-400/[0.06] p-4">
+                    <h3 className="text-lg font-semibold text-white">
+                      完全版Personal Product Briefを見る — $19
+                    </h3>
+                    <p className="mt-2 text-sm leading-6 text-zinc-400">
+                      3つの商品角度、LPコピー、X投稿10本、DMスクリプト、価格、Codex用Build Promptを含みます。
+                    </p>
+                    <div className="mt-4">
+                      <ButtonLink href="/jp/founder">完全版を見る</ButtonLink>
+                    </div>
+                  </div>
+                )}
+                <JapaneseMobileShareKit output={selectedOutput} />
               </div>
             )}
           </div>
@@ -1136,13 +1324,13 @@ export default function JapaneseBilionAppClient({
               <div className="flex flex-col gap-4 border-b border-white/10 pb-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <div className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
-                    MASTER PROMPT
+                    BUILD PROMPT
                   </div>
                   <h2 className="mt-2 text-2xl font-semibold tracking-tight">
-                    Full Code X Master Prompt
+                    最後に作るためのBuild Prompt
                   </h2>
                   <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-400">
-                    この英語プロンプトをCode X / Codex / Cursor / Claude Code / Lovableに貼ってください。
+                    売れる商品角度、コピー、検証プランを確認したあとで使う実装用プロンプトです。
                   </p>
                 </div>
                 <button
@@ -1222,5 +1410,75 @@ function JapaneseInlineShowcaseSection() {
         ))}
       </div>
     </section>
+  );
+}
+
+function JapaneseMobileShareKit({ output }: { output: SourceOutput }) {
+  const [copiedKey, setCopiedKey] = useState("");
+  const shareItems = [
+    {
+      key: "x-post",
+      label: "X投稿をコピー",
+      helper: "Post this brief on X",
+      text: buildJapaneseMobileXPost(output),
+    },
+    {
+      key: "reply",
+      label: "返信をコピー",
+      helper: "Reply to interested people with this",
+      text: japaneseMobileReplyCopy,
+    },
+    {
+      key: "dm",
+      label: "DMをコピー",
+      helper: "Reply to interested people with this",
+      text: japaneseMobileDmCopy,
+    },
+    {
+      key: "sales-cta",
+      label: "販売CTAをコピー",
+      helper: "Offer the $19 Personal Product Brief",
+      text: japaneseMobileSalesCtaCopy,
+    },
+  ];
+
+  async function copyShareText(key: string, text: string) {
+    const copied = await writeClipboardTextJa(text);
+    setCopiedKey(copied ? key : "error");
+    window.setTimeout(() => setCopiedKey(""), 1200);
+  }
+
+  return (
+    <div className="rounded-xl border border-emerald-400/20 bg-emerald-400/[0.06] p-4">
+      <div className="text-xs font-semibold tracking-wide text-emerald-300">
+        Mobile Share Kit
+      </div>
+      <p className="mt-2 text-sm leading-6 text-zinc-400">
+        Post this brief on X → Reply to interested people with this → Offer the
+        $19 Personal Product Brief.
+      </p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        {shareItems.map((item) => (
+          <button
+            key={item.key}
+            type="button"
+            onClick={() => copyShareText(item.key, item.text)}
+            className="min-h-20 rounded-xl bg-white px-4 py-4 text-left text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200"
+          >
+            <span className="block">
+              {copiedKey === item.key ? "コピー済み" : item.label}
+            </span>
+            <span className="mt-1 block text-xs leading-5 text-zinc-600">
+              {item.helper}
+            </span>
+          </button>
+        ))}
+      </div>
+      {copiedKey === "error" && (
+        <p className="mt-3 text-sm font-semibold text-yellow-100">
+          コピーできませんでした。テキストを選択して手動でコピーしてください。
+        </p>
+      )}
+    </div>
   );
 }

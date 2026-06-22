@@ -1,0 +1,42 @@
+{
+  "id": "gmail-signal-2026-06-19-003",
+  "source": {
+    "name": "Failory",
+    "from": "nico@failory.com",
+    "subject": "The $500 AI Accountant 櫨",
+    "received_at": "2026-06-18T20:26:39Z",
+    "source_type": "gmail_newsletter"
+  },
+  "category": "failure_pattern",
+  "raw_signal": "AI accounting is a high-demand category, but reliability, trust, and responsibility boundaries can break the product if the tool tries to replace expert review.",
+  "buyer": "Solo founders, freelancers, small business owners, accountants, and bookkeeping firms.",
+  "pain": "Bookkeeping, expense categorization, and tax preparation are painful, but users cannot afford serious mistakes.",
+  "why_now": "AI can automate parts of bookkeeping, but buyers need review-first tools rather than fully autonomous accounting agents.",
+  "product_idea": "AI Bookkeeping Pre-Check Assistant",
+  "first_product": "A tool that reviews transaction notes, receipts, and exports before they go to an accountant, flags missing information, and creates a clean handoff summary.",
+  "price": "$19-$49/month for founders, or $99-$299/month for accountants managing multiple clients.",
+  "distribution": "X, accountant communities, freelancer communities, small business newsletters, Japanese sole proprietor content.",
+  "lead_magnet_angle": "AI accounting mistakes checklist for solo founders.",
+  "content_angle": "The next AI accounting tool should not replace accountants. It should prepare cleaner inputs for them.",
+  "bilion_access_angle": "Bilion does not just find product ideas. It also scores hype risk and failure risk before you build.",
+  "evidence_level": "medium",
+  "hype_risk": "medium",
+  "score": {
+    "buyer_clarity": 5,
+    "pain_intensity": 5,
+    "urgency": 4,
+    "buildability": 4,
+    "distribution": 4,
+    "monetization": 5,
+    "evidence_strength": 3,
+    "total": 30
+  },
+  "recommended_use": [
+    "publish_candidate",
+    "failure_pattern",
+    "paid_report",
+    "x_post",
+    "product_safety_angle"
+  ],
+  "status": "draft"
+}

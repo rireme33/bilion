@@ -1,0 +1,283 @@
+{
+"sourceType": "YouTube",
+"source": {
+"videoTitle": "I Make $15K/Month From One Website",
+"creator": "Starter Story",
+"speaker": "Pat Walls、Maddx Schmidtoffer",
+"sourceUrl": "https://www.youtube.com/watch?v=qIlX7cQ2UdU",
+"genre": "起業家インタビュー、Webサイト収益化、ショート動画マーケティング",
+"language": "英語"
+},
+"oneLinePattern": "シンプルなアンブロックゲームサイトを作り、TikTok・Instagram Reels・YouTube Shorts・Snapchatへ短尺動画を大量投稿して流入を増やし、AdSense広告収益と事業売却で収益化したパターン。",
+"business": {
+"businessName": "DuckMath",
+"productOrService": "アンブロックゲームサイト",
+"industry": "オンラインゲーム、広告収益型メディア、学生向け娯楽サイト",
+"targetMarket": "学校や制限環境でもブラウザゲームを遊びたい学生・若年層",
+"customer": "直接の利用者は学生・若年ゲーマー。実際の支払い主体はGoogle AdSense経由の広告主。",
+"problemSolved": "ユーザーがブラウザ上で簡単にゲームを探して遊べる場所を提供する。",
+"valueProvided": "無料ゲームへの即時アクセス、暇つぶし、学校・制限環境で遊べる体験、ゲーム探索の簡略化。",
+"price": "ユーザー無料。収益はGoogle AdSense広告。Supabaseは月20ドル、Cloudflareはドメイン費用以外ほぼ無料と発言。",
+"revenue": "月15,000ドル。以前は月約1,000ドル。1ユーザーあたり約1セント。売却額は120,000ドル。",
+"period": "4年前にローンチ。直近4か月で5人から150,000人のDAUへ成長と発言。",
+"usersOrSubscribers": "月間約150万ユーザー、DAU最大150,000、Discord約7,000人、メインアカウント4.6百万ビューと発言。"
+},
+"buyer": {
+"whoBuys": "広告枠を間接的に買う広告主。事業売却時の買い手はゲームサイトを買収する大きめの会社。",
+"whyTheyBuy": "広告主は大量の若年層トラフィックにリーチできるため。買収企業は既存ゲームサイトのトラフィック、SEO、SNS導線、AdSense収益を取得できるため。",
+"urgency": "広告主側の緊急性は不明。買収企業側は既に類似ゲームサイト買収実績があり、同ジャンルの収益サイトをポートフォリオ化する動機があると推測される。",
+"willingnessToPay": "売却額120,000ドル。最初は100,000ドルの低いオファーを受け、交渉後に合意したと発言。",
+"existingAlternatives": "他のアンブロックゲームサイト、ゲームポータル、スマホゲーム、YouTubeやTikTokなどの暇つぶしコンテンツ。",
+"alternativeProblems": "競合サイトは学校やネットワークでブロックされる可能性、UIが悪い可能性、ゲーム数や発見性が弱い可能性、SNS上での認知が弱い可能性。"
+},
+"painDesireFear": {
+"pain": "学生・若年ユーザーは退屈で、手軽に遊べるゲームサイトを探している。サイト運営者側は流入がなければ広告収益が伸びない。",
+"desire": "ユーザーは無料で即遊びたい。運営者はシンプルなWebサイトで大量トラフィックと広告収益を得たい。",
+"fear": "ユーザー側はサイトがブロックされる、ゲームが動かない、面白いゲームが見つからないこと。運営者側はTikTok等の流入停止、AdSense停止、著作権・埋め込み問題、競合過多。",
+"reasonsNotToBuy": "利用者は無料でなければ離脱しやすい。広告主・買収企業はトラフィック品質、収益持続性、法的リスク、学校向けブロック回避系サイトの評判リスクを懸念する可能性がある。"
+},
+"offer": {
+"whatIsSold": "表向きは無料ゲーム体験。実際の収益商品は広告表示枠と、最終的には収益化済みゲームサイトそのもの。",
+"realBenefitSold": "大量の若年層トラフィックと滞在時間。買収企業には、既に収益化されているメディア資産を売っている。",
+"minimumProduct": "ゲーム一覧、検索またはカテゴリ、ゲーム詳細ページ、埋め込みプレイヤー、AdSense広告、SNSから誘導する短いURLまたはブランド名。",
+"subscriptionReason": "この事例自体はサブスクではなく広告収益型。Bilion化するなら、ゲームサイト運営者向けの短尺動画生成・ABテスト・回遊改善ツールなら月額化できる。",
+"upsellPotential": "広告最適化、ランキング機能、ユーザーアカウント、リーダーボード、コイン、Discordコミュニティ、ゲーム追加代行、ショート動画運用代行、買収仲介。"
+},
+"growthDistribution": {
+"initialAcquisition": "TikTokで同様のアンブロックゲームサイトを宣伝している若い競合を見て、自分もTikTok投稿を開始。",
+"mainGrowthChannel": "TikTok、Instagram Reels、YouTube Shorts、Snapchatへの短尺動画投稿。",
+"postingFrequency": "3つのTikTokアカウントで1日3本、週5日投稿。複数プラットフォームへ自動クロスポスト。",
+"winningContentFormat": "スマホでノートPCやゲーム画面を撮る簡単な動画、強いビジュアルフック、シリーズ化、最後に正確なリンクへ誘導。",
+"scaleMethod": "競合の高パフォーマンス動画を研究し、フック・CTA・構成を模倣して改善。動画量を競合より増やし、Repurpose.ioで自動クロスポストし、他人にも動画制作を任せた。",
+"adsUgcSeoCommunity": "広告収益はGoogle AdSense。UGCではなく運営者作成の短尺動画。Discord約7,000人を新機能の盛り上げに活用。SEOについては明確な言及なし。",
+"whyItSpread": "若年層に刺さるゲーム画面の即時性、短尺動画のドーパミン型フック、無料で遊べる明快なCTA、投稿量、競合成功フォーマットの反復改善。"
+},
+"monetization": {
+"monetizationPath": "無料ゲームサイトで大量流入を獲得し、ページビューと滞在時間を増やしてGoogle AdSenseで収益化。その後、収益実績とトラフィックを材料に事業売却。",
+"freeOffer": "ゲームを無料で遊べるWebサイト。",
+"paidProduct": "直接課金商品は不明。主な収益はAdSense広告と事業売却。",
+"pricingModel": "広告収益モデル。ユーザー無料。広告表示・ページビューに応じて収益発生。",
+"whyLtvCanGrow": "ゲーム追加、リーダーボード、コイン、アカウント、Discord、回遊導線、ABテストで滞在時間とページビューを増やせるため。",
+"whyRecurringRevenueWorks": "AdSense広告は継続トラフィックがあれば毎日収益が発生する。本人も2年間ほぼ放置で収益が出ていたと発言。"
+},
+"whyItWorked": {
+"reason1": "商品が極端にシンプルで、ユーザーの行動が明確だった。サイトに来てゲームをクリックして遊ぶだけ。",
+"reason2": "短尺動画の勝ちフォーマットを競合から学び、毎日大量に投稿して反復改善した。",
+"reason3": "広告収益モデルとゲームサイトの相性がよく、ページ回遊と滞在時間が直接収益につながった。",
+"marketTiming": "AI・Vibe codingにより開発負担が下がり、TikTok・Reels・Shorts・Snapchatの短尺動画流入が有効だった時期。",
+"founderStrength": "若年層・ゲーム文脈を理解しており、競合動画を観察して量で上回る実行力があった。技術よりマーケティングに集中した点が強い。",
+"highlyReplicableElements": "競合動画の研究、短尺動画の量産、クロスポスト、AdSenseサイト、ABテスト、シンプルなMVP、AIで開発負担を減らすこと。",
+"lowReplicabilityElements": "アンブロックゲームという領域の法的・規約リスク、学校環境でのアクセス事情、動画のバズ、AdSense承認、買収先の存在。"
+},
+"toolsStack": {
+"toolsUsed": [
+"Google Sites",
+"React",
+"Cloudflare",
+"Supabase",
+"PostHog",
+"Google AdSense",
+"Repurpose.io",
+"Discord",
+"Escrow"
+],
+"aiTools": [
+"AI coding tools",
+"Vibe coding"
+],
+"payment": "Google AdSense、売却時はEscrowを利用",
+"database": "Cloudflareの静的データ保存、Supabase",
+"hosting": "Cloudflare",
+"analytics": "以前はGoogle Analytics、その後PostHog",
+"other": [
+"TikTok",
+"Instagram Reels",
+"YouTube Shorts",
+"Snapchat"
+]
+},
+"evidence": {
+"evidenceQuotes": [
+"I built an unbought games website that makes 15,000 per month.",
+"we went from 5 to 150,000 daily active users",
+"I did actually sell this business just a few weeks ago for 120,000.",
+"I have about 1.5 million users a month",
+"off of each of those users, I get around 1 cent.",
+"I made three Tik Tok accounts.",
+"posting three times a day, 5 days a week",
+"It got 2.1 million views on Tik Tok.",
+"3.2 million views",
+"Cloudflare. They do all of my site hosting.",
+"I switched to Post Hog",
+"Google AdSense, they pay me"
+],
+"numberEvidence": "月間約150万ユーザー、DAU 5から150,000へ、メインアカウント4.6百万ビュー、TikTok動画2.1百万ビュー、Instagram同一動画3.2百万ビュー、Discord約7,000人。",
+"priceEvidence": "月15,000ドル収益、月約1,000ドルから成長、売却額120,000ドル、Supabase月20ドル、PostHog startup programで50,000ドル分のクレジット、動画投稿者への支払いは週200ドル前後と発言。",
+"growthChannelEvidence": "TikTok、Instagram Reels、YouTube Shorts、Snapchatへ投稿。3つのTikTokアカウントで1日3本・週5日。Snapchatでも継続的に20,000ビュー以上と発言。",
+"ambiguousPoints": [
+"ゲームの権利処理や埋め込み元の許可は不明。",
+"AdSenseの詳細なRPM、CTR、ページビュー数は不明。",
+"150,000 DAUが継続した期間は不明。",
+"売却条件の詳細、利益、費用、税金は不明。",
+"動画ごとの正確な収益貢献は本人の推測が含まれる。"
+]
+},
+"facts": [
+"DuckMathはアンブロックゲームサイトとして紹介された。",
+"最初はGoogle Sitesで作り、後にReactへ移行した。",
+"Google AdSenseで広告収益化していた。",
+"直近4か月で5人から150,000人のDAUへ成長したと発言した。",
+"月15,000ドルの収益を出したと発言した。",
+"事業を120,000ドルで売却したと発言した。",
+"3つのTikTokアカウントで、1日3本、週5日投稿したと発言した。",
+"Repurpose.ioでTikTok動画を他プラットフォームへクロスポストしたと発言した。",
+"PostHogでABテストを行ったと発言した。",
+"Discordコミュニティは約7,000人まで成長したと発言した。"
+],
+"inferences": [
+"この事例の本質はプロダクトの複雑さではなく、短尺動画による流通と広告収益の回遊最適化である。",
+"買収額は収益実績、トラフィック量、ゲームサイト買収ニーズの組み合わせで成立した可能性が高い。",
+"Bilionで再現するなら、ゲームサイトそのものよりも、短尺動画で流入させる広告収益型サイトの型として抽出する方が安全。",
+"日本向けではアンブロックゲーム領域より、診断・ミニツール・クイズ・学習補助などの広告/リード獲得型ミニサイトへ転用する方が現実的。",
+"AI活用余地は、サイト構築よりも動画フック生成、競合動画分析、ABテスト案生成、ページ回遊改善にある。"
+],
+"risks": {
+"legalRisk": "中〜高。ゲームの埋め込み、著作権、学校環境でのブロック回避、広告ポリシー違反の可能性がある。動画内では権利処理の説明は不明。",
+"platformDependency": "高。TikTok、Instagram、YouTube Shorts、Snapchat、Google AdSenseに強く依存している。",
+"competitionRisk": "高。アンブロックゲームサイトは模倣が容易で、投稿量・ドメイン・広告承認・回遊最適化で差が出る。",
+"replicabilityRisk": "中〜高。MVPは作りやすいが、バズ、広告承認、継続トラフィック、買収先発見は再現性が低い。",
+"exaggerationOrSuspiciousPoints": [
+"単一動画で1,000ドル稼いだという部分は本人の推測で、正確な計測ではない。",
+"DAU 150,000がどの程度継続したか不明。",
+"売却額120,000ドルに対して月15,000ドル収益なら倍率が低く見えるため、収益の持続性やリスクを買い手が織り込んだ可能性がある。",
+"ゲーム素材や埋め込みの合法性が説明されていない。",
+"若年層向け広告収益は広告単価や規約変更に影響されやすい。"
+]
+},
+"aiNativeRemake": {
+"howToRebuildWithAI": "AIでニッチ選定、競合短尺動画の構造分解、動画フック生成、ゲーム/ミニツール一覧ページ生成、ABテスト案作成、AdSense配置案、回遊導線改善を自動化する。",
+"smallerStart": "ゲームサイトではなく、1ジャンルに絞った無料ミニツール集を作る。例：学生向け暗記ゲーム、資格クイズ、AI診断、恋愛診断、職業診断、AIプロンプト診断。",
+"forSoloDevelopers": "Next.jsまたはReactで1ページMVPを作り、広告なしでもまず短尺動画から1000クリックを検証する。毎日3本投稿し、CTRと滞在時間を見る。",
+"forNonEngineers": "ノーコードまたはGoogle Sitesでミニサイトを作り、AIでゲーム/診断/クイズの説明文と動画台本を作る。まずはAdSenseではなくメール登録や低額商品へ誘導する。",
+"japanLocalization": "日本では学校回避系ゲームより、受験・資格・就活・副業診断・恋愛診断・美容診断などの広告/アフィリエイト/リード獲得型サイトに寄せる方が安全。短尺動画はTikTok、Instagram Reels、YouTube Shorts中心。",
+"englishMarketVersion": "英語圏ではStudent tools、AI study games、browser games、quiz tools、college productivity toolsとして展開し、TikTok・Reels・Shorts・Snapchatへ大量投稿する。"
+},
+"starterProduct": {
+"minimumVersionIn48h": "AI Study Game Hub。学生向けに、暗記カード、クイズ、集中タイマー、簡単な脳トレゲームを1ページにまとめ、短尺動画から流入させる。",
+"requiredFeatures": [
+"トップページ",
+"3〜5個の無料ミニゲームまたは診断",
+"各ツールの個別ページ",
+"スマホ対応UI",
+"短いURLまたは覚えやすいドメイン",
+"クリック計測",
+"滞在時間計測",
+"動画からのCTA文",
+"将来の広告枠またはメール登録枠"
+],
+"unnecessaryFeatures": [
+"ログイン",
+"高度なDB",
+"課金機能",
+"複雑なランキング",
+"大量のゲーム数",
+"ネイティブアプリ",
+"完璧なデザイン",
+"独自AIモデル"
+],
+"firstPrice": "初期は無料。収益化テストは広告、アフィリエイト、または9ドル〜19ドルのプロンプト/テンプレート商品。Bilion向けスターター商品なら19ドルの短尺動画フック生成テンプレートが現実的。",
+"howToGetFirst10Customers": "競合の伸びている短尺動画を10〜20本分解し、同じフォーマットで30本投稿。TikTok、Reels、Shortsにクロスポスト。動画のCTAでサイトへ誘導し、初回10人のメール登録または低額購入を狙う。",
+"validationMethod": "48時間で30本の短尺動画を投稿し、合計視聴数、プロフィールクリック、サイトクリック、滞在時間、再訪、メール登録率を見る。目安は合計10,000再生、100クリック、10登録、1件の有料反応。"
+},
+"contentAngles": {
+"xPostIdeas": [
+"大学生が作ったただのゲームサイトが、月$15Kまで伸びた。本質はコードじゃない。3アカウントで毎日短尺を投下し、当たったフォーマットを量産したこと。",
+"DuckMathの教訓：真面目そうなB2Bを作るより、すでに小さく金が出ている変なサイトに全振りした方が勝つことがある。",
+"月$15Kのサイトの初期版はGoogle Sitesだった。ReactでもAIでもなく、最初に必要だったのは“誰をどこから連れてくるか”だった。",
+"TikTok 2.1M、Instagram 3.2M。同じ動画をRepurpose.ioで横展開。1本を作って終わりではなく、勝ち型を全プラットフォームに流すのが強い。",
+"AI時代の個人開発は、MVPを3日で作って、競合の伸びた動画を20本研究し、毎日投稿する。プロダクトより先に流通を設計する。"
+],
+"shortVideoIdeas": [
+"『月$15Kのサイト、最初はGoogle Sitesでした』というフックで、Google Sites→React→AI/Vibe coding→TikTok大量投稿→AdSense収益化の順に見せる。",
+"『この大学生、ゲームサイトを$120Kで売りました』という冒頭で、DAU 5→150,000、月$1K→$15K、売却$120Kを数字カードで表示する。",
+"『真面目なSaaSより、変なゲームサイトが勝った話』という切り口で、ego businessとreal businessの対比を出す。",
+"『競合動画を20本パクるのは悪か？』という問いから、フック・CTA・構成を研究し、品質より投稿量で勝った流れを説明する。",
+"『1本の雑な動画が5M再生』として、スマホ撮影・ゲーム画面・視覚フック・リンク誘導だけで成立した理由を分解する。"
+],
+"imageCardIdea": "左に『Google Sitesで作った雑なゲームサイト』、中央に『短尺動画を週45本投稿』、右に『月$15K / 売却$120K』を置く3ステップ図。"
+},
+"bilionJudgment": {
+"worthAddingToBilion": "追加価値あり。ただし、ゲームサイトの丸コピーではなく『無料ミニサイト × 短尺動画大量投稿 × 広告/売却』の成功パターンとして保存するべき。",
+"replicationScore": 7,
+"aiLeverageScore": 6,
+"monetizationClarityScore": 8,
+"buildDifficultyScore": 4,
+"whatToCopyNow": "競合の伸びた短尺動画を10〜20本研究し、同じ構造で毎日投稿する運用。MVPを2〜3日で作り、回遊と滞在時間を伸ばすこと。",
+"whatNotToCopy": "著作権が曖昧なゲーム埋め込み、学校ブロック回避の文脈、AdSenseだけに依存するモデル、バズを前提にした売上予測。"
+},
+"bilionRecordJson": {
+"sourceType": "YouTube",
+"sourceUrl": "https://www.youtube.com/watch?v=qIlX7cQ2UdU",
+"businessName": "DuckMath",
+"industry": "オンラインゲーム、広告収益型Webメディア",
+"revenueSignal": "月15,000ドル、売却120,000ドル、月間約150万ユーザー、DAU 150,000と発言。",
+"buyer": "無料ゲームを遊びたい学生・若年層。収益上の買い手は広告主とゲームサイト買収企業。",
+"pain": "退屈な時間にすぐ遊べる無料ブラウザゲームを探している。運営者側は流入不足で広告収益が伸びない。",
+"desire": "ユーザーは無料で即遊びたい。運営者はシンプルなサイトで大量トラフィックと広告収益を得たい。",
+"fear": "サイトがブロックされる、ゲームが動かない、広告アカウント停止、SNS流入停止、法的リスク。",
+"offer": "無料アンブロックゲームサイト。裏側ではAdSense広告枠と収益化済みWeb資産を売っている。",
+"pricingModel": "ユーザー無料、Google AdSense広告収益、最終的に事業売却。",
+"growthChannel": "TikTok、Instagram Reels、YouTube Shorts、Snapchatへの短尺動画大量投稿。",
+"distributionNotes": "3つのTikTokアカウントで1日3本・週5日投稿。Repurpose.ioで自動クロスポスト。競合の成功動画を研究してフックとCTAを改善。",
+"whyItWorked": "商品がシンプルで若年層に刺さり、短尺動画の視覚フックと無料ゲームへの明確なCTAが強かった。ページビューと滞在時間がAdSense収益に直結した。",
+"toolsUsed": [
+"Google Sites",
+"React",
+"Cloudflare",
+"Supabase",
+"PostHog",
+"Google AdSense",
+"Repurpose.io",
+"Discord",
+"Escrow",
+"TikTok",
+"Instagram Reels",
+"YouTube Shorts",
+"Snapchat"
+],
+"evidence": [
+"月15,000ドルと発言。",
+"5から150,000 DAUへ成長と発言。",
+"120,000ドルで売却と発言。",
+"月間約150万ユーザーと発言。",
+"TikTok動画2.1百万ビュー、Instagram同一動画3.2百万ビューと発言。"
+],
+"risks": [
+"ゲーム埋め込みの権利関係が不明。",
+"Google AdSense依存が強い。",
+"TikTok等のアルゴリズム依存が強い。",
+"アンブロックゲーム領域は競合と規約リスクが高い。",
+"単一動画収益の推定は根拠が弱い。"
+],
+"aiNativeRemake": "AIで競合動画を分解し、フック、CTA、動画台本、サイト構成、ABテスト案を生成する。ゲームサイトではなく、学生向け診断・クイズ・学習ミニツール集として安全に再構築する。",
+"starterProduct": "48時間で作る『AI Study Game Hub』。3〜5個の無料クイズ/診断/暗記ツールを載せ、短尺動画30本で流入検証する。",
+"validationPlan48h": "競合短尺動画を20本収集し、共通フックを抽出。ミニサイトを1ページ作成。TikTok/Reels/Shortsへ30本投稿。100クリック、10登録、1有料反応を基準に継続判断する。",
+"xPostIdeas": [
+"月$15Kのサイトの初期版はGoogle Sitesだった。勝因はコードではなく、短尺動画の量産だった。",
+"DAU 5から150,000へ。やったことは、競合の伸びた動画を研究して毎日投稿しただけ。",
+"真面目なSaaSより、変なゲームサイトが金を生むことがある。顧客がいるなら、それが本命。"
+],
+"shortScriptIdeas": [
+"大学生が作ったゲームサイトが月$15Kになった理由を30秒で分解。",
+"Google Sitesから始まったサイトが$120Kで売れた話。",
+"TikTok動画を3アカウントで毎日投稿したら、AdSense収益が跳ねた。"
+],
+"imagePrompt": "Create a dark SaaS-style infographic showing a simple browser game website turning into a traffic and revenue machine. Three columns: 1. Simple MVP built in Google Sites, 2. Short-form video volume across TikTok, Reels, Shorts, Snapchat, 3. $15K/month AdSense and $120K exit. Use clean startup dashboard aesthetics, no faces, no logos.",
+"buildPromptSeed": "Build a standalone web app called AI Study Game Hub. It is a mobile-first site with 5 free mini tools for students: quick quiz, memory cards, focus timer, random study challenge, and score tracker. No auth, no database, no external API. Include mock analytics cards for clicks, time on site, and returning users. Add sections for short-form video CTA copy, best-performing hooks, and a 48-hour validation checklist. Use React or Next.js, local state, clean dark UI, and copy buttons for video scripts.",
+"monetizationPath": "無料ミニサイトで流入を取り、広告、アフィリエイト、メール登録、低額テンプレート、運用代行、または収益化後のサイト売却へ展開する。",
+"replicationScore": 7,
+"aiLeverageScore": 6,
+"monetizationClarity": 8,
+"buildDifficulty": 4
+}
+}

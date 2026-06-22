@@ -1,0 +1,14 @@
+{
+  "id": "gmail-signal-demo-published",
+  "status": "published",
+  "source": "gmail",
+  "sender": "newsletter@example.com",
+  "subject": "Example published signal",
+  "received_at": "2026-06-19T00:00:00.000Z",
+  "summary": "A specific operator workflow with clear buyer pain, urgency, and a small product path.",
+  "buyer": "Appointment-based clinics",
+  "pain": "Canceled appointments leave revenue holes when staff follow-up is delayed.",
+  "product_idea": "Cancellation recovery assistant",
+  "evidence_level": "medium",
+  "hype_risk": "low"
+}

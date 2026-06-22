@@ -1,0 +1,42 @@
+{
+  "id": "gmail-signal-2026-06-19-001",
+  "source": {
+    "name": "Indie Hackers",
+    "from": "channing@indiehackers.com",
+    "subject": "璃・・What's New: $15k MRR in a boring niche, selling your internal tools, stop getting told what to do",
+    "received_at": "2026-06-17T18:13:34Z",
+    "source_type": "gmail_newsletter"
+  },
+  "category": "success_pattern",
+  "raw_signal": "$15k MRR in a boring niche / selling internal tools / vibe coding tools are gaining attention among indie builders.",
+  "buyer": "Indie hackers, solo founders, vibe coders, and small software builders looking for proven small-business ideas.",
+  "pain": "They do not know what to build, and they waste time chasing broad AI ideas instead of boring, specific, monetizable niches.",
+  "why_now": "AI coding tools make it easier for solo builders to turn narrow workflow problems or internal tools into public products quickly.",
+  "product_idea": "Boring Niche SaaS Opportunity Finder",
+  "first_product": "A report or lightweight tool that converts real indie business signals into 10 buildable boring-niche SaaS ideas with buyer, pain, price, and validation plan.",
+  "price": "$19-$29 one-time for a report, then $19-$49/month for ongoing access.",
+  "distribution": "Indie Hackers, X, Product Hunt, Reddit r/SaaS, Reddit r/indiehackers, build-in-public accounts.",
+  "lead_magnet_angle": "10 boring AI SaaS ideas you can build this weekend.",
+  "content_angle": "The best AI business ideas are not flashy. They are boring workflows with clear buyers.",
+  "bilion_access_angle": "Bilion turns indie business signals into buildable product prompts, so builders stop guessing what to build.",
+  "evidence_level": "medium",
+  "hype_risk": "medium",
+  "score": {
+    "buyer_clarity": 5,
+    "pain_intensity": 4,
+    "urgency": 4,
+    "buildability": 5,
+    "distribution": 4,
+    "monetization": 5,
+    "evidence_strength": 3,
+    "total": 30
+  },
+  "recommended_use": [
+    "publish_candidate",
+    "lead_magnet",
+    "x_post",
+    "paid_report",
+    "bilion_access"
+  ],
+  "status": "draft"
+}

@@ -1,0 +1,277 @@
+{
+"sourceType": "YouTube",
+"source": {
+"videoTitle": "I built a $14K/month SaaS using Discord",
+"creator": "Starter Story",
+"speaker": "Sam、Pat Walls",
+"sourceUrl": "https://www.youtube.com/watch?v=9r0qPeSJGog",
+"genre": "創業者インタビュー / SaaS成長事例",
+"language": "英語"
+},
+"oneLinePattern": "ニッチなDiscordコミュニティで繰り返し出ている悩みを観察し、壊れたMVPでも画面共有で価値を見せ、初期ユーザーを口コミ役に変えて月額SaaSへ転換するパターン。",
+"business": {
+"businessName": "Algrow（書き起こし上はAlgro/Algorithとも表記揺れあり）",
+"productOrService": "クリエイター向けに、伸びている動画フォーマットのリサーチ、保存、AI動画生成、投稿最適化を支援するSaaS",
+"industry": "Creator tools / AI video / Social media research SaaS",
+"targetMarket": "faceless YouTuber、ショート動画制作者、インフルエンサー、ドロップシッパー",
+"customer": "バズる動画フォーマットやニッチを探している若年層のオンライン収益化プレイヤー",
+"problemSolved": "どのニッチや動画形式が伸びているか分からない、成功しているチャンネルやフォーマットを探すのに時間がかかる、AI動画制作までの流れが分断されている問題",
+"valueProvided": "リアルタイムで伸びている動画フォーマットを見つけ、保存し、AI生成機能で動画化し、投稿用に最適化できる",
+"price": "$25/月、$45/月、$80/月の3プラン",
+"revenue": "直近30日で約£10,000、換算で約$13,000〜$14,000。冒頭ではlast month over $40,000という発言もあり数値が矛盾",
+"period": "初回SaaS構築から約6〜7か月、成長期間は約6か月",
+"usersOrSubscribers": "10,000人以上のユーザー、当月の新規顧客480人"
+},
+"buyer": {
+"whoBuys": "faceless YouTube、YouTube automation、Shorts、TikTok、AI動画、ドロップシッピングなどで再現可能な勝ちフォーマットを探す個人クリエイター",
+"whyTheyBuy": "伸びているニッチや動画構成を自力で探すより早く、すでに成果が出ている形式を見つけて真似したいから",
+"urgency": "高い。トレンド動画やショート動画の勝ちパターンは移り変わりが早く、早く見つけて投稿するほど有利",
+"willingnessToPay": "中〜高。顧客は収益化目的で使うため、$25〜$80/月を回収可能な投資として見やすい",
+"existingAlternatives": "手作業でYouTube/TikTok検索、競合チャンネル監視、スプレッドシート管理、ChatGPTへの手動分析、vidIQ/TubeBuddy系ツール、動画生成AI単体ツール",
+"alternativeProblems": "リサーチ、保存、生成、最適化が分断される。勝ちフォーマットを見つけるまでに時間がかかり、初心者には判断基準がない"
+},
+"painDesireFear": {
+"pain": "何のニッチを選べばいいか分からない、どの動画フォーマットを真似ればよいか分からない、動画量産の材料探しが面倒",
+"desire": "すでに伸びている動画形式を見つけて、短時間で投稿・収益化したい",
+"fear": "間違ったニッチに時間を使う、伸びない動画を作り続ける、他人が先にトレンドを取る、AI動画ブームに乗り遅れる",
+"reasonsNotToBuy": "生成品質が低い可能性、既存ツールで足りる可能性、プラットフォーム規約や著作権への不安、月額費用を回収できるか不明"
+},
+"offer": {
+"whatIsSold": "トレンド動画フォーマット発見、チャンネル分析、フォーマット保存、AI画像/動画生成、投稿最適化の月額SaaS",
+"realBenefitSold": "『何を作れば伸びるか』を探す時間を減らし、再現性のある動画制作フローを得られること",
+"minimumProduct": "指定ニッチのDiscord/YouTube/TikTokから伸びているチャンネル・動画形式を抽出し、保存できるシンプルなリサーチダッシュボード",
+"subscriptionReason": "トレンド、チャンネル、平均再生数、勝ちフォーマットが継続的に変化するため、月額で最新データを見る理由がある",
+"upsellPotential": "AI動画生成クレジット、テンプレート販売、クリエイター向け分析レポート、チャンネル運用代行、Discordコミュニティ、上位プラン"
+},
+"growthDistribution": {
+"initialAcquisition": "Discboard.orgでニッチDiscordを探し、MoneyMindのようなサーバーに参加。検索欄で『niches』を調べ、悩みの繰り返しを発見。その後、VCで無言画面共有し、質問されたらツールとして紹介",
+"mainGrowthChannel": "Discordコミュニティ内の画面共有、DM、口コミ、サーバーオーナーによるYouTube紹介",
+"postingFrequency": "約1週間連続でDiscordサーバー内に滞在し、画面共有を継続",
+"winningContentFormat": "直接宣伝ではなく、VCで実際にツールを使っている画面を見せるデモ型の非スパム露出",
+"scaleMethod": "ウェイトリストをDiscordに投稿し、早期ユーザーに無料アクセスを与え、その友人を有料顧客化。後に自前Discordコミュニティへ誘導",
+"adsUgcSeoCommunity": "主にコミュニティ。広告やSEOは動画内では不明。UGC的にはサーバーオーナーのYouTube紹介と初期ユーザーの口コミが機能",
+"whyItSpread": "コミュニティ内で同じ悩みを持つ人が多く、実演で価値がすぐ見え、無料アクセスを持つ初期ユーザーが友人に実物を見せられたため"
+},
+"monetization": {
+"monetizationPath": "壊れたMVPをDiscordで見せる → 興味を持った人をウェイトリストへ → 早期ユーザーに無料提供 → 友人・周辺ユーザーを有料プランへ転換 → $25/$45/$80月額",
+"freeOffer": "初期検証に協力したユーザーへの無料アクセス",
+"paidProduct": "Algrowの月額SaaSプラン",
+"pricingModel": "3段階サブスクリプション。$25/月、$45/月、$80/月",
+"whyLtvCanGrow": "顧客が継続して新しい動画フォーマットやニッチを探し続ける限り、データ更新・AI生成・上位機能で継続利用される可能性がある",
+"whyRecurringRevenueWorks": "トレンド探索は一回で終わらず、クリエイターは継続的に次のネタ・次のチャンネル・次のフォーマットを必要とするから"
+},
+"whyItWorked": {
+"reason1": "Discord内で実際に『ニッチの探し方』『このニッチを再現する方法』が何度も質問されており、需要が先に見えていた",
+"reason2": "売り込みではなく、画面共有で実演したためスパムに見えず、自然な好奇心を生んだ",
+"reason3": "初期ユーザーに無料アクセスを渡し、そのユーザーが友人にツールを見せることで口コミが起きた",
+"marketTiming": "AI動画生成、faceless YouTube、YouTube automation、ショート動画収益化の関心が高いタイミング",
+"founderStrength": "自分自身がアフィリエイト、faceless texting stories、YouTube automationを経験しており、顧客の言葉と悩みを理解していた",
+"highlyReplicableElements": "DiscordでICPがいる場所を探す、チャット履歴から繰り返し悩みを抽出する、壊れたMVPでも画面共有で見せる、早期ユーザーを無料で巻き込む",
+"lowReplicabilityElements": "特定Discordサーバーの反応、サーバーオーナーによる無償YouTube紹介、若年クリエイターコミュニティとの距離感、タイミング"
+},
+"toolsStack": {
+"toolsUsed": [
+"Notepad",
+"VS Code",
+"Cursor",
+"Heroku",
+"MailerLite",
+"Discboard.org",
+"Stripe"
+],
+"aiTools": [
+"Cursor",
+"ChatGPT voice modeと思われるツール",
+"Nano Banana",
+"Sora 2",
+"Gemini"
+],
+"payment": "Stripe",
+"database": "不明",
+"hosting": "Heroku",
+"analytics": "Stripe dashboard。その他は不明",
+"other": [
+"Discord",
+"Loomまたは短い画面録画",
+"YouTube"
+]
+},
+"evidence": {
+"evidenceQuotes": [
+"I built my first SAS around six, seven months ago.",
+"I've gained over 10,000 users",
+"made over $14,000 in revenue in the last 30 days",
+"I got my first 400 users all on Discord.",
+"There is a 25 a month plan, a 45 a month plan, and an $80 a month plan.",
+"I would join a discord voice chat and I would share my screen",
+"Word of mouth was so big for me at the beginning.",
+"The initial MVP that you see it was coded in about a week.",
+"Yes, there were bugs. Yes, there were issues but the main idea of the app was working.",
+"I'm still on Heroku."
+],
+"numberEvidence": "10,000人以上のユーザー、当月480新規顧客、初期400ユーザーはDiscord、MVPは約1週間で構築、運営期間は約6〜7か月",
+"priceEvidence": "$25/月、$45/月、$80/月の3プランと本人が説明",
+"growthChannelEvidence": "Discboard.orgでDiscordコミュニティを探し、MoneyMindサーバーで『niches』を検索。VCで画面共有し、ウェイトリストを投稿し、口コミで拡大",
+"ambiguousPoints": [
+"冒頭にlast month over $40,000 in revenueという発言がある一方、本人のStripe説明では直近4週間で£10,000、約$13,000〜$14,000と説明しており矛盾がある",
+"businessNameがAlgrow、Algro、Algorithのように書き起こし内で揺れている",
+"10,000 usersが無料登録者なのかアクティブユーザーなのか有料顧客なのかは不明",
+"480 new customersが有料顧客か新規登録者か、文脈上はcustomersだが厳密には不明",
+"AI動画生成でSora 2、Nano Banana、Geminiを使っていると話すが、具体的API連携や利用条件は不明",
+"利益、解約率、継続率、広告費は不明"
+]
+},
+"facts": [
+"Samは大学生で、コーディング経験ゼロに近い状態からAIコーディングツールを使ってSaaSを構築した",
+"プロダクトはクリエイターが伸びている動画フォーマットを調べ、再現するためのSaaS",
+"価格は$25/月、$45/月、$80/月の3プラン",
+"直近30日売上は本人説明で約£10,000、ドル換算で約$13,000〜$14,000",
+"6か月で10,000人以上のユーザーを獲得したと語っている",
+"初期400ユーザーはDiscord経由だったと語っている",
+"MVPは約1週間で作られ、最初のユーザーにはHeroku上でapplication errorが出たが、コア機能は使えた",
+"初期の主な検証手法はDiscordのボイスチャットで無言で画面共有することだった",
+"Discordサーバー内で『how do I find a niche』のような質問が繰り返されていたことを需要の根拠にした",
+"初期ユーザーには無料アクセスを渡し、その友人が有料化する流れがあった"
+],
+"inferences": [
+"このビジネスの本質はAI動画生成ではなく、勝ちパターンの発見と模倣を短縮する『リサーチOS』である",
+"Discordが機能した理由は、顧客が若く、メールよりDiscordを見る習慣があり、悩みがコミュニティ内で可視化されていたから",
+"最初から大規模なSaaSを作るより、特定ニッチの『勝ちフォーマット発見レポート』として売る方が48時間検証しやすい",
+"日本向けに置き換えるなら、YouTubeショート/TikTok/Instagramリール運用者向けの『伸びている型リサーチ』が近い",
+"Bilion向けには、プロダクトそのものより『Discord無言デモ検証』の配布パターンが価値高い"
+],
+"risks": {
+"legalRisk": "他者の動画フォーマットを『replicate』する設計は、著作権、プラットフォーム規約、パクリ批判、肖像権、AI生成素材の権利問題に注意が必要",
+"platformDependency": "YouTube/TikTok/Discord/AI生成モデル/Heroku/Stripeなどへの依存がある。Discordでの自己宣伝はBANリスクもある",
+"competitionRisk": "vidIQ、TubeBuddy、YouTube分析ツール、AI動画生成ツール、トレンド分析ツール、テンプレート販売者と競合する",
+"replicabilityRisk": "Discord内で自然に見せる距離感、若年層コミュニティへの馴染み、サーバーオーナーによる無償紹介は再現性が低い",
+"exaggerationOrSuspiciousPoints": [
+"$40,000 revenueという冒頭表現と$14,000/monthの説明に矛盾がある",
+"10,000 usersの定義が不明",
+"480 new customersが有料顧客か登録者か不明",
+"Sora 2やNano Bananaなどのモデル名・費用説明は詳細検証ができない",
+"売上は示されたが利益、チャーン、返金、継続率は不明"
+]
+},
+"aiNativeRemake": {
+"howToRebuildWithAI": "Discord、Reddit、YouTube、TikTokの投稿やチャットから繰り返し出る『ニッチ探し』『伸びる型探し』の悩みを抽出し、AIで勝ちフォーマット一覧、投稿案、台本、生成プロンプトに変換する",
+"smallerStart": "SaaSではなく、特定ジャンルの『今週伸びているショート動画フォーマット20選＋再現プロンプト』を$19で販売する",
+"forSoloDevelopers": "Next.jsで、入力したニッチに対してサンプルデータから伸びるフォーマット、動画構成、フック、台本、投稿計画を出す小型Webアプリを作る",
+"forNonEngineers": "Google Sheets、ChatGPT、手動リサーチ、Gumroad/Notionで、週次レポート型の商品として開始する",
+"japanLocalization": "日本のTikTok運用者、YouTubeショート副業者、Instagramリール運用代行、コンテンツ販売者向けに『伸びてる型の発見と再現台本』として売る",
+"englishMarketVersion": "Faceless YouTube、AI Shorts、TikTok automation、dropshipping creatives向けに、Discordコミュニティで実演しながら『viral format finder』として販売する"
+},
+"starterProduct": {
+"minimumVersionIn48h": "『AI Shorts Format Finder』。1ジャンルを入力すると、伸びている動画フォーマット例、ターゲット、フック、15秒台本、画像/動画生成プロンプト、投稿タイトル案を出す簡易WebアプリまたはNotionレポート",
+"requiredFeatures": [
+"ニッチ入力フォーム",
+"伸びている動画フォーマットの一覧表示",
+"フォーマットごとの再現台本",
+"AI画像/動画生成プロンプト",
+"保存またはコピー機能",
+"3つのサンプルジャンル",
+"Discord/DMで見せられるデモ画面"
+],
+"unnecessaryFeatures": [
+"本格的なAI動画生成",
+"自動投稿",
+"複雑な認証",
+"大規模DB",
+"高度な分析ダッシュボード",
+"チーム機能",
+"完璧なUI"
+],
+"firstPrice": "$19買い切り、または$9初月/$29月額",
+"howToGetFirst10Customers": "TikTok副業、YouTube Shorts、AI動画、faceless YouTube、コンテンツ販売系のDiscord/Reddit/Xコミュニティを10個探し、売り込み投稿ではなく、画面共有または短い録画で『このジャンルならこういう型が見つかる』と見せる。興味を持った人に無料版を渡し、友人紹介で有料版へ誘導する",
+"validationMethod": "48時間で3つのDiscord/コミュニティからチャット履歴や投稿を観察し、同じ悩みが5回以上出るか確認。次に5〜6人へDMし、30秒デモ動画を送り、2人以上が『欲しい』『試したい』と反応し、1人が$19を払うなら継続"
+},
+"contentAngles": {
+"xPostIdeas": [
+"初期ユーザー400人を広告なしで獲った方法：Discordで売り込まず、ただ画面共有しただけ",
+"MVPが壊れていても売れる条件：コアの痛みだけ解決できていること",
+"RedditよりDiscordが強いケース：若い顧客はメールを見ない、VCで実物を見る",
+"SaaSの最初の100人はLPではなく、ICPが雑談している場所にいる",
+"Build in publicよりBuild with users。顧客の前で作って、顧客に見せる"
+],
+"shortVideoIdeas": [
+"『Discordで月$14K SaaS』の3ステップ：探す、黙って見せる、無料ユーザーを口コミ役にする",
+"壊れたMVPでも売れた理由を30秒で解説",
+"Discboardでニッチコミュニティを探してSaaS需要を見つける方法",
+"なぜ彼はBANされなかったのか：売り込みではなく実演だった",
+"AI時代のSaaS検証：コードを書く前にチャット履歴をChatGPTへ入れろ"
+],
+"imageCardIdea": "左に『普通のSaaS検証：LP→投稿→待つ』、右に『Sam式：Discord検索→悩み観察→VC画面共有→Waitlist→口コミ』を並べた比較カード"
+},
+"bilionJudgment": {
+"worthAddingToBilion": "追加価値あり。商品アイデアよりも、Discordを使った初期検証・配布パターンとして強い。Bilionの『48時間検証できるAI-native business』に変換しやすい",
+"replicationScore": 8,
+"aiLeverageScore": 8,
+"monetizationClarityScore": 8,
+"buildDifficultyScore": 5,
+"whatToCopyNow": "DiscordでICPの悩みを検索し、チャット履歴をAIで痛み抽出し、壊れたMVPやモックを画面共有で見せる検証導線",
+"whatNotToCopy": "最初からAI動画生成SaaS全体を作ること、他人の動画を丸パクリする表現、Discordで直接宣伝投稿すること、$40Kの数値を無検証で信じること"
+},
+"bilionRecordJson": {
+"sourceType": "YouTube",
+"sourceUrl": "https://www.youtube.com/watch?v=9r0qPeSJGog",
+"businessName": "Algrow",
+"industry": "AI creator tools / Viral format research SaaS",
+"revenueSignal": "直近30日で約£10,000、約$13,000〜$14,000。冒頭に$40,000超の発言もあり要注意",
+"buyer": "faceless YouTuber、ショート動画制作者、AI動画副業者、ドロップシッパー、インフルエンサー",
+"pain": "伸びるニッチや動画フォーマットを見つけるのに時間がかかる",
+"desire": "すでに伸びている型を見つけて、短時間で再現し、投稿・収益化したい",
+"fear": "伸びないニッチに時間を使う、トレンドに乗り遅れる、競合に先を越される",
+"offer": "リアルタイムで伸びている動画フォーマットを分析し、保存し、AI生成までできる月額SaaS",
+"pricingModel": "$25/月、$45/月、$80/月",
+"growthChannel": "Discordコミュニティ、画面共有、ウェイトリスト、口コミ",
+"distributionNotes": "Discboard.orgでニッチサーバーを探し、サーバー内検索で繰り返し出る悩みを確認。VCで無言画面共有し、質問されたらツールとして説明。初期ユーザーに無料アクセスを渡して口コミを作る",
+"whyItWorked": "顧客がいる場所で、売り込みではなく実物デモを見せた。悩みが明確で、初期ユーザーが友人に実演できた",
+"toolsUsed": [
+"Cursor",
+"VS Code",
+"Notepad",
+"Heroku",
+"MailerLite",
+"Stripe",
+"Discord",
+"Discboard.org",
+"Nano Banana",
+"Sora 2",
+"Gemini"
+],
+"evidence": [
+"I got my first 400 users all on Discord.",
+"I've gained over 10,000 users",
+"made over $14,000 in revenue in the last 30 days",
+"The initial MVP that you see it was coded in about a week.",
+"Word of mouth was so big for me at the beginning."
+],
+"risks": [
+"売上数値に矛盾がある",
+"10,000 usersの定義が不明",
+"Discordでの自己宣伝BANリスク",
+"他者フォーマット模倣による著作権・倫理リスク",
+"AI動画生成APIコストと品質リスク"
+],
+"aiNativeRemake": "ニッチコミュニティのチャット履歴から繰り返し悩みを抽出し、伸びる動画フォーマット、台本、AI生成プロンプト、投稿計画へ変換する小型AIリサーチツールとして再構築する",
+"starterProduct": "AI Shorts Format Finder：1ジャンルを入力すると、伸びている動画フォーマット、フック、15秒台本、画像/動画生成プロンプト、投稿タイトルを出す",
+"validationPlan48h": "1日目：Discboard/Reddit/XでAI動画・faceless YouTube系コミュニティを10個探し、繰り返し悩みを20件収集。2日目：モック画面または簡易LPを作り、5〜6人に30秒デモを送り、2人以上の強い反応と1件の$19支払いを目標にする",
+"xPostIdeas": [
+"Discordで初期400ユーザーを獲ったSaaSの本質は、売り込みではなく『顧客の前で使う』ことだった",
+"壊れたMVPでも売れる。条件は1つ、顧客の一番痛い問題だけは動いていること",
+"AI時代の検証は、LPより先にコミュニティのチャット履歴を読むこと"
+],
+"shortScriptIdeas": [
+"大学生がコーディング経験ゼロから月$14K SaaSを作った。最初にやったのは広告ではなくDiscordで画面共有だった",
+"SaaSの最初の100人を取る方法。Discboardで顧客の巣を探し、悩みを読み、無言でデモを見せる",
+"このMVPは壊れていた。でも売れた。なぜなら顧客が一番欲しかった機能だけは動いていたから"
+],
+"imagePrompt": "Dark SaaS style infographic showing a 5-step Discord SaaS validation funnel: Find ICP Discords, Search recurring pains, Screen-share MVP, Collect waitlist, Turn early users into advocates. Minimal, sharp, founder-focused.",
+"buildPromptSeed": "Build a standalone mobile-first web app called AI Shorts Format Finder. It helps faceless YouTubers and AI video creators discover viral content formats. No auth, no database, no external API. Include a niche input, mock trending format cards, subscriber/view metrics, save buttons, AI script generator, video prompt generator, and a 48-hour validation checklist. Use local state and polished dark SaaS UI.",
+"monetizationPath": "無料デモまたはサンプル3件 → $19買い切りレポート/プロンプトパック → $29/月の週次トレンド更新 → $79/月のAI生成・保存・複数ニッチ分析",
+"replicationScore": 8,
+"aiLeverageScore": 8,
+"monetizationClarity": 8,
+"buildDifficulty": 5
+}
+}

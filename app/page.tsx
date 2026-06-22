@@ -30,6 +30,49 @@ const showcasePreview = [
   },
 ];
 
+const patternLibrary = [
+  {
+    slug: "chat-product",
+    title: "$300K/year chat product",
+    revenueSignal: "$300K/year",
+    buyer: "Support-heavy SaaS teams",
+    pain: "Customer questions are repetitive, scattered, and slow to answer.",
+    channel: "Founder-led X posts and support communities",
+  },
+  {
+    slug: "discord-tool",
+    title: "$30K MRR Discord tool",
+    revenueSignal: "$30K MRR",
+    buyer: "Paid communities and course creators",
+    pain: "Members ask the same questions and miss important resources.",
+    channel: "Discord communities and creator referrals",
+  },
+  {
+    slug: "mobile-app",
+    title: "$20K/month mobile app",
+    revenueSignal: "$20K/month",
+    buyer: "Consumers with a repeated daily workflow",
+    pain: "The job is small, annoying, and happens often enough to pay for.",
+    channel: "Short-form content and app store search",
+  },
+  {
+    slug: "demo-saas",
+    title: "$250K MRR demo SaaS",
+    revenueSignal: "$250K MRR",
+    buyer: "B2B sales and marketing teams",
+    pain: "Static demos fail to show prospects the exact use case they care about.",
+    channel: "LinkedIn, outbound, and product-led demo pages",
+  },
+  {
+    slug: "analytics-tool",
+    title: "$1M ARR analytics tool",
+    revenueSignal: "$1M ARR",
+    buyer: "Operators who need revenue visibility",
+    pain: "Important metrics live across too many tools and spreadsheets.",
+    channel: "SEO, founder content, and integration marketplaces",
+  },
+];
+
 function LanguageSwitch() {
   return (
     <div className="flex rounded-full border border-white/10 bg-white/[0.03] p-1 text-xs font-medium text-zinc-500">
@@ -103,6 +146,51 @@ function ShowcaseCard({ item }: { item: (typeof showcasePreview)[number] }) {
   );
 }
 
+function PatternCard({ pattern }: { pattern: (typeof patternLibrary)[number] }) {
+  return (
+    <article className="min-w-[280px] rounded-lg border border-white/10 bg-[#111214] p-4 shadow-xl shadow-black/20 sm:min-w-0">
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="text-lg font-semibold leading-6 text-white">{pattern.title}</h3>
+        <span className="rounded-full border border-emerald-300/20 bg-emerald-300/10 px-2.5 py-1 text-[11px] font-bold text-emerald-200">
+          Pattern
+        </span>
+      </div>
+      <div className="mt-4 grid gap-3 text-sm leading-6">
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+            Revenue signal
+          </div>
+          <p className="mt-1 font-semibold text-zinc-100">{pattern.revenueSignal}</p>
+        </div>
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+            Buyer
+          </div>
+          <p className="mt-1 text-zinc-300">{pattern.buyer}</p>
+        </div>
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+            Pain
+          </div>
+          <p className="mt-1 text-zinc-300">{pattern.pain}</p>
+        </div>
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+            Channel
+          </div>
+          <p className="mt-1 text-zinc-300">{pattern.channel}</p>
+        </div>
+      </div>
+      <Link
+        href={`/app?pattern=${pattern.slug}`}
+        className="mt-5 inline-flex w-full items-center justify-center rounded-lg bg-white px-4 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200"
+      >
+        Generate my version
+      </Link>
+    </article>
+  );
+}
+
 export default function HomePage() {
   const [sourceMode, setSourceMode] = useState<SourceMode>("indie");
 
@@ -127,14 +215,18 @@ export default function HomePage() {
         <section className="py-14 md:py-18">
           <div className="max-w-3xl">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
-              Build Decision
+              Opportunity Brief
             </div>
             <h1 className="mt-5 text-4xl font-semibold leading-tight tracking-tight md:text-6xl">
-              Bilion
+              Know what sells before you build.
             </h1>
-            <div className="mt-2 text-xl font-semibold text-zinc-200">Build Decision</div>
             <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-400">
-              Turn market signals into buildable product opportunities.
+              Bilion turns proven business patterns into first offers, launch
+              copy, and 48-hour validation plans.
+            </p>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-500">
+              Built for people who want to sell AI-powered products, not
+              collect more ideas.
             </p>
 
             <div className="mt-7 grid gap-3 sm:grid-cols-2">
@@ -166,8 +258,11 @@ export default function HomePage() {
               </button>
             </div>
 
-            <div className="mt-6 max-w-sm">
-              <ButtonLink href={`/app?source=${sourceMode}`}>Generate Build Brief</ButtonLink>
+            <div className="mt-6 grid max-w-xl gap-3 sm:grid-cols-2">
+              <ButtonLink href={`/app?source=${sourceMode}`}>Get my free product roast</ButtonLink>
+              <ButtonLink href="/showcase" variant="secondary">
+                See example briefs
+              </ButtonLink>
             </div>
           </div>
         </section>
@@ -176,14 +271,71 @@ export default function HomePage() {
           <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div>
               <div className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
-                Showcase Demo
+                Pattern Library
               </div>
               <h2 className="mt-3 text-2xl font-semibold tracking-tight">
-                Products built from Bilion signals.
+                Browse proven business patterns
+              </h2>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-500">
+                Bilion turns real success stories into sell-before-you-build
+                briefs.
+              </p>
+            </div>
+            <Link href="/app" className="text-sm font-semibold text-zinc-400 hover:text-white">
+              Generate my version
+            </Link>
+          </div>
+          <div className="-mx-5 flex gap-3 overflow-x-auto px-5 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:px-0 lg:grid-cols-5">
+            {patternLibrary.map((pattern) => (
+              <PatternCard key={pattern.title} pattern={pattern} />
+            ))}
+          </div>
+        </section>
+
+        <section className="border-t border-white/10 py-10">
+          <div className="grid gap-5 md:grid-cols-[0.8fr_1.2fr] md:items-start">
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
+                What Bilion gives you
+              </div>
+              <h2 className="mt-3 text-2xl font-semibold tracking-tight">
+                See the example, then generate your own.
+              </h2>
+              <p className="mt-3 text-sm leading-6 text-zinc-500">
+                Bilion is not an idea generator. It is a
+                sell-before-you-build brief generator.
+              </p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {[
+                "Proven business pattern",
+                "First paid offer",
+                "Launch copy and DM script",
+                "48-hour validation plan + Codex prompt",
+              ].map((item) => (
+                <div
+                  key={item}
+                  className="rounded-lg border border-white/10 bg-[#111214] p-4 text-sm font-semibold leading-6 text-zinc-100"
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="border-t border-white/10 py-10">
+          <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
+                Example briefs
+              </div>
+              <h2 className="mt-3 text-2xl font-semibold tracking-tight">
+                Understand Bilion through examples first.
               </h2>
             </div>
             <Link href="/showcase" className="text-sm font-semibold text-zinc-400 hover:text-white">
-              View all demos
+              See example briefs
             </Link>
           </div>
           <div className="grid gap-3 lg:grid-cols-3">
@@ -201,14 +353,15 @@ export default function HomePage() {
                   Access
                 </div>
                 <h2 className="mt-3 text-2xl font-semibold tracking-tight">
-                  Three free generations. Unlimited with Founder Access.
+                  Three free product roasts. Unlimited with Founder Access.
                 </h2>
                 <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-500">
-                  Free users can generate 3 Build Briefs per calendar day. Founder and paid users get unlimited
-                  Market Signal, Product Opportunity, Build Brief, and Implementation Prompt output.
+                  Free users can generate 3 Opportunity Briefs per calendar day.
+                  Founder and paid users get unlimited product angles, launch
+                  copy, validation plans, and build prompts.
                 </p>
               </div>
-              <ButtonLink href="/app">Generate Build Brief</ButtonLink>
+              <ButtonLink href="/app">Get my free product roast</ButtonLink>
             </div>
           </div>
         </section>

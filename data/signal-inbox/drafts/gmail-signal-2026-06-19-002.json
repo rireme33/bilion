@@ -1,0 +1,42 @@
+{
+  "id": "gmail-signal-2026-06-19-002",
+  "source": {
+    "name": "Product Hunt Daily",
+    "from": "hello@digest.producthunt.com",
+    "subject": "从 Email hired an agent",
+    "received_at": "2026-06-18T15:17:10Z",
+    "source_type": "gmail_newsletter"
+  },
+  "category": "market_signal",
+  "raw_signal": "AI-native email clients are emerging because inboxes now contain human conversations, SaaS notifications, AI-agent outputs, and workflow signals in one overloaded place.",
+  "buyer": "Startup founders, operators, salespeople, consultants, newsletter-heavy creators, and AI builders drowning in email.",
+  "pain": "Important opportunities are buried inside email noise. The inbox is no longer just a communication tool; it is an unstructured signal feed.",
+  "why_now": "AI agents, SaaS notifications, and automated workflows are increasing inbox volume and complexity, creating demand for classification and extraction tools.",
+  "product_idea": "Inbox-to-Opportunity Signal Extractor",
+  "first_product": "A manual Gmail paste-in tool that extracts business opportunities, buyer pain, product ideas, and content angles from selected newsletters and emails.",
+  "price": "$9-$29/month, or $19 one-time for an inbox signal report.",
+  "distribution": "Product Hunt, X, Indie Hackers, Gmail power-user communities, AI builder communities.",
+  "lead_magnet_angle": "Find 10 business ideas hiding in your inbox.",
+  "content_angle": "Your inbox is not email anymore. It is a business signal database.",
+  "bilion_access_angle": "Bilion converts Gmail newsletters and startup emails into AI business opportunities and build prompts.",
+  "evidence_level": "strong",
+  "hype_risk": "low",
+  "score": {
+    "buyer_clarity": 5,
+    "pain_intensity": 5,
+    "urgency": 4,
+    "buildability": 5,
+    "distribution": 5,
+    "monetization": 4,
+    "evidence_strength": 4,
+    "total": 32
+  },
+  "recommended_use": [
+    "publish_candidate",
+    "x_post",
+    "lead_magnet",
+    "bilion_access",
+    "product_feature"
+  ],
+  "status": "draft"
+}

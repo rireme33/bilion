@@ -1,0 +1,212 @@
+[
+  {
+    "id": "gmail-signal-2026-06-19-001",
+    "source": {
+      "name": "Indie Hackers",
+      "from": "channing@indiehackers.com",
+      "subject": "璃・・What's New: $15k MRR in a boring niche, selling your internal tools, stop getting told what to do",
+      "received_at": "2026-06-17T18:13:34Z",
+      "source_type": "gmail_newsletter"
+    },
+    "category": "success_pattern",
+    "raw_signal": "$15k MRR in a boring niche / selling internal tools / vibe coding tools are gaining attention among indie builders.",
+    "buyer": "Indie hackers, solo founders, vibe coders, and small software builders looking for proven small-business ideas.",
+    "pain": "They do not know what to build, and they waste time chasing broad AI ideas instead of boring, specific, monetizable niches.",
+    "why_now": "AI coding tools make it easier for solo builders to turn narrow workflow problems or internal tools into public products quickly.",
+    "product_idea": "Boring Niche SaaS Opportunity Finder",
+    "first_product": "A report or lightweight tool that converts real indie business signals into 10 buildable boring-niche SaaS ideas with buyer, pain, price, and validation plan.",
+    "price": "$19-$29 one-time for a report, then $19-$49/month for ongoing access.",
+    "distribution": "Indie Hackers, X, Product Hunt, Reddit r/SaaS, Reddit r/indiehackers, build-in-public accounts.",
+    "lead_magnet_angle": "10 boring AI SaaS ideas you can build this weekend.",
+    "content_angle": "The best AI business ideas are not flashy. They are boring workflows with clear buyers.",
+    "bilion_access_angle": "Bilion turns indie business signals into buildable product prompts, so builders stop guessing what to build.",
+    "evidence_level": "medium",
+    "hype_risk": "medium",
+    "score": {
+      "buyer_clarity": 5,
+      "pain_intensity": 4,
+      "urgency": 4,
+      "buildability": 5,
+      "distribution": 4,
+      "monetization": 5,
+      "evidence_strength": 3,
+      "total": 30
+    },
+    "recommended_use": [
+      "publish_candidate",
+      "lead_magnet",
+      "x_post",
+      "paid_report",
+      "bilion_access"
+    ],
+    "status": "draft"
+  },
+  {
+    "id": "gmail-signal-2026-06-19-002",
+    "source": {
+      "name": "Product Hunt Daily",
+      "from": "hello@digest.producthunt.com",
+      "subject": "从 Email hired an agent",
+      "received_at": "2026-06-18T15:17:10Z",
+      "source_type": "gmail_newsletter"
+    },
+    "category": "market_signal",
+    "raw_signal": "AI-native email clients are emerging because inboxes now contain human conversations, SaaS notifications, AI-agent outputs, and workflow signals in one overloaded place.",
+    "buyer": "Startup founders, operators, salespeople, consultants, newsletter-heavy creators, and AI builders drowning in email.",
+    "pain": "Important opportunities are buried inside email noise. The inbox is no longer just a communication tool; it is an unstructured signal feed.",
+    "why_now": "AI agents, SaaS notifications, and automated workflows are increasing inbox volume and complexity, creating demand for classification and extraction tools.",
+    "product_idea": "Inbox-to-Opportunity Signal Extractor",
+    "first_product": "A manual Gmail paste-in tool that extracts business opportunities, buyer pain, product ideas, and content angles from selected newsletters and emails.",
+    "price": "$9-$29/month, or $19 one-time for an inbox signal report.",
+    "distribution": "Product Hunt, X, Indie Hackers, Gmail power-user communities, AI builder communities.",
+    "lead_magnet_angle": "Find 10 business ideas hiding in your inbox.",
+    "content_angle": "Your inbox is not email anymore. It is a business signal database.",
+    "bilion_access_angle": "Bilion converts Gmail newsletters and startup emails into AI business opportunities and build prompts.",
+    "evidence_level": "strong",
+    "hype_risk": "low",
+    "score": {
+      "buyer_clarity": 5,
+      "pain_intensity": 5,
+      "urgency": 4,
+      "buildability": 5,
+      "distribution": 5,
+      "monetization": 4,
+      "evidence_strength": 4,
+      "total": 32
+    },
+    "recommended_use": [
+      "publish_candidate",
+      "x_post",
+      "lead_magnet",
+      "bilion_access",
+      "product_feature"
+    ],
+    "status": "draft"
+  },
+  {
+    "id": "gmail-signal-2026-06-19-003",
+    "source": {
+      "name": "Failory",
+      "from": "nico@failory.com",
+      "subject": "The $500 AI Accountant 櫨",
+      "received_at": "2026-06-18T20:26:39Z",
+      "source_type": "gmail_newsletter"
+    },
+    "category": "failure_pattern",
+    "raw_signal": "AI accounting is a high-demand category, but reliability, trust, and responsibility boundaries can break the product if the tool tries to replace expert review.",
+    "buyer": "Solo founders, freelancers, small business owners, accountants, and bookkeeping firms.",
+    "pain": "Bookkeeping, expense categorization, and tax preparation are painful, but users cannot afford serious mistakes.",
+    "why_now": "AI can automate parts of bookkeeping, but buyers need review-first tools rather than fully autonomous accounting agents.",
+    "product_idea": "AI Bookkeeping Pre-Check Assistant",
+    "first_product": "A tool that reviews transaction notes, receipts, and exports before they go to an accountant, flags missing information, and creates a clean handoff summary.",
+    "price": "$19-$49/month for founders, or $99-$299/month for accountants managing multiple clients.",
+    "distribution": "X, accountant communities, freelancer communities, small business newsletters, Japanese sole proprietor content.",
+    "lead_magnet_angle": "AI accounting mistakes checklist for solo founders.",
+    "content_angle": "The next AI accounting tool should not replace accountants. It should prepare cleaner inputs for them.",
+    "bilion_access_angle": "Bilion does not just find product ideas. It also scores hype risk and failure risk before you build.",
+    "evidence_level": "medium",
+    "hype_risk": "medium",
+    "score": {
+      "buyer_clarity": 5,
+      "pain_intensity": 5,
+      "urgency": 4,
+      "buildability": 4,
+      "distribution": 4,
+      "monetization": 5,
+      "evidence_strength": 3,
+      "total": 30
+    },
+    "recommended_use": [
+      "publish_candidate",
+      "failure_pattern",
+      "paid_report",
+      "x_post",
+      "product_safety_angle"
+    ],
+    "status": "draft"
+  },
+  {
+    "id": "gmail-signal-2026-06-19-004",
+    "source": {
+      "name": "God of Prompt",
+      "from": "godofprompt@mail.beehiiv.com",
+      "subject": "You don't have a Claude problem. You have a blank-chat problem.",
+      "received_at": "2026-06-18T15:46:12Z",
+      "source_type": "gmail_newsletter"
+    },
+    "category": "lead_magnet_pattern",
+    "raw_signal": "AI users are not only blocked by model quality. They are blocked by blank-chat friction: not knowing what to ask, how to structure the task, or how to reuse workflows.",
+    "buyer": "Claude users, ChatGPT users, AI beginners, creators, solo operators, and business owners trying to use AI repeatedly.",
+    "pain": "They open AI tools but do not know what to type. They rewrite prompts from scratch and fail to create repeatable workflows.",
+    "why_now": "AI skills, reusable prompt packs, and workflow templates are becoming a more understandable product format than abstract prompt engineering.",
+    "product_idea": "AI Business Skills Pack",
+    "first_product": "A pack of reusable AI skills for business builders: idea validation, offer creation, landing page drafting, DM writing, content generation, and build prompt creation.",
+    "price": "Free starter pack, then $19-$29 for the complete pack.",
+    "distribution": "Gumroad, X, beehiiv, Reddit AI communities, Claude communities, AI beginner audiences.",
+    "lead_magnet_angle": "10 AI skills that remove the blank-chat problem.",
+    "content_angle": "You do not have an AI problem. You have a blank-product problem.",
+    "bilion_access_angle": "Bilion turns vague AI business ideas into reusable build, content, and monetization workflows.",
+    "evidence_level": "strong",
+    "hype_risk": "low",
+    "score": {
+      "buyer_clarity": 5,
+      "pain_intensity": 5,
+      "urgency": 5,
+      "buildability": 5,
+      "distribution": 5,
+      "monetization": 4,
+      "evidence_strength": 4,
+      "total": 33
+    },
+    "recommended_use": [
+      "publish_candidate",
+      "lead_magnet",
+      "paid_report",
+      "x_post",
+      "bilion_access"
+    ],
+    "status": "draft"
+  },
+  {
+    "id": "gmail-signal-2026-06-19-005",
+    "source": {
+      "name": "Liam Ottley",
+      "from": "admin@liamottley.com",
+      "subject": "$28k AI Contract Without Quitting His Job",
+      "received_at": "2026-06-18T19:02:23Z",
+      "source_type": "gmail_newsletter"
+    },
+    "category": "high_ticket_pattern",
+    "raw_signal": "AI agency education is selling the story that full-time employees can use Claude Code and limited spare time to close high-ticket AI implementation contracts.",
+    "buyer": "Full-time workers, aspiring AI agency owners, consultants, non-technical operators, and people who want high-ticket AI service income.",
+    "pain": "They believe they do not have enough time, technical skill, or confidence to sell AI implementation services.",
+    "why_now": "Claude Code and similar tools compress build time, making AI implementation offers feel accessible to people with limited time.",
+    "product_idea": "AI Agency Offer Builder",
+    "first_product": "A tool or report that generates niche-specific AI agency offers, scopes, pricing, outreach scripts, and 48-hour validation tasks.",
+    "price": "$29 for an offer pack, $99 for a workshop, $299-$999 for a guided AI Product Opportunity Sprint.",
+    "distribution": "X, Skool, YouTube shorts, AI agency communities, Japanese side-hustle audiences, LinkedIn.",
+    "lead_magnet_angle": "5 AI agency offers you can pitch this weekend.",
+    "content_angle": "AI side income does not start with building a tool. It starts with a narrow paid implementation offer.",
+    "bilion_access_angle": "Bilion helps users turn market signals into offers, build prompts, and outreach scripts instead of random AI tool ideas.",
+    "evidence_level": "medium",
+    "hype_risk": "high",
+    "score": {
+      "buyer_clarity": 5,
+      "pain_intensity": 5,
+      "urgency": 4,
+      "buildability": 4,
+      "distribution": 4,
+      "monetization": 5,
+      "evidence_strength": 2,
+      "total": 29
+    },
+    "recommended_use": [
+      "high_ticket_angle",
+      "hook_research",
+      "lead_magnet",
+      "x_post",
+      "bilion_access"
+    ],
+    "status": "draft"
+  }
+]

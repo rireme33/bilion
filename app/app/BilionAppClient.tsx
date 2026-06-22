@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { showcaseItems } from "../showcase/showcase-data";
 
@@ -58,6 +59,21 @@ type BilionAppClientProps = {
 
 type SourceMode = "indie" | "github";
 
+const selectedPatternLabels: Record<string, string> = {
+  "chat-product": "$300K/year chat product",
+  "discord-tool": "$30K MRR Discord tool",
+  "mobile-app": "$20K/month mobile app",
+  "demo-saas": "$250K MRR demo SaaS",
+  "analytics-tool": "$1M ARR analytics tool",
+};
+
+type CopyFeedback = {
+  message: string;
+  tone: "success" | "error";
+};
+
+type ExportAssetKind = "pdf" | "pack" | "tiktok" | "x" | "gumroad";
+
 type SavedSignal = {
   id: string;
   createdAt: string;
@@ -81,6 +97,19 @@ type MasterPrompt = {
   angleLabel: string;
   promptTitle: string;
   originalCase: string;
+  provenPattern: string;
+  whyItSold: string;
+  marketProof: {
+    comparablePattern: string;
+    revenueOrPricingSignal: string;
+    whyBuyersPay: string;
+    distributionChannel: string;
+    evidenceStrength: "Strong" | "Medium" | "Directional";
+    note: string;
+  };
+  whoPays: string;
+  yourProductAngle: string;
+  firstPaidOffer: string;
   buyer: string;
   pain: string;
   revenueSignal: string;
@@ -89,6 +118,19 @@ type MasterPrompt = {
   whatToBuild: string;
   firstVersion: string;
   price: string;
+  leadMagnet: string;
+  launchCopy: {
+    xPost: string;
+    lpHeadline: string;
+    dmMessage: string;
+  };
+  firstCustomerPlan: {
+    whoToContactFirst: string;
+    whereToFindThem: string;
+    whatToSay: string;
+    whatToOffer: string;
+    validationWithin48h: string;
+  };
   coreFeatures: string[];
   validationPlan: string[];
   buildSteps: string[];
@@ -1207,55 +1249,6 @@ function normalizeLocalOnlyBuildStep(step: string) {
     .replace(/\b[Bb]uild a simple LINE webhook\b/g, "Build a mock chat-style command panel");
 }
 
-function slugifyProductName(productName?: string) {
-  const slug = (productName || "bilion-build-demo")
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "")
-    .slice(0, 64)
-    .replace(/-$/g, "");
-
-  return slug || "bilion-build-demo";
-}
-
-function buildSafeCodeXPrompt(masterPrompt: MasterPrompt) {
-  const routeSlug = slugifyProductName(masterPrompt.promptTitle);
-  const routePath = `/${routeSlug}`;
-
-  return `Important implementation constraint:
-
-Do not modify the existing Bilion app routes, access logic, API routes, data files, package files, global layout, or existing production pages.
-
-Build this as a new isolated demo route inside the existing Next.js app.
-
-Create or edit only the files required for this isolated route.
-
-Preferred route:
-${routePath}
-
-Preferred file:
-app/${routeSlug}/page.tsx
-
-Do not edit:
-app/app/BilionAppClient.tsx
-app/app/page.tsx
-app/page.tsx
-API routes
-data files
-package files
-global CSS
-layout files
-
-The goal is to create a screenshot-worthy demo product generated from this Bilion Implementation Prompt without breaking Bilion itself.
-
---- FULL IMPLEMENTATION PROMPT ---
-
-${masterPrompt.fullCodeXMasterPrompt}`;
-}
-
 function buildPromptTitle(signal: BuildSignal, angleIndex: number) {
   const angle = getAngle(angleIndex);
   return angle.promptTitle(signal);
@@ -1309,6 +1302,43 @@ function buildMasterPrompt(signal: BuildSignal, angleIndex: number): MasterPromp
   const originalCase = signal.latestSignal || signal.sourceTitle;
   const revenueSignal = `${price}. ${signal.comparablePrice || "The buyer has a repeated workflow pain and can justify a small paid tool or setup offer."}`;
   const distributionChannel = validationPlan[1] || `Reach ${compactBuyer(signal)} with a before/after demo and ask for paid pilot objections.`;
+  const provenPattern = `${signal.sourceTitle || "A real business signal"}: ${originalCase}`;
+  const whyItSold = `${signal.whyNow || "The timing is strong because the buyer already has a repeated painful workflow."} ${signal.comparablePrice || "The pattern can be monetized as a small paid tool, prompt pack, or setup offer."}`;
+  const hasPricingSignal = Boolean(signal.comparablePrice.trim());
+  const hasPatternMatches = signal.patternMatches.length > 0;
+  const marketProof = {
+    comparablePattern: signal.patternMatches.length
+      ? signal.patternMatches.slice(0, 3).join(" / ")
+      : signal.sourceType || "Comparable workflow pattern",
+    revenueOrPricingSignal: signal.comparablePrice || "No hard revenue number available. Proof is directional, not guaranteed.",
+    whyBuyersPay: `${buyer} already pay when a repeated, annoying workflow becomes faster, clearer, or easier to hand off.`,
+    distributionChannel,
+    evidenceStrength: hasPricingSignal && hasPatternMatches
+      ? "Strong" as const
+      : hasPricingSignal
+        ? "Medium" as const
+        : "Directional" as const,
+    note: hasPricingSignal
+      ? "Pricing signal exists, but demand still needs direct validation."
+      : "Proof is directional, not guaranteed.",
+  };
+  const whoPays = buyer;
+  const yourProductAngle = productAngle;
+  const firstPaidOffer = `${firstVersion} Sell it as ${price} before adding extra features.`;
+  const leadMagnet = `Free ${workflowOutputTitle(signal)} teardown: show one messy ${workflowName(signal)} input, the cleaned output, and the exact prompt or workflow used to produce it.`;
+  const launchCopy = {
+    xPost: `I found a proven pattern: ${compactBuyer(signal)} need ${workflowOutcome(signal)} but the work is still manual. I would sell ${promptTitle} at ${price}: one focused offer, one before/after demo, and a 48-hour validation sprint.`,
+    lpHeadline: `${workflowOutputTitle(signal)} for ${titleCase(compactBuyer(signal))}`,
+    dmMessage: `Quick idea: I am testing a ${price} offer that turns ${workflowInput(signal)} into ${workflowOutcome(signal)} for ${compactBuyer(signal)}. Want me to send a before/after sample?`,
+  };
+  const firstCustomerPlan = {
+    whoToContactFirst: compactBuyer(signal),
+    whereToFindThem: distributionChannel,
+    whatToSay: launchCopy.dmMessage,
+    whatToOffer: `A paid first version at ${price}: ${firstVersion}`,
+    validationWithin48h:
+      "Validation means at least 3 useful replies, 1 paid pre-order, or 2 buyers willing to send real workflow examples.",
+  };
   const uxStructure = [
     `Header with ${promptTitle}, buyer, pain, product angle, and ${price} offer.`,
     `Primary workflow panel for ${workflowInput(signal)} with sample input selectors and editable fields.`,
@@ -1468,6 +1498,12 @@ ${(signal.patternMatches.length ? signal.patternMatches : ["AI workflow", "Local
     angleLabel: angle.label,
     promptTitle,
     originalCase,
+    provenPattern,
+    whyItSold,
+    marketProof,
+    whoPays,
+    yourProductAngle,
+    firstPaidOffer,
     buyer,
     pain,
     revenueSignal,
@@ -1476,6 +1512,9 @@ ${(signal.patternMatches.length ? signal.patternMatches : ["AI workflow", "Local
     whatToBuild: signal.whatYouCanBuild || productAngle,
     firstVersion,
     price,
+    leadMagnet,
+    launchCopy,
+    firstCustomerPlan,
     coreFeatures: features,
     validationPlan,
     buildSteps,
@@ -1507,9 +1546,80 @@ ${signal.whyNow}`;
 }
 
 function buildFreeMasterPromptCopy(masterPrompt: MasterPrompt) {
-  return `Bilion Build Brief preview
+  return `Bilion Opportunity Brief preview
 
-Product:
+What already sold:
+${masterPrompt.provenPattern}
+
+Why it sold:
+${masterPrompt.whyItSold}
+
+Market proof:
+- Evidence strength: ${masterPrompt.marketProof.evidenceStrength}
+- Similar business / comparable pattern: ${masterPrompt.marketProof.comparablePattern}
+- Revenue or pricing signal: ${masterPrompt.marketProof.revenueOrPricingSignal}
+- Why buyers already pay: ${masterPrompt.marketProof.whyBuyersPay}
+- Distribution channel that worked: ${masterPrompt.marketProof.distributionChannel}
+- Note: ${masterPrompt.marketProof.note}
+
+Your AI-native version:
+${masterPrompt.yourProductAngle}
+
+Who pays:
+${masterPrompt.whoPays}
+
+First paid offer:
+${masterPrompt.firstPaidOffer}
+
+Price:
+${masterPrompt.price}
+
+X post:
+${masterPrompt.launchCopy.xPost}
+
+DM script:
+${masterPrompt.launchCopy.dmMessage}
+
+48-hour validation plan:
+${masterPrompt.validationPlan.map((step, index) => `${index + 1}. ${step}`).join("\n")}
+
+Get the full Personal Product Brief \u2014 $19
+Includes: 3 angles, launch copy, pricing, DM scripts, landing headline, and Codex prompt.`;
+}
+
+function buildValidationPlanCopy(masterPrompt: MasterPrompt) {
+  return `48-hour validation plan:
+
+${masterPrompt.validationPlan.map((step, index) => `${index + 1}. ${step}`).join("\n")}`;
+}
+
+function buildCodexExportSection(
+  masterPrompt: MasterPrompt,
+  includeCodexPrompt: boolean,
+) {
+  if (!includeCodexPrompt) {
+    return "";
+  }
+
+  return `
+
+Codex prompt:
+${masterPrompt.fullCodeXMasterPrompt}`;
+}
+
+function buildExportAssetCopy(
+  masterPrompt: MasterPrompt,
+  kind: ExportAssetKind,
+  includeCodexPrompt: boolean,
+) {
+  const validationPlan = masterPrompt.validationPlan
+    .map((step, index) => `${index + 1}. ${step}`)
+    .join("\n");
+  const codexSection = buildCodexExportSection(
+    masterPrompt,
+    includeCodexPrompt,
+  );
+  const sharedFields = `Title:
 ${masterPrompt.promptTitle}
 
 Buyer:
@@ -1518,16 +1628,169 @@ ${masterPrompt.buyer}
 Pain:
 ${masterPrompt.pain}
 
-What to build:
+Why now:
+${masterPrompt.whyItSold}
+
+First product / what to build:
 ${masterPrompt.whatToBuild}
 
 Price:
 ${masterPrompt.price}
 
-Next action:
-${masterPrompt.validationPlan[0] || "Create a before/after demo and validate with the buyer segment."}
+Distribution angle:
+${masterPrompt.distributionChannel}
 
-Unlock Founder Access for the full Build Brief and long Implementation Prompt.`;
+Lead magnet angle:
+${masterPrompt.leadMagnet}
+
+48h validation plan:
+${validationPlan}`;
+
+  if (kind === "pdf") {
+    return `Free PDF page
+
+${sharedFields}
+
+CTA:
+Use this as a free teaser. Invite readers to get the full $19 Pattern Pack with launch copy, buyer DM, and build prompt.${codexSection}`;
+  }
+
+  if (kind === "pack") {
+    return `$19 Pattern Pack entry
+
+${sharedFields}
+
+What already sold:
+${masterPrompt.provenPattern}
+
+Market proof:
+- Comparable pattern: ${masterPrompt.marketProof.comparablePattern}
+- Revenue or pricing signal: ${masterPrompt.marketProof.revenueOrPricingSignal}
+- Why buyers pay: ${masterPrompt.marketProof.whyBuyersPay}
+- Evidence strength: ${masterPrompt.marketProof.evidenceStrength}
+
+Launch copy:
+${masterPrompt.launchCopy.xPost}
+
+DM script:
+${masterPrompt.launchCopy.dmMessage}${codexSection}`;
+  }
+
+  if (kind === "tiktok") {
+    return `TikTok script
+
+Title:
+${masterPrompt.promptTitle}
+
+Hook:
+Most people ask AI what to build. This pattern starts with a buyer, a pain, and a price.
+
+Scene 1 - The signal:
+${masterPrompt.provenPattern}
+
+Scene 2 - The buyer:
+${masterPrompt.buyer}
+
+Scene 3 - The pain:
+${masterPrompt.pain}
+
+Scene 4 - Why now:
+${masterPrompt.whyItSold}
+
+Scene 5 - The first product:
+${masterPrompt.whatToBuild}
+
+Scene 6 - Price:
+${masterPrompt.price}
+
+Scene 7 - Distribution:
+${masterPrompt.distributionChannel}
+
+Scene 8 - Free lead magnet:
+${masterPrompt.leadMagnet}
+
+CTA:
+Comment "pattern" and I will send the 48h validation plan.
+
+48h validation plan:
+${validationPlan}${codexSection}`;
+  }
+
+  if (kind === "x") {
+    return `X post
+
+${masterPrompt.launchCopy.xPost}
+
+Title: ${masterPrompt.promptTitle}
+Buyer: ${masterPrompt.buyer}
+Pain: ${masterPrompt.pain}
+Why now: ${masterPrompt.whyItSold}
+First product: ${masterPrompt.whatToBuild}
+Price: ${masterPrompt.price}
+Distribution: ${masterPrompt.distributionChannel}
+Lead magnet: ${masterPrompt.leadMagnet}
+
+48h validation:
+${validationPlan}${codexSection}`;
+  }
+
+  return `Gumroad description
+
+${masterPrompt.promptTitle}
+
+A $19 Pattern Pack entry for builders who want a clear product angle instead of another vague AI idea.
+
+What you get:
+- Title: ${masterPrompt.promptTitle}
+- Buyer: ${masterPrompt.buyer}
+- Pain: ${masterPrompt.pain}
+- Why now: ${masterPrompt.whyItSold}
+- First product / what to build: ${masterPrompt.whatToBuild}
+- Price: ${masterPrompt.price}
+- Distribution angle: ${masterPrompt.distributionChannel}
+- Lead magnet angle: ${masterPrompt.leadMagnet}
+- X post and DM script
+- 48h validation plan
+${includeCodexPrompt ? "- Codex build prompt" : ""}
+
+48h validation plan:
+${validationPlan}
+
+Who this is for:
+Builders, consultants, and solo founders who want to turn real market signals into a small product they can test this week.
+
+What this is not:
+This is not a guaranteed business outcome. It is a sell-first brief designed to help you test buyer response fast.${codexSection}`;
+}
+
+function buildShortBriefCopy(masterPrompt: MasterPrompt) {
+  return `Product name:
+${masterPrompt.promptTitle}
+
+Buyer:
+${masterPrompt.buyer}
+
+Pain:
+${masterPrompt.pain}
+
+Price:
+${masterPrompt.price}
+
+What to build:
+${masterPrompt.whatToBuild}`;
+}
+
+async function writeClipboardText(text: string) {
+  if (!navigator.clipboard?.writeText) {
+    return false;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function buildGitHubSignalFromInput(input: string): BuildSignal {
@@ -1773,6 +2036,9 @@ function writeFreeUsageCount(count: number) {
 export default function BilionAppClient({
   hasFounderAccess,
 }: BilionAppClientProps) {
+  const searchParams = useSearchParams();
+  const selectedPatternLabel =
+    selectedPatternLabels[searchParams.get("pattern") || ""];
   const [signalIndex, setSignalIndex] = useState(todayIndex);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ApiResult | null>(null);
@@ -1780,6 +2046,7 @@ export default function BilionAppClient({
   const [copiedMasterPrompt, setCopiedMasterPrompt] = useState(false);
   const [copiedSafePrompt, setCopiedSafePrompt] = useState(false);
   const [copiedSavedSignalId, setCopiedSavedSignalId] = useState("");
+  const [copyFeedback, setCopyFeedback] = useState<CopyFeedback | null>(null);
   const [savedSignals, setSavedSignals] = useState<SavedSignal[]>([]);
   const [masterPrompt, setMasterPrompt] = useState<MasterPrompt | null>(null);
   const [masterPromptAngleIndex, setMasterPromptAngleIndex] = useState(0);
@@ -1854,6 +2121,7 @@ export default function BilionAppClient({
     setMasterPrompt(builtMaster);
     setCopiedMasterPrompt(false);
     setCopiedSafePrompt(false);
+    setCopyFeedback(null);
     saveResult(nextResult);
     incrementFreeUsage();
 
@@ -1863,6 +2131,7 @@ export default function BilionAppClient({
   function viewSavedSignal(signal: SavedSignal) {
     setCopiedMasterPrompt(false);
     setCopiedSafePrompt(false);
+    setCopyFeedback(null);
     setResult(buildResultFromSavedSignal(signal));
     setMasterPrompt(null);
   }
@@ -1872,9 +2141,18 @@ export default function BilionAppClient({
       ? signal.fullCodeXPrompt
       : buildFreeSavedSignalCopy(signal);
 
-    await navigator.clipboard.writeText(text);
-    setCopiedSavedSignalId(signal.id);
-    window.setTimeout(() => setCopiedSavedSignalId(""), 1000);
+    const copied = await writeClipboardText(text);
+
+    if (copied) {
+      setCopiedSavedSignalId(signal.id);
+      window.setTimeout(() => setCopiedSavedSignalId(""), 1000);
+      return;
+    }
+
+    setCopyFeedback({
+      message: "Clipboard blocked. Open the signal, select the prompt text, and copy it manually.",
+      tone: "error",
+    });
   }
 
   function generateMasterPrompt() {
@@ -1889,6 +2167,7 @@ export default function BilionAppClient({
 
     setCopiedMasterPrompt(false);
     setCopiedSafePrompt(false);
+    setCopyFeedback(null);
     setSignalIndex(nextIndexes.signalIndex);
     setMasterPromptAngleIndex(nextIndexes.angleIndex);
     setResult(nextResult);
@@ -1930,6 +2209,7 @@ export default function BilionAppClient({
 
     setCopiedMasterPrompt(false);
     setCopiedSafePrompt(false);
+    setCopyFeedback(null);
     setSignalIndex(buildSignals.indexOf(nextSignal));
     setMasterPromptAngleIndex(safeAngleIndex);
     setResult(nextResult);
@@ -1941,27 +2221,51 @@ export default function BilionAppClient({
   async function copyMasterPrompt() {
     if (!masterPrompt) return;
 
-    await navigator.clipboard.writeText(
+    const copied = await writeClipboardText(
       hasFounderAccess
         ? masterPrompt.fullCodeXMasterPrompt
         : buildFreeMasterPromptCopy(masterPrompt),
     );
-    setCopiedMasterPrompt(true);
-    window.setTimeout(() => setCopiedMasterPrompt(false), 1000);
+
+    if (copied) {
+      setCopiedMasterPrompt(true);
+      setCopyFeedback({
+        message: hasFounderAccess ? "Copied Code X prompt" : "Copied preview",
+        tone: "success",
+      });
+      window.setTimeout(() => setCopiedMasterPrompt(false), 1000);
+      return;
+    }
+
+    setCopyFeedback({
+      message: hasFounderAccess
+        ? "Clipboard blocked. Select the Product Brief or Build Prompt text below and copy it manually."
+        : "Clipboard blocked. Select the visible brief fields and copy them manually.",
+      tone: "error",
+    });
   }
 
-  async function copySafeBuildPrompt() {
+  async function copyShortBrief() {
     if (!masterPrompt) {
       return;
     }
 
-    await navigator.clipboard.writeText(
-      hasFounderAccess
-        ? buildSafeCodeXPrompt(masterPrompt)
-        : buildFreeMasterPromptCopy(masterPrompt),
-    );
-    setCopiedSafePrompt(true);
-    window.setTimeout(() => setCopiedSafePrompt(false), 1000);
+    const copied = await writeClipboardText(buildShortBriefCopy(masterPrompt));
+
+    if (copied) {
+      setCopiedSafePrompt(true);
+      setCopyFeedback({
+        message: "Copied brief",
+        tone: "success",
+      });
+      window.setTimeout(() => setCopiedSafePrompt(false), 1000);
+      return;
+    }
+
+    setCopyFeedback({
+      message: "Clipboard blocked. Select the Product Name, Buyer, Pain, Price, and What to Build fields and copy them manually.",
+      tone: "error",
+    });
   }
 
   function deleteSavedSignal(signalId: string) {
@@ -1994,18 +2298,29 @@ export default function BilionAppClient({
               Bilion
             </h1>
             <div className="mt-2 text-xl font-bold text-zinc-200">
-              Build Decision
+              Opportunity Brief
             </div>
 
             <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-400">
-              Turn market signals into buildable product opportunities.
+              Turn proven business patterns into product angles, first offers,
+              launch copy, and 48-hour validation plans.
+            </p>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-500">
+              Bilion does for business patterns what swipe files did for viral
+              tweets: it turns what already worked into your next testable offer.
             </p>
           </header>
+
+          {selectedPatternLabel && (
+            <div className="mb-5 rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.06] px-4 py-3 text-sm font-bold text-emerald-100">
+              Selected pattern: {selectedPatternLabel}
+            </div>
+          )}
 
           {!result && (
             <div className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl md:p-8">
               <h2 className="text-2xl font-black tracking-tight">
-                Generate a Build Brief
+                Generate an Opportunity Brief
               </h2>
               <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-400">
                 Free generations today: {freeUsageCount} / {FREE_GENERATION_LIMIT}. Founder and paid users get unlimited generations.
@@ -2064,29 +2379,29 @@ export default function BilionAppClient({
                 disabled={loading || !canGenerate}
                 className="mt-6 rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {loading ? "Generating..." : "Generate Build Brief"}
+                {loading ? "Generating..." : "Generate Opportunity Brief"}
               </button>
               {!canGenerate && (
                 <div className="mt-5 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-5">
                   <h3 className="text-lg font-black text-yellow-100">
-                    You&apos;ve used your 3 free build signals today.
+                    You&apos;ve used your 3 free opportunity briefs today.
                   </h3>
                   <p className="mt-2 text-sm leading-6 text-zinc-400">
-                    Founder Access unlocks unlimited Build Briefs, Implementation Prompts, saved signals, and copy actions.
+                    Founder Access unlocks unlimited Personal Product Briefs, launch copy, saved signals, and build prompts.
                   </p>
                   {CHECKOUT_URL ? (
                     <a
                       href={CHECKOUT_URL}
                       className="mt-4 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                     >
-                      Unlock unlimited Build Briefs — $19
+                      Get the full Personal Product Brief — $19
                     </a>
                   ) : (
                     <a
                       href="/founder"
                       className="mt-4 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                     >
-                      Unlock unlimited Build Briefs — $19
+                      Get the full Personal Product Brief — $19
                     </a>
                   )}
                 </div>
@@ -2101,10 +2416,10 @@ export default function BilionAppClient({
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                   <div>
                     <div className="inline-flex rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-300">
-                      Market Signal
+                      Opportunity Brief
                     </div>
                     <h2 className="mt-4 text-3xl font-black tracking-tight">
-                      Product opportunity extracted from real market activity.
+                      Proven pattern converted into a sellable product angle.
                     </h2>
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-xs font-bold uppercase tracking-wide text-zinc-400">
@@ -2114,17 +2429,17 @@ export default function BilionAppClient({
 
                 <div className="mt-6 grid gap-4 md:grid-cols-2">
                   <InfoBlock
-                    label="Original Case"
+                    label="Proven Pattern"
                     value={result.free.latest_signal}
                   />
                   <InfoBlock
-                    label="What to Build"
+                    label="Your Product Angle"
                     value={result.free.what_you_can_build}
                   />
-                  <InfoBlock label="Buyer" value={result.free.buyer} />
-                  <InfoBlock label="Pain" value={result.free.pain} />
+                  <InfoBlock label="Who Pays" value={result.free.buyer} />
+                  <InfoBlock label="Why It Sold" value={result.free.pain} />
                   <InfoBlock label="Price" value={result.paid.comparable_price} />
-                  <InfoBlock label="Next Action" value={result.free.why_now} />
+                  <InfoBlock label="48h Validation Signal" value={result.free.why_now} />
                 </div>
               </div>
 
@@ -2133,15 +2448,15 @@ export default function BilionAppClient({
                 <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                   <div>
                     <div className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-wide text-black">
-                      Founder/Paid Build Brief
+                      Personal Product Brief
                     </div>
                     <h2 className="mt-4 text-3xl font-black tracking-tight">
-                      Generate a commercial build angle from this signal.
+                      Generate another sellable product angle from this pattern.
                     </h2>
                     <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
                       {hasFounderAccess
-                        ? "Paid users can copy the full Implementation Prompt and generate additional commercial angles."
-                        : `Free generations today: ${freeUsageCount} / ${FREE_GENERATION_LIMIT}. Founder Access unlocks unlimited generation.`}
+                        ? "Paid users can generate more product angles and copy the full build prompt at the end."
+                        : `Free generations today: ${freeUsageCount} / ${FREE_GENERATION_LIMIT}. Founder Access unlocks unlimited product briefs.`}
                     </p>
                   </div>
 
@@ -2152,7 +2467,7 @@ export default function BilionAppClient({
                       disabled={!canGenerate}
                       className="rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      Generate Build Brief
+                      Generate Product Angle
                     </button>
                     <button
                       type="button"
@@ -2172,24 +2487,24 @@ export default function BilionAppClient({
                     Founder/Paid Access
                   </div>
                   <h2 className="mt-4 text-3xl font-black tracking-tight">
-                    You&apos;ve used your 3 free build signals today.
+                    You&apos;ve used your 3 free opportunity briefs today.
                   </h2>
                   <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
-                    Founder Access unlocks unlimited Build Briefs, Implementation Prompts, saved signals, and copy actions.
+                    Founder Access unlocks unlimited Personal Product Briefs, launch copy, saved signals, and build prompts.
                   </p>
                   {CHECKOUT_URL ? (
                     <a
                       href={CHECKOUT_URL}
                       className="mt-5 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                     >
-                      Unlock unlimited Build Briefs — $19
+                      Get the full Personal Product Brief — $19
                     </a>
                   ) : (
                     <a
                       href="/founder"
                       className="mt-5 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                     >
-                      Unlock unlimited Build Briefs — $19
+                      Get the full Personal Product Brief — $19
                     </a>
                   )}
                 </section>
@@ -2202,7 +2517,8 @@ export default function BilionAppClient({
                   hasFounderAccess={hasFounderAccess}
                   masterPrompt={masterPrompt}
                   onCopy={copyMasterPrompt}
-                  onCopySafe={copySafeBuildPrompt}
+                  onCopyBrief={copyShortBrief}
+                  copyFeedback={copyFeedback}
                   angleNumber={masterPromptAngleIndex + 1}
                   signalNumber={signalIndex + 1}
                 />
@@ -2227,24 +2543,24 @@ export default function BilionAppClient({
             <div className="sticky top-5">
               <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5">
                 <div className="inline-flex rounded-full bg-yellow-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-yellow-300">
-                  Founder Access
+                  Distribution Kit
                 </div>
 
                 <h2 className="mt-4 text-2xl font-black">
-                  The paid asset is the complete build spec.
+                  Turn the brief into attention, replies, and buyers.
                 </h2>
 
                 <p className="mt-3 text-sm leading-6 text-zinc-500">
-                  Founder Access reveals Revenue Signal, Distribution, Full 48h
-                  Validation, Build Brief, Implementation Prompt, and copy workflow.
+                  Use the Mobile Share Kit at the bottom of the brief to post on
+                  X, reply to interest, DM likely buyers, and offer the $19
+                  Personal Product Brief.
                 </p>
 
                 <div className="mt-5 space-y-3">
-                  <RightPanelItem title="Revenue Signal" />
-                  <RightPanelItem title="Distribution" />
-                  <RightPanelItem title="Build Brief" />
-                  <RightPanelItem title="Implementation Prompt" />
-                  <RightPanelItem title="Pattern Matches" />
+                  <RightPanelItem title="Copy X Post" />
+                  <RightPanelItem title="Copy DM Script" />
+                  <RightPanelItem title="Copy Validation Plan" />
+                  <RightPanelItem title="Copy Codex Prompt" />
                 </div>
               </div>
             </div>
@@ -2259,19 +2575,21 @@ function MasterPromptCard({
   angleNumber,
   copied,
   copiedSafe,
+  copyFeedback,
   hasFounderAccess,
   masterPrompt,
   onCopy,
-  onCopySafe,
+  onCopyBrief,
   signalNumber,
 }: {
   angleNumber: number;
   copied: boolean;
   copiedSafe: boolean;
+  copyFeedback: CopyFeedback | null;
   hasFounderAccess: boolean;
   masterPrompt: MasterPrompt;
-  onCopy: () => void;
-  onCopySafe: () => void;
+  onCopy: () => void | Promise<void>;
+  onCopyBrief: () => void | Promise<void>;
   signalNumber: number;
 }) {
   return (
@@ -2294,36 +2612,48 @@ function MasterPromptCard({
             {masterPrompt.angleLabel}
           </p>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
-            Built from the current build signal for Code X, Codex, Cursor,
-            Claude Code, Lovable, and solo builder workflows.
+            A sell-first brief that turns a proven pattern into a product angle,
+            first offer, launch copy, and 48-hour validation plan.
           </p>
         </div>
 
         <div className="flex flex-col gap-2 sm:flex-row">
           <button
             type="button"
-            onClick={onCopySafe}
-            className="rounded-2xl bg-emerald-300 px-5 py-4 text-sm font-bold text-black transition hover:bg-emerald-200"
+            onClick={onCopy}
+            className="rounded-2xl bg-emerald-300 px-5 py-4 text-sm font-black text-black shadow-lg shadow-emerald-950/40 transition hover:bg-emerald-200"
           >
-            {copiedSafe
-              ? "Copied"
+            {copied
+              ? hasFounderAccess
+                ? "Copied product brief"
+                : "Copied preview"
               : hasFounderAccess
-                ? "Copy Safe Build Prompt"
+                ? "Copy Product Brief"
                 : "Copy Preview"}
           </button>
           <button
             type="button"
-            onClick={onCopy}
-            className="rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200"
+            onClick={onCopyBrief}
+            className="rounded-2xl border border-white/10 px-5 py-4 text-sm font-bold text-white transition hover:bg-white/[0.04]"
           >
-            {copied
-              ? "Copied"
-              : hasFounderAccess
-                ? "Copy Implementation Prompt"
-                : "Copy Preview"}
+            {copiedSafe ? "Copied brief" : "Copy Short Brief"}
           </button>
         </div>
       </div>
+
+      {copyFeedback && (
+        <div
+          className={[
+            "mt-5 rounded-2xl border px-4 py-3 text-sm font-bold",
+            copyFeedback.tone === "success"
+              ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-200"
+              : "border-yellow-400/20 bg-yellow-400/10 text-yellow-100",
+          ].join(" ")}
+          role="status"
+        >
+          {copyFeedback.message}
+        </div>
+      )}
 
       {!hasFounderAccess && (
         <div className="mt-6 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-5">
@@ -2331,52 +2661,70 @@ function MasterPromptCard({
             Free preview
           </div>
           <p className="mt-2 text-sm leading-6 text-zinc-300">
-            Free users can preview the buyer, pain, what to build, price, and next action.
-            Founder/Paid access unlocks the full Build Brief and long Code X-ready
-            Implementation Prompt.
+            Free users can preview the sellable product angle, launch copy, price,
+            and validation plan. Founder/Paid access unlocks the full Personal
+            Product Brief and the final Codex build prompt.
           </p>
         </div>
       )}
 
       <div className="mt-6 grid gap-4 md:grid-cols-2">
-        <MasterPromptField label="Product Name" value={masterPrompt.promptTitle} />
-        <MasterPromptField label="Original Case" value={masterPrompt.originalCase} />
+        <MasterPromptField label="What already sold" value={masterPrompt.provenPattern} />
         <MasterPromptField
-          label="Revenue Signal"
-          value={masterPrompt.revenueSignal}
+          label="Why it sold"
+          value={masterPrompt.whyItSold}
         />
+      </div>
+
+      <div className="mt-4 rounded-2xl border border-white/10 bg-black/40 p-4">
+        <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+          Market proof
+        </div>
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <MasterPromptField
+            label="Similar business / comparable pattern"
+            value={masterPrompt.marketProof.comparablePattern}
+          />
+          <MasterPromptField
+            label="Revenue or pricing signal"
+            value={masterPrompt.marketProof.revenueOrPricingSignal}
+          />
+          <MasterPromptField
+            label="Why buyers already pay"
+            value={masterPrompt.marketProof.whyBuyersPay}
+          />
+          <MasterPromptField
+            label="Distribution channel that worked"
+            value={masterPrompt.marketProof.distributionChannel}
+          />
+          <MasterPromptField
+            label="Evidence strength"
+            value={`${masterPrompt.marketProof.evidenceStrength}. ${masterPrompt.marketProof.note}`}
+          />
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-4 md:grid-cols-2">
         <MasterPromptField
-          label="Distribution Channel"
-          value={masterPrompt.distributionChannel}
+          label="Your AI-native version"
+          value={masterPrompt.yourProductAngle}
         />
-        <MasterPromptField label="Buyer" value={masterPrompt.buyer} />
-        <MasterPromptField label="Pain" value={masterPrompt.pain} />
+        <MasterPromptField label="Who pays" value={masterPrompt.whoPays} />
         <MasterPromptField
-          label="What to Build"
-          value={masterPrompt.whatToBuild}
+          label="First paid offer"
+          value={masterPrompt.firstPaidOffer}
         />
         <MasterPromptField label="Price" value={masterPrompt.price} />
       </div>
 
-      {hasFounderAccess && (
-        <div className="mt-4 rounded-2xl border border-white/10 bg-black/40 p-4">
-          <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
-            Build Brief Details
-          </div>
-          <div className="mt-4 grid gap-5 md:grid-cols-2">
-            <MasterPromptList label="Core Features" items={masterPrompt.coreFeatures} />
-            <MasterPromptList label="Build Steps" items={masterPrompt.buildSteps} ordered />
-            <MasterPromptList label="UX Structure" items={masterPrompt.uxStructure} />
-            <MasterPromptList label="Data Model / Local State" items={masterPrompt.dataModel} />
-            <MasterPromptList label="Copy/Export Behavior" items={masterPrompt.copyExportBehavior} />
-            <MasterPromptList label="Constraints" items={masterPrompt.constraints} />
-          </div>
-        </div>
-      )}
+      <div className="mt-4 space-y-4">
+        <MasterPromptField label="X post" value={masterPrompt.launchCopy.xPost} />
+        <MasterPromptField label="DM script" value={masterPrompt.launchCopy.dmMessage} />
+      </div>
 
       <div className="mt-4 rounded-2xl border border-white/10 bg-black/40 p-4">
         <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
-          Full 48h Validation
+          48-hour validation plan
         </div>
         <ol className="mt-3 space-y-2 text-sm leading-6 text-zinc-100">
           {masterPrompt.validationPlan.map((step, index) => (
@@ -2388,10 +2736,44 @@ function MasterPromptCard({
         </ol>
       </div>
 
+      <MobileShareKit masterPrompt={masterPrompt} />
+
+      <ExportAssets
+        hasFounderAccess={hasFounderAccess}
+        masterPrompt={masterPrompt}
+      />
+
+      {!hasFounderAccess && (
+        <div className="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.06] p-5">
+          <h3 className="text-xl font-black text-white">
+            Get the full Personal Product Brief {"\u2014"} $19
+          </h3>
+          <p className="mt-2 text-sm leading-6 text-zinc-300">
+            Includes: 3 angles, launch copy, pricing, DM scripts, landing
+            headline, and Codex prompt.
+          </p>
+          <a
+            href={CHECKOUT_URL || "/founder"}
+            className="mt-4 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-zinc-200"
+          >
+            Get the full Personal Product Brief {"\u2014"} $19
+          </a>
+        </div>
+      )}
+
       {hasFounderAccess ? (
         <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 p-4">
-          <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
-            Implementation Prompt
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+              Codex build prompt
+            </div>
+            <button
+              type="button"
+              onClick={onCopy}
+              className="rounded-2xl bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-zinc-200"
+            >
+              {copied ? "Copied Codex prompt" : "Copy Codex Prompt"}
+            </button>
           </div>
           <pre className="mt-3 max-h-[640px] overflow-auto whitespace-pre-wrap rounded-xl border border-white/10 bg-black/60 p-4 font-sans text-sm leading-6 text-zinc-100">
             {masterPrompt.fullCodeXMasterPrompt}
@@ -2399,15 +2781,117 @@ function MasterPromptCard({
         </div>
       ) : (
         <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 p-4">
-          <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
-            Implementation Prompt
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+              Codex build prompt
+            </div>
+            <button
+              type="button"
+              disabled
+              className="rounded-2xl border border-white/10 px-5 py-3 text-sm font-black text-zinc-500"
+            >
+              Unlock to copy Codex Prompt
+            </button>
           </div>
           <p className="mt-3 text-sm leading-6 text-zinc-400">
-            The full long Implementation Prompt is available with Founder/Paid access.
+            The full Codex build prompt is available with Founder/Paid access.
           </p>
         </div>
       )}
     </article>
+  );
+}
+
+function ExportAssets({
+  hasFounderAccess,
+  masterPrompt,
+}: {
+  hasFounderAccess: boolean;
+  masterPrompt: MasterPrompt;
+}) {
+  const [copiedKey, setCopiedKey] = useState("");
+  const exportItems = [
+    {
+      key: "pdf",
+      label: "Copy Free PDF Page",
+      helper: "Use as a lead magnet page",
+      text: buildExportAssetCopy(masterPrompt, "pdf", hasFounderAccess),
+    },
+    {
+      key: "pack",
+      label: "Copy $19 Pattern Pack Entry",
+      helper: "Paste into a paid pack",
+      text: buildExportAssetCopy(masterPrompt, "pack", hasFounderAccess),
+    },
+    {
+      key: "tiktok",
+      label: "Copy TikTok Script",
+      helper: "Turn the pattern into a short video",
+      text: buildExportAssetCopy(masterPrompt, "tiktok", hasFounderAccess),
+    },
+    {
+      key: "x",
+      label: "Copy X Post",
+      helper: "Post the idea and test replies",
+      text: buildExportAssetCopy(masterPrompt, "x", hasFounderAccess),
+    },
+    {
+      key: "gumroad",
+      label: "Copy Gumroad Description",
+      helper: "Use as the product listing draft",
+      text: buildExportAssetCopy(masterPrompt, "gumroad", hasFounderAccess),
+    },
+  ];
+
+  async function copyExportAsset(key: string, text: string) {
+    const copied = await writeClipboardText(text);
+    setCopiedKey(copied ? key : "error");
+    window.setTimeout(() => setCopiedKey(""), 1200);
+  }
+
+  return (
+    <div className="mt-4 rounded-2xl border border-white/10 bg-black/35 p-5">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+            Export Assets
+          </div>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-300">
+            Copy the current brief into monetization-ready assets for a free
+            PDF, $19 pack, short video, X post, or Gumroad listing.
+          </p>
+        </div>
+        {!hasFounderAccess && (
+          <div className="rounded-xl border border-yellow-400/20 bg-yellow-400/[0.06] px-3 py-2 text-xs font-bold leading-5 text-yellow-100">
+            Codex prompt excluded until Founder/Paid access
+          </div>
+        )}
+      </div>
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        {exportItems.map((item) => (
+          <button
+            key={item.key}
+            type="button"
+            onClick={() => copyExportAsset(item.key, item.text)}
+            className="min-h-24 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4 text-left text-sm font-black text-white transition hover:border-emerald-300/40 hover:bg-emerald-300/10"
+          >
+            <span className="block">
+              {copiedKey === item.key ? "Copied" : item.label}
+            </span>
+            <span className="mt-1 block text-xs font-bold leading-5 text-zinc-400">
+              {item.helper}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {copiedKey === "error" && (
+        <p className="mt-3 text-sm font-bold text-yellow-100">
+          Clipboard blocked. Select the visible brief fields and copy them manually.
+        </p>
+      )}
+    </div>
   );
 }
 
@@ -2418,6 +2902,70 @@ function MasterPromptField({ label, value }: { label: string; value: string }) {
         {label}
       </div>
       <div className="mt-2 text-sm leading-6 text-zinc-100">{value}</div>
+    </div>
+  );
+}
+
+function MobileShareKit({ masterPrompt }: { masterPrompt: MasterPrompt }) {
+  const [copiedKey, setCopiedKey] = useState("");
+  const shareItems = [
+    {
+      key: "x-post",
+      label: "Copy X Post",
+      helper: "Post this brief on X",
+      text: masterPrompt.launchCopy.xPost,
+    },
+    {
+      key: "dm",
+      label: "Copy DM Script",
+      helper: "DM a likely buyer with this",
+      text: masterPrompt.launchCopy.dmMessage,
+    },
+    {
+      key: "validation-plan",
+      label: "Copy Validation Plan",
+      helper: "Use this as the 48-hour test",
+      text: buildValidationPlanCopy(masterPrompt),
+    },
+  ];
+
+  async function copyShareText(key: string, text: string) {
+    const copied = await writeClipboardText(text);
+    setCopiedKey(copied ? key : "error");
+    window.setTimeout(() => setCopiedKey(""), 1200);
+  }
+
+  return (
+    <div className="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.05] p-5">
+      <div className="text-xs font-bold uppercase tracking-wide text-emerald-300">
+        Mobile Share Kit
+      </div>
+      <p className="mt-2 text-sm leading-6 text-zinc-300">
+        Copy the sales-facing pieces from this brief, then test buyer response
+        before building.
+      </p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        {shareItems.map((item) => (
+          <button
+            key={item.key}
+            type="button"
+            onClick={() => copyShareText(item.key, item.text)}
+            className="min-h-20 rounded-2xl bg-white px-5 py-4 text-left text-sm font-black text-black transition hover:bg-zinc-200"
+          >
+            <span className="block">
+              {copiedKey === item.key ? "Copied" : item.label}
+            </span>
+            <span className="mt-1 block text-xs font-bold leading-5 text-zinc-600">
+              {item.helper}
+            </span>
+          </button>
+        ))}
+      </div>
+      {copiedKey === "error" && (
+        <p className="mt-3 text-sm font-bold text-yellow-100">
+          Clipboard blocked. Select the text and copy it manually.
+        </p>
+      )}
     </div>
   );
 }

@@ -1,0 +1,42 @@
+{
+  "id": "gmail-signal-2026-06-19-004",
+  "source": {
+    "name": "God of Prompt",
+    "from": "godofprompt@mail.beehiiv.com",
+    "subject": "You don't have a Claude problem. You have a blank-chat problem.",
+    "received_at": "2026-06-18T15:46:12Z",
+    "source_type": "gmail_newsletter"
+  },
+  "category": "lead_magnet_pattern",
+  "raw_signal": "AI users are not only blocked by model quality. They are blocked by blank-chat friction: not knowing what to ask, how to structure the task, or how to reuse workflows.",
+  "buyer": "Claude users, ChatGPT users, AI beginners, creators, solo operators, and business owners trying to use AI repeatedly.",
+  "pain": "They open AI tools but do not know what to type. They rewrite prompts from scratch and fail to create repeatable workflows.",
+  "why_now": "AI skills, reusable prompt packs, and workflow templates are becoming a more understandable product format than abstract prompt engineering.",
+  "product_idea": "AI Business Skills Pack",
+  "first_product": "A pack of reusable AI skills for business builders: idea validation, offer creation, landing page drafting, DM writing, content generation, and build prompt creation.",
+  "price": "Free starter pack, then $19-$29 for the complete pack.",
+  "distribution": "Gumroad, X, beehiiv, Reddit AI communities, Claude communities, AI beginner audiences.",
+  "lead_magnet_angle": "10 AI skills that remove the blank-chat problem.",
+  "content_angle": "You do not have an AI problem. You have a blank-product problem.",
+  "bilion_access_angle": "Bilion turns vague AI business ideas into reusable build, content, and monetization workflows.",
+  "evidence_level": "strong",
+  "hype_risk": "low",
+  "score": {
+    "buyer_clarity": 5,
+    "pain_intensity": 5,
+    "urgency": 5,
+    "buildability": 5,
+    "distribution": 5,
+    "monetization": 4,
+    "evidence_strength": 4,
+    "total": 33
+  },
+  "recommended_use": [
+    "publish_candidate",
+    "lead_magnet",
+    "paid_report",
+    "x_post",
+    "bilion_access"
+  ],
+  "status": "draft"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "gmail-signal-demo-draft",
+  "status": "draft",
+  "source": "gmail",
+  "sender": "newsletter@example.com",
+  "subject": "Example AI workflow signal",
+  "received_at": "2026-06-19T00:00:00.000Z",
+  "summary": "A newsletter describes small teams using AI to turn messy customer messages into structured replies and follow-up tasks.",
+  "buyer": "Small service businesses",
+  "pain": "Customer messages arrive across inboxes and chats, making follow-up inconsistent.",
+  "evidence_level": "weak",
+  "hype_risk": "medium",
+  "notes": "Sample draft record for the isolated Signal Inbox importer."
+}

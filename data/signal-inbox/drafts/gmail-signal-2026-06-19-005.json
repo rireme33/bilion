@@ -1,0 +1,42 @@
+{
+  "id": "gmail-signal-2026-06-19-005",
+  "source": {
+    "name": "Liam Ottley",
+    "from": "admin@liamottley.com",
+    "subject": "$28k AI Contract Without Quitting His Job",
+    "received_at": "2026-06-18T19:02:23Z",
+    "source_type": "gmail_newsletter"
+  },
+  "category": "high_ticket_pattern",
+  "raw_signal": "AI agency education is selling the story that full-time employees can use Claude Code and limited spare time to close high-ticket AI implementation contracts.",
+  "buyer": "Full-time workers, aspiring AI agency owners, consultants, non-technical operators, and people who want high-ticket AI service income.",
+  "pain": "They believe they do not have enough time, technical skill, or confidence to sell AI implementation services.",
+  "why_now": "Claude Code and similar tools compress build time, making AI implementation offers feel accessible to people with limited time.",
+  "product_idea": "AI Agency Offer Builder",
+  "first_product": "A tool or report that generates niche-specific AI agency offers, scopes, pricing, outreach scripts, and 48-hour validation tasks.",
+  "price": "$29 for an offer pack, $99 for a workshop, $299-$999 for a guided AI Product Opportunity Sprint.",
+  "distribution": "X, Skool, YouTube shorts, AI agency communities, Japanese side-hustle audiences, LinkedIn.",
+  "lead_magnet_angle": "5 AI agency offers you can pitch this weekend.",
+  "content_angle": "AI side income does not start with building a tool. It starts with a narrow paid implementation offer.",
+  "bilion_access_angle": "Bilion helps users turn market signals into offers, build prompts, and outreach scripts instead of random AI tool ideas.",
+  "evidence_level": "medium",
+  "hype_risk": "high",
+  "score": {
+    "buyer_clarity": 5,
+    "pain_intensity": 5,
+    "urgency": 4,
+    "buildability": 4,
+    "distribution": 4,
+    "monetization": 5,
+    "evidence_strength": 2,
+    "total": 29
+  },
+  "recommended_use": [
+    "high_ticket_angle",
+    "hook_research",
+    "lead_magnet",
+    "x_post",
+    "bilion_access"
+  ],
+  "status": "draft"
+}

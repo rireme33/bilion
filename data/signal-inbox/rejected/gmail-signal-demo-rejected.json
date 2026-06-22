@@ -1,0 +1,12 @@
+{
+  "id": "gmail-signal-demo-rejected",
+  "status": "rejected",
+  "source": "gmail",
+  "sender": "newsletter@example.com",
+  "subject": "Example rejected signal",
+  "received_at": "2026-06-19T00:00:00.000Z",
+  "summary": "A broad AI trend mention without a clear buyer, paid pain, or repeatable workflow.",
+  "reason": "Too generic for Bilion opportunity generation.",
+  "evidence_level": "weak",
+  "hype_risk": "high"
+}
