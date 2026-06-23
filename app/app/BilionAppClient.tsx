@@ -61,6 +61,10 @@ type BilionAppClientProps = {
 
 type SourceMode = "indie" | "github";
 type NextAction = "build" | "sell" | "post";
+type WorkflowTab = "library" | "studio" | "queue" | "validation" | "winners";
+type DistributionStatus = "Draft" | "Posted" | "Sent" | "Tested";
+type DistributionKind = "X post" | "DM script" | "Validation log" | "Short video angle";
+type ValidationVerdict = "Build" | "Kill" | "Pivot";
 
 const selectedPatternLabels: Record<string, string> = {
   "chat-product": "$300K/year chat product",
@@ -76,6 +80,33 @@ type CopyFeedback = {
 };
 
 type ExportAssetKind = "pdf" | "pack" | "tiktok" | "x" | "gumroad";
+
+type DistributionAsset = {
+  id: string;
+  action: NextAction;
+  body: string;
+  buyer: string;
+  createdAt: string;
+  kind: DistributionKind;
+  signalTitle: string;
+  status: DistributionStatus;
+  title: string;
+};
+
+type ValidationRecord = {
+  id: string;
+  action: NextAction;
+  buyer: string;
+  clicks: number;
+  createdAt: string;
+  dmsSent: number;
+  interested: number;
+  objections: string;
+  replies: number;
+  signalTitle: string;
+  verdict: ValidationVerdict;
+  winner: boolean;
+};
 
 const nextActionOptions: Array<{
   action: NextAction;
@@ -96,6 +127,38 @@ const nextActionOptions: Array<{
     action: "post",
     label: "Post it",
     helper: "Turn the signal into a shareable market insight.",
+  },
+];
+
+const workflowTabs: Array<{
+  id: WorkflowTab;
+  label: string;
+  helper: string;
+}> = [
+  {
+    id: "library",
+    label: "Signal Library",
+    helper: "Find signal",
+  },
+  {
+    id: "studio",
+    label: "Action Brief Studio",
+    helper: "Generate brief",
+  },
+  {
+    id: "queue",
+    label: "Distribution Queue",
+    helper: "Distribute",
+  },
+  {
+    id: "validation",
+    label: "Validation Tracker",
+    helper: "Track replies",
+  },
+  {
+    id: "winners",
+    label: "Winners",
+    helper: "Save winners",
   },
 ];
 
@@ -177,6 +240,8 @@ const lockedItems = [
 
 const CHECKOUT_URL = process.env.NEXT_PUBLIC_LEMONSQUEZY_CHECKOUT_URL || "";
 const SAVED_SIGNALS_STORAGE_KEY = "bilion.savedSignals";
+const DISTRIBUTION_QUEUE_STORAGE_KEY = "bilion.distributionQueue";
+const VALIDATION_RECORDS_STORAGE_KEY = "bilion.validationRecords";
 const FREE_GENERATION_LIMIT = 3;
 const FREE_USAGE_STORAGE_KEY_EN = "bilion_free_generation_count_en";
 const MAX_SAVED_SIGNALS = 10;
@@ -2227,6 +2292,83 @@ function writeSavedSignals(signals: SavedSignal[]) {
   }
 }
 
+function readDistributionQueue(): DistributionAsset[] {
+  try {
+    const raw = window.localStorage.getItem(DISTRIBUTION_QUEUE_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+
+    return parsed.filter((item): item is DistributionAsset => {
+      return (
+        item &&
+        typeof item.id === "string" &&
+        typeof item.signalTitle === "string" &&
+        typeof item.buyer === "string" &&
+        typeof item.kind === "string" &&
+        typeof item.status === "string" &&
+        typeof item.title === "string" &&
+        typeof item.body === "string"
+      );
+    });
+  } catch {
+    return [];
+  }
+}
+
+function writeDistributionQueue(items: DistributionAsset[]) {
+  try {
+    window.localStorage.setItem(
+      DISTRIBUTION_QUEUE_STORAGE_KEY,
+      JSON.stringify(items.slice(0, 50)),
+    );
+  } catch {
+    // localStorage can be unavailable in private modes or locked-down browsers.
+  }
+}
+
+function readValidationRecords(): ValidationRecord[] {
+  try {
+    const raw = window.localStorage.getItem(VALIDATION_RECORDS_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+
+    return parsed.filter((item): item is ValidationRecord => {
+      return (
+        item &&
+        typeof item.id === "string" &&
+        typeof item.signalTitle === "string" &&
+        typeof item.buyer === "string" &&
+        typeof item.dmsSent === "number" &&
+        typeof item.replies === "number" &&
+        typeof item.interested === "number" &&
+        typeof item.clicks === "number" &&
+        typeof item.objections === "string" &&
+        typeof item.verdict === "string" &&
+        typeof item.winner === "boolean"
+      );
+    });
+  } catch {
+    return [];
+  }
+}
+
+function writeValidationRecords(records: ValidationRecord[]) {
+  try {
+    window.localStorage.setItem(
+      VALIDATION_RECORDS_STORAGE_KEY,
+      JSON.stringify(records.slice(0, 50)),
+    );
+  } catch {
+    // localStorage can be unavailable in private modes or locked-down browsers.
+  }
+}
+
 function getLocalDateKey() {
   const today = new Date();
   const year = today.getFullYear();
@@ -2292,7 +2434,11 @@ export default function BilionAppClient({
   const [copiedSafePrompt, setCopiedSafePrompt] = useState(false);
   const [copiedSavedSignalId, setCopiedSavedSignalId] = useState("");
   const [copyFeedback, setCopyFeedback] = useState<CopyFeedback | null>(null);
+  const [activeWorkflowTab, setActiveWorkflowTab] = useState<WorkflowTab>("library");
   const [savedSignals, setSavedSignals] = useState<SavedSignal[]>([]);
+  const [distributionQueue, setDistributionQueue] = useState<DistributionAsset[]>([]);
+  const [validationRecords, setValidationRecords] = useState<ValidationRecord[]>([]);
+  const [workflowItemSeed, setWorkflowItemSeed] = useState(0);
   const [masterPrompt, setMasterPrompt] = useState<MasterPrompt | null>(null);
   const [masterPromptAngleIndex, setMasterPromptAngleIndex] = useState(0);
   const [freeUsageCount, setFreeUsageCount] = useState(0);
@@ -2323,6 +2469,8 @@ export default function BilionAppClient({
   useEffect(() => {
     const loadSavedSignals = window.setTimeout(() => {
       setSavedSignals(readSavedSignals());
+      setDistributionQueue(readDistributionQueue());
+      setValidationRecords(readValidationRecords());
       setFreeUsageCount(readFreeUsageCount());
 
       const source = new URLSearchParams(window.location.search).get("source");
@@ -2398,6 +2546,7 @@ export default function BilionAppClient({
     setCopyFeedback(null);
     saveResult(nextResult);
     incrementFreeUsage();
+    setActiveWorkflowTab("studio");
 
     setLoading(false);
   }
@@ -2459,6 +2608,7 @@ export default function BilionAppClient({
     setMasterPrompt(builtMaster);
     saveResult(nextResult);
     incrementFreeUsage();
+    setActiveWorkflowTab("studio");
   }
 
   function generateAnotherAngle() {
@@ -2492,6 +2642,141 @@ export default function BilionAppClient({
     setMasterPrompt(buildActionMasterPrompt(nextSignal, selectedBuyer, nextAction));
     saveResult(nextResult);
     incrementFreeUsage();
+    setActiveWorkflowTab("studio");
+  }
+
+  function buildQueueAssetsFromCurrentBrief(seed: number): DistributionAsset[] {
+    const now = new Date().toISOString();
+    const signalTitle =
+      selectedSignalDisplayTitle?.detail ||
+      selectedSignalDisplayTitle?.title ||
+      selectedSignal?.sourceTitle ||
+      "Selected signal";
+    const buyer = selectedBuyer || selectedSignal?.buyer || "Selected buyer";
+
+    return [
+      {
+        id: `queue-x-${seed}`,
+        action: selectedAction,
+        body:
+          masterPrompt?.launchCopy.xPost ||
+          `Draft X post from this signal: ${signalTitle}. Buyer: ${buyer}. Action: ${getActionLabel(selectedAction)}.`,
+        buyer,
+        createdAt: now,
+        kind: "X post",
+        signalTitle,
+        status: "Draft",
+        title: "Draft X post from this signal",
+      },
+      {
+        id: `queue-dm-${seed}`,
+        action: selectedAction,
+        body:
+          masterPrompt?.launchCopy.dmMessage ||
+          `Draft DM from this offer for ${buyer}. Ask if they want a before/after sample from ${signalTitle}.`,
+        buyer,
+        createdAt: now,
+        kind: "DM script",
+        signalTitle,
+        status: "Draft",
+        title: "Draft DM from this offer",
+      },
+      {
+        id: `queue-log-${seed}`,
+        action: selectedAction,
+        body:
+          masterPrompt?.validationPlan.join("\n") ||
+          `Prepare validation log for ${buyer}: DMs sent, replies, interested, clicks, objections, verdict.`,
+        buyer,
+        createdAt: now,
+        kind: "Validation log",
+        signalTitle,
+        status: "Draft",
+        title: "Prepare validation log",
+      },
+      {
+        id: `queue-video-${seed}`,
+        action: selectedAction,
+        body: `Short video angle: show the signal, name the buyer pain, then say what to ${selectedAction} today.`,
+        buyer,
+        createdAt: now,
+        kind: "Short video angle",
+        signalTitle,
+        status: "Draft",
+        title: "Short video angle",
+      },
+    ];
+  }
+
+  function saveDistributionAssets() {
+    const nextSeed = workflowItemSeed + 1;
+    const nextQueue = [...buildQueueAssetsFromCurrentBrief(nextSeed), ...distributionQueue].slice(0, 50);
+    setWorkflowItemSeed(nextSeed);
+    setDistributionQueue(nextQueue);
+    writeDistributionQueue(nextQueue);
+    setActiveWorkflowTab("queue");
+  }
+
+  function updateDistributionStatus(assetId: string, status: DistributionStatus) {
+    setDistributionQueue((currentQueue) => {
+      const nextQueue = currentQueue.map((item) =>
+        item.id === assetId ? { ...item, status } : item,
+      );
+
+      writeDistributionQueue(nextQueue);
+      return nextQueue;
+    });
+  }
+
+  function addValidationRecord() {
+    const nextSeed = workflowItemSeed + 1;
+    const signalTitle =
+      selectedSignalDisplayTitle?.detail ||
+      selectedSignalDisplayTitle?.title ||
+      selectedSignal?.sourceTitle ||
+      "Selected signal";
+    const nextRecord: ValidationRecord = {
+      id: `validation-${nextSeed}`,
+      action: selectedAction,
+      buyer: selectedBuyer || selectedSignal?.buyer || "Selected buyer",
+      clicks: 0,
+      createdAt: new Date().toISOString(),
+      dmsSent: 0,
+      interested: 0,
+      objections: "",
+      replies: 0,
+      signalTitle,
+      verdict: "Pivot",
+      winner: false,
+    };
+    const nextRecords = [nextRecord, ...validationRecords].slice(0, 50);
+
+    setWorkflowItemSeed(nextSeed);
+    setValidationRecords(nextRecords);
+    writeValidationRecords(nextRecords);
+    setActiveWorkflowTab("validation");
+  }
+
+  function updateValidationRecord(
+    recordId: string,
+    updates: Partial<ValidationRecord>,
+  ) {
+    setValidationRecords((currentRecords) => {
+      const nextRecords = currentRecords.map((record) =>
+        record.id === recordId ? { ...record, ...updates } : record,
+      );
+
+      writeValidationRecords(nextRecords);
+      return nextRecords;
+    });
+  }
+
+  function markWinner(recordId: string) {
+    updateValidationRecord(recordId, {
+      verdict: "Build",
+      winner: true,
+    });
+    setActiveWorkflowTab("winners");
   }
 
   async function copyMasterPrompt() {
@@ -2563,7 +2848,9 @@ export default function BilionAppClient({
       <div
         className={[
           "grid min-h-screen grid-cols-1",
-          result ? "lg:grid-cols-[1fr_340px]" : "lg:grid-cols-1",
+          result && activeWorkflowTab === "studio"
+            ? "lg:grid-cols-[1fr_340px]"
+            : "lg:grid-cols-1",
         ].join(" ")}
       >
         <section className="p-4 md:p-8">
@@ -2606,17 +2893,59 @@ export default function BilionAppClient({
             </div>
           )}
 
-          {!result && (
+          <section className="mb-5 rounded-3xl border border-white/10 bg-[#101011] p-3">
+            <div className="grid gap-2 md:grid-cols-5">
+              {workflowTabs.map((tab) => {
+                const active = activeWorkflowTab === tab.id;
+
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setActiveWorkflowTab(tab.id)}
+                    className={[
+                      "rounded-2xl border px-4 py-3 text-left transition",
+                      active
+                        ? "border-emerald-300/60 bg-emerald-300/[0.12] text-white"
+                        : "border-white/10 bg-black/25 text-zinc-500 hover:bg-white/[0.04] hover:text-zinc-200",
+                    ].join(" ")}
+                  >
+                    <span className="block text-sm font-black">{tab.label}</span>
+                    <span className="mt-1 block text-xs font-bold">{tab.helper}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          <section className="mb-5 rounded-3xl border border-white/10 bg-[#101011] p-5">
+            <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+              Workflow
+            </div>
+            <h2 className="mt-2 text-2xl font-black tracking-tight">
+              Find a signal. Turn it into an action. Track what gets replies.
+            </h2>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-zinc-500">
+              Bilion does for business patterns what swipe files did for viral tweets:
+              find signal, generate brief, distribute, track replies, save winners.
+            </p>
+          </section>
+
+          {(activeWorkflowTab === "library" || (activeWorkflowTab === "studio" && !result)) && (
             <div className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl md:p-8">
               <h2 className="text-2xl font-black tracking-tight">
-                Generate an Action Brief
+                {activeWorkflowTab === "library"
+                  ? "Signal Library"
+                  : "Action Brief Studio"}
               </h2>
               <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-400">
-                Choose a proven signal, pick the buyer, and decide what to do next.
-                Free Action Briefs today: {freeUsageCount} of {FREE_GENERATION_LIMIT} used.
+                {activeWorkflowTab === "library"
+                  ? "Pick a proven business signal, then choose Build, Sell, or Post."
+                  : `Free Action Briefs today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used.`}
               </p>
 
               <div className="mt-6 grid gap-6">
+                {activeWorkflowTab === "library" && (
                 <section>
                   <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                     <div>
@@ -2655,16 +2984,15 @@ export default function BilionAppClient({
                             const displayTitle = getDisplaySignalTitle(signal);
 
                             return (
-                              <button
+                              <article
                                 key={signal.id}
-                                type="button"
                                 onClick={() => {
                                   setSourceMode("indie");
                                   setSelectedSignalId(signal.id);
                                   setSelectedBuyer(signal.buyer);
                                 }}
                                 className={[
-                                  "min-h-28 rounded-2xl border px-4 py-3 text-left transition",
+                                  "min-h-36 rounded-2xl border px-4 py-3 text-left transition",
                                   active
                                     ? "border-emerald-300/70 bg-emerald-300/[0.12] text-white shadow-lg shadow-emerald-950/30"
                                     : "border-white/10 bg-black/30 text-zinc-400 hover:bg-white/[0.04] hover:text-white",
@@ -2684,7 +3012,26 @@ export default function BilionAppClient({
                                 <span className="mt-2 block text-xs leading-5 text-zinc-500">
                                   {signal.buyer}
                                 </span>
-                              </button>
+                                <div className="mt-3 grid grid-cols-3 gap-2">
+                                  {nextActionOptions.map((option) => (
+                                    <button
+                                      key={option.action}
+                                      type="button"
+                                      onClick={(event) => {
+                                        event.stopPropagation();
+                                        setSourceMode("indie");
+                                        setSelectedSignalId(signal.id);
+                                        setSelectedBuyer(signal.buyer);
+                                        setSelectedAction(option.action);
+                                        setActiveWorkflowTab("studio");
+                                      }}
+                                      className="rounded-xl border border-white/10 bg-white/[0.04] px-2 py-2 text-xs font-black text-zinc-200 transition hover:bg-white hover:text-black"
+                                    >
+                                      {option.label.split(" ")[0]}
+                                    </button>
+                                  ))}
+                                </div>
+                              </article>
                             );
                           })}
                         </div>
@@ -2723,7 +3070,10 @@ export default function BilionAppClient({
                     </div>
                   </div>
                 </section>
+                )}
 
+                {activeWorkflowTab === "studio" && (
+                <>
                 <section>
                   <div>
                     <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
@@ -2792,7 +3142,6 @@ export default function BilionAppClient({
                     })}
                   </div>
                 </section>
-              </div>
 
               {sourceMode === "github" && (
                 <label className="mt-5 block">
@@ -2878,10 +3227,38 @@ export default function BilionAppClient({
                 </div>
               )}
               {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
+                </>
+                )}
+              </div>
             </div>
           )}
 
-          {result && (
+          {activeWorkflowTab === "queue" && (
+            <DistributionQueueSection
+              canSaveAssets={Boolean(result || masterPrompt)}
+              queue={distributionQueue}
+              onSaveAssets={saveDistributionAssets}
+              onStatusChange={updateDistributionStatus}
+            />
+          )}
+
+          {activeWorkflowTab === "validation" && (
+            <ValidationTrackerSection
+              records={validationRecords}
+              onAddRecord={addValidationRecord}
+              onMarkWinner={markWinner}
+              onUpdateRecord={updateValidationRecord}
+            />
+          )}
+
+          {activeWorkflowTab === "winners" && (
+            <WinnersSection
+              records={validationRecords}
+              onMarkWinner={markWinner}
+            />
+          )}
+
+          {result && activeWorkflowTab === "studio" && (
             <div className="mt-8 grid gap-6">
               <div className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
@@ -2948,6 +3325,20 @@ export default function BilionAppClient({
                     >
                       Try Next Action
                     </button>
+                    <button
+                      type="button"
+                      onClick={saveDistributionAssets}
+                      className="rounded-2xl border border-emerald-300/30 px-5 py-4 text-sm font-bold text-emerald-100 transition hover:bg-emerald-300/10"
+                    >
+                      Save to Queue
+                    </button>
+                    <button
+                      type="button"
+                      onClick={addValidationRecord}
+                      className="rounded-2xl border border-white/10 px-5 py-4 text-sm font-bold text-white transition hover:bg-white/[0.04]"
+                    >
+                      Track Validation
+                    </button>
                   </div>
                 </div>
 
@@ -3010,7 +3401,7 @@ export default function BilionAppClient({
           <InlineShowcaseSection />
         </section>
 
-        {result && (
+        {result && activeWorkflowTab === "studio" && (
           <aside className="border-l border-white/10 bg-[#0b0b0c] p-5">
             <div className="sticky top-5">
               <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5">
@@ -3040,6 +3431,279 @@ export default function BilionAppClient({
         )}
       </div>
     </main>
+  );
+}
+
+function DistributionQueueSection({
+  canSaveAssets,
+  onSaveAssets,
+  onStatusChange,
+  queue,
+}: {
+  canSaveAssets: boolean;
+  onSaveAssets: () => void;
+  onStatusChange: (assetId: string, status: DistributionStatus) => void;
+  queue: DistributionAsset[];
+}) {
+  return (
+    <section className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+            Distribution Queue
+          </div>
+          <h2 className="mt-2 text-3xl font-black tracking-tight">
+            Turn generated briefs into distribution assets.
+          </h2>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-500">
+            Draft the X post, DM script, validation log, and short video angle.
+            No scheduling or external posting.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={onSaveAssets}
+          disabled={!canSaveAssets}
+          className="rounded-2xl bg-white px-5 py-4 text-sm font-black text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Save assets from current brief
+        </button>
+      </div>
+
+      {queue.length === 0 ? (
+        <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-5 text-sm leading-6 text-zinc-500">
+          Generate an Action Brief, then save distribution assets here.
+        </div>
+      ) : (
+        <div className="mt-6 grid gap-3 lg:grid-cols-2">
+          {queue.map((asset) => (
+            <article
+              key={asset.id}
+              className="rounded-2xl border border-white/10 bg-black/30 p-4"
+            >
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <div className="text-xs font-black uppercase tracking-wide text-emerald-300">
+                    {asset.kind}
+                  </div>
+                  <h3 className="mt-2 text-lg font-black text-white">{asset.title}</h3>
+                  <p className="mt-1 text-xs font-bold text-zinc-500">
+                    {asset.signalTitle} / {asset.buyer}
+                  </p>
+                </div>
+                <select
+                  value={asset.status}
+                  onChange={(event) =>
+                    onStatusChange(asset.id, event.target.value as DistributionStatus)
+                  }
+                  className="rounded-xl border border-white/10 bg-black px-3 py-2 text-xs font-bold text-zinc-200"
+                >
+                  {["Draft", "Posted", "Sent", "Tested"].map((status) => (
+                    <option key={status}>{status}</option>
+                  ))}
+                </select>
+              </div>
+              <p className="mt-4 whitespace-pre-wrap text-sm leading-6 text-zinc-300">
+                {asset.body}
+              </p>
+            </article>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function ValidationTrackerSection({
+  onAddRecord,
+  onMarkWinner,
+  onUpdateRecord,
+  records,
+}: {
+  onAddRecord: () => void;
+  onMarkWinner: (recordId: string) => void;
+  onUpdateRecord: (recordId: string, updates: Partial<ValidationRecord>) => void;
+  records: ValidationRecord[];
+}) {
+  return (
+    <section className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+            Validation Tracker
+          </div>
+          <h2 className="mt-2 text-3xl font-black tracking-tight">
+            Track replies before you build.
+          </h2>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-500">
+            Manually log DMs, replies, interest, clicks, objections, and verdict.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={onAddRecord}
+          className="rounded-2xl bg-white px-5 py-4 text-sm font-black text-black transition hover:bg-zinc-200"
+        >
+          Add validation record
+        </button>
+      </div>
+
+      {records.length === 0 ? (
+        <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-5 text-sm leading-6 text-zinc-500">
+          Add a record after you send the first post or DM.
+        </div>
+      ) : (
+        <div className="mt-6 grid gap-3">
+          {records.map((record) => (
+            <article
+              key={record.id}
+              className="rounded-2xl border border-white/10 bg-black/30 p-4"
+            >
+              <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                <div>
+                  <h3 className="text-lg font-black text-white">{record.signalTitle}</h3>
+                  <p className="mt-1 text-xs font-bold text-zinc-500">
+                    {record.buyer} / {getActionLabel(record.action)}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onMarkWinner(record.id)}
+                  className="rounded-xl border border-emerald-300/30 px-3 py-2 text-xs font-black text-emerald-200 transition hover:bg-emerald-300/10"
+                >
+                  Mark Winner
+                </button>
+              </div>
+
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {[
+                  ["DMs sent", "dmsSent"],
+                  ["Replies", "replies"],
+                  ["Interested", "interested"],
+                  ["Clicks", "clicks"],
+                ].map(([label, key]) => (
+                  <label key={key} className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                    {label}
+                    <input
+                      type="number"
+                      min={0}
+                      value={record[key as keyof ValidationRecord] as number}
+                      onChange={(event) =>
+                        onUpdateRecord(record.id, {
+                          [key]: Math.max(0, Number(event.target.value) || 0),
+                        } as Partial<ValidationRecord>)
+                      }
+                      className="mt-2 w-full rounded-xl border border-white/10 bg-black px-3 py-2 text-sm text-white"
+                    />
+                  </label>
+                ))}
+              </div>
+
+              <div className="mt-3 grid gap-3 lg:grid-cols-[1fr_180px]">
+                <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                  Objections
+                  <textarea
+                    value={record.objections}
+                    onChange={(event) =>
+                      onUpdateRecord(record.id, { objections: event.target.value })
+                    }
+                    rows={3}
+                    className="mt-2 w-full rounded-xl border border-white/10 bg-black px-3 py-2 text-sm leading-6 text-white"
+                  />
+                </label>
+                <label className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                  Verdict
+                  <select
+                    value={record.verdict}
+                    onChange={(event) =>
+                      onUpdateRecord(record.id, {
+                        verdict: event.target.value as ValidationVerdict,
+                      })
+                    }
+                    className="mt-2 w-full rounded-xl border border-white/10 bg-black px-3 py-2 text-sm text-white"
+                  >
+                    {["Build", "Kill", "Pivot"].map((verdict) => (
+                      <option key={verdict}>{verdict}</option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function WinnersSection({
+  onMarkWinner,
+  records,
+}: {
+  onMarkWinner: (recordId: string) => void;
+  records: ValidationRecord[];
+}) {
+  const winners = records.filter(
+    (record) =>
+      record.winner ||
+      record.replies > 0 ||
+      record.interested > 0 ||
+      record.verdict === "Build",
+  );
+
+  return (
+    <section className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl">
+      <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+        Winners
+      </div>
+      <h2 className="mt-2 text-3xl font-black tracking-tight">
+        Signals with traction.
+      </h2>
+      <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-500">
+        Anything with replies, interest, or a Build verdict becomes a winner.
+      </p>
+
+      {winners.length === 0 ? (
+        <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-5 text-sm leading-6 text-zinc-500">
+          No winners yet. Track replies in Validation Tracker first.
+        </div>
+      ) : (
+        <div className="mt-6 grid gap-3 md:grid-cols-2">
+          {winners.map((record) => (
+            <article
+              key={record.id}
+              className="rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.05] p-4"
+            >
+              <div className="text-xs font-black uppercase tracking-wide text-emerald-300">
+                Winner
+              </div>
+              <h3 className="mt-2 text-lg font-black text-white">{record.signalTitle}</h3>
+              <p className="mt-1 text-sm leading-6 text-zinc-400">{record.buyer}</p>
+              <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs font-black text-zinc-300">
+                <div className="rounded-xl border border-white/10 bg-black/25 p-3">
+                  {record.replies} replies
+                </div>
+                <div className="rounded-xl border border-white/10 bg-black/25 p-3">
+                  {record.interested} interested
+                </div>
+                <div className="rounded-xl border border-white/10 bg-black/25 p-3">
+                  {record.verdict}
+                </div>
+              </div>
+              {!record.winner && (
+                <button
+                  type="button"
+                  onClick={() => onMarkWinner(record.id)}
+                  className="mt-4 rounded-xl bg-white px-4 py-2 text-xs font-black text-black transition hover:bg-zinc-200"
+                >
+                  Save as Winner
+                </button>
+              )}
+            </article>
+          ))}
+        </div>
+      )}
+    </section>
   );
 }
 
