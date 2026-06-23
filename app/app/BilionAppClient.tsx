@@ -1362,6 +1362,8 @@ function cleanSignalText(value: string) {
     .replace(/[\uE000-\uF8FF\uFFFD]/g, "")
     .replace(/[\u200B-\u200D\uFEFF]/g, "")
     .replace(/[\u{1F000}-\u{1FAFF}]/gu, "")
+    .replace(/^[\s\u3000-\u303F\u3040-\u30FF\u3400-\u9FFF々〆〤〳-〵〻・･:|/,.，、。-]+/u, "")
+    .replace(/[\s\u3000-\u303F\u3040-\u30FF\u3400-\u9FFF々〆〤〳-〵〻・･:|/,.，、。-]+$/u, "")
     .replace(/\s+/g, " ")
     .replace(/\s*[:|/,-]\s*$/g, "")
     .replace(/^[\s:|/,.・-]+/g, "")
@@ -1369,9 +1371,13 @@ function cleanSignalText(value: string) {
 }
 
 function stripNewsletterPrefix(value: string) {
-  return value
+  return cleanSignalText(value)
     .replace(/^(what'?s new|daily|weekly|newsletter|issue\s+\d+)\s*[:|-]\s*/i, "")
     .replace(/\s*,\s*/g, " / ")
+    .split("/")
+    .map((part) => cleanSignalText(part))
+    .filter(Boolean)
+    .join(" / ")
     .trim();
 }
 
@@ -1388,9 +1394,11 @@ function getDisplaySignalTitle(signal: BuildSignal) {
 
   if (isNewsletterSignal && match) {
     const publisher = cleanSignalText(match[1]);
-    const subject = stripNewsletterPrefix(cleanSignalText(match[3])).replace(
-      new RegExp(`^${escapeRegExp(publisher)}\\s*[:|-]\\s*`, "i"),
-      "",
+    const subject = stripNewsletterPrefix(
+      cleanSignalText(match[3]).replace(
+        new RegExp(`^${escapeRegExp(publisher)}\\s*[:|-]\\s*`, "i"),
+        "",
+      ),
     );
 
     return {
@@ -2962,18 +2970,25 @@ export default function BilionAppClient({
                   </div>
                   <div className="mt-4 grid gap-4">
                     {signalGroups.map((group) => (
-                      <div
+                      <details
                         key={group.label}
-                        className="rounded-2xl border border-white/10 bg-black/20 p-3"
+                        open={group.label === "Recommended"}
+                        className={[
+                          "rounded-2xl border p-3",
+                          group.label === "Recommended"
+                            ? "border-emerald-300/20 bg-emerald-300/[0.045]"
+                            : "border-white/[0.07] bg-black/15",
+                        ].join(" ")}
                       >
-                        <div className="mb-3 flex items-center justify-between gap-3">
+                        <summary className="mb-3 flex cursor-pointer list-none items-center justify-between gap-3">
                           <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-400">
                             {group.label}
                           </div>
-                          <div className="text-xs font-bold text-zinc-600">
-                            {group.signals.length}
+                          <div className="flex items-center gap-2 text-xs font-bold text-zinc-600">
+                            <span>{group.signals.length}</span>
+                            <span>{group.label === "Recommended" ? "Open" : "Tap to open"}</span>
                           </div>
-                        </div>
+                        </summary>
                         <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                           {group.signals.map((signal) => {
                             const active = selectedSignalId === signal.id;
@@ -3035,7 +3050,7 @@ export default function BilionAppClient({
                             );
                           })}
                         </div>
-                      </div>
+                      </details>
                     ))}
 
                     <div className="rounded-2xl border border-white/10 bg-black/20 p-3">
@@ -4234,28 +4249,28 @@ function SavedSignalsSection({
 }) {
   return (
     <section className="mt-8 rounded-3xl border border-white/[0.08] bg-white/[0.025] p-5">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h2 className="text-xl font-black tracking-tight text-zinc-200">
-            Past Prompts
-          </h2>
-          <p className="mt-2 text-sm leading-6 text-zinc-500">
-            Your latest 3 saved Build Briefs are shown here. Saved Signals still keep
-            up to 10 records in this browser.
-          </p>
-        </div>
-        <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
-          {savedSignals.length}/10
-        </div>
-      </div>
+      <details>
+        <summary className="flex cursor-pointer list-none flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="text-lg font-black tracking-tight text-zinc-300">
+              Past Prompts
+            </h2>
+            <p className="mt-1 text-sm leading-6 text-zinc-600">
+              Secondary archive. Open when you need an older saved brief.
+            </p>
+          </div>
+          <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+            {savedSignals.length}/10 saved
+          </div>
+        </summary>
 
-      {savedSignals.length === 0 ? (
-        <p className="mt-6 rounded-2xl border border-white/10 bg-black/40 p-4 text-sm text-zinc-500">
-          No saved build signals yet.
-        </p>
-      ) : (
-        <div className="mt-6 grid gap-3">
-          {savedSignals.slice(0, 3).map((signal) => (
+        {savedSignals.length === 0 ? (
+          <p className="mt-6 rounded-2xl border border-white/10 bg-black/40 p-4 text-sm text-zinc-500">
+            No saved build signals yet.
+          </p>
+        ) : (
+          <div className="mt-6 grid gap-3">
+            {savedSignals.slice(0, 3).map((signal) => (
             <article
               key={signal.id}
               className="rounded-2xl border border-white/[0.08] bg-black/25 p-4"
@@ -4315,9 +4330,10 @@ function SavedSignalsSection({
                 </div>
               </div>
             </article>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </details>
     </section>
   );
 }
@@ -4325,23 +4341,25 @@ function SavedSignalsSection({
 function InlineShowcaseSection() {
   return (
     <section className="mt-8 rounded-3xl border border-white/[0.08] bg-white/[0.025] p-5">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h2 className="text-xl font-black tracking-tight text-zinc-200">Showcase</h2>
-          <p className="mt-2 text-sm leading-6 text-zinc-500">
-            Products built from Bilion signals.
-          </p>
-        </div>
-        <Link
-          href="/showcase"
-          className="text-sm font-bold text-zinc-400 transition hover:text-white"
-        >
-          Open full showcase
-        </Link>
-      </div>
+      <details>
+        <summary className="flex cursor-pointer list-none flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="text-lg font-black tracking-tight text-zinc-300">Showcase</h2>
+            <p className="mt-1 text-sm leading-6 text-zinc-600">
+              Secondary examples. Open when you want reference builds.
+            </p>
+          </div>
+          <Link
+            href="/showcase"
+            className="text-sm font-bold text-zinc-400 transition hover:text-white"
+            onClick={(event) => event.stopPropagation()}
+          >
+            Open full showcase
+          </Link>
+        </summary>
 
-      <div className="mt-6 grid gap-3 lg:grid-cols-3">
-        {showcaseItems.slice(0, 5).map((item) => (
+        <div className="mt-6 grid gap-3 lg:grid-cols-3">
+          {showcaseItems.slice(0, 5).map((item) => (
           <article
             key={item.route}
             className="rounded-2xl border border-white/[0.08] bg-black/25 p-4"
@@ -4379,8 +4397,9 @@ function InlineShowcaseSection() {
               Open demo route
             </Link>
           </article>
-        ))}
-      </div>
+          ))}
+        </div>
+      </details>
     </section>
   );
 }
