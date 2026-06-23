@@ -51,13 +51,16 @@ type BuildSignal = {
   buildSteps: string[];
   patternMatches: string[];
   codeXPrompt: string;
+  signalSourceLabel?: string;
 };
 
 type BilionAppClientProps = {
+  gmailMarketSignals: BuildSignal[];
   hasFounderAccess: boolean;
 };
 
 type SourceMode = "indie" | "github";
+type NextAction = "build" | "sell" | "post";
 
 const selectedPatternLabels: Record<string, string> = {
   "chat-product": "$300K/year chat product",
@@ -73,6 +76,28 @@ type CopyFeedback = {
 };
 
 type ExportAssetKind = "pdf" | "pack" | "tiktok" | "x" | "gumroad";
+
+const nextActionOptions: Array<{
+  action: NextAction;
+  label: string;
+  helper: string;
+}> = [
+  {
+    action: "build",
+    label: "Build it",
+    helper: "Turn the signal into a focused MVP brief.",
+  },
+  {
+    action: "sell",
+    label: "Sell it",
+    helper: "Turn the signal into an offer and outreach sprint.",
+  },
+  {
+    action: "post",
+    label: "Post it",
+    helper: "Turn the signal into a shareable market insight.",
+  },
+];
 
 type SavedSignal = {
   id: string;
@@ -1051,21 +1076,6 @@ Acceptance criteria:
   },
 ];
 
-const todayIndex = Math.floor(Date.now() / 86400000) % buildSignals.length;
-
-function createClientSeed() {
-  if (
-    typeof crypto !== "undefined" &&
-    typeof crypto.getRandomValues === "function"
-  ) {
-    const values = new Uint32Array(1);
-    crypto.getRandomValues(values);
-    return values[0];
-  }
-
-  return Date.now();
-}
-
 function buildResult(signal: BuildSignal): ApiResult {
   return {
     free: {
@@ -1254,30 +1264,83 @@ function buildPromptTitle(signal: BuildSignal, angleIndex: number) {
   return angle.promptTitle(signal);
 }
 
-function getSeededPromptIndexes(previousPromptTitle?: string) {
-  const seed = createClientSeed();
-  let signalIndex = seed % buildSignals.length;
-  let angleIndex =
-    Math.floor(seed / Math.max(buildSignals.length, 1)) %
-    masterPromptAngles.length;
+function getBuyerOptions(signal: BuildSignal) {
+  const options = [
+    signal.buyer,
+    ...signal.patternMatches.slice(0, 3).map((match) => `${match} operators`),
+    "AI builders and implementation consultants",
+  ]
+    .map((option) => option.trim())
+    .filter(Boolean);
 
-  if (
-    previousPromptTitle &&
-    buildPromptTitle(buildSignals[signalIndex], angleIndex) ===
-      previousPromptTitle
-  ) {
-    angleIndex = (angleIndex + 1) % masterPromptAngles.length;
+  return Array.from(new Set(options)).slice(0, 5);
+}
 
-    if (
-      buildPromptTitle(buildSignals[signalIndex], angleIndex) ===
-        previousPromptTitle &&
-      buildSignals.length > 1
-    ) {
-      signalIndex = (signalIndex + 1) % buildSignals.length;
-    }
+function getActionAngleIndex(action: NextAction) {
+  if (action === "sell") {
+    return 4;
   }
 
-  return { angleIndex, signalIndex };
+  if (action === "post") {
+    return 3;
+  }
+
+  return 2;
+}
+
+function getActionLabel(action: NextAction) {
+  return nextActionOptions.find((option) => option.action === action)?.label || "Build it";
+}
+
+function getActionSignal(signal: BuildSignal, buyer: string): BuildSignal {
+  const selectedBuyer = buyer.trim() || signal.buyer;
+
+  return {
+    ...signal,
+    buyer: selectedBuyer,
+    pain: `${signal.pain} For ${selectedBuyer}, the urgent question is what to build, sell, or post next from this proven signal.`,
+  };
+}
+
+function buildActionMasterPrompt(
+  signal: BuildSignal,
+  buyer: string,
+  action: NextAction,
+) {
+  const actionSignal = getActionSignal(signal, buyer);
+  const prompt = buildMasterPrompt(actionSignal, getActionAngleIndex(action));
+  const actionLabel = getActionLabel(action);
+  const actionTitle =
+    action === "build"
+      ? `${workflowBrandName(actionSignal)} MVP for ${titleCase(buyer || actionSignal.buyer)}`
+      : action === "sell"
+        ? `${workflowOutputTitle(actionSignal)} Offer for ${titleCase(buyer || actionSignal.buyer)}`
+        : `${workflowOutputTitle(actionSignal)} Market Post for ${titleCase(buyer || actionSignal.buyer)}`;
+  const postCopy = `Hook: ${actionSignal.buyer} do not need another AI idea. They need a faster way to handle ${workflowName(actionSignal)}.\n\nSignal: ${actionSignal.latestSignal}\n\nWhy it matters: ${actionSignal.whyNow}\n\nWhat to build: ${actionSignal.whatYouCanBuild}\n\nCTA: Want the 48h validation plan for this pattern?`;
+
+  return {
+    ...prompt,
+    angleLabel: actionLabel,
+    promptTitle: actionTitle,
+    buyer: actionSignal.buyer,
+    whoPays: actionSignal.buyer,
+    pain: actionSignal.pain,
+    originalCase: actionSignal.latestSignal,
+    provenPattern: `${actionSignal.sourceTitle}: ${actionSignal.latestSignal}`,
+    whyItSold: `${actionSignal.whyNow} ${actionSignal.comparablePrice}`,
+    launchCopy: {
+      ...prompt.launchCopy,
+      xPost: action === "post" ? postCopy : prompt.launchCopy.xPost,
+      dmMessage:
+        action === "sell"
+          ? `Quick idea: I am testing a ${prompt.price} ${workflowOutputTitle(actionSignal)} offer for ${actionSignal.buyer}. Want me to send a before/after sample and see if it fits your workflow?`
+          : prompt.launchCopy.dmMessage,
+    },
+    firstPaidOffer:
+      action === "sell"
+        ? `${workflowOutputTitle(actionSignal)} Sprint for ${actionSignal.buyer}: ${prompt.firstVersion}`
+        : prompt.firstPaidOffer,
+  };
 }
 
 function buildMasterPrompt(signal: BuildSignal, angleIndex: number): MasterPrompt {
@@ -1780,6 +1843,100 @@ What to build:
 ${masterPrompt.whatToBuild}`;
 }
 
+function buildProspectList(masterPrompt: MasterPrompt) {
+  const buyer = masterPrompt.buyer || "target buyers";
+
+  return [
+    `5 ${buyer} posting about this workflow on X or LinkedIn`,
+    `3 ${buyer} asking repeated questions in niche communities`,
+    `3 operators using spreadsheets, docs, or manual handoffs for this pain`,
+    `2 consultants already serving ${buyer}`,
+    `2 small teams with public job posts or help docs around this workflow`,
+  ].join("\n");
+}
+
+function buildObjectionList(masterPrompt: MasterPrompt) {
+  return [
+    `"We already do this manually." -> Show the before/after time saved.`,
+    `"This feels too narrow." -> Position it as a paid first sprint, not a platform.`,
+    `"I need integrations." -> Offer a manual or CSV-based first version.`,
+    `"The price is not clear." -> Anchor it to ${masterPrompt.price} and one measurable outcome.`,
+  ].join("\n");
+}
+
+function buildActionBriefFields(
+  masterPrompt: MasterPrompt,
+  action: NextAction,
+  includeCodexPrompt: boolean,
+) {
+  if (action === "sell") {
+    return [
+      ["Offer", masterPrompt.firstPaidOffer],
+      ["Price", masterPrompt.price],
+      ["First 15 prospects", buildProspectList(masterPrompt)],
+      ["Outreach message", masterPrompt.launchCopy.dmMessage],
+      ["Objections to expect", buildObjectionList(masterPrompt)],
+      [
+        "48h validation plan",
+        masterPrompt.validationPlan
+          .map((step, index) => `${index + 1}. ${step}`)
+          .join("\n"),
+      ],
+    ] satisfies [string, string][];
+  }
+
+  if (action === "post") {
+    return [
+      [
+        "Hook",
+        `${masterPrompt.buyer} do not need another AI idea. They need a faster way to solve this paid pain.`,
+      ],
+      ["Signal", masterPrompt.provenPattern],
+      ["Why it matters", masterPrompt.whyItSold],
+      ["What to build", masterPrompt.whatToBuild],
+      ["CTA", "Want the 48h validation plan for this pattern?"],
+    ] satisfies [string, string][];
+  }
+
+  return [
+    ["Product name", masterPrompt.promptTitle],
+    ["Buyer", masterPrompt.buyer],
+    ["Pain", masterPrompt.pain],
+    ["First version scope", masterPrompt.firstVersion],
+    [
+      "Core workflow",
+      [
+        "1. User opens the product and sees the buyer, pain, and offer.",
+        "2. User enters or selects a realistic workflow input.",
+        "3. App turns the input into a structured useful output.",
+        "4. User copies the result or uses it as a sales demo.",
+      ].join("\n"),
+    ],
+    [
+      "Codex-ready build prompt",
+      includeCodexPrompt
+        ? masterPrompt.fullCodeXMasterPrompt
+        : "Founder/Paid access unlocks the full Codex-ready build prompt.",
+    ],
+  ] satisfies [string, string][];
+}
+
+function buildActionBriefCopy(
+  masterPrompt: MasterPrompt,
+  action: NextAction,
+  includeCodexPrompt: boolean,
+) {
+  const fields = buildActionBriefFields(
+    masterPrompt,
+    action,
+    includeCodexPrompt,
+  );
+
+  return `${getActionLabel(action)} Action Brief
+
+${fields.map(([label, value]) => `${label}:\n${value}`).join("\n\n")}`;
+}
+
 async function writeClipboardText(text: string) {
   if (!navigator.clipboard?.writeText) {
     return false;
@@ -2034,9 +2191,16 @@ function writeFreeUsageCount(count: number) {
 }
 
 export default function BilionAppClient({
+  gmailMarketSignals,
   hasFounderAccess,
 }: BilionAppClientProps) {
   const searchParams = useSearchParams();
+  const marketSignals: BuildSignal[] = [...buildSignals, ...gmailMarketSignals];
+  const [dailySignalSeed] = useState(() => Math.floor(Date.now() / 86400000));
+  const todayIndex =
+    marketSignals.length > 0
+      ? dailySignalSeed % marketSignals.length
+      : 0;
   const selectedPatternLabel =
     selectedPatternLabels[searchParams.get("pattern") || ""];
   const [signalIndex, setSignalIndex] = useState(todayIndex);
@@ -2053,10 +2217,24 @@ export default function BilionAppClient({
   const [freeUsageCount, setFreeUsageCount] = useState(0);
   const [sourceMode, setSourceMode] = useState<SourceMode>("indie");
   const [githubInput, setGithubInput] = useState("");
+  const [selectedSignalId, setSelectedSignalId] = useState(
+    marketSignals[todayIndex]?.id || marketSignals[0]?.id || "",
+  );
+  const [selectedBuyer, setSelectedBuyer] = useState(
+    marketSignals[todayIndex]?.buyer || marketSignals[0]?.buyer || "",
+  );
+  const [selectedAction, setSelectedAction] = useState<NextAction>("build");
   const freeRunsRemaining = hasFounderAccess
     ? Infinity
     : Math.max(0, FREE_GENERATION_LIMIT - freeUsageCount);
   const canGenerate = hasFounderAccess || freeRunsRemaining > 0;
+  const selectedSignal =
+    selectedSignalId === "github-sample"
+      ? buildGitHubSignalFromInput(githubInput)
+      : marketSignals.find((signal) => signal.id === selectedSignalId) ||
+        marketSignals[todayIndex] ||
+        marketSignals[0];
+  const buyerOptions = selectedSignal ? getBuyerOptions(selectedSignal) : [];
 
   useEffect(() => {
     const loadSavedSignals = window.setTimeout(() => {
@@ -2066,6 +2244,8 @@ export default function BilionAppClient({
       const source = new URLSearchParams(window.location.search).get("source");
       if (source === "github") {
         setSourceMode("github");
+        setSelectedSignalId("github-sample");
+        setSelectedBuyer(buildGitHubSignalFromInput("").buyer);
       }
     }, 0);
 
@@ -2107,16 +2287,26 @@ export default function BilionAppClient({
 
     setLoading(true);
     setError("");
-    const nextIndexes = getSeededPromptIndexes(masterPrompt?.promptTitle);
-    const nextSignal =
-      sourceMode === "github"
-        ? buildGitHubSignalFromInput(githubInput)
-        : buildSignals[nextIndexes.signalIndex];
-    const nextResult = buildResult(nextSignal);
-    const builtMaster = buildMasterPrompt(nextSignal, nextIndexes.angleIndex);
+    if (!selectedSignal) {
+      setError("Select a market signal first.");
+      setLoading(false);
+      return;
+    }
 
-    setSignalIndex(sourceMode === "github" ? 0 : nextIndexes.signalIndex);
-    setMasterPromptAngleIndex(nextIndexes.angleIndex);
+    const nextSignal = selectedSignal;
+    const actionSignal = getActionSignal(nextSignal, selectedBuyer);
+    const nextResult = buildResult(actionSignal);
+    const builtMaster = buildActionMasterPrompt(
+      nextSignal,
+      selectedBuyer,
+      selectedAction,
+    );
+    const nextSignalIndex =
+      selectedSignalId === "github-sample" ? 0 : marketSignals.indexOf(nextSignal);
+    const nextAngleIndex = getActionAngleIndex(selectedAction);
+
+    setSignalIndex(nextSignalIndex < 0 ? 0 : nextSignalIndex);
+    setMasterPromptAngleIndex(nextAngleIndex);
     setResult(nextResult);
     setMasterPrompt(builtMaster);
     setCopiedMasterPrompt(false);
@@ -2160,16 +2350,27 @@ export default function BilionAppClient({
       return;
     }
 
-    const nextIndexes = getSeededPromptIndexes(masterPrompt?.promptTitle);
-    const nextSignal = buildSignals[nextIndexes.signalIndex];
-    const nextResult = buildResult(nextSignal);
-    const builtMaster = buildMasterPrompt(nextSignal, nextIndexes.angleIndex);
+    if (!selectedSignal) {
+      return;
+    }
+
+    const nextSignal = selectedSignal;
+    const actionSignal = getActionSignal(nextSignal, selectedBuyer);
+    const nextResult = buildResult(actionSignal);
+    const builtMaster = buildActionMasterPrompt(
+      nextSignal,
+      selectedBuyer,
+      selectedAction,
+    );
+    const nextSignalIndex =
+      selectedSignalId === "github-sample" ? 0 : marketSignals.indexOf(nextSignal);
+    const nextAngleIndex = getActionAngleIndex(selectedAction);
 
     setCopiedMasterPrompt(false);
     setCopiedSafePrompt(false);
     setCopyFeedback(null);
-    setSignalIndex(nextIndexes.signalIndex);
-    setMasterPromptAngleIndex(nextIndexes.angleIndex);
+    setSignalIndex(nextSignalIndex < 0 ? 0 : nextSignalIndex);
+    setMasterPromptAngleIndex(nextAngleIndex);
     setResult(nextResult);
     setMasterPrompt(builtMaster);
     saveResult(nextResult);
@@ -2181,39 +2382,30 @@ export default function BilionAppClient({
       return;
     }
 
-    const nextAngleIndex =
-      (masterPromptAngleIndex + 1) % masterPromptAngles.length;
-    const nextSignalIndex =
-      nextAngleIndex === 0 && buildSignals.length > 1
-        ? (signalIndex + 1) % buildSignals.length
-        : signalIndex;
-    let nextSignal = buildSignals[nextSignalIndex];
-    let safeAngleIndex = nextAngleIndex;
-
-    if (
-      masterPrompt &&
-      buildPromptTitle(nextSignal, safeAngleIndex) === masterPrompt.promptTitle
-    ) {
-      safeAngleIndex = (safeAngleIndex + 1) % masterPromptAngles.length;
-
-      if (
-        buildPromptTitle(nextSignal, safeAngleIndex) ===
-          masterPrompt.promptTitle &&
-        buildSignals.length > 1
-      ) {
-        nextSignal = buildSignals[(nextSignalIndex + 1) % buildSignals.length];
-      }
+    if (!selectedSignal) {
+      return;
     }
 
-    const nextResult = buildResult(nextSignal);
+    const currentActionIndex = nextActionOptions.findIndex(
+      (option) => option.action === selectedAction,
+    );
+    const nextAction =
+      nextActionOptions[(currentActionIndex + 1) % nextActionOptions.length]
+        ?.action || "build";
+    const nextSignal = selectedSignal;
+    const actionSignal = getActionSignal(nextSignal, selectedBuyer);
+    const nextResult = buildResult(actionSignal);
+    const nextSignalIndex =
+      selectedSignalId === "github-sample" ? 0 : marketSignals.indexOf(nextSignal);
 
     setCopiedMasterPrompt(false);
     setCopiedSafePrompt(false);
     setCopyFeedback(null);
-    setSignalIndex(buildSignals.indexOf(nextSignal));
-    setMasterPromptAngleIndex(safeAngleIndex);
+    setSelectedAction(nextAction);
+    setSignalIndex(nextSignalIndex < 0 ? 0 : nextSignalIndex);
+    setMasterPromptAngleIndex(getActionAngleIndex(nextAction));
     setResult(nextResult);
-    setMasterPrompt(buildMasterPrompt(nextSignal, safeAngleIndex));
+    setMasterPrompt(buildActionMasterPrompt(nextSignal, selectedBuyer, nextAction));
     saveResult(nextResult);
     incrementFreeUsage();
   }
@@ -2222,7 +2414,7 @@ export default function BilionAppClient({
     if (!masterPrompt) return;
 
     const copied = await writeClipboardText(
-      hasFounderAccess
+      hasFounderAccess && selectedAction === "build"
         ? masterPrompt.fullCodeXMasterPrompt
         : buildFreeMasterPromptCopy(masterPrompt),
     );
@@ -2230,7 +2422,10 @@ export default function BilionAppClient({
     if (copied) {
       setCopiedMasterPrompt(true);
       setCopyFeedback({
-        message: hasFounderAccess ? "Copied Code X prompt" : "Copied preview",
+        message:
+          hasFounderAccess && selectedAction === "build"
+            ? "Copied Code X prompt"
+            : "Copied action brief preview",
         tone: "success",
       });
       window.setTimeout(() => setCopiedMasterPrompt(false), 1000);
@@ -2320,43 +2515,134 @@ export default function BilionAppClient({
           {!result && (
             <div className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl md:p-8">
               <h2 className="text-2xl font-black tracking-tight">
-                Generate an Opportunity Brief
+                Generate an Action Brief
               </h2>
               <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-400">
                 Free generations today: {freeUsageCount} / {FREE_GENERATION_LIMIT}. Founder and paid users get unlimited generations.
               </p>
 
-              <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                <button
-                  type="button"
-                  onClick={() => setSourceMode("indie")}
-                  className={[
-                    "rounded-2xl border px-4 py-4 text-left transition",
-                    sourceMode === "indie"
-                      ? "border-white/30 bg-white/[0.08] text-white"
-                      : "border-white/10 bg-black/30 text-zinc-400 hover:bg-white/[0.04]",
-                  ].join(" ")}
-                >
-                  <span className="block text-sm font-bold">Indie Hacker Signal</span>
-                  <span className="mt-1 block text-xs leading-5">
-                    Use the existing curated signal engine.
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSourceMode("github")}
-                  className={[
-                    "rounded-2xl border px-4 py-4 text-left transition",
-                    sourceMode === "github"
-                      ? "border-white/30 bg-white/[0.08] text-white"
-                      : "border-white/10 bg-black/30 text-zinc-400 hover:bg-white/[0.04]",
-                  ].join(" ")}
-                >
-                  <span className="block text-sm font-bold">GitHub Signal</span>
-                  <span className="mt-1 block text-xs leading-5">
-                    Paste activity or use the sample signal.
-                  </span>
-                </button>
+              <div className="mt-6 grid gap-6">
+                <section>
+                  <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+                    Step 1 - Choose a proven market signal
+                  </div>
+                  <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                    {marketSignals.slice(0, 14).map((signal) => {
+                      const active = selectedSignalId === signal.id;
+                      const signalLabel =
+                        signal.signalSourceLabel || signal.sourceType || "Market Signal";
+
+                      return (
+                        <button
+                          key={signal.id}
+                          type="button"
+                          onClick={() => {
+                            setSourceMode("indie");
+                            setSelectedSignalId(signal.id);
+                            setSelectedBuyer(signal.buyer);
+                          }}
+                          className={[
+                            "min-h-28 rounded-2xl border px-4 py-3 text-left transition",
+                            active
+                              ? "border-emerald-300/50 bg-emerald-300/10 text-white"
+                              : "border-white/10 bg-black/30 text-zinc-400 hover:bg-white/[0.04] hover:text-white",
+                          ].join(" ")}
+                        >
+                          <span className="mb-2 inline-flex rounded-full border border-white/10 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-emerald-200">
+                            {signalLabel}
+                          </span>
+                          <span className="block text-sm font-black leading-5">
+                            {signal.sourceTitle}
+                          </span>
+                          <span className="mt-2 block text-xs leading-5 text-zinc-500">
+                            {signal.buyer}
+                          </span>
+                        </button>
+                      );
+                    })}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const githubSignal = buildGitHubSignalFromInput(githubInput);
+                        setSourceMode("github");
+                        setSelectedSignalId("github-sample");
+                        setSelectedBuyer(githubSignal.buyer);
+                      }}
+                      className={[
+                        "min-h-28 rounded-2xl border px-4 py-3 text-left transition",
+                        selectedSignalId === "github-sample"
+                          ? "border-emerald-300/50 bg-emerald-300/10 text-white"
+                          : "border-white/10 bg-black/30 text-zinc-400 hover:bg-white/[0.04] hover:text-white",
+                      ].join(" ")}
+                    >
+                      <span className="block text-sm font-black leading-5">
+                        GitHub setup friction
+                      </span>
+                      <span className="mt-2 block text-xs leading-5 text-zinc-500">
+                        Use repo activity as the market signal.
+                      </span>
+                    </button>
+                  </div>
+                </section>
+
+                <section>
+                  <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+                    Step 2 - Choose a buyer
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {buyerOptions.map((buyer) => {
+                      const active = selectedBuyer === buyer;
+
+                      return (
+                        <button
+                          key={buyer}
+                          type="button"
+                          onClick={() => setSelectedBuyer(buyer)}
+                          className={[
+                            "rounded-full border px-4 py-2 text-sm font-bold transition",
+                            active
+                              ? "border-white/40 bg-white text-zinc-950"
+                              : "border-white/10 bg-white/[0.03] text-zinc-400 hover:bg-white/[0.06] hover:text-white",
+                          ].join(" ")}
+                        >
+                          {buyer}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
+
+                <section>
+                  <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+                    Step 3 - Choose next action
+                  </div>
+                  <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                    {nextActionOptions.map((option) => {
+                      const active = selectedAction === option.action;
+
+                      return (
+                        <button
+                          key={option.action}
+                          type="button"
+                          onClick={() => setSelectedAction(option.action)}
+                          className={[
+                            "rounded-2xl border px-4 py-4 text-left transition",
+                            active
+                              ? "border-emerald-300/50 bg-emerald-300/10 text-white"
+                              : "border-white/10 bg-black/30 text-zinc-400 hover:bg-white/[0.04] hover:text-white",
+                          ].join(" ")}
+                        >
+                          <span className="block text-sm font-black">
+                            {option.label}
+                          </span>
+                          <span className="mt-1 block text-xs leading-5 text-zinc-500">
+                            {option.helper}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
               </div>
 
               {sourceMode === "github" && (
@@ -2374,12 +2660,43 @@ export default function BilionAppClient({
                 </label>
               )}
 
+              {selectedSignal && (
+                <div className="mt-5 rounded-2xl border border-white/10 bg-black/30 p-4">
+                  <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+                    Selected choices
+                  </div>
+                  <div className="mt-3 grid gap-3 text-sm leading-6 md:grid-cols-3">
+                    <div>
+                      <div className="text-zinc-500">Signal</div>
+                      <div className="font-bold text-zinc-100">
+                        {selectedSignal.sourceTitle}
+                      </div>
+                      <div className="mt-1 text-xs font-bold text-emerald-200">
+                        {selectedSignal.signalSourceLabel ||
+                          selectedSignal.sourceType ||
+                          "Market Signal"}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-zinc-500">Buyer</div>
+                      <div className="font-bold text-zinc-100">{selectedBuyer}</div>
+                    </div>
+                    <div>
+                      <div className="text-zinc-500">Action</div>
+                      <div className="font-bold text-zinc-100">
+                        {getActionLabel(selectedAction)}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <button
                 onClick={generateIdea}
                 disabled={loading || !canGenerate}
-                className="mt-6 rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-6 w-full rounded-2xl bg-white px-5 py-4 text-sm font-black text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
               >
-                {loading ? "Generating..." : "Generate Opportunity Brief"}
+                {loading ? "Generating..." : "Generate Action Brief"}
               </button>
               {!canGenerate && (
                 <div className="mt-5 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-5">
@@ -2448,15 +2765,15 @@ export default function BilionAppClient({
                 <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                   <div>
                     <div className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-wide text-black">
-                      Personal Product Brief
+                      Action Brief
                     </div>
                     <h2 className="mt-4 text-3xl font-black tracking-tight">
-                      Generate another sellable product angle from this pattern.
+                      Generate from your selected signal, buyer, and action.
                     </h2>
                     <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
                       {hasFounderAccess
-                        ? "Paid users can generate more product angles and copy the full build prompt at the end."
-                        : `Free generations today: ${freeUsageCount} / ${FREE_GENERATION_LIMIT}. Founder Access unlocks unlimited product briefs.`}
+                        ? "Paid users can generate more action briefs and copy the full build prompt when Build it is selected."
+                        : `Free generations today: ${freeUsageCount} / ${FREE_GENERATION_LIMIT}. Founder Access unlocks unlimited action briefs.`}
                     </p>
                   </div>
 
@@ -2467,7 +2784,7 @@ export default function BilionAppClient({
                       disabled={!canGenerate}
                       className="rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      Generate Product Angle
+                      Generate Action Brief
                     </button>
                     <button
                       type="button"
@@ -2475,7 +2792,7 @@ export default function BilionAppClient({
                       disabled={!masterPrompt || !canGenerate}
                       className="rounded-2xl border border-white/10 px-5 py-4 text-sm font-bold text-white transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      Generate Another Angle
+                      Try Next Action
                     </button>
                   </div>
                 </div>
@@ -2516,6 +2833,7 @@ export default function BilionAppClient({
                   copiedSafe={copiedSafePrompt}
                   hasFounderAccess={hasFounderAccess}
                   masterPrompt={masterPrompt}
+                  selectedAction={selectedAction}
                   onCopy={copyMasterPrompt}
                   onCopyBrief={copyShortBrief}
                   copyFeedback={copyFeedback}
@@ -2580,6 +2898,7 @@ function MasterPromptCard({
   masterPrompt,
   onCopy,
   onCopyBrief,
+  selectedAction,
   signalNumber,
 }: {
   angleNumber: number;
@@ -2590,6 +2909,7 @@ function MasterPromptCard({
   masterPrompt: MasterPrompt;
   onCopy: () => void | Promise<void>;
   onCopyBrief: () => void | Promise<void>;
+  selectedAction: NextAction;
   signalNumber: number;
 }) {
   return (
@@ -2667,6 +2987,12 @@ function MasterPromptCard({
           </p>
         </div>
       )}
+
+      <ActionBriefSection
+        action={selectedAction}
+        hasFounderAccess={hasFounderAccess}
+        masterPrompt={masterPrompt}
+      />
 
       <div className="mt-6 grid gap-4 md:grid-cols-2">
         <MasterPromptField label="What already sold" value={masterPrompt.provenPattern} />
@@ -2761,44 +3087,119 @@ function MasterPromptCard({
         </div>
       )}
 
-      {hasFounderAccess ? (
-        <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 p-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
-              Codex build prompt
+      {selectedAction === "build" &&
+        (hasFounderAccess ? (
+          <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 p-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                Codex build prompt
+              </div>
+              <button
+                type="button"
+                onClick={onCopy}
+                className="rounded-2xl bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-zinc-200"
+              >
+                {copied ? "Copied Codex prompt" : "Copy Codex Prompt"}
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={onCopy}
-              className="rounded-2xl bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-zinc-200"
-            >
-              {copied ? "Copied Codex prompt" : "Copy Codex Prompt"}
-            </button>
+            <pre className="mt-3 max-h-[640px] overflow-auto whitespace-pre-wrap rounded-xl border border-white/10 bg-black/60 p-4 font-sans text-sm leading-6 text-zinc-100">
+              {masterPrompt.fullCodeXMasterPrompt}
+            </pre>
           </div>
-          <pre className="mt-3 max-h-[640px] overflow-auto whitespace-pre-wrap rounded-xl border border-white/10 bg-black/60 p-4 font-sans text-sm leading-6 text-zinc-100">
-            {masterPrompt.fullCodeXMasterPrompt}
-          </pre>
-        </div>
-      ) : (
-        <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 p-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
-              Codex build prompt
+        ) : (
+          <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 p-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                Codex build prompt
+              </div>
+              <button
+                type="button"
+                disabled
+                className="rounded-2xl border border-white/10 px-5 py-3 text-sm font-black text-zinc-500"
+              >
+                Unlock to copy Codex Prompt
+              </button>
             </div>
-            <button
-              type="button"
-              disabled
-              className="rounded-2xl border border-white/10 px-5 py-3 text-sm font-black text-zinc-500"
-            >
-              Unlock to copy Codex Prompt
-            </button>
+            <p className="mt-3 text-sm leading-6 text-zinc-400">
+              The full Codex build prompt is available with Founder/Paid access.
+            </p>
           </div>
-          <p className="mt-3 text-sm leading-6 text-zinc-400">
-            The full Codex build prompt is available with Founder/Paid access.
-          </p>
-        </div>
-      )}
+        ))}
     </article>
+  );
+}
+
+function ActionBriefSection({
+  action,
+  hasFounderAccess,
+  masterPrompt,
+}: {
+  action: NextAction;
+  hasFounderAccess: boolean;
+  masterPrompt: MasterPrompt;
+}) {
+  const [copied, setCopied] = useState(false);
+  const [copyError, setCopyError] = useState(false);
+  const fields = buildActionBriefFields(masterPrompt, action, hasFounderAccess);
+
+  async function copyActionBrief() {
+    const copiedText = await writeClipboardText(
+      buildActionBriefCopy(masterPrompt, action, hasFounderAccess),
+    );
+
+    setCopied(copiedText);
+    setCopyError(!copiedText);
+    window.setTimeout(() => {
+      setCopied(false);
+      setCopyError(false);
+    }, 1200);
+  }
+
+  return (
+    <section className="mt-6 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.05] p-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+            Action Brief
+          </div>
+          <h3 className="mt-2 text-2xl font-black text-white">
+            {getActionLabel(action)}
+          </h3>
+        </div>
+        <button
+          type="button"
+          onClick={copyActionBrief}
+          className="rounded-2xl bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-zinc-200"
+        >
+          {copied ? "Copied Action Brief" : "Copy Action Brief"}
+        </button>
+      </div>
+
+      <div className="mt-4 grid gap-3 md:grid-cols-2">
+        {fields.map(([label, value]) => (
+          <div
+            key={label}
+            className={[
+              "rounded-2xl border border-white/10 bg-black/35 p-4",
+              label === "Codex-ready build prompt" ? "md:col-span-2" : "",
+            ].join(" ")}
+          >
+            <div className="text-xs font-black uppercase tracking-[0.14em] text-zinc-500">
+              {label}
+            </div>
+            <div className="mt-2 max-h-[420px] overflow-auto whitespace-pre-wrap text-sm leading-6 text-zinc-100">
+              {value}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {copyError && (
+        <p className="mt-3 text-sm font-bold text-yellow-100">
+          Clipboard blocked. Select the visible action brief fields and copy them manually.
+        </p>
+      )}
+    </section>
   );
 }
 

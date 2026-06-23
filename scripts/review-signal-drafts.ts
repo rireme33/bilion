@@ -5,19 +5,16 @@ type ReviewAction = "publish_candidate" | "review_more" | "reject_candidate";
 
 type DraftRecord = {
   id: string;
-  source: {
-    name: string;
-  };
+  sourceName: string;
+  subject: string;
   category: string;
-  product_idea: string;
+  productIdea: string;
   buyer: string;
   pain: string;
-  score: {
-    total: number;
-  };
-  evidence_level: string;
-  hype_risk: string;
-  recommended_use: string[];
+  score: number;
+  evidenceLevel: string;
+  hypeRisk: string;
+  recommendedUse: string;
 };
 
 type LoadedDraft =
@@ -38,9 +35,60 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
-function getNestedRecord(value: Record<string, unknown>, key: string) {
-  const nested = value[key];
-  return isRecord(nested) ? nested : undefined;
+function getString(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function getSourceName(value: Record<string, unknown>) {
+  if (typeof value.source === "string") {
+    return value.source;
+  }
+
+  if (isRecord(value.source)) {
+    return getString(value.source.name) || getString(value.source.source_type) || "gmail";
+  }
+
+  return "";
+}
+
+function getSubject(value: Record<string, unknown>) {
+  const flatSubject = getString(value.subject);
+
+  if (flatSubject) {
+    return flatSubject;
+  }
+
+  if (isRecord(value.source)) {
+    return getString(value.source.subject);
+  }
+
+  return "";
+}
+
+function getScore(value: Record<string, unknown>) {
+  if (typeof value.score === "number") {
+    return value.score;
+  }
+
+  if (isRecord(value.score) && typeof value.score.total === "number") {
+    return value.score.total <= 35
+      ? Math.round((value.score.total / 35) * 100)
+      : value.score.total;
+  }
+
+  return Number.NaN;
+}
+
+function getRecommendedUse(value: Record<string, unknown>) {
+  if (typeof value.recommended_use === "string") {
+    return value.recommended_use;
+  }
+
+  if (Array.isArray(value.recommended_use)) {
+    return value.recommended_use.filter((item) => typeof item === "string").join(", ");
+  }
+
+  return "";
 }
 
 function validateDraft(value: unknown) {
@@ -53,43 +101,52 @@ function validateDraft(value: unknown) {
     };
   }
 
-  const source = getNestedRecord(value, "source");
-  const score = getNestedRecord(value, "score");
+  const score = getScore(value);
+  const record: DraftRecord = {
+    id: getString(value.id),
+    sourceName: getSourceName(value),
+    subject: getSubject(value),
+    category: getString(value.category),
+    productIdea: getString(value.product_idea),
+    buyer: getString(value.buyer),
+    pain: getString(value.pain),
+    score,
+    evidenceLevel: getString(value.evidence_level),
+    hypeRisk: getString(value.hype_risk),
+    recommendedUse: getRecommendedUse(value),
+  };
 
-  if (typeof value.id !== "string" || value.id.trim().length === 0) {
+  if (!record.id) {
     errors.push("missing id");
   }
-  if (!source || typeof source.name !== "string" || source.name.trim().length === 0) {
-    errors.push("missing source.name");
+  if (!record.sourceName) {
+    errors.push("missing source");
   }
-  if (typeof value.category !== "string" || value.category.trim().length === 0) {
+  if (!record.subject) {
+    errors.push("missing subject");
+  }
+  if (!record.category) {
     errors.push("missing category");
   }
-  if (typeof value.product_idea !== "string" || value.product_idea.trim().length === 0) {
+  if (!record.productIdea) {
     errors.push("missing product_idea");
   }
-  if (typeof value.buyer !== "string" || value.buyer.trim().length === 0) {
+  if (!record.buyer) {
     errors.push("missing buyer");
   }
-  if (typeof value.pain !== "string" || value.pain.trim().length === 0) {
+  if (!record.pain) {
     errors.push("missing pain");
   }
-  if (!score || typeof score.total !== "number") {
-    errors.push("missing score.total");
+  if (!Number.isFinite(record.score)) {
+    errors.push("invalid score");
   }
-  if (
-    typeof value.evidence_level !== "string" ||
-    value.evidence_level.trim().length === 0
-  ) {
+  if (!record.evidenceLevel) {
     errors.push("missing evidence_level");
   }
-  if (typeof value.hype_risk !== "string" || value.hype_risk.trim().length === 0) {
+  if (!record.hypeRisk) {
     errors.push("missing hype_risk");
   }
-  if (
-    !Array.isArray(value.recommended_use) ||
-    !value.recommended_use.every((item) => typeof item === "string")
-  ) {
+  if (!record.recommendedUse) {
     errors.push("missing recommended_use");
   }
 
@@ -102,22 +159,16 @@ function validateDraft(value: unknown) {
 
   return {
     errors,
-    record: value as DraftRecord,
+    record,
   };
 }
 
 function getRecommendedAction(record: DraftRecord): ReviewAction {
-  if (
-    record.score.total < 29 ||
-    (record.hype_risk === "high" && record.evidence_level === "weak")
-  ) {
+  if (record.score < 55 || (record.hypeRisk === "high" && record.evidenceLevel === "weak")) {
     return "reject_candidate";
   }
 
-  if (
-    record.score.total >= 32 &&
-    (record.hype_risk === "low" || record.hype_risk === "medium")
-  ) {
+  if (record.score >= 80 && record.hypeRisk !== "high") {
     return "publish_candidate";
   }
 
@@ -163,7 +214,7 @@ function loadDrafts(): LoadedDraft[] {
 }
 
 function printReviewTable(records: DraftRecord[]) {
-  const ranked = records.sort((a, b) => b.score.total - a.score.total);
+  const ranked = records.sort((a, b) => b.score - a.score);
 
   console.log("\nBilion Signal Inbox Draft Review");
   console.log("=".repeat(34));
@@ -171,13 +222,14 @@ function printReviewTable(records: DraftRecord[]) {
     ranked.map((record, index) => ({
       rank: index + 1,
       id: record.id,
-      source: record.source.name,
+      source: record.sourceName,
+      subject: record.subject,
       category: record.category,
-      product_idea: record.product_idea,
-      total: record.score.total,
-      evidence_level: record.evidence_level,
-      hype_risk: record.hype_risk,
-      recommended_use: record.recommended_use.join(", "),
+      product_idea: record.productIdea,
+      score: record.score,
+      evidence_level: record.evidenceLevel,
+      hype_risk: record.hypeRisk,
+      recommended_use: record.recommendedUse,
       action: getRecommendedAction(record),
     })),
   );
@@ -188,8 +240,8 @@ function printInvalidDrafts(invalidDrafts: Extract<LoadedDraft, { valid: false }
     return;
   }
 
-  console.log("\nInvalid or legacy draft files");
-  console.log("=".repeat(29));
+  console.log("\nInvalid draft files");
+  console.log("=".repeat(19));
 
   for (const draft of invalidDrafts) {
     console.log(`- ${draft.fileName}: ${draft.errors.join("; ")}`);
@@ -209,7 +261,7 @@ function reviewDrafts() {
   printInvalidDrafts(invalidDrafts);
 
   console.log(
-    `\nReviewed ${validDrafts.length} valid draft(s). Skipped ${invalidDrafts.length} invalid/legacy draft file(s).`,
+    `\nReviewed ${validDrafts.length} valid draft(s). Skipped ${invalidDrafts.length} invalid draft file(s).`,
   );
 }
 

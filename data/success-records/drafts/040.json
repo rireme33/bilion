@@ -1,0 +1,321 @@
+{
+"sourceType": "YouTube",
+"source": {
+"videoTitle": "How I built an app that makes $2,000 in one month (from scratch)",
+"creator": "不明",
+"speaker": "Arthur",
+"sourceUrl": "https://www.youtube.com/watch?v=Z-0Vf79GD3w",
+"genre": "インディーハッキング / モバイルアプリ開発 / アプリ収益化チャレンジ",
+"language": "英語"
+},
+"oneLinePattern": "既に売れているシンプルな瞑想・アファメーションアプリを、季節性うつ・北欧の暗い冬という具体ニッチに寄せ、オンボーディングと広告をABテストして有料サブスク化したパターン。",
+"business": {
+"businessName": "Glow",
+"productOrService": "北欧の暗い冬や季節性の落ち込みに寄り添う、アファメーション・通知・ウィジェット付きiOSアプリ",
+"industry": "メンタルウェルネス / モバイルアプリ / サブスクリプション",
+"targetMarket": "主に北欧諸国のiOSユーザー。特に冬の暗さ、気分の落ち込み、日々の自己肯定感に関心がある層。",
+"customer": "日々の気分改善、自己肯定感、メンタルヘルス習慣、ホーム画面ウィジェットによる小さな励ましを求めるiPhoneユーザー。",
+"problemSolved": "冬の暗さ、季節性の落ち込み、日々のモチベーション低下に対して、軽い励まし・通知・習慣化体験を提供する。",
+"valueProvided": "暖かいUI、キャンドルのマスコット、通知、ウィジェット、カテゴリ別アファメーション、パーソナライズされたFor You体験、ダークモード、テーマ、音声読み上げ機能。",
+"price": "月額$10、年額$40、3日間無料トライアル。国別価格調整あり。",
+"revenue": "最終時点で直近28日売上約$2,800。利益は$2,000超と説明。別時点でRevenueCat上は収益約$1,500、MRR $143、37 active subscriptions。さらに別時点で収益約$2,100、$2,400、$2,600と推移。",
+"period": "当初30日目標だったが、実際は約57日で直近28日利益$2,000超に到達したと説明。",
+"usersOrSubscribers": "初期に約900ダウンロード、最終付近で46 active trials、66 active subscriptions。別時点で39 active trials、61 active subscriptions。55 ratings、平均4.7/5。"
+},
+"buyer": {
+"whoBuys": "iPhoneで自己肯定感、日々の励まし、メンタルウェルネス習慣、ウィジェット型のアファメーションを求めるユーザー。主に北欧の冬・季節性の気分低下に刺さる層。",
+"whyTheyBuy": "毎日スマホを見るたびに励まされたい、冬の暗さや気分低下に対して小さな習慣を持ちたい、可愛いUIやウィジェットを使いたいから。",
+"urgency": "冬の短い日照時間、季節性うつ、年末・冬季のメンタル低下という季節要因により、今使う理由がある。",
+"willingnessToPay": "年額$40または月額$10を払うユーザーが発生。ダウンロードからトライアル開始率14%超、トライアルから有料化31%超と説明されており、一定の支払い意欲が確認されている。",
+"existingAlternatives": "I Am、Daily Affirmations、Daily Motivationなどの既存アファメーションアプリ。",
+"alternativeProblems": "既存アプリは似たような引用・デザインで差別化が弱く、長いオンボーディングや汎用的なメッセージが多い。北欧の暗い冬や季節性の悩みに特化していない。"
+},
+"painDesireFear": {
+"pain": "冬の暗さ、日照不足、気分の落ち込み、自己肯定感の低下、継続できるメンタル習慣がないこと。",
+"desire": "毎日少し気分が上がる、暖かく可愛い体験、ホーム画面で自然に励まされる、アプリを開く習慣ができること。",
+"fear": "何も変わらず暗い季節を過ごすこと、自分に合わない汎用メンタルアプリに課金してしまうこと、通知や習慣化が続かないこと。",
+"reasonsNotToBuy": "アファメーション自体に価値を感じない、月額$10が高い、無料でも類似アプリがある、英語アプリが母国語ではない、効果が曖昧、トライアル後に解約されやすい。"
+},
+"offer": {
+"whatIsSold": "アファメーション、ウィジェット、通知、カテゴリ、テーマ、ダークモード、パーソナライズ、音声読み上げを含むプレミアムiOSアプリ体験。",
+"realBenefitSold": "暗い季節でも毎日スマホ上で小さな励ましを受け取り、自己肯定感や気分を整える習慣。",
+"minimumProduct": "オンボーディング、アファメーション表示、スワイプUI、いいね、カテゴリ、通知、iOSウィジェット、RevenueCatのサブスク課金。",
+"subscriptionReason": "日々使う習慣型アプリであり、継続的に引用、通知、カテゴリ、テーマ、音声、パーソナライズ体験を提供できるため。",
+"upsellPotential": "年額プラン、テーマ、音声アファメーション、カテゴリ拡張、国別ローカライズ、季節別パック、コミュニティ、アプリ開発講座・Discordへの展開。"
+},
+"growthDistribution": {
+"initialAcquisition": "アプリ公開直後は完全無料のライフタイムアクセスを配布し、初期ダウンロードとレビュー獲得を狙った。YouTube Shorts、Reddit投稿、App Store Optimization、WeChatなどの自然共有、AppRaven経由の流入も発生。",
+"mainGrowthChannel": "最終的な売上ドライバーはTikTok広告。加えてASO、Reddit、YouTube、Expoブログ掲載、App Storeレビューが補助的に機能。",
+"postingFrequency": "TikTokでは当初10〜20本作成し、1日2〜3本投稿する計画。実際に約15本投稿し、2本が2,000 views超。Redditは毎日1〜2サブレディットへ投稿と説明。",
+"winningContentFormat": "TikTokネイティブな短尺動画、5秒UGC、iOS壁紙風の視覚的動画、ウィジェットや通知を見せるプロダクトデモ、POV、変化・結果訴求。CPCが低かったのは地球と太陽のiOS壁紙風動画、UGC、Pinterest風グローアップ動画。",
+"scaleMethod": "TikTok広告でインストールを獲得し、オンボーディング、ペイウォール、価格、App StoreアイコンをABテスト。広告クリエイティブ、配信時間、ターゲット国、キーワードを改善しながら再投資。",
+"adsUgcSeoCommunity": "TikTok広告、UGC動画、ASO、Reddit投稿、YouTube Shorts、Expoブログ、Discordコミュニティ構想。",
+"whyItSpread": "無料ライフタイム配布で初期シェアとレビューを得たこと、北欧の冬という明確な文脈、TikTokで視覚的に伝わる可愛いUI、広告クレジットによる低リスク検証。WeChatやAppRavenなど予期しない共有も発生。"
+},
+"monetization": {
+"monetizationPath": "無料公開で初期レビューと利用データを獲得し、その後RevenueCatで月額・年額サブスク、3日間無料トライアル、ペイウォールABテスト、TikTok広告で有料化を伸ばす。",
+"freeOffer": "初期は完全無料のライフタイムProアクセス。後に3日間無料トライアル。",
+"paidProduct": "Glow Premium。年額$40、月額$10。テーマ、プレミアム機能、パーソナライズ、継続的な改善を含む。",
+"pricingModel": "アプリ内課金のサブスクリプション。月額・年額。Apple Small Business Program前提でApple手数料15%と説明。",
+"whyLtvCanGrow": "毎日の習慣アプリで継続接触があり、通知・ウィジェット・テーマ・音声・ローカライズ・カテゴリ追加で利用継続を伸ばせる。",
+"whyRecurringRevenueWorks": "毎日見る・毎日通知を受けるアプリであり、継続利用が価値になる。トライアルから有料化し、年額プランで前払い収益を作れる。"
+},
+"whyItWorked": {
+"reason1": "既にTop Grossingに存在するアファメーションアプリを観察し、ゼロ発明ではなく proven concept を別ニッチに寄せた。",
+"reason2": "北欧の暗い冬、季節性の気分低下という具体的で広告訴求しやすい角度を設定した。",
+"reason3": "オンボーディング、ペイウォール、広告、ASOを数字で改善し、特にオンボーディング完了率とトライアル開始率を重点的に最適化した。",
+"marketTiming": "AI開発支援、Expo、RevenueCat、PostHog、TikTok広告により、学生個人でも短期間でiOSアプリを作り、広告と分析まで回せる環境が整っていた。",
+"founderStrength": "CS学生としてReact Native、Expo、Swift、RevenueCat、TikTok SDK、分析実装を自力で進められる技術力。YouTubeで開発過程を公開できる発信力もあった。",
+"highlyReplicableElements": "既存Top Grossingアプリの分解、ニッチ変更、MVP高速実装、RevenueCat導入、TikTok広告テスト、オンボーディングABテスト、ASO改善、レビュー返信。",
+"lowReplicabilityElements": "iOS開発・Swiftウィジェット・TikTok SDKのネイティブ実装、既存YouTube視聴者、Expoブログ掲載、広告クレジット獲得、北欧現地文脈への接続。"
+},
+"toolsStack": {
+"toolsUsed": [
+"App Store",
+"Figma",
+"Dribbble",
+"ChatGPT",
+"Expo",
+"React Native",
+"Swift",
+"Jitter",
+"RevenueCat",
+"Supabase",
+"Next.js",
+"EAS Build",
+"EAS Submit",
+"Apple Developer",
+"App Store Connect",
+"Astro",
+"YouTube Shorts",
+"Premiere Pro",
+"Reddit",
+"TikTok",
+"TikTok Ads Manager",
+"TikTok Events SDK",
+"Linktree",
+"PostHog",
+"Transporter",
+"Gemini API",
+"Notion"
+],
+"aiTools": [
+"ChatGPT",
+"Claude CodeまたはCloud Codeと聞こえる開発支援ツール",
+"Gemini API"
+],
+"payment": "RevenueCat、Apple In-App Purchase、App Store Connect",
+"database": "Supabase",
+"hosting": "Next.jsランディングページ。ホスティング先は不明。",
+"analytics": "Supabase内データ、RevenueCat dashboard、App Store Connect、TikTok Ads、PostHog、Linktree、独自analytics dashboard",
+"other": [
+"Apple Search Ads",
+"AppRaven",
+"WeChat",
+"Telegram",
+"Discord"
+]
+},
+"evidence": {
+"evidenceQuotes": [
+"I challenged myself to build an app that reaches $2,000 of monthly profits",
+"it ends up a lot closer to 60 days",
+"I want something that's already proven to work",
+"affirmation apps are everywhere",
+"Monthly for $10 and yearly for 40",
+"Current downloads nearly 900",
+"Only 15% of users came back day two",
+"We've made nearly $160 by spending only €30 on ads",
+"today we gained two new paying customers for a total of $80",
+"we made $164 of revenue",
+"we got for the last month 800 more than 800 USD",
+"37 active subscriptions",
+"revenue nearly $2,100",
+"61 active subscriptions, and 2400 revenue",
+"the revenue is nearly 2600",
+"we are at $2,800 of revenue in the last 28 days"
+],
+"numberEvidence": "初期900ダウンロード、600人以上が無料トライアル請求、8 ratingsで平均4.0、後に55 ratingsで4.7。最終付近で46 trials、66 active subscriptions。TikTok広告20日、$35/日相当、広告支出総額$700相当だがクレジット$210+$150を利用。UGC動画3本に$60。",
+"priceEvidence": "月額$10、年額$40、3日間無料トライアル。Apple手数料はSmall Business Programで15%と説明。",
+"growthChannelEvidence": "YouTube Shorts 2本で合計20,000 views、約300クリック、App Store上は10 downloads。Reddit投稿は約3,000 views、10 upvotes。TikTok広告は一時100 downloads/day、後に200 downloads/day超と説明。WeChatから約200 downloads。",
+"ambiguousPoints": [
+"動画タイトルは1か月で$2,000と読めるが、実際の達成はday 57で直近28日利益$2,000超という説明。",
+"収益と利益の区別が途中で変わる。RevenueCatの売上、Apple payout、広告クレジット、自己立替が混在している。",
+"アプリの国別正確な売上、解約率、返金、継続率は不明。",
+"広告クレジットが大きく、純粋な自己資金広告だけで同じ利益になるかは不明。",
+"有料化後の長期LTVは動画時点ではまだ短期データしかない。"
+]
+},
+"facts": [
+"Arthurは20歳、コンピュータサイエンス4年生と自己紹介している。",
+"過去に医師向けAIスタートアップを共同創業したが、ユーザーと話さず市場適合を無視し失敗したと述べている。",
+"App StoreのTop Grossingアプリからアファメーションアプリが多いことを発見した。",
+"I Am、Daily Affirmations、Daily Motivationを競合として見ている。",
+"北欧諸国の冬、短い日照時間、季節性の落ち込みをニッチとして選んだ。",
+"アプリ名はGlowで、キャンドルのマスコットを使った。",
+"Expo、React Native、SwiftでiOSアプリとウィジェットを実装した。",
+"初期MVPではログインなし、オンデバイス保存中心で構築した。",
+"RevenueCatで月額$10、年額$40、3日間無料トライアルを設定した。",
+"Supabaseにオンボーディング回答とフィードバックを保存した。",
+"Apple審査で最初にプライバシー設定の不一致によりリジェクトされ、その後修正して承認された。",
+"ローンチ直後はPro版を完全無料のライフタイムアクセスとして配布した。",
+"初期に約900ダウンロードを獲得した。",
+"day 2 retentionは15%と低かったと述べている。",
+"TikTok広告、ASO、Reddit、YouTube Shorts、AppRaven、WeChatなどから流入があった。",
+"オンボーディング改善後に売上が出始め、1日で$160、$80、$164、$278などの収益日があった。",
+"PostHogでオンボーディングABテスト、RevenueCatでペイウォールABテストを行った。",
+"最終的に直近28日売上約$2,800、利益$2,000超と説明している。"
+],
+"inferences": [
+"この成功の本体はアファメーションの内容そのものではなく、ニッチ選定、オンボーディング、ペイウォール、広告クリエイティブ、ASOの運用改善にある。",
+"プロダクトの独自性は強くないが、既存市場に対して季節性・地域性・可愛いUIを足すことで広告で売れる角度を作った可能性が高い。",
+"短期収益は広告クレジットの影響が大きいため、広告クレジットなしの再現性はやや下がる。",
+"一方で、ダウンロードからトライアル14%超、トライアルから有料31%超という数値が正しければ、広告費を払っても成立する可能性がある。",
+"Bilion向けには、アプリそのものよりも「既存Top Grossingアプリをニッチ別に焼き直し、オンボーディング最適化で売る」パターンとして価値が高い。"
+],
+"risks": {
+"legalRisk": "メンタルヘルス領域のため、医療効果を断定するとリスクがある。プライバシーポリシー、データ収集、トラッキング表記、App Store審査対応も必須。",
+"platformDependency": "App Store、Apple審査、RevenueCat、TikTok Ads、ASO、Apple Search Adsに強く依存する。",
+"competitionRisk": "アファメーションアプリは競合が多く、I Amなど既存Top Grossing勢が強い。デザイン・広告・ニッチ以外の差別化は弱い。",
+"replicabilityRisk": "React Native、Swift、RevenueCat、TikTok SDK、App Store審査、広告運用、ABテストの総合力が必要。ノーコード初心者にはそのまま再現しにくい。",
+"exaggerationOrSuspiciousPoints": [
+"タイトルは1か月で$2,000に見えるが、実際は約57日で直近28日利益$2,000超という構成。",
+"広告クレジットが利益に大きく貢献しており、通常広告費では利益率が変わる。",
+"RevenueCat収益、Apple支払い、広告費、自己立替の説明が複雑で、キャッシュベースの利益とは異なる可能性がある。",
+"短期のトライアル・有料化データであり、長期継続率と解約率は不明。",
+"季節性アプリのため、冬以外の需要継続は不明。"
+]
+},
+"aiNativeRemake": {
+"howToRebuildWithAI": "App Store上位アプリをスクレイピングではなく手動観察し、AIでUIパターン、オンボーディング質問、ペイウォール文言、広告フック、ASOキーワード、国別ローカライズ文言を生成する。Expo/React NativeでMVPを作り、RevenueCatとPostHogで数字を回す。",
+"smallerStart": "最初はiOSアプリ完成ではなく、1ニッチ向けのランディングページ、TikTok広告風動画3本、Figmaモック、メール登録、またはTestFlight待機リストで検証する。",
+"forSoloDevelopers": "Expoでログインなし、オンデバイス保存、固定コンテンツ、RevenueCat、簡易通知、1種類のウィジェットだけ作る。SwiftやTikTok SDKは後回しにする。",
+"forNonEngineers": "アプリ本体ではなく、Notion/Canva/音声/メール配信で『冬の30日セルフケア・アファメーションパック』として先に販売し、反応があればアプリ化する。",
+"japanLocalization": "日本向けなら『冬季うつ』の医療断定は避け、『冬の朝がつらい人向け』『自己肯定感が落ちる会社員向け』『通勤前1分の励まし』などに寄せる。価格は月額480〜980円、年額2,980〜4,800円が検討範囲。",
+"englishMarketVersion": "英語圏ではNordic winter、seasonal blues、cozy affirmations、home screen widget、dark winter wellnessの角度で訴求する。北欧・カナダ・英国・北米寒冷地域などへ広告テスト可能。"
+},
+"starterProduct": {
+"minimumVersionIn48h": "『Dark Winter Affirmation Pack』として、Figma/LP/モックアプリ/メール登録/3本のTikTok広告素材まで作る。アプリ実装はExpoで1画面のスワイプUI、カテゴリ3つ、ローカル保存、ペイウォール風画面まで。App Store公開は48時間検証には含めない。",
+"requiredFeatures": [
+"ニッチ別コンセプト",
+"アファメーション表示画面",
+"3〜5問のオンボーディング",
+"カテゴリ選択",
+"ペイウォール風画面",
+"FigmaまたはExpoモック",
+"LP",
+"メール登録またはTestFlight待機リスト",
+"TikTok広告用短尺動画3本",
+"クリック計測"
+],
+"unnecessaryFeatures": [
+"ログイン",
+"複雑なバックエンド",
+"複数OS対応",
+"ネイティブウィジェット",
+"AI音声機能",
+"大量カテゴリ",
+"完全なABテスト基盤",
+"本格的なコミュニティ",
+"高機能分析ダッシュボード"
+],
+"firstPrice": "検証段階は無料待機リスト、または$9の早期アクセス。アプリ化後は年額$29〜$40、月額$5〜$10。",
+"howToGetFirst10Customers": "北欧・冬・季節性メンタル・self care系のTikTok動画を10本投稿し、Redditの関連サブレディットに無料テスター募集を1〜2投稿。さらにXで『Top Grossing appを北欧冬向けに焼き直した』開発ログを投稿し、TestFlightまたはLPに誘導する。",
+"validationMethod": "48時間でLP訪問100、メール登録10、TikTok動画合計1,000 views、クリック率1%以上、無料テスター5人、または$9早期アクセス1件を基準に継続判断。反応がなければアプリ開発に進まない。"
+},
+"contentAngles": {
+"xPostIdeas": [
+"I copied a Top Grossing app category, changed only the niche, and found a $2k/month pattern: affirmations for dark Nordic winters.",
+"The app was not the moat. The onboarding was. One screen change took completion from 74% to 83%.",
+"Most indie hackers build features. This student made money by optimizing the first 60 seconds after install.",
+"A $40/year affirmation app worked because the buyer was not buying quotes. They were buying a daily ritual during dark winters.",
+"The ugly truth: TikTok ads failed first, then onboarding fixes turned the same traffic into paid users."
+],
+"shortVideoIdeas": [
+"Hook: He built a $2k/month app by copying a boring category. Show: affirmation apps everywhere, then Nordic winter angle, then RevenueCat numbers.",
+"Hook: The money was hidden in onboarding. Show before/after: 74% completion to 83%, trial starts, daily revenue.",
+"Hook: Don’t invent apps. Reposition apps. Show Top Grossing app, niche pain, MVP, TikTok ads, AB test.",
+"Hook: This app made money because of one seasonal pain. Show dark winter, cozy UI, widget, paywall, TikTok creative.",
+"Hook: His first TikTok ads lost money. Then he changed the onboarding. Show failed campaign, new tutorial, paid conversions."
+],
+"imageCardIdea": "1枚目に『$2,000/mo app pattern』、2枚目に『Existing market: affirmation apps』、3枚目に『New angle: dark Nordic winters』、4枚目に『Monetization: $10/mo or $40/year』、5枚目に『Growth: TikTok ads + onboarding AB tests』を並べる。"
+},
+"bilionJudgment": {
+"worthAddingToBilion": "追加する価値あり。理由は、既存成功カテゴリの観察、ニッチ変更、MVP、広告、オンボーディングABテスト、RevenueCat収益化まで再現可能な分解単位が多いため。ただし広告クレジット依存とiOS実装難度は明記すべき。",
+"replicationScore": 8,
+"aiLeverageScore": 7,
+"monetizationClarityScore": 9,
+"buildDifficultyScore": 6,
+"whatToCopyNow": "Top Grossingアプリを観察し、既存カテゴリを特定ニッチへ再配置すること。オンボーディングとペイウォールを最重要KPIとして改善すること。最初から機能勝負ではなく、広告フックと初回体験で売ること。",
+"whatNotToCopy": "いきなりiOSネイティブウィジェット、TikTok SDK、Swift、App Store公開まで全部やること。広告クレジット前提の利益計算をそのまま信じること。医療効果を断定すること。"
+},
+"bilionRecordJson": {
+"sourceType": "YouTube",
+"sourceUrl": "https://www.youtube.com/watch?v=Z-0Vf79GD3w",
+"businessName": "Glow",
+"industry": "メンタルウェルネス / iOSサブスクアプリ",
+"revenueSignal": "直近28日売上約$2,800、利益$2,000超。月額$10、年額$40、3日間無料トライアル。66 active subscriptions、46 active trials付近まで成長。",
+"buyer": "暗い冬、季節性の落ち込み、自己肯定感低下に悩むiPhoneユーザー。特に北欧諸国を想定。",
+"pain": "冬の暗さ、日照不足、気分の落ち込み、毎日のメンタル習慣が続かないこと。",
+"desire": "ホーム画面や通知で毎日励まされたい。可愛い、暖かい、続けやすいセルフケア体験が欲しい。",
+"fear": "冬の気分低下が続くこと、既存の汎用アプリに課金しても自分には合わないこと。",
+"offer": "北欧の暗い冬向けに設計された、通知・ウィジェット・カテゴリ・テーマ・音声付きアファメーションアプリ。",
+"pricingModel": "月額$10、年額$40、3日間無料トライアルのアプリ内サブスク。",
+"growthChannel": "TikTok広告、ASO、Reddit、YouTube Shorts、初期無料配布、WeChat/AppRaven経由の自然流入。",
+"distributionNotes": "最初はPro版を完全無料配布してレビューと初期利用を獲得。その後TikTok広告でインストールを買い、オンボーディングとペイウォールをABテストして有料化率を改善。ASOでは国別キーワードを調整。",
+"whyItWorked": "既に売れているアファメーションアプリ市場を選び、北欧の暗い冬という明確な買う理由を足し、アプリ機能よりオンボーディングとペイウォールを改善したため。",
+"toolsUsed": [
+"Expo",
+"React Native",
+"Swift",
+"Figma",
+"ChatGPT",
+"RevenueCat",
+"Supabase",
+"PostHog",
+"TikTok Ads",
+"App Store Connect",
+"Astro",
+"Jitter",
+"Gemini API"
+],
+"evidence": [
+"Monthly for $10 and yearly for 40",
+"Current downloads nearly 900",
+"37 active subscriptions",
+"revenue nearly $2,100",
+"we are at $2,800 of revenue in the last 28 days"
+],
+"risks": [
+"広告クレジット依存で利益が膨らんでいる可能性",
+"長期継続率と解約率が不明",
+"App StoreとTikTok広告への依存",
+"メンタルヘルス表現の法務・審査リスク",
+"iOS開発と広告計測の技術難度"
+],
+"aiNativeRemake": "AIで既存Top GrossingアプリのUI、オンボーディング、ペイウォール、広告フックを分解し、特定ニッチ向けの文言・カテゴリ・ASOキーワード・短尺広告を生成する。Expoで最小アプリまたはFigmaモックを作り、48時間はLPと広告素材で検証する。",
+"starterProduct": "Dark Winter Affirmation App Starter。北欧冬・季節性の落ち込み向けのLP、Figmaモック、アファメーション100個、オンボーディング案、TikTok広告3本、RevenueCatペイウォール文言をセットにした検証商品。",
+"validationPlan48h": "1日目にTop Grossing競合3つを分解し、ニッチLP、Figmaモック、TikTok動画3本を作成。2日目にReddit/X/TikTokへ投稿し、少額広告または無料投稿でLPクリック100、登録10、早期アクセス購入1件を目標に検証。未達ならアプリ実装しない。",
+"xPostIdeas": [
+"He didn’t invent a new app. He copied a Top Grossing category and changed the buyer: affirmations for dark Nordic winters.",
+"The app made money after the onboarding changed. Not after adding more features.",
+"A $40/year quote app worked because the real product was not quotes. It was a daily winter survival ritual.",
+"His TikTok ads failed first. Then one onboarding rebuild turned installs into paid users.",
+"Build lesson: spend 90% of your time on the first 60 seconds after install."
+],
+"shortScriptIdeas": [
+"This student built a $2k profit app by copying affirmation apps and niching down to dark Nordic winters.",
+"The first ads lost money. Then he improved onboarding, added a tutorial, and conversions started.",
+"He used RevenueCat, PostHog, TikTok Ads, and App Store ASO to turn a simple quote app into subscriptions.",
+"The key lesson: the product was simple, but the funnel was engineered.",
+"Don’t build more features. Fix the onboarding where 80% of the revenue happens."
+],
+"imagePrompt": "Dark SaaS-style breakdown card showing a cozy candle mascot app, Nordic winter background, App Store top grossing signal, $10/mo $40/year pricing, TikTok ads funnel, onboarding AB test metrics, and $2,800 revenue in 28 days.",
+"buildPromptSeed": "Build a mobile-first Expo/React Native MVP for a cozy daily affirmation app targeting people experiencing dark winters. Include 5-screen onboarding, name input, mood question, category recommendation, swipeable quote feed, favorite button, notification preference screen, simple paywall mock with $10/month and $40/year, local storage, and analytics event stubs for onboarding_completed, trial_started, quote_liked. Do not add login, backend, native widgets, or real payments in v1.",
+"monetizationPath": "無料テスター獲得とレビュー収集から開始し、3日間無料トライアル付き年額$40プランへ誘導。オンボーディング、ペイウォール、価格、広告クリエイティブをABテストし、ダウンロード単価よりLTVが上回ったら広告を拡大。",
+"replicationScore": 8,
+"aiLeverageScore": 7,
+"monetizationClarity": 9,
+"buildDifficulty": 6
+}
+}

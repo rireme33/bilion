@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "import:gmail-signals": "tsx scripts/import-gmail-signals.ts",
     "signals:import": "tsx scripts/import-gmail-signals.ts",
     "signals:review": "tsx scripts/review-signal-drafts.ts",
     "records:audit": "tsx scripts/audit-success-records.ts",
