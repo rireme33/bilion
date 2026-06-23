@@ -1292,6 +1292,86 @@ function getActionLabel(action: NextAction) {
   return nextActionOptions.find((option) => option.action === action)?.label || "Build it";
 }
 
+function cleanSignalText(value: string) {
+  return value
+    .replace(/[\uE000-\uF8FF\uFFFD]/g, "")
+    .replace(/[\u200B-\u200D\uFEFF]/g, "")
+    .replace(/[\u{1F000}-\u{1FAFF}]/gu, "")
+    .replace(/\s+/g, " ")
+    .replace(/\s*[:|/,-]\s*$/g, "")
+    .replace(/^[\s:|/,.・-]+/g, "")
+    .trim();
+}
+
+function stripNewsletterPrefix(value: string) {
+  return value
+    .replace(/^(what'?s new|daily|weekly|newsletter|issue\s+\d+)\s*[:|-]\s*/i, "")
+    .replace(/\s*,\s*/g, " / ")
+    .trim();
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function getDisplaySignalTitle(signal: BuildSignal) {
+  const cleanedTitle = cleanSignalText(signal.sourceTitle);
+  const isNewsletterSignal =
+    signal.signalSourceLabel === "Gmail Signal" ||
+    /newsletter|gmail/i.test(signal.sourceType);
+  const match = cleanedTitle.match(/^(.+?)\s+(signal|newsletter)\s*:\s*(.+)$/i);
+
+  if (isNewsletterSignal && match) {
+    const publisher = cleanSignalText(match[1]);
+    const subject = stripNewsletterPrefix(cleanSignalText(match[3])).replace(
+      new RegExp(`^${escapeRegExp(publisher)}\\s*[:|-]\\s*`, "i"),
+      "",
+    );
+
+    return {
+      title: `${publisher} Signal`,
+      detail: subject,
+    };
+  }
+
+  return {
+    title: cleanedTitle,
+    detail: "",
+  };
+}
+
+function isNewsletterSignal(signal: BuildSignal) {
+  return (
+    signal.signalSourceLabel === "Gmail Signal" ||
+    /newsletter|gmail/i.test(`${signal.sourceType} ${signal.signalSourceLabel || ""}`)
+  );
+}
+
+function getSignalGroups(signals: BuildSignal[]) {
+  const newsletterSignals = signals.filter(isNewsletterSignal);
+  const nonNewsletterSignals = signals.filter((signal) => !isNewsletterSignal(signal));
+  const recommendedSignals = nonNewsletterSignals.slice(0, 3);
+  const recommendedIds = new Set(recommendedSignals.map((signal) => signal.id));
+  const localSignals = nonNewsletterSignals.filter(
+    (signal) => !recommendedIds.has(signal.id),
+  );
+
+  return [
+    {
+      label: "Recommended",
+      signals: recommendedSignals,
+    },
+    {
+      label: "Local AI Use Cases",
+      signals: localSignals,
+    },
+    {
+      label: "Newsletter Signals",
+      signals: newsletterSignals,
+    },
+  ].filter((group) => group.signals.length > 0);
+}
+
 function getActionSignal(signal: BuildSignal, buyer: string): BuildSignal {
   const selectedBuyer = buyer.trim() || signal.buyer;
 
@@ -1609,7 +1689,7 @@ ${signal.whyNow}`;
 }
 
 function buildFreeMasterPromptCopy(masterPrompt: MasterPrompt) {
-  return `Bilion Opportunity Brief preview
+  return `Bilion Action Brief preview
 
 What already sold:
 ${masterPrompt.provenPattern}
@@ -1646,7 +1726,7 @@ ${masterPrompt.launchCopy.dmMessage}
 48-hour validation plan:
 ${masterPrompt.validationPlan.map((step, index) => `${index + 1}. ${step}`).join("\n")}
 
-Get the full Personal Product Brief \u2014 $19
+Get the full Action Brief \u2014 $19
 Includes: 3 angles, launch copy, pricing, DM scripts, landing headline, and Codex prompt.`;
 }
 
@@ -2196,6 +2276,7 @@ export default function BilionAppClient({
 }: BilionAppClientProps) {
   const searchParams = useSearchParams();
   const marketSignals: BuildSignal[] = [...buildSignals, ...gmailMarketSignals];
+  const signalGroups = getSignalGroups(marketSignals);
   const [dailySignalSeed] = useState(() => Math.floor(Date.now() / 86400000));
   const todayIndex =
     marketSignals.length > 0
@@ -2234,6 +2315,9 @@ export default function BilionAppClient({
       : marketSignals.find((signal) => signal.id === selectedSignalId) ||
         marketSignals[todayIndex] ||
         marketSignals[0];
+  const selectedSignalDisplayTitle = selectedSignal
+    ? getDisplaySignalTitle(selectedSignal)
+    : null;
   const buyerOptions = selectedSignal ? getBuyerOptions(selectedSignal) : [];
 
   useEffect(() => {
@@ -2493,7 +2577,7 @@ export default function BilionAppClient({
               Bilion
             </h1>
             <div className="mt-2 text-xl font-bold text-zinc-200">
-              Opportunity Brief
+              Market signals for AI builders
             </div>
 
             <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-400">
@@ -2501,9 +2585,19 @@ export default function BilionAppClient({
               launch copy, and 48-hour validation plans.
             </p>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-500">
-              Bilion does for business patterns what swipe files did for viral
-              tweets: it turns what already worked into your next testable offer.
+              Pick a signal, choose a buyer, then generate a focused action
+              brief before you ask Codex to code.
             </p>
+            <div className="mt-5 grid max-w-2xl gap-2 text-sm font-bold text-zinc-100 sm:grid-cols-3">
+              {["1. Signal", "2. Buyer", "3. Action"].map((item) => (
+                <div
+                  key={item}
+                  className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3"
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
           </header>
 
           {selectedPatternLabel && (
@@ -2518,76 +2612,126 @@ export default function BilionAppClient({
                 Generate an Action Brief
               </h2>
               <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-400">
-                Free generations today: {freeUsageCount} / {FREE_GENERATION_LIMIT}. Founder and paid users get unlimited generations.
+                Choose a proven signal, pick the buyer, and decide what to do next.
+                Free Action Briefs today: {freeUsageCount} of {FREE_GENERATION_LIMIT} used.
               </p>
 
               <div className="mt-6 grid gap-6">
                 <section>
-                  <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
-                    Step 1 - Choose a proven market signal
+                  <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                      <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+                        Step 1
+                      </div>
+                      <h3 className="mt-1 text-lg font-black text-white">
+                        Pick a proven market signal
+                      </h3>
+                    </div>
+                    <p className="text-xs font-bold text-zinc-500">
+                      Success Records, Pattern Library, and Gmail/newsletter signals
+                    </p>
                   </div>
-                  <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-                    {marketSignals.slice(0, 14).map((signal) => {
-                      const active = selectedSignalId === signal.id;
-                      const signalLabel =
-                        signal.signalSourceLabel || signal.sourceType || "Market Signal";
+                  <div className="mt-4 grid gap-4">
+                    {signalGroups.map((group) => (
+                      <div
+                        key={group.label}
+                        className="rounded-2xl border border-white/10 bg-black/20 p-3"
+                      >
+                        <div className="mb-3 flex items-center justify-between gap-3">
+                          <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-400">
+                            {group.label}
+                          </div>
+                          <div className="text-xs font-bold text-zinc-600">
+                            {group.signals.length}
+                          </div>
+                        </div>
+                        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                          {group.signals.map((signal) => {
+                            const active = selectedSignalId === signal.id;
+                            const signalLabel =
+                              signal.signalSourceLabel ||
+                              signal.sourceType ||
+                              "Market Signal";
+                            const displayTitle = getDisplaySignalTitle(signal);
 
-                      return (
-                        <button
-                          key={signal.id}
-                          type="button"
-                          onClick={() => {
-                            setSourceMode("indie");
-                            setSelectedSignalId(signal.id);
-                            setSelectedBuyer(signal.buyer);
-                          }}
-                          className={[
-                            "min-h-28 rounded-2xl border px-4 py-3 text-left transition",
-                            active
-                              ? "border-emerald-300/50 bg-emerald-300/10 text-white"
-                              : "border-white/10 bg-black/30 text-zinc-400 hover:bg-white/[0.04] hover:text-white",
-                          ].join(" ")}
-                        >
-                          <span className="mb-2 inline-flex rounded-full border border-white/10 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-emerald-200">
-                            {signalLabel}
-                          </span>
-                          <span className="block text-sm font-black leading-5">
-                            {signal.sourceTitle}
-                          </span>
-                          <span className="mt-2 block text-xs leading-5 text-zinc-500">
-                            {signal.buyer}
-                          </span>
-                        </button>
-                      );
-                    })}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const githubSignal = buildGitHubSignalFromInput(githubInput);
-                        setSourceMode("github");
-                        setSelectedSignalId("github-sample");
-                        setSelectedBuyer(githubSignal.buyer);
-                      }}
-                      className={[
-                        "min-h-28 rounded-2xl border px-4 py-3 text-left transition",
-                        selectedSignalId === "github-sample"
-                          ? "border-emerald-300/50 bg-emerald-300/10 text-white"
-                          : "border-white/10 bg-black/30 text-zinc-400 hover:bg-white/[0.04] hover:text-white",
-                      ].join(" ")}
-                    >
-                      <span className="block text-sm font-black leading-5">
-                        GitHub setup friction
-                      </span>
-                      <span className="mt-2 block text-xs leading-5 text-zinc-500">
-                        Use repo activity as the market signal.
-                      </span>
-                    </button>
+                            return (
+                              <button
+                                key={signal.id}
+                                type="button"
+                                onClick={() => {
+                                  setSourceMode("indie");
+                                  setSelectedSignalId(signal.id);
+                                  setSelectedBuyer(signal.buyer);
+                                }}
+                                className={[
+                                  "min-h-28 rounded-2xl border px-4 py-3 text-left transition",
+                                  active
+                                    ? "border-emerald-300/70 bg-emerald-300/[0.12] text-white shadow-lg shadow-emerald-950/30"
+                                    : "border-white/10 bg-black/30 text-zinc-400 hover:bg-white/[0.04] hover:text-white",
+                                ].join(" ")}
+                              >
+                                <span className="mb-2 inline-flex rounded-full border border-white/10 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-emerald-200">
+                                  {signalLabel}
+                                </span>
+                                <span className="block text-sm font-black leading-5">
+                                  {displayTitle.title}
+                                </span>
+                                {displayTitle.detail && (
+                                  <span className="mt-1 line-clamp-2 block text-xs font-bold leading-5 text-zinc-300">
+                                    {displayTitle.detail}
+                                  </span>
+                                )}
+                                <span className="mt-2 block text-xs leading-5 text-zinc-500">
+                                  {signal.buyer}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+
+                    <div className="rounded-2xl border border-white/10 bg-black/20 p-3">
+                      <div className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-zinc-400">
+                        GitHub Signal
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const githubSignal = buildGitHubSignalFromInput(githubInput);
+                          setSourceMode("github");
+                          setSelectedSignalId("github-sample");
+                          setSelectedBuyer(githubSignal.buyer);
+                        }}
+                        className={[
+                          "min-h-28 w-full rounded-2xl border px-4 py-3 text-left transition sm:w-auto sm:min-w-72",
+                          selectedSignalId === "github-sample"
+                            ? "border-emerald-300/70 bg-emerald-300/[0.12] text-white shadow-lg shadow-emerald-950/30"
+                            : "border-white/10 bg-black/30 text-zinc-400 hover:bg-white/[0.04] hover:text-white",
+                        ].join(" ")}
+                      >
+                        <span className="mb-2 inline-flex rounded-full border border-white/10 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-emerald-200">
+                          GitHub Signal
+                        </span>
+                        <span className="block text-sm font-black leading-5">
+                          GitHub setup friction
+                        </span>
+                        <span className="mt-2 block text-xs leading-5 text-zinc-500">
+                          Use repo activity as the market signal.
+                        </span>
+                      </button>
+                    </div>
                   </div>
                 </section>
 
                 <section>
-                  <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
-                    Step 2 - Choose a buyer
+                  <div>
+                    <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+                      Step 2
+                    </div>
+                    <h3 className="mt-1 text-lg font-black text-white">
+                      Choose a buyer
+                    </h3>
                   </div>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {buyerOptions.map((buyer) => {
@@ -2613,8 +2757,13 @@ export default function BilionAppClient({
                 </section>
 
                 <section>
-                  <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
-                    Step 3 - Choose next action
+                  <div>
+                    <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+                      Step 3
+                    </div>
+                    <h3 className="mt-1 text-lg font-black text-white">
+                      Choose your next action
+                    </h3>
                   </div>
                   <div className="mt-3 grid gap-2 sm:grid-cols-3">
                     {nextActionOptions.map((option) => {
@@ -2628,7 +2777,7 @@ export default function BilionAppClient({
                           className={[
                             "rounded-2xl border px-4 py-4 text-left transition",
                             active
-                              ? "border-emerald-300/50 bg-emerald-300/10 text-white"
+                              ? "border-emerald-300/70 bg-emerald-300/[0.12] text-white shadow-lg shadow-emerald-950/30"
                               : "border-white/10 bg-black/30 text-zinc-400 hover:bg-white/[0.04] hover:text-white",
                           ].join(" ")}
                         >
@@ -2661,27 +2810,32 @@ export default function BilionAppClient({
               )}
 
               {selectedSignal && (
-                <div className="mt-5 rounded-2xl border border-white/10 bg-black/30 p-4">
+                <div className="mt-5 rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.04] p-4">
                   <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
-                    Selected choices
+                    You are about to generate:
                   </div>
                   <div className="mt-3 grid gap-3 text-sm leading-6 md:grid-cols-3">
-                    <div>
+                    <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
                       <div className="text-zinc-500">Signal</div>
                       <div className="font-bold text-zinc-100">
-                        {selectedSignal.sourceTitle}
+                        {selectedSignalDisplayTitle?.title || selectedSignal.sourceTitle}
                       </div>
+                      {selectedSignalDisplayTitle?.detail && (
+                        <div className="mt-1 text-xs font-bold leading-5 text-zinc-300">
+                          {selectedSignalDisplayTitle.detail}
+                        </div>
+                      )}
                       <div className="mt-1 text-xs font-bold text-emerald-200">
                         {selectedSignal.signalSourceLabel ||
                           selectedSignal.sourceType ||
                           "Market Signal"}
                       </div>
                     </div>
-                    <div>
+                    <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
                       <div className="text-zinc-500">Buyer</div>
                       <div className="font-bold text-zinc-100">{selectedBuyer}</div>
                     </div>
-                    <div>
+                    <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
                       <div className="text-zinc-500">Action</div>
                       <div className="font-bold text-zinc-100">
                         {getActionLabel(selectedAction)}
@@ -2701,24 +2855,24 @@ export default function BilionAppClient({
               {!canGenerate && (
                 <div className="mt-5 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-5">
                   <h3 className="text-lg font-black text-yellow-100">
-                    You&apos;ve used your 3 free opportunity briefs today.
+                    You&apos;ve used your 3 free Action Briefs today.
                   </h3>
                   <p className="mt-2 text-sm leading-6 text-zinc-400">
-                    Founder Access unlocks unlimited Personal Product Briefs, launch copy, saved signals, and build prompts.
+                    Founder Access unlocks unlimited Action Briefs, launch copy, saved signals, and build prompts.
                   </p>
                   {CHECKOUT_URL ? (
                     <a
                       href={CHECKOUT_URL}
                       className="mt-4 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                     >
-                      Get the full Personal Product Brief — $19
+                      Get unlimited Action Briefs
                     </a>
                   ) : (
                     <a
                       href="/founder"
                       className="mt-4 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                     >
-                      Get the full Personal Product Brief — $19
+                      Get unlimited Action Briefs
                     </a>
                   )}
                 </div>
@@ -2733,7 +2887,7 @@ export default function BilionAppClient({
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                   <div>
                     <div className="inline-flex rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-300">
-                      Opportunity Brief
+                      Action Brief
                     </div>
                     <h2 className="mt-4 text-3xl font-black tracking-tight">
                       Proven pattern converted into a sellable product angle.
@@ -2773,7 +2927,7 @@ export default function BilionAppClient({
                     <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
                       {hasFounderAccess
                         ? "Paid users can generate more action briefs and copy the full build prompt when Build it is selected."
-                        : `Free generations today: ${freeUsageCount} / ${FREE_GENERATION_LIMIT}. Founder Access unlocks unlimited action briefs.`}
+                        : `Free Action Briefs today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used. Founder Access unlocks unlimited action briefs.`}
                     </p>
                   </div>
 
@@ -2804,24 +2958,24 @@ export default function BilionAppClient({
                     Founder/Paid Access
                   </div>
                   <h2 className="mt-4 text-3xl font-black tracking-tight">
-                    You&apos;ve used your 3 free opportunity briefs today.
+                    You&apos;ve used your 3 free Action Briefs today.
                   </h2>
                   <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
-                    Founder Access unlocks unlimited Personal Product Briefs, launch copy, saved signals, and build prompts.
+                    Founder Access unlocks unlimited Action Briefs, launch copy, saved signals, and build prompts.
                   </p>
                   {CHECKOUT_URL ? (
                     <a
                       href={CHECKOUT_URL}
                       className="mt-5 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                     >
-                      Get the full Personal Product Brief — $19
+                      Get unlimited Action Briefs
                     </a>
                   ) : (
                     <a
                       href="/founder"
                       className="mt-5 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                     >
-                      Get the full Personal Product Brief — $19
+                      Get unlimited Action Briefs
                     </a>
                   )}
                 </section>
@@ -2870,8 +3024,8 @@ export default function BilionAppClient({
 
                 <p className="mt-3 text-sm leading-6 text-zinc-500">
                   Use the Mobile Share Kit at the bottom of the brief to post on
-                  X, reply to interest, DM likely buyers, and offer the $19
-                  Personal Product Brief.
+                  X, reply to interest, DM likely buyers, and offer the paid
+                  Action Brief.
                 </p>
 
                 <div className="mt-5 space-y-3">
@@ -3072,7 +3226,7 @@ function MasterPromptCard({
       {!hasFounderAccess && (
         <div className="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.06] p-5">
           <h3 className="text-xl font-black text-white">
-            Get the full Personal Product Brief {"\u2014"} $19
+            Get unlimited Action Briefs
           </h3>
           <p className="mt-2 text-sm leading-6 text-zinc-300">
             Includes: 3 angles, launch copy, pricing, DM scripts, landing
@@ -3082,7 +3236,7 @@ function MasterPromptCard({
             href={CHECKOUT_URL || "/founder"}
             className="mt-4 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-zinc-200"
           >
-            Get the full Personal Product Brief {"\u2014"} $19
+            Get unlimited Action Briefs
           </a>
         </div>
       )}
@@ -3415,10 +3569,10 @@ function SavedSignalsSection({
   savedSignals: SavedSignal[];
 }) {
   return (
-    <section className="mt-8 rounded-3xl border border-white/10 bg-[#101011] p-6">
+    <section className="mt-8 rounded-3xl border border-white/[0.08] bg-white/[0.025] p-5">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="text-2xl font-black tracking-tight">
+          <h2 className="text-xl font-black tracking-tight text-zinc-200">
             Past Prompts
           </h2>
           <p className="mt-2 text-sm leading-6 text-zinc-500">
@@ -3440,7 +3594,7 @@ function SavedSignalsSection({
           {savedSignals.slice(0, 3).map((signal) => (
             <article
               key={signal.id}
-              className="rounded-2xl border border-white/10 bg-black/40 p-4"
+              className="rounded-2xl border border-white/[0.08] bg-black/25 p-4"
             >
               <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div className="min-w-0">
@@ -3506,10 +3660,10 @@ function SavedSignalsSection({
 
 function InlineShowcaseSection() {
   return (
-    <section className="mt-8 rounded-3xl border border-white/10 bg-[#101011] p-6">
+    <section className="mt-8 rounded-3xl border border-white/[0.08] bg-white/[0.025] p-5">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="text-2xl font-black tracking-tight">Showcase</h2>
+          <h2 className="text-xl font-black tracking-tight text-zinc-200">Showcase</h2>
           <p className="mt-2 text-sm leading-6 text-zinc-500">
             Products built from Bilion signals.
           </p>
@@ -3526,7 +3680,7 @@ function InlineShowcaseSection() {
         {showcaseItems.slice(0, 5).map((item) => (
           <article
             key={item.route}
-            className="rounded-2xl border border-white/10 bg-black/40 p-4"
+            className="rounded-2xl border border-white/[0.08] bg-black/25 p-4"
           >
             <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
               Product built
