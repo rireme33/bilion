@@ -1730,7 +1730,7 @@ ${signal.whyNow}`;
 }
 
 function buildFreeMasterPromptCopy(masterPrompt: MasterPrompt) {
-  return `Bilion Aha Brief preview
+  return `Bilion Opportunity Reveal preview
 
 What already sold:
 ${masterPrompt.provenPattern}
@@ -1767,7 +1767,7 @@ ${masterPrompt.launchCopy.dmMessage}
 48-hour validation plan:
 ${masterPrompt.validationPlan.map((step, index) => `${index + 1}. ${step}`).join("\n")}
 
-Get the full Aha Brief \u2014 $19
+Get the full Opportunity Reveal \u2014 $19
 Includes: 3 angles, launch copy, pricing, DM scripts, landing headline, and Codex prompt.`;
 }
 
@@ -1948,36 +1948,71 @@ This is not a guaranteed business outcome. It is a sell-first brief designed to 
 }
 
 function buildShortBriefCopy(masterPrompt: MasterPrompt) {
-  return `Aha Moment:
-${buildAhaMoment(masterPrompt)}
+  return `Holy Shit:
+${buildHolyShit(masterPrompt)}
 
 Buyer:
 ${masterPrompt.buyer}
 
-Market Shift:
-${buildMarketShift(masterPrompt)}
+What Everyone Misses:
+${buildWhatEveryoneMisses(masterPrompt)}
 
-Opportunity:
-${buildOpportunity(masterPrompt)}
+Money Angle:
+${buildMoneyAngle(masterPrompt)}
 
-Build:
-${masterPrompt.whatToBuild}`;
+First Wedge:
+${buildFirstWedge(masterPrompt)}`;
 }
 
-function buildAhaMoment(masterPrompt: MasterPrompt) {
+function buildHolyShit(masterPrompt: MasterPrompt) {
   return `The interesting part is not the app idea. It is that ${masterPrompt.buyer} already show a repeated paid pain, and AI turns that pain into a tiny productized wedge instead of a full startup bet.`;
 }
 
-function buildLeverage(masterPrompt: MasterPrompt) {
-  return `A small builder can get leverage because the work is narrow, repeatable, and outcome-shaped: ${masterPrompt.marketProof.whyBuyersPay} The first proof can be a brief, DM, demo, or manual workflow before software exists.`;
+function buildWhatEveryoneMisses(masterPrompt: MasterPrompt) {
+  return `Most people will summarize this as a problem/solution idea. The missed truth is the buying behavior: ${masterPrompt.marketProof.whyBuyersPay} That is the signal to study before deciding what to build.`;
 }
 
-function buildMarketShift(masterPrompt: MasterPrompt) {
-  return `${masterPrompt.whyItSold} ${masterPrompt.marketProof.note}`;
+function buildMoneyAngle(masterPrompt: MasterPrompt) {
+  return `This can become money because the buyer, pain, and price are already visible. Revenue signal: ${masterPrompt.marketProof.revenueOrPricingSignal}. Distribution signal: ${masterPrompt.marketProof.distributionChannel}.`;
 }
 
-function buildOpportunity(masterPrompt: MasterPrompt) {
+function buildFirstWedge(masterPrompt: MasterPrompt) {
   return `Enter through the smallest useful slice: ${masterPrompt.firstPaidOffer} Do not start with a platform. Start with the buyer's most urgent before/after moment.`;
+}
+
+function getOpportunityScore(masterPrompt: MasterPrompt) {
+  const evidenceBonus =
+    masterPrompt.marketProof.evidenceStrength === "Strong"
+      ? 2
+      : masterPrompt.marketProof.evidenceStrength === "Medium"
+        ? 1
+        : 0;
+  const hasPrice = /\d|\$|¥|€|£|mrr|arr|paid|price/i.test(
+    `${masterPrompt.price} ${masterPrompt.marketProof.revenueOrPricingSignal}`,
+  );
+  const hasSharpBuyer = masterPrompt.buyer.length >= 16;
+  const hasDistribution = masterPrompt.distributionChannel.length >= 12;
+  const hasValidationPlan = masterPrompt.validationPlan.length >= 3;
+
+  const scores = {
+    Money: Math.min(10, 7 + evidenceBonus + (hasPrice ? 1 : 0)),
+    Leverage: Math.min(10, 7 + evidenceBonus),
+    "Buyer Clarity": Math.min(10, 7 + (hasSharpBuyer ? 2 : 0)),
+    Virality: Math.min(10, 6 + (hasDistribution ? 2 : 0) + evidenceBonus),
+    "48h Test": Math.min(10, 7 + (hasValidationPlan ? 2 : 0)),
+  };
+  const total = Object.values(scores).reduce((sum, score) => sum + score, 0);
+
+  return { scores, total };
+}
+
+function buildOpportunityScore(masterPrompt: MasterPrompt) {
+  const { scores, total } = getOpportunityScore(masterPrompt);
+
+  return [
+    ...Object.entries(scores).map(([label, score]) => `${label}: ${score}/10`),
+    `Total: ${total}/50`,
+  ].join("\n");
 }
 
 function buildAttackPlan(masterPrompt: MasterPrompt) {
@@ -1991,7 +2026,7 @@ function buildBuildAngle(masterPrompt: MasterPrompt, includeCodexPrompt: boolean
     ? `\n\nCodex prompt is available below, but only after the market angle is clear.`
     : "\n\nFounder/Paid access unlocks the full Codex-ready build prompt.";
 
-  return `Only build after the Aha Moment gets a reply. Build this narrow first version: ${masterPrompt.firstVersion}${codexNote}`;
+  return `Only build after the opportunity gets a reply. Build this narrow first version: ${masterPrompt.firstVersion}${codexNote}`;
 }
 
 function buildActionBriefFields(
@@ -2000,10 +2035,11 @@ function buildActionBriefFields(
   includeCodexPrompt: boolean,
 ) {
   return [
-    ["💥 Aha Moment", buildAhaMoment(masterPrompt)],
-    ["💰 Leverage", buildLeverage(masterPrompt)],
-    ["🌊 Market Shift", buildMarketShift(masterPrompt)],
-    ["🎯 Opportunity", buildOpportunity(masterPrompt)],
+    ["💥 Holy Shit", buildHolyShit(masterPrompt)],
+    ["🤯 What Everyone Misses", buildWhatEveryoneMisses(masterPrompt)],
+    ["💰 Money Angle", buildMoneyAngle(masterPrompt)],
+    ["🔥 Opportunity Score", buildOpportunityScore(masterPrompt)],
+    ["🚀 First Wedge", buildFirstWedge(masterPrompt)],
     ["⚔️ 48h Attack", buildAttackPlan(masterPrompt)],
     ["🧱 Build", buildBuildAngle(masterPrompt, includeCodexPrompt)],
   ] satisfies [string, string][];
@@ -2020,7 +2056,7 @@ function buildActionBriefCopy(
     includeCodexPrompt,
   );
 
-  return `${getActionLabel(action)} Aha Brief
+  return `${getActionLabel(action)} Opportunity Reveal
 
 ${fields.map(([label, value]) => `${label}:\n${value}`).join("\n\n")}`;
 }
@@ -2029,23 +2065,23 @@ function buildCarouselSlides(masterPrompt: MasterPrompt) {
   return [
     {
       title: "Slide 1: Contrarian hook",
-      body: `Most AI builders do not need more ideas.\nThey need one market signal that changes what they notice.`,
+      body: `Most AI builders are looking for ideas.\nThe money is usually hiding inside signals everyone else scrolls past.`,
     },
     {
       title: "Slide 2: What most people see",
-      body: `Most people see this as a product idea:\n${masterPrompt.whatToBuild}`,
+      body: `Most people see this as another product idea:\n${masterPrompt.whatToBuild}`,
     },
     {
       title: "Slide 3: Why they are wrong",
-      body: `The product is not the point.\nThe point is the leverage hidden inside this buyer pain:\n${masterPrompt.pain}`,
+      body: `The product is not the goldmine.\nThe buying behavior is:\n${buildWhatEveryoneMisses(masterPrompt)}`,
     },
     {
-      title: "Slide 4: Aha Moment",
-      body: buildAhaMoment(masterPrompt),
+      title: "Slide 4: Holy Shit",
+      body: buildHolyShit(masterPrompt),
     },
     {
       title: "Slide 5: Opportunity / Bilion Signal",
-      body: `${buildOpportunity(masterPrompt)}\n\nBilion Signal:\n${masterPrompt.provenPattern}`,
+      body: `${buildFirstWedge(masterPrompt)}\n\nOpportunity Score:\n${buildOpportunityScore(masterPrompt)}\n\nBilion Signal:\n${masterPrompt.provenPattern}`,
     },
   ];
 }
@@ -2846,7 +2882,7 @@ export default function BilionAppClient({
             <div className="mt-5 grid max-w-3xl gap-2 text-sm font-bold text-zinc-100 sm:grid-cols-3">
               {[
                 "1. Pick a signal",
-                "2. Generate Aha Brief",
+                "2. Reveal opportunity",
                 "3. Copy distribution assets",
               ].map((item) => (
                 <div
@@ -2870,12 +2906,12 @@ export default function BilionAppClient({
               <h2 className="text-2xl font-black tracking-tight">
                 {activeWorkflowTab === "library"
                   ? "Signal Library"
-                  : "Aha Brief Studio"}
+                  : "Opportunity Reveal Studio"}
               </h2>
               <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-400">
                 {activeWorkflowTab === "library"
                   ? "Pick a proven business signal, then choose Build, Sell, or Post."
-                  : `Free Aha Briefs today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used.`}
+                  : `Free Opportunity Reveals today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used.`}
               </p>
 
               <div className="mt-6 grid gap-6">
@@ -3140,29 +3176,29 @@ export default function BilionAppClient({
                 disabled={loading || !canGenerate}
                 className="mt-6 w-full rounded-2xl bg-white px-5 py-4 text-sm font-black text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
               >
-                {loading ? "Generating..." : "Generate Aha Brief"}
+                {loading ? "Revealing..." : "💰 Reveal Hidden Opportunity"}
               </button>
               {!canGenerate && (
                 <div className="mt-5 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-5">
                   <h3 className="text-lg font-black text-yellow-100">
-                    You&apos;ve used your 3 free Aha Briefs today.
+                    You&apos;ve used your 3 free Opportunity Reveals today.
                   </h3>
                   <p className="mt-2 text-sm leading-6 text-zinc-400">
-                    Founder Access unlocks unlimited Aha Briefs, launch copy, saved signals, and build prompts.
+                    Founder Access unlocks unlimited Opportunity Reveals, launch copy, saved signals, and build prompts.
                   </p>
                   {CHECKOUT_URL ? (
                     <a
                       href={CHECKOUT_URL}
                       className="mt-4 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                     >
-                      Get unlimited Aha Briefs
+                      Get unlimited Opportunity Reveals
                     </a>
                   ) : (
                     <a
                       href="/founder"
                       className="mt-4 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                     >
-                      Get unlimited Aha Briefs
+                      Get unlimited Opportunity Reveals
                     </a>
                   )}
                 </div>
@@ -3180,10 +3216,10 @@ export default function BilionAppClient({
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                   <div>
                     <div className="inline-flex rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-300">
-                      Aha Brief
+                      Opportunity Reveal
                     </div>
                     <h2 className="mt-4 text-3xl font-black tracking-tight">
-                      Aha Moment first. Build second.
+                      Opportunity Revealed
                     </h2>
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-xs font-bold uppercase tracking-wide text-zinc-400">
@@ -3193,35 +3229,43 @@ export default function BilionAppClient({
 
                 <div className="mt-6 grid gap-4 md:grid-cols-2">
                   <InfoBlock
-                    label="💥 Aha Moment"
+                    label="💥 Holy Shit"
                     value={
                       masterPrompt
-                        ? buildAhaMoment(masterPrompt)
+                        ? buildHolyShit(masterPrompt)
                         : result.free.latest_signal
                     }
                   />
                   <InfoBlock
-                    label="💰 Leverage"
+                    label="🤯 What Everyone Misses"
                     value={
                       masterPrompt
-                        ? buildLeverage(masterPrompt)
+                        ? buildWhatEveryoneMisses(masterPrompt)
                         : result.free.why_now
                     }
                   />
                   <InfoBlock
-                    label="🌊 Market Shift"
+                    label="💰 Money Angle"
                     value={
                       masterPrompt
-                        ? buildMarketShift(masterPrompt)
+                        ? buildMoneyAngle(masterPrompt)
                         : result.free.why_now
                     }
                   />
                   <InfoBlock
-                    label="🎯 Opportunity"
+                    label="🔥 Opportunity Score"
                     value={
                       masterPrompt
-                        ? buildOpportunity(masterPrompt)
+                        ? buildOpportunityScore(masterPrompt)
                         : result.free.pain
+                    }
+                  />
+                  <InfoBlock
+                    label="🚀 First Wedge"
+                    value={
+                      masterPrompt
+                        ? buildFirstWedge(masterPrompt)
+                        : result.free.what_you_can_build
                     }
                   />
                   <InfoBlock
@@ -3241,15 +3285,15 @@ export default function BilionAppClient({
                 <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                   <div>
                     <div className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-wide text-black">
-                      Aha Brief
+                      Opportunity Reveal
                     </div>
                     <h2 className="mt-4 text-3xl font-black tracking-tight">
                       Generate from your selected signal, buyer, and action.
                     </h2>
                     <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
                       {hasFounderAccess
-                        ? "Paid users can generate more Aha Briefs and copy the full build prompt when Build it is selected."
-                        : `Free Aha Briefs today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used. Founder Access unlocks unlimited Aha Briefs.`}
+                        ? "Paid users can reveal more hidden opportunities and copy the full build prompt when Build it is selected."
+                        : `Free Opportunity Reveals today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used. Founder Access unlocks unlimited Opportunity Reveals.`}
                     </p>
                   </div>
 
@@ -3260,7 +3304,7 @@ export default function BilionAppClient({
                       disabled={!canGenerate}
                       className="rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      Generate Aha Brief
+                      💰 Reveal Hidden Opportunity
                     </button>
                     <button
                       type="button"
@@ -3294,24 +3338,24 @@ export default function BilionAppClient({
                     Founder/Paid Access
                   </div>
                   <h2 className="mt-4 text-3xl font-black tracking-tight">
-                    You&apos;ve used your 3 free Aha Briefs today.
+                    You&apos;ve used your 3 free Opportunity Reveals today.
                   </h2>
                   <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
-                    Founder Access unlocks unlimited Aha Briefs, launch copy, saved signals, and build prompts.
+                    Founder Access unlocks unlimited Opportunity Reveals, launch copy, saved signals, and build prompts.
                   </p>
                   {CHECKOUT_URL ? (
                     <a
                       href={CHECKOUT_URL}
                       className="mt-5 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                     >
-                      Get unlimited Aha Briefs
+                      Get unlimited Opportunity Reveals
                     </a>
                   ) : (
                     <a
                       href="/founder"
                       className="mt-5 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                     >
-                      Get unlimited Aha Briefs
+                      Get unlimited Opportunity Reveals
                     </a>
                   )}
                 </section>
@@ -3367,7 +3411,7 @@ export default function BilionAppClient({
                 <p className="mt-3 text-sm leading-6 text-zinc-500">
                   Use the Mobile Share Kit at the bottom of the brief to post on
                   X, reply to interest, DM likely buyers, and offer the paid
-                  Aha Brief.
+                  Opportunity Reveal.
                 </p>
 
                 <div className="mt-5 space-y-3">
@@ -3423,7 +3467,7 @@ function DistributionQueueSection({
 
       {queue.length === 0 ? (
         <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-5 text-sm leading-6 text-zinc-500">
-          Generate an Aha Brief, then save distribution assets here.
+          Reveal an opportunity, then save distribution assets here.
         </div>
       ) : (
         <div className="mt-6 grid gap-3 lg:grid-cols-2">
@@ -3510,7 +3554,7 @@ function SecondaryToolsSection({
             Validation, winners, saved prompts, and examples.
           </h2>
           <p className="mt-2 text-sm leading-6 text-zinc-600">
-            The main path is Signal Library → Aha Brief Studio → Carousel and
+            The main path is Signal Library → Opportunity Reveal Studio → Carousel and
             Distribution Assets. Open this only when tracking or reviewing.
           </p>
         </summary>
@@ -3938,7 +3982,7 @@ function MasterPromptCard({
       {!hasFounderAccess && (
         <div className="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.06] p-5">
           <h3 className="text-xl font-black text-white">
-            Get unlimited Aha Briefs
+            Get unlimited Opportunity Reveals
           </h3>
           <p className="mt-2 text-sm leading-6 text-zinc-300">
             Includes: 3 angles, launch copy, pricing, DM scripts, landing
@@ -3948,7 +3992,7 @@ function MasterPromptCard({
             href={CHECKOUT_URL || "/founder"}
             className="mt-4 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-zinc-200"
           >
-            Get unlimited Aha Briefs
+            Get unlimited Opportunity Reveals
           </a>
         </div>
       )}
@@ -4025,10 +4069,10 @@ function CarouselGenerator({
             Carousel Generator
           </div>
           <h3 className="mt-2 text-2xl font-black text-white">
-            5-slide Aha Moment carousel
+            5-slide Opportunity Reveal carousel
           </h3>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-500">
-            Turn this Aha Brief into TikTok, Instagram, or X carousel copy.
+            Turn this hidden opportunity into TikTok, Instagram, or X carousel copy.
           </p>
         </div>
         <button
@@ -4114,7 +4158,7 @@ function ActionBriefSection({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-            Aha Brief
+            Opportunity Reveal
           </div>
           <h3 className="mt-2 text-2xl font-black text-white">
             {getActionLabel(action)}
@@ -4125,7 +4169,7 @@ function ActionBriefSection({
           onClick={copyActionBrief}
           className="rounded-2xl bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-zinc-200"
         >
-          {copied ? "Copied Aha Brief" : "Copy Aha Brief"}
+          {copied ? "Copied Opportunity Reveal" : "Copy Opportunity Reveal"}
         </button>
       </div>
 
@@ -4212,7 +4256,7 @@ function ExportAssets({
             Distribution Assets
           </div>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-300">
-            Copy the current Aha Brief into carousel, post, DM, lead magnet,
+            Copy the current Opportunity Reveal into carousel, post, DM, lead magnet,
             and product listing assets.
           </p>
         </div>
