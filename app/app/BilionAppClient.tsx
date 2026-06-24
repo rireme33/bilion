@@ -130,38 +130,6 @@ const nextActionOptions: Array<{
   },
 ];
 
-const workflowTabs: Array<{
-  id: WorkflowTab;
-  label: string;
-  helper: string;
-}> = [
-  {
-    id: "library",
-    label: "Signal Library",
-    helper: "Find signal",
-  },
-  {
-    id: "studio",
-    label: "Action Brief Studio",
-    helper: "Generate brief",
-  },
-  {
-    id: "queue",
-    label: "Distribution Queue",
-    helper: "Distribute",
-  },
-  {
-    id: "validation",
-    label: "Validation Tracker",
-    helper: "Track replies",
-  },
-  {
-    id: "winners",
-    label: "Winners",
-    helper: "Save winners",
-  },
-];
-
 type SavedSignal = {
   id: string;
   createdAt: string;
@@ -1762,7 +1730,7 @@ ${signal.whyNow}`;
 }
 
 function buildFreeMasterPromptCopy(masterPrompt: MasterPrompt) {
-  return `Bilion Action Brief preview
+  return `Bilion Aha Brief preview
 
 What already sold:
 ${masterPrompt.provenPattern}
@@ -1799,7 +1767,7 @@ ${masterPrompt.launchCopy.dmMessage}
 48-hour validation plan:
 ${masterPrompt.validationPlan.map((step, index) => `${index + 1}. ${step}`).join("\n")}
 
-Get the full Action Brief \u2014 $19
+Get the full Aha Brief \u2014 $19
 Includes: 3 angles, launch copy, pricing, DM scripts, landing headline, and Codex prompt.`;
 }
 
@@ -1980,97 +1948,64 @@ This is not a guaranteed business outcome. It is a sell-first brief designed to 
 }
 
 function buildShortBriefCopy(masterPrompt: MasterPrompt) {
-  return `Product name:
-${masterPrompt.promptTitle}
+  return `Aha Moment:
+${buildAhaMoment(masterPrompt)}
 
 Buyer:
 ${masterPrompt.buyer}
 
-Pain:
-${masterPrompt.pain}
+Market Shift:
+${buildMarketShift(masterPrompt)}
 
-Price:
-${masterPrompt.price}
+Opportunity:
+${buildOpportunity(masterPrompt)}
 
-What to build:
+Build:
 ${masterPrompt.whatToBuild}`;
 }
 
-function buildProspectList(masterPrompt: MasterPrompt) {
-  const buyer = masterPrompt.buyer || "target buyers";
-
-  return [
-    `5 ${buyer} posting about this workflow on X or LinkedIn`,
-    `3 ${buyer} asking repeated questions in niche communities`,
-    `3 operators using spreadsheets, docs, or manual handoffs for this pain`,
-    `2 consultants already serving ${buyer}`,
-    `2 small teams with public job posts or help docs around this workflow`,
-  ].join("\n");
+function buildAhaMoment(masterPrompt: MasterPrompt) {
+  return `The interesting part is not the app idea. It is that ${masterPrompt.buyer} already show a repeated paid pain, and AI turns that pain into a tiny productized wedge instead of a full startup bet.`;
 }
 
-function buildObjectionList(masterPrompt: MasterPrompt) {
-  return [
-    `"We already do this manually." -> Show the before/after time saved.`,
-    `"This feels too narrow." -> Position it as a paid first sprint, not a platform.`,
-    `"I need integrations." -> Offer a manual or CSV-based first version.`,
-    `"The price is not clear." -> Anchor it to ${masterPrompt.price} and one measurable outcome.`,
-  ].join("\n");
+function buildLeverage(masterPrompt: MasterPrompt) {
+  return `A small builder can get leverage because the work is narrow, repeatable, and outcome-shaped: ${masterPrompt.marketProof.whyBuyersPay} The first proof can be a brief, DM, demo, or manual workflow before software exists.`;
+}
+
+function buildMarketShift(masterPrompt: MasterPrompt) {
+  return `${masterPrompt.whyItSold} ${masterPrompt.marketProof.note}`;
+}
+
+function buildOpportunity(masterPrompt: MasterPrompt) {
+  return `Enter through the smallest useful slice: ${masterPrompt.firstPaidOffer} Do not start with a platform. Start with the buyer's most urgent before/after moment.`;
+}
+
+function buildAttackPlan(masterPrompt: MasterPrompt) {
+  return masterPrompt.validationPlan
+    .map((step, index) => `${index + 1}. ${step}`)
+    .join("\n");
+}
+
+function buildBuildAngle(masterPrompt: MasterPrompt, includeCodexPrompt: boolean) {
+  const codexNote = includeCodexPrompt
+    ? `\n\nCodex prompt is available below, but only after the market angle is clear.`
+    : "\n\nFounder/Paid access unlocks the full Codex-ready build prompt.";
+
+  return `Only build after the Aha Moment gets a reply. Build this narrow first version: ${masterPrompt.firstVersion}${codexNote}`;
 }
 
 function buildActionBriefFields(
   masterPrompt: MasterPrompt,
-  action: NextAction,
+  _action: NextAction,
   includeCodexPrompt: boolean,
 ) {
-  if (action === "sell") {
-    return [
-      ["Offer", masterPrompt.firstPaidOffer],
-      ["Price", masterPrompt.price],
-      ["First 15 prospects", buildProspectList(masterPrompt)],
-      ["Outreach message", masterPrompt.launchCopy.dmMessage],
-      ["Objections to expect", buildObjectionList(masterPrompt)],
-      [
-        "48h validation plan",
-        masterPrompt.validationPlan
-          .map((step, index) => `${index + 1}. ${step}`)
-          .join("\n"),
-      ],
-    ] satisfies [string, string][];
-  }
-
-  if (action === "post") {
-    return [
-      [
-        "Hook",
-        `${masterPrompt.buyer} do not need another AI idea. They need a faster way to solve this paid pain.`,
-      ],
-      ["Signal", masterPrompt.provenPattern],
-      ["Why it matters", masterPrompt.whyItSold],
-      ["What to build", masterPrompt.whatToBuild],
-      ["CTA", "Want the 48h validation plan for this pattern?"],
-    ] satisfies [string, string][];
-  }
-
   return [
-    ["Product name", masterPrompt.promptTitle],
-    ["Buyer", masterPrompt.buyer],
-    ["Pain", masterPrompt.pain],
-    ["First version scope", masterPrompt.firstVersion],
-    [
-      "Core workflow",
-      [
-        "1. User opens the product and sees the buyer, pain, and offer.",
-        "2. User enters or selects a realistic workflow input.",
-        "3. App turns the input into a structured useful output.",
-        "4. User copies the result or uses it as a sales demo.",
-      ].join("\n"),
-    ],
-    [
-      "Codex-ready build prompt",
-      includeCodexPrompt
-        ? masterPrompt.fullCodeXMasterPrompt
-        : "Founder/Paid access unlocks the full Codex-ready build prompt.",
-    ],
+    ["💥 Aha Moment", buildAhaMoment(masterPrompt)],
+    ["💰 Leverage", buildLeverage(masterPrompt)],
+    ["🌊 Market Shift", buildMarketShift(masterPrompt)],
+    ["🎯 Opportunity", buildOpportunity(masterPrompt)],
+    ["⚔️ 48h Attack", buildAttackPlan(masterPrompt)],
+    ["🧱 Build", buildBuildAngle(masterPrompt, includeCodexPrompt)],
   ] satisfies [string, string][];
 }
 
@@ -2085,9 +2020,41 @@ function buildActionBriefCopy(
     includeCodexPrompt,
   );
 
-  return `${getActionLabel(action)} Action Brief
+  return `${getActionLabel(action)} Aha Brief
 
 ${fields.map(([label, value]) => `${label}:\n${value}`).join("\n\n")}`;
+}
+
+function buildCarouselSlides(masterPrompt: MasterPrompt) {
+  return [
+    {
+      title: "Slide 1: Contrarian hook",
+      body: `Most AI builders do not need more ideas.\nThey need one market signal that changes what they notice.`,
+    },
+    {
+      title: "Slide 2: What most people see",
+      body: `Most people see this as a product idea:\n${masterPrompt.whatToBuild}`,
+    },
+    {
+      title: "Slide 3: Why they are wrong",
+      body: `The product is not the point.\nThe point is the leverage hidden inside this buyer pain:\n${masterPrompt.pain}`,
+    },
+    {
+      title: "Slide 4: Aha Moment",
+      body: buildAhaMoment(masterPrompt),
+    },
+    {
+      title: "Slide 5: Opportunity / Bilion Signal",
+      body: `${buildOpportunity(masterPrompt)}\n\nBilion Signal:\n${masterPrompt.provenPattern}`,
+    },
+  ];
+}
+
+function buildCarouselCopy(masterPrompt: MasterPrompt, hasFounderAccess: boolean) {
+  return buildCarouselSlides(masterPrompt)
+    .slice(0, hasFounderAccess ? 5 : 2)
+    .map((slide) => `${slide.title}\n${slide.body}`)
+    .join("\n\n---\n\n");
 }
 
 async function writeClipboardText(text: string) {
@@ -2722,7 +2689,6 @@ export default function BilionAppClient({
     setWorkflowItemSeed(nextSeed);
     setDistributionQueue(nextQueue);
     writeDistributionQueue(nextQueue);
-    setActiveWorkflowTab("queue");
   }
 
   function updateDistributionStatus(assetId: string, status: DistributionStatus) {
@@ -2762,7 +2728,6 @@ export default function BilionAppClient({
     setWorkflowItemSeed(nextSeed);
     setValidationRecords(nextRecords);
     writeValidationRecords(nextRecords);
-    setActiveWorkflowTab("validation");
   }
 
   function updateValidationRecord(
@@ -2784,7 +2749,6 @@ export default function BilionAppClient({
       verdict: "Build",
       winner: true,
     });
-    setActiveWorkflowTab("winners");
   }
 
   async function copyMasterPrompt() {
@@ -2872,19 +2836,19 @@ export default function BilionAppClient({
               Bilion
             </h1>
             <div className="mt-2 text-xl font-bold text-zinc-200">
-              Market signals for AI builders
+              Find leverage before everyone else.
             </div>
 
             <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-400">
-              Turn proven business patterns into product angles, first offers,
-              launch copy, and 48-hour validation plans.
+              Turn proven business patterns into Aha Moments, carousel posts,
+              first offers, and 48-hour validation plans.
             </p>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-500">
-              Pick a signal, choose a buyer, then generate a focused action
-              brief before you ask Codex to code.
-            </p>
-            <div className="mt-5 grid max-w-2xl gap-2 text-sm font-bold text-zinc-100 sm:grid-cols-3">
-              {["1. Signal", "2. Buyer", "3. Action"].map((item) => (
+            <div className="mt-5 grid max-w-3xl gap-2 text-sm font-bold text-zinc-100 sm:grid-cols-3">
+              {[
+                "1. Pick a signal",
+                "2. Generate Aha Brief",
+                "3. Copy distribution assets",
+              ].map((item) => (
                 <div
                   key={item}
                   className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3"
@@ -2901,55 +2865,17 @@ export default function BilionAppClient({
             </div>
           )}
 
-          <section className="mb-5 rounded-3xl border border-white/10 bg-[#101011] p-3">
-            <div className="grid gap-2 md:grid-cols-5">
-              {workflowTabs.map((tab) => {
-                const active = activeWorkflowTab === tab.id;
-
-                return (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={() => setActiveWorkflowTab(tab.id)}
-                    className={[
-                      "rounded-2xl border px-4 py-3 text-left transition",
-                      active
-                        ? "border-emerald-300/60 bg-emerald-300/[0.12] text-white"
-                        : "border-white/10 bg-black/25 text-zinc-500 hover:bg-white/[0.04] hover:text-zinc-200",
-                    ].join(" ")}
-                  >
-                    <span className="block text-sm font-black">{tab.label}</span>
-                    <span className="mt-1 block text-xs font-bold">{tab.helper}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </section>
-
-          <section className="mb-5 rounded-3xl border border-white/10 bg-[#101011] p-5">
-            <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-              Workflow
-            </div>
-            <h2 className="mt-2 text-2xl font-black tracking-tight">
-              Find a signal. Turn it into an action. Track what gets replies.
-            </h2>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-zinc-500">
-              Bilion does for business patterns what swipe files did for viral tweets:
-              find signal, generate brief, distribute, track replies, save winners.
-            </p>
-          </section>
-
           {(activeWorkflowTab === "library" || (activeWorkflowTab === "studio" && !result)) && (
             <div className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl md:p-8">
               <h2 className="text-2xl font-black tracking-tight">
                 {activeWorkflowTab === "library"
                   ? "Signal Library"
-                  : "Action Brief Studio"}
+                  : "Aha Brief Studio"}
               </h2>
               <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-400">
                 {activeWorkflowTab === "library"
                   ? "Pick a proven business signal, then choose Build, Sell, or Post."
-                  : `Free Action Briefs today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used.`}
+                  : `Free Aha Briefs today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used.`}
               </p>
 
               <div className="mt-6 grid gap-6">
@@ -3214,29 +3140,29 @@ export default function BilionAppClient({
                 disabled={loading || !canGenerate}
                 className="mt-6 w-full rounded-2xl bg-white px-5 py-4 text-sm font-black text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
               >
-                {loading ? "Generating..." : "Generate Action Brief"}
+                {loading ? "Generating..." : "Generate Aha Brief"}
               </button>
               {!canGenerate && (
                 <div className="mt-5 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-5">
                   <h3 className="text-lg font-black text-yellow-100">
-                    You&apos;ve used your 3 free Action Briefs today.
+                    You&apos;ve used your 3 free Aha Briefs today.
                   </h3>
                   <p className="mt-2 text-sm leading-6 text-zinc-400">
-                    Founder Access unlocks unlimited Action Briefs, launch copy, saved signals, and build prompts.
+                    Founder Access unlocks unlimited Aha Briefs, launch copy, saved signals, and build prompts.
                   </p>
                   {CHECKOUT_URL ? (
                     <a
                       href={CHECKOUT_URL}
                       className="mt-4 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                     >
-                      Get unlimited Action Briefs
+                      Get unlimited Aha Briefs
                     </a>
                   ) : (
                     <a
                       href="/founder"
                       className="mt-4 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                     >
-                      Get unlimited Action Briefs
+                      Get unlimited Aha Briefs
                     </a>
                   )}
                 </div>
@@ -3248,41 +3174,16 @@ export default function BilionAppClient({
             </div>
           )}
 
-          {activeWorkflowTab === "queue" && (
-            <DistributionQueueSection
-              canSaveAssets={Boolean(result || masterPrompt)}
-              queue={distributionQueue}
-              onSaveAssets={saveDistributionAssets}
-              onStatusChange={updateDistributionStatus}
-            />
-          )}
-
-          {activeWorkflowTab === "validation" && (
-            <ValidationTrackerSection
-              records={validationRecords}
-              onAddRecord={addValidationRecord}
-              onMarkWinner={markWinner}
-              onUpdateRecord={updateValidationRecord}
-            />
-          )}
-
-          {activeWorkflowTab === "winners" && (
-            <WinnersSection
-              records={validationRecords}
-              onMarkWinner={markWinner}
-            />
-          )}
-
           {result && activeWorkflowTab === "studio" && (
             <div className="mt-8 grid gap-6">
               <div className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                   <div>
                     <div className="inline-flex rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-300">
-                      Action Brief
+                      Aha Brief
                     </div>
                     <h2 className="mt-4 text-3xl font-black tracking-tight">
-                      Proven pattern converted into a sellable product angle.
+                      Aha Moment first. Build second.
                     </h2>
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-xs font-bold uppercase tracking-wide text-zinc-400">
@@ -3292,17 +3193,46 @@ export default function BilionAppClient({
 
                 <div className="mt-6 grid gap-4 md:grid-cols-2">
                   <InfoBlock
-                    label="Proven Pattern"
-                    value={result.free.latest_signal}
+                    label="💥 Aha Moment"
+                    value={
+                      masterPrompt
+                        ? buildAhaMoment(masterPrompt)
+                        : result.free.latest_signal
+                    }
                   />
                   <InfoBlock
-                    label="Your Product Angle"
-                    value={result.free.what_you_can_build}
+                    label="💰 Leverage"
+                    value={
+                      masterPrompt
+                        ? buildLeverage(masterPrompt)
+                        : result.free.why_now
+                    }
                   />
-                  <InfoBlock label="Who Pays" value={result.free.buyer} />
-                  <InfoBlock label="Why It Sold" value={result.free.pain} />
-                  <InfoBlock label="Price" value={result.paid.comparable_price} />
-                  <InfoBlock label="48h Validation Signal" value={result.free.why_now} />
+                  <InfoBlock
+                    label="🌊 Market Shift"
+                    value={
+                      masterPrompt
+                        ? buildMarketShift(masterPrompt)
+                        : result.free.why_now
+                    }
+                  />
+                  <InfoBlock
+                    label="🎯 Opportunity"
+                    value={
+                      masterPrompt
+                        ? buildOpportunity(masterPrompt)
+                        : result.free.pain
+                    }
+                  />
+                  <InfoBlock
+                    label="⚔️ 48h Attack"
+                    value={
+                      masterPrompt
+                        ? buildAttackPlan(masterPrompt)
+                        : result.free.why_now
+                    }
+                  />
+                  <InfoBlock label="🧱 Build" value={result.free.what_you_can_build} />
                 </div>
               </div>
 
@@ -3311,15 +3241,15 @@ export default function BilionAppClient({
                 <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                   <div>
                     <div className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-wide text-black">
-                      Action Brief
+                      Aha Brief
                     </div>
                     <h2 className="mt-4 text-3xl font-black tracking-tight">
                       Generate from your selected signal, buyer, and action.
                     </h2>
                     <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
                       {hasFounderAccess
-                        ? "Paid users can generate more action briefs and copy the full build prompt when Build it is selected."
-                        : `Free Action Briefs today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used. Founder Access unlocks unlimited action briefs.`}
+                        ? "Paid users can generate more Aha Briefs and copy the full build prompt when Build it is selected."
+                        : `Free Aha Briefs today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used. Founder Access unlocks unlimited Aha Briefs.`}
                     </p>
                   </div>
 
@@ -3330,7 +3260,7 @@ export default function BilionAppClient({
                       disabled={!canGenerate}
                       className="rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      Generate Action Brief
+                      Generate Aha Brief
                     </button>
                     <button
                       type="button"
@@ -3364,24 +3294,24 @@ export default function BilionAppClient({
                     Founder/Paid Access
                   </div>
                   <h2 className="mt-4 text-3xl font-black tracking-tight">
-                    You&apos;ve used your 3 free Action Briefs today.
+                    You&apos;ve used your 3 free Aha Briefs today.
                   </h2>
                   <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
-                    Founder Access unlocks unlimited Action Briefs, launch copy, saved signals, and build prompts.
+                    Founder Access unlocks unlimited Aha Briefs, launch copy, saved signals, and build prompts.
                   </p>
                   {CHECKOUT_URL ? (
                     <a
                       href={CHECKOUT_URL}
                       className="mt-5 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                     >
-                      Get unlimited Action Briefs
+                      Get unlimited Aha Briefs
                     </a>
                   ) : (
                     <a
                       href="/founder"
                       className="mt-5 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                     >
-                      Get unlimited Action Briefs
+                      Get unlimited Aha Briefs
                     </a>
                   )}
                 </section>
@@ -3404,16 +3334,22 @@ export default function BilionAppClient({
             </div>
           )}
 
-          <SavedSignalsSection
-            hasFounderAccess={hasFounderAccess}
+          <SecondaryToolsSection
+            canSaveAssets={Boolean(result || masterPrompt)}
             copiedSignalId={copiedSavedSignalId}
-            onCopyPrompt={copySavedSignalPrompt}
-            onDelete={deleteSavedSignal}
-            onView={viewSavedSignal}
+            distributionQueue={distributionQueue}
+            hasFounderAccess={hasFounderAccess}
+            onAddValidationRecord={addValidationRecord}
+            onCopySavedPrompt={copySavedSignalPrompt}
+            onDeleteSavedSignal={deleteSavedSignal}
+            onMarkWinner={markWinner}
+            onSaveDistributionAssets={saveDistributionAssets}
+            onUpdateDistributionStatus={updateDistributionStatus}
+            onUpdateValidationRecord={updateValidationRecord}
+            onViewSavedSignal={viewSavedSignal}
             savedSignals={savedSignals}
+            validationRecords={validationRecords}
           />
-
-          <InlineShowcaseSection />
         </section>
 
         {result && activeWorkflowTab === "studio" && (
@@ -3431,7 +3367,7 @@ export default function BilionAppClient({
                 <p className="mt-3 text-sm leading-6 text-zinc-500">
                   Use the Mobile Share Kit at the bottom of the brief to post on
                   X, reply to interest, DM likely buyers, and offer the paid
-                  Action Brief.
+                  Aha Brief.
                 </p>
 
                 <div className="mt-5 space-y-3">
@@ -3487,7 +3423,7 @@ function DistributionQueueSection({
 
       {queue.length === 0 ? (
         <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-5 text-sm leading-6 text-zinc-500">
-          Generate an Action Brief, then save distribution assets here.
+          Generate an Aha Brief, then save distribution assets here.
         </div>
       ) : (
         <div className="mt-6 grid gap-3 lg:grid-cols-2">
@@ -3525,6 +3461,98 @@ function DistributionQueueSection({
           ))}
         </div>
       )}
+    </section>
+  );
+}
+
+function SecondaryToolsSection({
+  canSaveAssets,
+  copiedSignalId,
+  distributionQueue,
+  hasFounderAccess,
+  onAddValidationRecord,
+  onCopySavedPrompt,
+  onDeleteSavedSignal,
+  onMarkWinner,
+  onSaveDistributionAssets,
+  onUpdateDistributionStatus,
+  onUpdateValidationRecord,
+  onViewSavedSignal,
+  savedSignals,
+  validationRecords,
+}: {
+  canSaveAssets: boolean;
+  copiedSignalId: string;
+  distributionQueue: DistributionAsset[];
+  hasFounderAccess: boolean;
+  onAddValidationRecord: () => void;
+  onCopySavedPrompt: (signal: SavedSignal) => void;
+  onDeleteSavedSignal: (signalId: string) => void;
+  onMarkWinner: (recordId: string) => void;
+  onSaveDistributionAssets: () => void;
+  onUpdateDistributionStatus: (assetId: string, status: DistributionStatus) => void;
+  onUpdateValidationRecord: (
+    recordId: string,
+    updates: Partial<ValidationRecord>,
+  ) => void;
+  onViewSavedSignal: (signal: SavedSignal) => void;
+  savedSignals: SavedSignal[];
+  validationRecords: ValidationRecord[];
+}) {
+  return (
+    <section className="mt-8 rounded-3xl border border-white/[0.08] bg-white/[0.02] p-4">
+      <details>
+        <summary className="cursor-pointer list-none rounded-2xl border border-white/[0.08] bg-black/25 px-4 py-4">
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+            Secondary tools
+          </div>
+          <h2 className="mt-2 text-xl font-black text-zinc-200">
+            Validation, winners, saved prompts, and examples.
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-zinc-600">
+            The main path is Signal Library → Aha Brief Studio → Carousel and
+            Distribution Assets. Open this only when tracking or reviewing.
+          </p>
+        </summary>
+
+        <div className="mt-4 grid gap-4">
+          <details className="rounded-2xl border border-white/[0.08] bg-black/20 p-3">
+            <summary className="cursor-pointer list-none text-sm font-black text-zinc-300">
+              Workflow note
+            </summary>
+            <p className="mt-3 text-sm leading-6 text-zinc-500">
+              Find signal → Generate brief → Distribute → Track replies → Save winners.
+            </p>
+          </details>
+
+          <DistributionQueueSection
+            canSaveAssets={canSaveAssets}
+            queue={distributionQueue}
+            onSaveAssets={onSaveDistributionAssets}
+            onStatusChange={onUpdateDistributionStatus}
+          />
+
+          <ValidationTrackerSection
+            records={validationRecords}
+            onAddRecord={onAddValidationRecord}
+            onMarkWinner={onMarkWinner}
+            onUpdateRecord={onUpdateValidationRecord}
+          />
+
+          <WinnersSection records={validationRecords} onMarkWinner={onMarkWinner} />
+
+          <SavedSignalsSection
+            hasFounderAccess={hasFounderAccess}
+            copiedSignalId={copiedSignalId}
+            onCopyPrompt={onCopySavedPrompt}
+            onDelete={onDeleteSavedSignal}
+            onView={onViewSavedSignal}
+            savedSignals={savedSignals}
+          />
+
+          <InlineShowcaseSection />
+        </div>
+      </details>
     </section>
   );
 }
@@ -3765,8 +3793,8 @@ function MasterPromptCard({
             {masterPrompt.angleLabel}
           </p>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
-            A sell-first brief that turns a proven pattern into a product angle,
-            first offer, launch copy, and 48-hour validation plan.
+            An aha-first brief that explains why this market is interesting
+            before deciding what to build.
           </p>
         </div>
 
@@ -3815,14 +3843,24 @@ function MasterPromptCard({
           </div>
           <p className="mt-2 text-sm leading-6 text-zinc-300">
             Free users can preview the sellable product angle, launch copy, price,
-            and validation plan. Founder/Paid access unlocks the full Personal
-            Product Brief and the final Codex build prompt.
+            and validation plan. Founder/Paid access unlocks the full Action
+            Brief and the final Codex build prompt.
           </p>
         </div>
       )}
 
       <ActionBriefSection
         action={selectedAction}
+        hasFounderAccess={hasFounderAccess}
+        masterPrompt={masterPrompt}
+      />
+
+      <CarouselGenerator
+        hasFounderAccess={hasFounderAccess}
+        masterPrompt={masterPrompt}
+      />
+
+      <ExportAssets
         hasFounderAccess={hasFounderAccess}
         masterPrompt={masterPrompt}
       />
@@ -3865,7 +3903,7 @@ function MasterPromptCard({
 
       <div className="mt-4 grid gap-4 md:grid-cols-2">
         <MasterPromptField
-          label="Your AI-native version"
+          label="Small wedge"
           value={masterPrompt.yourProductAngle}
         />
         <MasterPromptField label="Who pays" value={masterPrompt.whoPays} />
@@ -3897,15 +3935,10 @@ function MasterPromptCard({
 
       <MobileShareKit masterPrompt={masterPrompt} />
 
-      <ExportAssets
-        hasFounderAccess={hasFounderAccess}
-        masterPrompt={masterPrompt}
-      />
-
       {!hasFounderAccess && (
         <div className="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.06] p-5">
           <h3 className="text-xl font-black text-white">
-            Get unlimited Action Briefs
+            Get unlimited Aha Briefs
           </h3>
           <p className="mt-2 text-sm leading-6 text-zinc-300">
             Includes: 3 angles, launch copy, pricing, DM scripts, landing
@@ -3915,7 +3948,7 @@ function MasterPromptCard({
             href={CHECKOUT_URL || "/founder"}
             className="mt-4 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-zinc-200"
           >
-            Get unlimited Action Briefs
+            Get unlimited Aha Briefs
           </a>
         </div>
       )}
@@ -3962,6 +3995,94 @@ function MasterPromptCard({
   );
 }
 
+function CarouselGenerator({
+  hasFounderAccess,
+  masterPrompt,
+}: {
+  hasFounderAccess: boolean;
+  masterPrompt: MasterPrompt;
+}) {
+  const [copiedKey, setCopiedKey] = useState("");
+  const [copyError, setCopyError] = useState(false);
+  const slides = buildCarouselSlides(masterPrompt);
+  const visibleSlides = hasFounderAccess ? slides : slides.slice(0, 2);
+
+  async function copyText(key: string, text: string) {
+    const copied = await writeClipboardText(text);
+    setCopiedKey(copied ? key : "");
+    setCopyError(!copied);
+    window.setTimeout(() => {
+      setCopiedKey("");
+      setCopyError(false);
+    }, 1200);
+  }
+
+  return (
+    <section className="mt-6 rounded-2xl border border-white/10 bg-black/35 p-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+            Carousel Generator
+          </div>
+          <h3 className="mt-2 text-2xl font-black text-white">
+            5-slide Aha Moment carousel
+          </h3>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-500">
+            Turn this Aha Brief into TikTok, Instagram, or X carousel copy.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() =>
+            copyText("all", buildCarouselCopy(masterPrompt, hasFounderAccess))
+          }
+          className="rounded-2xl bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-zinc-200"
+        >
+          {copiedKey === "all" ? "Copied All" : "Copy All"}
+        </button>
+      </div>
+
+      {!hasFounderAccess && (
+        <div className="mt-4 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-4 text-sm leading-6 text-yellow-100">
+          Free preview shows Slide 1-2. Founder/Paid access unlocks all 5 slides.
+        </div>
+      )}
+
+      <div className="mt-4 grid gap-3 lg:grid-cols-5">
+        {visibleSlides.map((slide, index) => (
+          <article
+            key={slide.title}
+            className="flex min-h-56 flex-col rounded-2xl border border-white/10 bg-white/[0.035] p-4"
+          >
+            <div className="text-xs font-black uppercase tracking-wide text-zinc-500">
+              Slide {index + 1}
+            </div>
+            <h4 className="mt-2 text-base font-black leading-6 text-white">
+              {slide.title.replace(/^Slide \d+:\s*/, "")}
+            </h4>
+            <p className="mt-3 flex-1 whitespace-pre-wrap text-sm leading-6 text-zinc-300">
+              {slide.body}
+            </p>
+            <button
+              type="button"
+              onClick={() => copyText(slide.title, `${slide.title}\n${slide.body}`)}
+              className="mt-4 rounded-xl border border-white/10 px-3 py-2 text-xs font-black text-white transition hover:bg-white/[0.06]"
+            >
+              {copiedKey === slide.title ? "Copied" : "Copy Slide"}
+            </button>
+          </article>
+        ))}
+      </div>
+
+      {copyError && (
+        <p className="mt-3 text-sm font-bold text-yellow-100">
+          Clipboard blocked. Select the visible carousel text and copy manually.
+        </p>
+      )}
+    </section>
+  );
+}
+
 function ActionBriefSection({
   action,
   hasFounderAccess,
@@ -3993,7 +4114,7 @@ function ActionBriefSection({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-            Action Brief
+            Aha Brief
           </div>
           <h3 className="mt-2 text-2xl font-black text-white">
             {getActionLabel(action)}
@@ -4004,7 +4125,7 @@ function ActionBriefSection({
           onClick={copyActionBrief}
           className="rounded-2xl bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-zinc-200"
         >
-          {copied ? "Copied Action Brief" : "Copy Action Brief"}
+          {copied ? "Copied Aha Brief" : "Copy Aha Brief"}
         </button>
       </div>
 
@@ -4088,11 +4209,11 @@ function ExportAssets({
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
-            Export Assets
+            Distribution Assets
           </div>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-300">
-            Copy the current brief into monetization-ready assets for a free
-            PDF, $19 pack, short video, X post, or Gumroad listing.
+            Copy the current Aha Brief into carousel, post, DM, lead magnet,
+            and product listing assets.
           </p>
         </div>
         {!hasFounderAccess && (
