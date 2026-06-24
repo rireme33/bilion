@@ -2025,6 +2025,32 @@ function buildAttackPlan(masterPrompt: MasterPrompt) {
     .join("\n");
 }
 
+function normalizeDisplayText(value: string) {
+  return value
+    .replace(/\s+/g, " ")
+    .replace(/\.{2,}/g, ".")
+    .replace(/\s+([,.!?;:])/g, "$1")
+    .trim();
+}
+
+function truncateDisplayText(value: string, maxLength = 80) {
+  const normalized = normalizeDisplayText(value);
+
+  if (normalized.length <= maxLength) {
+    return normalized;
+  }
+
+  return `${normalized.slice(0, maxLength - 1).trim()}…`;
+}
+
+function formatDisplayText(value: string) {
+  return value
+    .split("\n")
+    .map((line) => normalizeDisplayText(line))
+    .filter(Boolean)
+    .join("\n");
+}
+
 function buildBuildAngle(masterPrompt: MasterPrompt, includeCodexPrompt: boolean) {
   const codexNote = includeCodexPrompt
     ? `\n\nCodex prompt is available below, but only after the market angle is clear.`
@@ -3191,6 +3217,7 @@ export default function BilionAppClient({
 
           {result && activeWorkflowTab === "studio" && (
             <div className="mt-8 grid gap-6">
+              {!masterPrompt && (
               <div className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                   <div>
@@ -3258,6 +3285,7 @@ export default function BilionAppClient({
                   <InfoBlock label="🧱 Build" value={result.free.what_you_can_build} />
                 </div>
               </div>
+              )}
 
               {canGenerate ? (
               <section className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl">
@@ -3640,7 +3668,7 @@ function SecondaryToolsSection({
       <details>
         <summary className="cursor-pointer list-none rounded-2xl border border-white/[0.08] bg-black/25 px-4 py-4">
           <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
-            Secondary tools
+            Advanced / Archive
           </div>
           <h2 className="mt-2 text-xl font-black text-zinc-200">
             Validation, winners, saved prompts, and examples.
@@ -3909,122 +3937,246 @@ function MasterPromptCard({
   selectedAction: NextAction;
   signalNumber: number;
 }) {
+  const [copiedCarousel, setCopiedCarousel] = useState(false);
+  const [carouselCopyError, setCarouselCopyError] = useState(false);
+  const opportunityScore = getOpportunityScore(masterPrompt);
+  const shortSignalTitle = truncateDisplayText(masterPrompt.provenPattern);
+  const shortProductTitle = truncateDisplayText(masterPrompt.promptTitle);
+  const oneLineAha = truncateDisplayText(buildHolyShit(masterPrompt), 140);
+
+  async function copyCarouselFromSummary() {
+    const copiedText = await writeClipboardText(
+      buildCarouselCopy(masterPrompt, hasFounderAccess),
+    );
+
+    setCopiedCarousel(copiedText);
+    setCarouselCopyError(!copiedText);
+    window.setTimeout(() => {
+      setCopiedCarousel(false);
+      setCarouselCopyError(false);
+    }, 1200);
+  }
+
   return (
-    <article className="rounded-3xl border border-emerald-400/20 bg-[#0f1512] p-5 shadow-2xl md:p-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <div>
-          <div className="flex flex-wrap gap-2">
-            <div className="inline-flex rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-300">
-              Commercial Angle
+    <article className="space-y-5">
+      <section className="rounded-3xl border border-emerald-400/20 bg-[#0f1512] p-5 shadow-2xl md:p-6">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+          <div className="max-w-3xl">
+            <div className="flex flex-wrap gap-2">
+              <div className="inline-flex rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-300">
+                Hero Summary
+              </div>
+              <div className="inline-flex rounded-full border border-white/10 px-3 py-1 text-xs font-bold text-zinc-400">
+                Signal #{signalNumber} / Angle #{angleNumber}
+              </div>
             </div>
-            <div className="inline-flex rounded-full border border-white/10 px-3 py-1 text-xs font-bold text-zinc-400">
-              {masterPrompt.angleLabel}
+            <h2 className="mt-4 text-3xl font-black tracking-tight md:text-4xl">
+              {shortProductTitle}
+            </h2>
+            <p className="mt-3 text-sm font-bold leading-6 text-emerald-200">
+              {shortSignalTitle}
+            </p>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-200">
+              {oneLineAha}
+            </p>
+          </div>
+
+          <div className="grid min-w-full gap-3 sm:grid-cols-2 lg:min-w-80 lg:grid-cols-1">
+            <button
+              type="button"
+              onClick={copyCarouselFromSummary}
+              className="rounded-2xl bg-emerald-300 px-5 py-4 text-sm font-black text-black shadow-lg shadow-emerald-950/40 transition hover:bg-emerald-200"
+            >
+              {copiedCarousel ? "Copied Carousel" : "Copy Carousel"}
+            </button>
+            <button
+              type="button"
+              onClick={onCopyBrief}
+              className="rounded-2xl border border-white/10 px-5 py-4 text-sm font-bold text-white transition hover:bg-white/[0.04]"
+            >
+              {copiedSafe ? "Copied Short Brief" : "Copy Short Brief"}
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-5 grid gap-3 md:grid-cols-5">
+          <SummaryMetric label="Opportunity Score" value={`${opportunityScore.total}/50`} />
+          <SummaryMetric label="Buyer" value={truncateDisplayText(masterPrompt.buyer, 72)} />
+          <SummaryMetric label="Price" value={truncateDisplayText(masterPrompt.price, 60)} />
+          <SummaryMetric
+            label="First Wedge"
+            value={truncateDisplayText(masterPrompt.firstPaidOffer, 80)}
+          />
+          <SummaryMetric label="Action" value={getActionLabel(selectedAction)} />
+        </div>
+
+        {(copyFeedback || carouselCopyError) && (
+          <div
+            className={[
+              "mt-5 rounded-2xl border px-4 py-3 text-sm font-bold",
+              copyFeedback?.tone === "success" && !carouselCopyError
+                ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-200"
+                : "border-yellow-400/20 bg-yellow-400/10 text-yellow-100",
+            ].join(" ")}
+            role="status"
+          >
+            {carouselCopyError
+              ? "Clipboard blocked. Select the carousel text and copy manually."
+              : copyFeedback?.message}
+          </div>
+        )}
+
+        {!hasFounderAccess && (
+          <div className="mt-5 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-4">
+            <div className="text-xs font-bold uppercase tracking-wide text-yellow-300">
+              Free preview
             </div>
+            <p className="mt-2 text-sm leading-6 text-zinc-300">
+              Free users can preview the signal, carousel starter, offer, price,
+              and validation plan. Founder/Paid access unlocks all carousel slides
+              and the final Codex build prompt.
+            </p>
           </div>
-          <h2 className="mt-4 text-3xl font-black tracking-tight">
-            {masterPrompt.promptTitle}
-          </h2>
-          <p className="mt-3 text-sm font-bold text-emerald-200">
-            Variant: Signal #{signalNumber} / Angle #{angleNumber} /{" "}
-            {masterPrompt.angleLabel}
-          </p>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
-            An aha-first brief that explains why this market is interesting
-            before deciding what to build.
-          </p>
-        </div>
+        )}
+      </section>
 
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <button
-            type="button"
-            onClick={onCopy}
-            className="rounded-2xl bg-emerald-300 px-5 py-4 text-sm font-black text-black shadow-lg shadow-emerald-950/40 transition hover:bg-emerald-200"
-          >
-            {copied
-              ? hasFounderAccess
-                ? "Copied product brief"
-                : "Copied preview"
-              : hasFounderAccess
-                ? "Copy Product Brief"
-                : "Copy Preview"}
-          </button>
-          <button
-            type="button"
-            onClick={onCopyBrief}
-            className="rounded-2xl border border-white/10 px-5 py-4 text-sm font-bold text-white transition hover:bg-white/[0.04]"
-          >
-            {copiedSafe ? "Copied brief" : "Copy Short Brief"}
-          </button>
+      <section className="rounded-3xl border border-white/10 bg-[#101011] p-5 shadow-2xl md:p-6">
+        <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+          Why This Matters
         </div>
-      </div>
-
-      {copyFeedback && (
-        <div
-          className={[
-            "mt-5 rounded-2xl border px-4 py-3 text-sm font-bold",
-            copyFeedback.tone === "success"
-              ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-200"
-              : "border-yellow-400/20 bg-yellow-400/10 text-yellow-100",
-          ].join(" ")}
-          role="status"
-        >
-          {copyFeedback.message}
+        <h3 className="mt-2 text-2xl font-black tracking-tight">
+          Why this signal is worth attention.
+        </h3>
+        <div className="mt-5 grid gap-3 md:grid-cols-2">
+          <StarterStoryCard label="Holy Shit" value={buildHolyShit(masterPrompt)} />
+          <StarterStoryCard
+            label="What Everyone Misses"
+            value={buildWhatEveryoneMisses(masterPrompt)}
+          />
+          <StarterStoryCard label="Money Angle" value={buildMoneyAngle(masterPrompt)} />
+          <StarterStoryCard
+            label="Market Shift"
+            value={normalizeDisplayText(masterPrompt.whyItSold)}
+          />
         </div>
-      )}
-
-      {!hasFounderAccess && (
-        <div className="mt-6 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-5">
-          <div className="text-xs font-bold uppercase tracking-wide text-yellow-300">
-            Free preview
-          </div>
-          <p className="mt-2 text-sm leading-6 text-zinc-300">
-            Free users can preview the sellable product angle, launch copy, price,
-            and validation plan. Founder/Paid access unlocks the full Action
-            Brief and the final Codex build prompt.
-          </p>
-        </div>
-      )}
-
-      <ActionBriefSection
-        action={selectedAction}
-        hasFounderAccess={hasFounderAccess}
-        masterPrompt={masterPrompt}
-      />
+      </section>
 
       <CarouselGenerator
         hasFounderAccess={hasFounderAccess}
         masterPrompt={masterPrompt}
       />
 
-      <ExportAssets
-        hasFounderAccess={hasFounderAccess}
-        masterPrompt={masterPrompt}
-      />
-
-      <div className="mt-6 grid gap-4 md:grid-cols-2">
-        <MasterPromptField label="What already sold" value={masterPrompt.provenPattern} />
-        <MasterPromptField
-          label="Why it sold"
-          value={masterPrompt.whyItSold}
-        />
-      </div>
-
-      <div className="mt-4 rounded-2xl border border-white/10 bg-black/40 p-4">
-        <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
-          Market proof
+      <section className="rounded-3xl border border-white/10 bg-[#101011] p-5 shadow-2xl md:p-6">
+        <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+          Sell This First
         </div>
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
+        <h3 className="mt-2 text-2xl font-black tracking-tight">
+          Test demand before building.
+        </h3>
+        <div className="mt-5 grid gap-4 md:grid-cols-2">
+          <MasterPromptField label="First paid offer" value={masterPrompt.firstPaidOffer} />
+          <MasterPromptField label="Price" value={masterPrompt.price} />
+          <MasterPromptField label="DM script" value={masterPrompt.launchCopy.dmMessage} />
+          <MasterPromptField label="X post" value={masterPrompt.launchCopy.xPost} />
+        </div>
+        <div className="mt-4 rounded-2xl border border-white/10 bg-black/40 p-4">
+          <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+            48-hour validation plan
+          </div>
+          <ol className="mt-3 space-y-2 text-sm leading-6 text-zinc-100">
+            {masterPrompt.validationPlan.map((step, index) => (
+              <li key={step} className="flex gap-3">
+                <span className="text-zinc-500">{index + 1}.</span>
+                <span>{normalizeDisplayText(step)}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <details className="rounded-3xl border border-white/10 bg-[#101011] p-5 shadow-2xl md:p-6">
+        <summary className="cursor-pointer list-none">
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+            Build Only After Replies
+          </div>
+          <h3 className="mt-2 text-2xl font-black tracking-tight">
+            Open this after the carousel or DM gets a reply.
+          </h3>
+          <p className="mt-2 text-sm leading-6 text-zinc-500">
+            Build summary, core workflow, core features, and Codex prompt are kept here.
+          </p>
+        </summary>
+
+        <div className="mt-5 grid gap-4 md:grid-cols-2">
+          <MasterPromptField label="Build summary" value={masterPrompt.firstVersion} />
+          <MasterPromptField label="Small wedge" value={masterPrompt.yourProductAngle} />
           <MasterPromptField
-            label="Similar business / comparable pattern"
-            value={masterPrompt.marketProof.comparablePattern}
+            label="Core workflow"
+            value={[
+              "1. Capture the buyer's input or repeated workflow.",
+              "2. Generate the useful output tied to the first paid offer.",
+              "3. Let the user copy, save, and reuse the output.",
+              "4. Use the result as a demo for the next buyer conversation.",
+            ].join("\n")}
           />
+          <MasterPromptField
+            label="Core features"
+            value={masterPrompt.coreFeatures.join("\n")}
+          />
+        </div>
+
+        {selectedAction === "build" &&
+          (hasFounderAccess ? (
+            <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 p-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                  Codex build prompt
+                </div>
+                <button
+                  type="button"
+                  onClick={onCopy}
+                  className="rounded-2xl bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-zinc-200"
+                >
+                  {copied ? "Copied Codex prompt" : "Copy Codex Prompt"}
+                </button>
+              </div>
+              <pre className="mt-3 max-h-[520px] overflow-auto whitespace-pre-wrap rounded-xl border border-white/10 bg-black/60 p-4 font-sans text-sm leading-6 text-zinc-100">
+                {masterPrompt.fullCodeXMasterPrompt}
+              </pre>
+            </div>
+          ) : (
+            <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 p-4">
+              <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+                Codex build prompt
+              </div>
+              <p className="mt-3 text-sm leading-6 text-zinc-400">
+                The full Codex build prompt is available with Founder/Paid access.
+              </p>
+            </div>
+          ))}
+      </details>
+
+      <details className="rounded-3xl border border-white/10 bg-black/30 p-5 md:p-6">
+        <summary className="cursor-pointer list-none">
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+            Advanced / Archive
+          </div>
+          <h3 className="mt-2 text-2xl font-black tracking-tight">
+            Full brief, exports, proof, and share kit.
+          </h3>
+        </summary>
+
+        <div className="mt-5 grid gap-4 md:grid-cols-2">
+          <MasterPromptField label="What already sold" value={masterPrompt.provenPattern} />
+          <MasterPromptField label="Why it sold" value={masterPrompt.whyItSold} />
+          <MasterPromptField label="Who pays" value={masterPrompt.whoPays} />
           <MasterPromptField
             label="Revenue or pricing signal"
             value={masterPrompt.marketProof.revenueOrPricingSignal}
           />
           <MasterPromptField
-            label="Why buyers already pay"
-            value={masterPrompt.marketProof.whyBuyersPay}
+            label="Similar business / comparable pattern"
+            value={masterPrompt.marketProof.comparablePattern}
           />
           <MasterPromptField
             label="Distribution channel that worked"
@@ -4035,41 +4187,20 @@ function MasterPromptCard({
             value={`${masterPrompt.marketProof.evidenceStrength}. ${masterPrompt.marketProof.note}`}
           />
         </div>
-      </div>
 
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
-        <MasterPromptField
-          label="Small wedge"
-          value={masterPrompt.yourProductAngle}
+        <ActionBriefSection
+          action={selectedAction}
+          hasFounderAccess={hasFounderAccess}
+          masterPrompt={masterPrompt}
         />
-        <MasterPromptField label="Who pays" value={masterPrompt.whoPays} />
-        <MasterPromptField
-          label="First paid offer"
-          value={masterPrompt.firstPaidOffer}
+
+        <ExportAssets
+          hasFounderAccess={hasFounderAccess}
+          masterPrompt={masterPrompt}
         />
-        <MasterPromptField label="Price" value={masterPrompt.price} />
-      </div>
 
-      <div className="mt-4 space-y-4">
-        <MasterPromptField label="X post" value={masterPrompt.launchCopy.xPost} />
-        <MasterPromptField label="DM script" value={masterPrompt.launchCopy.dmMessage} />
-      </div>
-
-      <div className="mt-4 rounded-2xl border border-white/10 bg-black/40 p-4">
-        <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
-          48-hour validation plan
-        </div>
-        <ol className="mt-3 space-y-2 text-sm leading-6 text-zinc-100">
-          {masterPrompt.validationPlan.map((step, index) => (
-            <li key={step} className="flex gap-3">
-              <span className="text-zinc-500">{index + 1}.</span>
-              <span>{step}</span>
-            </li>
-          ))}
-        </ol>
-      </div>
-
-      <MobileShareKit masterPrompt={masterPrompt} />
+        <MobileShareKit masterPrompt={masterPrompt} />
+      </details>
 
       {!hasFounderAccess && (
         <div className="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.06] p-5">
@@ -4088,45 +4219,6 @@ function MasterPromptCard({
           </a>
         </div>
       )}
-
-      {selectedAction === "build" &&
-        (hasFounderAccess ? (
-          <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 p-4">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
-                Codex build prompt
-              </div>
-              <button
-                type="button"
-                onClick={onCopy}
-                className="rounded-2xl bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-zinc-200"
-              >
-                {copied ? "Copied Codex prompt" : "Copy Codex Prompt"}
-              </button>
-            </div>
-            <pre className="mt-3 max-h-[640px] overflow-auto whitespace-pre-wrap rounded-xl border border-white/10 bg-black/60 p-4 font-sans text-sm leading-6 text-zinc-100">
-              {masterPrompt.fullCodeXMasterPrompt}
-            </pre>
-          </div>
-        ) : (
-          <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 p-4">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
-                Codex build prompt
-              </div>
-              <button
-                type="button"
-                disabled
-                className="rounded-2xl border border-white/10 px-5 py-3 text-sm font-black text-zinc-500"
-              >
-                Unlock to copy Codex Prompt
-              </button>
-            </div>
-            <p className="mt-3 text-sm leading-6 text-zinc-400">
-              The full Codex build prompt is available with Founder/Paid access.
-            </p>
-          </div>
-        ))}
     </article>
   );
 }
@@ -4172,7 +4264,7 @@ function CarouselGenerator({
           onClick={() =>
             copyText("all", buildCarouselCopy(masterPrompt, hasFounderAccess))
           }
-          className="rounded-2xl bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-zinc-200"
+          className="rounded-2xl bg-emerald-300 px-5 py-3 text-sm font-black text-black shadow-lg shadow-emerald-950/40 transition hover:bg-emerald-200"
         >
           {copiedKey === "all" ? "Copied All" : "Copy All"}
         </button>
@@ -4386,13 +4478,41 @@ function ExportAssets({
   );
 }
 
+function SummaryMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
+      <div className="text-xs font-black uppercase tracking-[0.14em] text-zinc-500">
+        {label}
+      </div>
+      <div className="mt-2 text-sm font-black leading-5 text-white">
+        {formatDisplayText(value)}
+      </div>
+    </div>
+  );
+}
+
+function StarterStoryCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
+      <div className="text-xs font-black uppercase tracking-[0.14em] text-zinc-500">
+        {label}
+      </div>
+      <p className="mt-2 text-sm leading-6 text-zinc-100">
+        {normalizeDisplayText(value)}
+      </p>
+    </div>
+  );
+}
+
 function MasterPromptField({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-black/40 p-4">
       <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
         {label}
       </div>
-      <div className="mt-2 text-sm leading-6 text-zinc-100">{value}</div>
+      <div className="mt-2 whitespace-pre-wrap text-sm leading-6 text-zinc-100">
+        {normalizeDisplayText(value)}
+      </div>
     </div>
   );
 }
