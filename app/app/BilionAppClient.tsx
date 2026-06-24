@@ -195,6 +195,59 @@ type MasterPrompt = {
   copyExportBehavior: string[];
   constraints: string[];
   fullCodeXMasterPrompt: string;
+  aiReveal?: AiOpportunityReveal;
+};
+
+type AiOpportunityReveal = {
+  heroSummary: {
+    title: string;
+    signal: string;
+    aha: string;
+    buyer: string;
+    price: string;
+    firstWedge: string;
+  };
+  whyThisMatters: {
+    holyShit: string;
+    whatEveryoneMisses: string;
+    moneyAngle: string;
+    marketShift: string;
+  };
+  opportunityScore: {
+    total: number;
+    buyerUrgency: number;
+    painFrequency: number;
+    distributionEase: number;
+    speedToValidate: number;
+    buildComplexity: number;
+    reason: string;
+  };
+  carousel: Array<{
+    slide: number;
+    title: string;
+    body: string;
+  }>;
+  sellThisFirst: {
+    whoBuys: string;
+    firstOffer: string;
+    price: string;
+    whereToFindThem: string;
+    dmScript: string;
+    xPost: string;
+  };
+  attack48h: string[];
+  buildAfterReplies: {
+    doNotBuildYet: string;
+    buildOnlyIf: string;
+    mvpScope: string;
+    codexPrompt: string;
+  };
+  evidence: {
+    whatIsFact: string[];
+    whatIsInference: string[];
+    risk: string;
+    confidence: "High" | "Medium" | "Low";
+  };
 };
 
 /*
@@ -1969,22 +2022,53 @@ ${buildFirstWedge(masterPrompt)}`;
 }
 
 function buildHolyShit(masterPrompt: MasterPrompt) {
+  if (masterPrompt.aiReveal) {
+    return masterPrompt.aiReveal.whyThisMatters.holyShit;
+  }
+
   return `The interesting part is not the app idea. It is that ${masterPrompt.buyer} already show a repeated paid pain, and AI turns that pain into a tiny productized wedge instead of a full startup bet.`;
 }
 
 function buildWhatEveryoneMisses(masterPrompt: MasterPrompt) {
+  if (masterPrompt.aiReveal) {
+    return masterPrompt.aiReveal.whyThisMatters.whatEveryoneMisses;
+  }
+
   return `Most people will summarize this as a problem/solution idea. The missed truth is the buying behavior: ${masterPrompt.marketProof.whyBuyersPay} That is the signal to study before deciding what to build.`;
 }
 
 function buildMoneyAngle(masterPrompt: MasterPrompt) {
+  if (masterPrompt.aiReveal) {
+    return masterPrompt.aiReveal.whyThisMatters.moneyAngle;
+  }
+
   return `This can become money because the buyer, pain, and price are already visible. Revenue signal: ${masterPrompt.marketProof.revenueOrPricingSignal}. Distribution signal: ${masterPrompt.marketProof.distributionChannel}.`;
 }
 
 function buildFirstWedge(masterPrompt: MasterPrompt) {
+  if (masterPrompt.aiReveal) {
+    return masterPrompt.aiReveal.heroSummary.firstWedge;
+  }
+
   return `Enter through the smallest useful slice: ${masterPrompt.firstPaidOffer} Do not start with a platform. Start with the buyer's most urgent before/after moment.`;
 }
 
 function getOpportunityScore(masterPrompt: MasterPrompt) {
+  if (masterPrompt.aiReveal) {
+    const score = masterPrompt.aiReveal.opportunityScore;
+
+    return {
+      scores: {
+        "Buyer Urgency": score.buyerUrgency,
+        "Pain Frequency": score.painFrequency,
+        "Distribution Ease": score.distributionEase,
+        "Speed To Validate": score.speedToValidate,
+        "Build Complexity": score.buildComplexity,
+      },
+      total: score.total,
+    };
+  }
+
   const evidenceBonus =
     masterPrompt.marketProof.evidenceStrength === "Strong"
       ? 2
@@ -2012,14 +2096,22 @@ function getOpportunityScore(masterPrompt: MasterPrompt) {
 
 function buildOpportunityScore(masterPrompt: MasterPrompt) {
   const { scores, total } = getOpportunityScore(masterPrompt);
+  const scoreTotal = masterPrompt.aiReveal ? `${total}/50` : `${total}/50`;
 
   return [
     ...Object.entries(scores).map(([label, score]) => `${label}: ${score}/10`),
-    `Total: ${total}/50`,
+    `Total: ${scoreTotal}`,
+    ...(masterPrompt.aiReveal ? [`Reason: ${masterPrompt.aiReveal.opportunityScore.reason}`] : []),
   ].join("\n");
 }
 
 function buildAttackPlan(masterPrompt: MasterPrompt) {
+  if (masterPrompt.aiReveal) {
+    return masterPrompt.aiReveal.attack48h
+      .map((step, index) => `${index + 1}. ${step}`)
+      .join("\n");
+  }
+
   return masterPrompt.validationPlan
     .map((step, index) => `${index + 1}. ${step}`)
     .join("\n");
@@ -2052,6 +2144,14 @@ function formatDisplayText(value: string) {
 }
 
 function buildBuildAngle(masterPrompt: MasterPrompt, includeCodexPrompt: boolean) {
+  if (masterPrompt.aiReveal) {
+    const codexNote = includeCodexPrompt
+      ? `\n\nCodex prompt is available below, but only after the market angle is clear.`
+      : "\n\nFounder/Paid access unlocks the full Codex-ready build prompt.";
+
+    return `${masterPrompt.aiReveal.buildAfterReplies.doNotBuildYet}\n\nBuild only if: ${masterPrompt.aiReveal.buildAfterReplies.buildOnlyIf}\n\nMVP scope: ${masterPrompt.aiReveal.buildAfterReplies.mvpScope}${codexNote}`;
+  }
+
   const codexNote = includeCodexPrompt
     ? `\n\nCodex prompt is available below, but only after the market angle is clear.`
     : "\n\nFounder/Paid access unlocks the full Codex-ready build prompt.";
@@ -2092,6 +2192,16 @@ ${fields.map(([label, value]) => `${label}:\n${value}`).join("\n\n")}`;
 }
 
 function buildCarouselSlides(masterPrompt: MasterPrompt) {
+  if (masterPrompt.aiReveal?.carousel.length) {
+    return masterPrompt.aiReveal.carousel
+      .slice()
+      .sort((a, b) => a.slide - b.slide)
+      .map((slide) => ({
+        title: `Slide ${slide.slide}: ${slide.title}`,
+        body: slide.body,
+      }));
+  }
+
   return [
     {
       title: "Slide 1: Contrarian hook",
@@ -2121,6 +2231,144 @@ function buildCarouselCopy(masterPrompt: MasterPrompt, hasFounderAccess: boolean
     .slice(0, hasFounderAccess ? 5 : 2)
     .map((slide) => `${slide.title}\n${slide.body}`)
     .join("\n\n---\n\n");
+}
+
+function applyAiRevealToMasterPrompt(
+  aiReveal: AiOpportunityReveal,
+  fallbackPrompt: MasterPrompt,
+): MasterPrompt {
+  const attack48h = aiReveal.attack48h.length
+    ? aiReveal.attack48h
+    : fallbackPrompt.validationPlan;
+  const coreFeatures = [
+    aiReveal.buildAfterReplies.doNotBuildYet,
+    aiReveal.buildAfterReplies.buildOnlyIf,
+    aiReveal.buildAfterReplies.mvpScope,
+  ].filter(Boolean);
+
+  return {
+    ...fallbackPrompt,
+    aiReveal,
+    promptTitle: aiReveal.heroSummary.title || fallbackPrompt.promptTitle,
+    originalCase: aiReveal.heroSummary.signal || fallbackPrompt.originalCase,
+    provenPattern: aiReveal.heroSummary.signal || fallbackPrompt.provenPattern,
+    whyItSold: aiReveal.whyThisMatters.marketShift || fallbackPrompt.whyItSold,
+    marketProof: {
+      comparablePattern: fallbackPrompt.marketProof.comparablePattern,
+      revenueOrPricingSignal: aiReveal.sellThisFirst.price || fallbackPrompt.price,
+      whyBuyersPay: aiReveal.whyThisMatters.moneyAngle || fallbackPrompt.marketProof.whyBuyersPay,
+      distributionChannel:
+        aiReveal.sellThisFirst.whereToFindThem || fallbackPrompt.distributionChannel,
+      evidenceStrength:
+        aiReveal.evidence.confidence === "High"
+          ? "Strong"
+          : aiReveal.evidence.confidence === "Medium"
+            ? "Medium"
+            : "Directional",
+      note: aiReveal.evidence.risk || fallbackPrompt.marketProof.note,
+    },
+    whoPays: aiReveal.sellThisFirst.whoBuys || aiReveal.heroSummary.buyer,
+    yourProductAngle: aiReveal.heroSummary.firstWedge || fallbackPrompt.yourProductAngle,
+    firstPaidOffer: aiReveal.sellThisFirst.firstOffer || fallbackPrompt.firstPaidOffer,
+    buyer: aiReveal.heroSummary.buyer || fallbackPrompt.buyer,
+    pain: aiReveal.whyThisMatters.whatEveryoneMisses || fallbackPrompt.pain,
+    revenueSignal: aiReveal.whyThisMatters.moneyAngle || fallbackPrompt.revenueSignal,
+    distributionChannel:
+      aiReveal.sellThisFirst.whereToFindThem || fallbackPrompt.distributionChannel,
+    productAngle: aiReveal.heroSummary.aha || fallbackPrompt.productAngle,
+    whatToBuild: aiReveal.buildAfterReplies.mvpScope || fallbackPrompt.whatToBuild,
+    firstVersion: aiReveal.buildAfterReplies.mvpScope || fallbackPrompt.firstVersion,
+    price: aiReveal.heroSummary.price || aiReveal.sellThisFirst.price || fallbackPrompt.price,
+    launchCopy: {
+      ...fallbackPrompt.launchCopy,
+      xPost: aiReveal.sellThisFirst.xPost || fallbackPrompt.launchCopy.xPost,
+      dmMessage: aiReveal.sellThisFirst.dmScript || fallbackPrompt.launchCopy.dmMessage,
+    },
+    firstCustomerPlan: {
+      ...fallbackPrompt.firstCustomerPlan,
+      whoToContactFirst: aiReveal.sellThisFirst.whoBuys || fallbackPrompt.firstCustomerPlan.whoToContactFirst,
+      whereToFindThem:
+        aiReveal.sellThisFirst.whereToFindThem || fallbackPrompt.firstCustomerPlan.whereToFindThem,
+      whatToSay: aiReveal.sellThisFirst.dmScript || fallbackPrompt.firstCustomerPlan.whatToSay,
+      whatToOffer: aiReveal.sellThisFirst.firstOffer || fallbackPrompt.firstCustomerPlan.whatToOffer,
+      validationWithin48h: attack48h.join(" "),
+    },
+    coreFeatures: coreFeatures.length ? coreFeatures : fallbackPrompt.coreFeatures,
+    validationPlan: attack48h,
+    fullCodeXMasterPrompt:
+      aiReveal.buildAfterReplies.codexPrompt || fallbackPrompt.fullCodeXMasterPrompt,
+  };
+}
+
+function applyAiRevealToResult(
+  aiReveal: AiOpportunityReveal,
+  fallbackResult: ApiResult,
+  aiMasterPrompt: MasterPrompt,
+): ApiResult {
+  return {
+    free: {
+      latest_signal: aiReveal.heroSummary.signal || fallbackResult.free.latest_signal,
+      what_you_can_build:
+        aiReveal.buildAfterReplies.mvpScope || fallbackResult.free.what_you_can_build,
+      buyer: aiReveal.heroSummary.buyer || fallbackResult.free.buyer,
+      pain: aiReveal.whyThisMatters.whatEveryoneMisses || fallbackResult.free.pain,
+      why_now: aiReveal.whyThisMatters.marketShift || fallbackResult.free.why_now,
+    },
+    paid: {
+      ...fallbackResult.paid,
+      latest_signal: aiReveal.heroSummary.signal || fallbackResult.paid.latest_signal,
+      source_title: aiMasterPrompt.promptTitle,
+      buyer: aiMasterPrompt.buyer,
+      pain: aiMasterPrompt.pain,
+      why_now: aiMasterPrompt.whyItSold,
+      what_you_can_build: aiMasterPrompt.whatToBuild,
+      comparable_price: aiMasterPrompt.price,
+      build_steps: aiReveal.attack48h.length
+        ? aiReveal.attack48h
+        : fallbackResult.paid.build_steps,
+      pattern_matches: [
+        ...aiReveal.evidence.whatIsFact,
+        ...aiReveal.evidence.whatIsInference,
+      ].slice(0, 6),
+      code_x_prompt: aiMasterPrompt.fullCodeXMasterPrompt,
+    },
+  };
+}
+
+async function requestAiOpportunityReveal(
+  signal: BuildSignal,
+  buyer: string,
+  goal: NextAction,
+) {
+  const response = await fetch("/api/opportunity-reveal", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      signal: {
+        id: signal.id,
+        latestSignal: signal.latestSignal,
+        sourceTitle: signal.sourceTitle,
+        sourceType: signal.sourceType,
+        sourceNote: signal.sourceNote,
+        buyer: signal.buyer,
+        pain: signal.pain,
+        whyNow: signal.whyNow,
+        whatYouCanBuild: signal.whatYouCanBuild,
+        comparablePrice: signal.comparablePrice,
+        patternMatches: signal.patternMatches,
+      },
+      buyer,
+      goal,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("AI opportunity reveal request failed.");
+  }
+
+  return (await response.json()) as AiOpportunityReveal;
 }
 
 async function writeClipboardText(text: string) {
@@ -2567,7 +2815,7 @@ export default function BilionAppClient({
     });
   }
 
-  function generateIdea() {
+  async function generateIdea() {
     if (!canGenerate) {
       return;
     }
@@ -2599,11 +2847,30 @@ export default function BilionAppClient({
     setCopiedMasterPrompt(false);
     setCopiedSafePrompt(false);
     setCopyFeedback(null);
-    saveResult(nextResult);
     incrementFreeUsage();
     setActiveWorkflowTab("studio");
 
-    setLoading(false);
+    try {
+      const aiReveal = await requestAiOpportunityReveal(
+        nextSignal,
+        selectedBuyer || nextSignal.buyer,
+        selectedAction,
+      );
+      const aiMasterPrompt = applyAiRevealToMasterPrompt(aiReveal, builtMaster);
+      const aiResult = applyAiRevealToResult(aiReveal, nextResult, aiMasterPrompt);
+
+      setResult(aiResult);
+      setMasterPrompt(aiMasterPrompt);
+      saveResult(aiResult);
+    } catch {
+      saveResult(nextResult);
+      setCopyFeedback({
+        message: "AI generation failed. Showing fallback Opportunity Reveal.",
+        tone: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
   }
 
   function viewSavedSignal(signal: SavedSignal) {
@@ -2634,36 +2901,7 @@ export default function BilionAppClient({
   }
 
   function generateMasterPrompt() {
-    if (!canGenerate) {
-      return;
-    }
-
-    if (!selectedSignal) {
-      return;
-    }
-
-    const nextSignal = selectedSignal;
-    const actionSignal = getActionSignal(nextSignal, selectedBuyer);
-    const nextResult = buildResult(actionSignal);
-    const builtMaster = buildActionMasterPrompt(
-      nextSignal,
-      selectedBuyer,
-      selectedAction,
-    );
-    const nextSignalIndex =
-      selectedSignalId === "github-sample" ? 0 : marketSignals.indexOf(nextSignal);
-    const nextAngleIndex = getActionAngleIndex(selectedAction);
-
-    setCopiedMasterPrompt(false);
-    setCopiedSafePrompt(false);
-    setCopyFeedback(null);
-    setSignalIndex(nextSignalIndex < 0 ? 0 : nextSignalIndex);
-    setMasterPromptAngleIndex(nextAngleIndex);
-    setResult(nextResult);
-    setMasterPrompt(builtMaster);
-    saveResult(nextResult);
-    incrementFreeUsage();
-    setActiveWorkflowTab("studio");
+    void generateIdea();
   }
 
   function generateAnotherAngle() {
