@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { showcaseItems } from "../showcase/showcase-data";
 
 type FreeIdea = {
@@ -2476,6 +2476,7 @@ export default function BilionAppClient({
     ? getDisplaySignalTitle(selectedSignal)
     : null;
   const buyerOptions = selectedSignal ? getBuyerOptions(selectedSignal) : [];
+  const guidedWorkflowStep = result ? 3 : selectedSignalId ? 2 : 1;
 
   useEffect(() => {
     const loadSavedSignals = window.setTimeout(() => {
@@ -2879,20 +2880,7 @@ export default function BilionAppClient({
               Turn proven business patterns into Aha Moments, carousel posts,
               first offers, and 48-hour validation plans.
             </p>
-            <div className="mt-5 grid max-w-3xl gap-2 text-sm font-bold text-zinc-100 sm:grid-cols-3">
-              {[
-                "1. Pick a signal",
-                "2. Reveal opportunity",
-                "3. Copy distribution assets",
-              ].map((item) => (
-                <div
-                  key={item}
-                  className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3"
-                >
-                  {item}
-                </div>
-              ))}
-            </div>
+            <GuidedWorkflow currentStep={guidedWorkflowStep} />
           </header>
 
           {selectedPatternLabel && (
@@ -3426,6 +3414,119 @@ export default function BilionAppClient({
         )}
       </div>
     </main>
+  );
+}
+
+function GuidedWorkflow({ currentStep }: { currentStep: 1 | 2 | 3 }) {
+  const steps = [
+    {
+      id: 1,
+      eyebrow: "Step 1",
+      title: "📡 Pick a Signal",
+      body: "Choose a proven market signal from the Signal Library.",
+    },
+    {
+      id: 2,
+      eyebrow: "Step 2",
+      title: "💰 Reveal Hidden Opportunity",
+      body: "Generate the Opportunity Reveal and discover the leverage behind the signal.",
+    },
+    {
+      id: 3,
+      eyebrow: "Step 3",
+      title: "📣 Copy & Distribute",
+      body: "Use Carousel Generator and Distribution Assets to publish the insight.",
+    },
+  ] satisfies Array<{
+    id: 1 | 2 | 3;
+    eyebrow: string;
+    title: string;
+    body: string;
+  }>;
+
+  return (
+    <section className="mt-6 max-w-6xl rounded-3xl border border-white/10 bg-[#101011] p-4 shadow-2xl md:p-5">
+      <div className="flex flex-col gap-3 border-b border-white/10 pb-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+            New here?
+          </div>
+          <p className="mt-2 text-sm font-bold leading-6 text-zinc-300">
+            1. Pick a signal → 2. Reveal the opportunity → 3. Post the carousel
+          </p>
+        </div>
+        <div className="rounded-full border border-emerald-300/30 bg-emerald-300/[0.08] px-4 py-2 text-xs font-black uppercase tracking-wide text-emerald-100">
+          This takes less than 2 minutes.
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-3 lg:grid-cols-[1fr_auto_1fr_auto_1fr] lg:items-stretch">
+        {steps.map((step, index) => {
+          const active = currentStep === step.id;
+          const complete = currentStep > step.id;
+
+          return (
+            <Fragment key={step.id}>
+              <article
+                className={[
+                  "relative rounded-2xl border p-4 transition",
+                  active
+                    ? "border-emerald-300/60 bg-emerald-300/[0.1] shadow-[0_0_40px_rgba(16,185,129,0.12)]"
+                    : complete
+                      ? "border-emerald-300/20 bg-emerald-300/[0.04]"
+                      : "border-white/10 bg-black/25",
+                ].join(" ")}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div
+                    className={[
+                      "text-xs font-black uppercase tracking-[0.16em]",
+                      active ? "text-emerald-200" : "text-zinc-500",
+                    ].join(" ")}
+                  >
+                    {step.eyebrow}
+                  </div>
+                  <div
+                    className={[
+                      "rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wide",
+                      active
+                        ? "bg-white text-black"
+                        : complete
+                          ? "bg-emerald-300/15 text-emerald-200"
+                          : "bg-white/[0.06] text-zinc-500",
+                    ].join(" ")}
+                  >
+                    {active ? "You are here" : complete ? "Done" : "Next"}
+                  </div>
+                </div>
+                <h2 className="mt-3 text-lg font-black leading-6 text-white">
+                  {step.title}
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-zinc-400">
+                  {step.body}
+                </p>
+                <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
+                  <div
+                    className={[
+                      "h-full rounded-full",
+                      active || complete ? "bg-emerald-300" : "bg-white/10",
+                    ].join(" ")}
+                    style={{ width: active || complete ? "100%" : "35%" }}
+                  />
+                </div>
+              </article>
+
+              {index < steps.length - 1 && (
+                <div className="flex items-center justify-center text-zinc-600">
+                  <span className="hidden text-2xl font-black lg:block">→</span>
+                  <span className="text-xl font-black lg:hidden">↓</span>
+                </div>
+              )}
+            </Fragment>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 
