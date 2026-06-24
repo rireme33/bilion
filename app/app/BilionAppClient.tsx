@@ -1388,7 +1388,7 @@ function isNewsletterSignal(signal: BuildSignal) {
   );
 }
 
-function getSignalGroups(signals: BuildSignal[]) {
+function getSignalGroups(signals: BuildSignal[], githubSignal?: BuildSignal) {
   const newsletterSignals = signals.filter(isNewsletterSignal);
   const nonNewsletterSignals = signals.filter((signal) => !isNewsletterSignal(signal));
   const recommendedSignals = nonNewsletterSignals.slice(0, 3);
@@ -1409,6 +1409,10 @@ function getSignalGroups(signals: BuildSignal[]) {
     {
       label: "Newsletter Signals",
       signals: newsletterSignals,
+    },
+    {
+      label: "GitHub Signal",
+      signals: githubSignal ? [githubSignal] : [],
     },
   ].filter((group) => group.signals.length > 0);
 }
@@ -2203,6 +2207,14 @@ Acceptance criteria:
   };
 }
 
+function buildGitHubLibrarySignal(input: string): BuildSignal {
+  return {
+    ...buildGitHubSignalFromInput(input),
+    id: "github-sample",
+    signalSourceLabel: "GitHub Signal",
+  };
+}
+
 function buildSavedSignal(result: ApiResult): SavedSignal {
   return {
     id:
@@ -2429,7 +2441,6 @@ export default function BilionAppClient({
 }: BilionAppClientProps) {
   const searchParams = useSearchParams();
   const marketSignals: BuildSignal[] = [...buildSignals, ...gmailMarketSignals];
-  const signalGroups = getSignalGroups(marketSignals);
   const [dailySignalSeed] = useState(() => Math.floor(Date.now() / 86400000));
   const todayIndex =
     marketSignals.length > 0
@@ -2455,6 +2466,8 @@ export default function BilionAppClient({
   const [freeUsageCount, setFreeUsageCount] = useState(0);
   const [sourceMode, setSourceMode] = useState<SourceMode>("indie");
   const [githubInput, setGithubInput] = useState("");
+  const githubLibrarySignal = buildGitHubLibrarySignal(githubInput);
+  const signalGroups = getSignalGroups(marketSignals, githubLibrarySignal);
   const [selectedSignalId, setSelectedSignalId] = useState(
     marketSignals[todayIndex]?.id || marketSignals[0]?.id || "",
   );
@@ -2468,7 +2481,7 @@ export default function BilionAppClient({
   const canGenerate = hasFounderAccess || freeRunsRemaining > 0;
   const selectedSignal =
     selectedSignalId === "github-sample"
-      ? buildGitHubSignalFromInput(githubInput)
+      ? githubLibrarySignal
       : marketSignals.find((signal) => signal.id === selectedSignalId) ||
         marketSignals[todayIndex] ||
         marketSignals[0];
@@ -2489,7 +2502,7 @@ export default function BilionAppClient({
       if (source === "github") {
         setSourceMode("github");
         setSelectedSignalId("github-sample");
-        setSelectedBuyer(buildGitHubSignalFromInput("").buyer);
+        setSelectedBuyer(buildGitHubLibrarySignal("").buyer);
       }
     }, 0);
 
@@ -2915,17 +2928,17 @@ export default function BilionAppClient({
                       </h3>
                     </div>
                     <p className="text-xs font-bold text-zinc-500">
-                      Success Records, Pattern Library, and Gmail/newsletter signals
+                      Success Records, Pattern Library, Gmail/newsletter signals, and GitHub Signal
                     </p>
                   </div>
                   <div className="mt-4 grid gap-4">
                     {signalGroups.map((group) => (
                       <details
                         key={group.label}
-                        open={group.label === "Recommended"}
+                        open={group.label === "Recommended" || group.label === "GitHub Signal"}
                         className={[
                           "rounded-2xl border p-3",
-                          group.label === "Recommended"
+                          group.label === "Recommended" || group.label === "GitHub Signal"
                             ? "border-emerald-300/20 bg-emerald-300/[0.045]"
                             : "border-white/[0.07] bg-black/15",
                         ].join(" ")}
@@ -2936,7 +2949,11 @@ export default function BilionAppClient({
                           </div>
                           <div className="flex items-center gap-2 text-xs font-bold text-zinc-600">
                             <span>{group.signals.length}</span>
-                            <span>{group.label === "Recommended" ? "Open" : "Tap to open"}</span>
+                            <span>
+                              {group.label === "Recommended" || group.label === "GitHub Signal"
+                                ? "Open"
+                                : "Tap to open"}
+                            </span>
                           </div>
                         </summary>
                         <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
@@ -2952,7 +2969,9 @@ export default function BilionAppClient({
                               <article
                                 key={signal.id}
                                 onClick={() => {
-                                  setSourceMode("indie");
+                                  setSourceMode(
+                                    signal.id === "github-sample" ? "github" : "indie",
+                                  );
                                   setSelectedSignalId(signal.id);
                                   setSelectedBuyer(signal.buyer);
                                 }}
@@ -2984,7 +3003,9 @@ export default function BilionAppClient({
                                       type="button"
                                       onClick={(event) => {
                                         event.stopPropagation();
-                                        setSourceMode("indie");
+                                        setSourceMode(
+                                          signal.id === "github-sample" ? "github" : "indie",
+                                        );
                                         setSelectedSignalId(signal.id);
                                         setSelectedBuyer(signal.buyer);
                                         setSelectedAction(option.action);
@@ -3003,36 +3024,6 @@ export default function BilionAppClient({
                       </details>
                     ))}
 
-                    <div className="rounded-2xl border border-white/10 bg-black/20 p-3">
-                      <div className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-zinc-400">
-                        GitHub Signal
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const githubSignal = buildGitHubSignalFromInput(githubInput);
-                          setSourceMode("github");
-                          setSelectedSignalId("github-sample");
-                          setSelectedBuyer(githubSignal.buyer);
-                        }}
-                        className={[
-                          "min-h-28 w-full rounded-2xl border px-4 py-3 text-left transition sm:w-auto sm:min-w-72",
-                          selectedSignalId === "github-sample"
-                            ? "border-emerald-300/70 bg-emerald-300/[0.12] text-white shadow-lg shadow-emerald-950/30"
-                            : "border-white/10 bg-black/30 text-zinc-400 hover:bg-white/[0.04] hover:text-white",
-                        ].join(" ")}
-                      >
-                        <span className="mb-2 inline-flex rounded-full border border-white/10 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-emerald-200">
-                          GitHub Signal
-                        </span>
-                        <span className="block text-sm font-black leading-5">
-                          GitHub setup friction
-                        </span>
-                        <span className="mt-2 block text-xs leading-5 text-zinc-500">
-                          Use repo activity as the market signal.
-                        </span>
-                      </button>
-                    </div>
                   </div>
                 </section>
                 )}
