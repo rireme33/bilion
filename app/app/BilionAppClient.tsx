@@ -2490,6 +2490,10 @@ export default function BilionAppClient({
   const [masterPrompt, setMasterPrompt] = useState<MasterPrompt | null>(null);
   const [masterPromptAngleIndex, setMasterPromptAngleIndex] = useState(0);
   const [freeUsageCount, setFreeUsageCount] = useState(0);
+  const [openSignalGroups, setOpenSignalGroups] = useState<string[]>([
+    "Recommended",
+    "GitHub Signal",
+  ]);
   const [sourceMode, setSourceMode] = useState<SourceMode>("indie");
   const [githubInput, setGithubInput] = useState("");
   const githubLibrarySignal = buildGitHubLibrarySignal(githubInput);
@@ -2958,10 +2962,22 @@ export default function BilionAppClient({
                     </p>
                   </div>
                   <div className="mt-4 grid gap-4">
-                    {signalGroups.map((group) => (
+                    {signalGroups.map((group) => {
+                      const groupOpen = openSignalGroups.includes(group.label);
+
+                      return (
                       <details
                         key={group.label}
-                        open={group.label === "Recommended" || group.label === "GitHub Signal"}
+                        open={groupOpen}
+                        onToggle={(event) => {
+                          const isOpen = event.currentTarget.open;
+
+                          setOpenSignalGroups((currentGroups) =>
+                            isOpen
+                              ? Array.from(new Set([...currentGroups, group.label]))
+                              : currentGroups.filter((label) => label !== group.label),
+                          );
+                        }}
                         className={[
                           "rounded-2xl border p-3",
                           group.label === "Recommended" || group.label === "GitHub Signal"
@@ -2976,12 +2992,13 @@ export default function BilionAppClient({
                           <div className="flex items-center gap-2 text-xs font-bold text-zinc-600">
                             <span>{group.signals.length}</span>
                             <span>
-                              {group.label === "Recommended" || group.label === "GitHub Signal"
+                              {groupOpen
                                 ? "Open"
                                 : "Tap to open"}
                             </span>
                           </div>
                         </summary>
+                        {groupOpen && (
                         <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                           {group.signals.map((signal) => {
                             const active = selectedSignalId === signal.id;
@@ -3022,7 +3039,23 @@ export default function BilionAppClient({
                                 <span className="mt-2 block text-xs leading-5 text-zinc-500">
                                   {signal.buyer}
                                 </span>
-                                <div className="mt-3 grid grid-cols-3 gap-2">
+                                <button
+                                  type="button"
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    setSourceMode(
+                                      signal.id === "github-sample" ? "github" : "indie",
+                                    );
+                                    setSelectedSignalId(signal.id);
+                                    setSelectedBuyer(signal.buyer);
+                                    setSelectedAction("build");
+                                    setActiveWorkflowTab("studio");
+                                  }}
+                                  className="mt-3 w-full rounded-xl bg-emerald-300 px-3 py-2.5 text-xs font-black text-black transition hover:bg-emerald-200"
+                                >
+                                  Reveal Opportunity
+                                </button>
+                                <div className="mt-2 grid grid-cols-3 gap-1.5">
                                   {nextActionOptions.map((option) => (
                                     <button
                                       key={option.action}
@@ -3037,7 +3070,7 @@ export default function BilionAppClient({
                                         setSelectedAction(option.action);
                                         setActiveWorkflowTab("studio");
                                       }}
-                                      className="rounded-xl border border-white/10 bg-white/[0.04] px-2 py-2 text-xs font-black text-zinc-200 transition hover:bg-white hover:text-black"
+                                      className="rounded-lg border border-white/10 bg-white/[0.03] px-2 py-1.5 text-[11px] font-bold text-zinc-400 transition hover:bg-white/[0.08] hover:text-white"
                                     >
                                       {option.label.split(" ")[0]}
                                     </button>
@@ -3047,8 +3080,10 @@ export default function BilionAppClient({
                             );
                           })}
                         </div>
+                        )}
                       </details>
-                    ))}
+                      );
+                    })}
 
                   </div>
                 </section>
@@ -3663,29 +3698,34 @@ function SecondaryToolsSection({
   savedSignals: SavedSignal[];
   validationRecords: ValidationRecord[];
 }) {
+  const [archiveOpen, setArchiveOpen] = useState(false);
+
   return (
     <section className="mt-8 rounded-3xl border border-white/[0.08] bg-white/[0.02] p-4">
-      <details>
+      <details
+        open={archiveOpen}
+        onToggle={(event) => setArchiveOpen(event.currentTarget.open)}
+      >
         <summary className="cursor-pointer list-none rounded-2xl border border-white/[0.08] bg-black/25 px-4 py-4">
           <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
             Advanced / Archive
           </div>
           <h2 className="mt-2 text-xl font-black text-zinc-200">
-            Validation, winners, saved prompts, and examples.
+            Saved prompts, validation tracker, winners, and showcase examples.
           </h2>
           <p className="mt-2 text-sm leading-6 text-zinc-600">
-            The main path is Signal Library → Opportunity Reveal Studio → Carousel and
-            Distribution Assets. Open this only when tracking or reviewing.
+            Open archive
           </p>
         </summary>
 
+        {archiveOpen && (
         <div className="mt-4 grid gap-4">
           <details className="rounded-2xl border border-white/[0.08] bg-black/20 p-3">
             <summary className="cursor-pointer list-none text-sm font-black text-zinc-300">
               Workflow note
             </summary>
             <p className="mt-3 text-sm leading-6 text-zinc-500">
-              Find signal → Generate brief → Distribute → Track replies → Save winners.
+              Find signal - Reveal opportunity - Copy carousel - Sell first - Build after replies.
             </p>
           </details>
 
@@ -3716,6 +3756,7 @@ function SecondaryToolsSection({
 
           <InlineShowcaseSection />
         </div>
+        )}
       </details>
     </section>
   );
