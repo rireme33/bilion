@@ -3829,7 +3829,6 @@ export default function BilionAppClient({
               Pick a market-backed opportunity, sell it with a carousel or DM,
               then build with Codex only after replies.
             </p>
-            <GuidedWorkflow currentStep={guidedWorkflowStep} />
           </header>
 
           {selectedPatternLabel && (
@@ -3842,7 +3841,7 @@ export default function BilionAppClient({
             <div className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl md:p-8">
               <h2 className="text-2xl font-black tracking-tight">
                 {activeWorkflowTab === "library"
-                  ? "Signal Library"
+                  ? "Choose market. Test opportunity."
                   : "Opportunity Reveal Studio"}
               </h2>
               <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-400">
@@ -3854,19 +3853,6 @@ export default function BilionAppClient({
               <div className="mt-6 grid gap-6">
                 {activeWorkflowTab === "library" && (
                 <section>
-                  <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-                    <div>
-                      <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-                        Step 1
-                      </div>
-                      <h3 className="mt-1 text-lg font-black text-white">
-                        Pick a proven market signal
-                      </h3>
-                    </div>
-                    <p className="text-xs font-bold text-zinc-500">
-                      Success Records, Pattern Library, Gmail/newsletter signals, and GitHub Signal
-                    </p>
-                  </div>
                   <MarketSelectionSection
                     opportunities={topMarketOpportunities}
                     selectedMarket={selectedMarket}
@@ -3879,24 +3865,20 @@ export default function BilionAppClient({
                       setActiveWorkflowTab("studio");
                     }}
                   />
-                  <EvidenceInboxSummary
-                    signals={evidenceInboxSignals}
-                    topSignal={topOpportunitySignal}
-                    onRevealTop={(signal) => {
-                      setSourceMode(signal.id === "github-sample" ? "github" : "indie");
-                      setSelectedSignalId(signal.id);
-                      setSelectedBuyer(signal.buyer);
-                      setSelectedAction("build");
-                      setActiveWorkflowTab("studio");
-                    }}
-                  />
-                  <EvidenceIntakeSection
-                    approvedCount={approvedEvidenceSignals.length}
-                    drafts={evidenceDrafts}
-                    onApprove={approveEvidenceDraft}
-                    onImport={importEvidenceSnippets}
-                    onReject={rejectEvidenceDraft}
-                  />
+                  <GuidedWorkflow currentStep={guidedWorkflowStep} />
+                  <div className="mt-5 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                      <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+                        More signals
+                      </div>
+                      <h3 className="mt-1 text-lg font-black text-white">
+                        Browse other evidence-backed signals.
+                      </h3>
+                    </div>
+                    <p className="text-xs font-bold text-zinc-600">
+                      Secondary. Start with the Top Opportunity above.
+                    </p>
+                  </div>
                   <div className="mt-4 grid gap-4">
                     {signalGroups.map((group) => {
                       const groupOpen = openSignalGroups.includes(group.label);
@@ -4036,6 +4018,24 @@ export default function BilionAppClient({
                     })}
 
                   </div>
+                  <EvidenceInboxSummary
+                    signals={evidenceInboxSignals}
+                    topSignal={topOpportunitySignal}
+                    onRevealTop={(signal) => {
+                      setSourceMode(signal.id === "github-sample" ? "github" : "indie");
+                      setSelectedSignalId(signal.id);
+                      setSelectedBuyer(signal.buyer);
+                      setSelectedAction("build");
+                      setActiveWorkflowTab("studio");
+                    }}
+                  />
+                  <EvidenceIntakeSection
+                    approvedCount={approvedEvidenceSignals.length}
+                    drafts={evidenceDrafts}
+                    onApprove={approveEvidenceDraft}
+                    onImport={importEvidenceSnippets}
+                    onReject={rejectEvidenceDraft}
+                  />
                 </section>
                 )}
 
@@ -4449,8 +4449,22 @@ function GuidedWorkflow({ currentStep }: { currentStep: 1 | 2 | 3 }) {
   }>;
 
   return (
-    <section className="mt-6 max-w-6xl rounded-3xl border border-white/10 bg-[#101011] p-4 shadow-2xl md:p-5">
-      <div className="flex flex-col gap-3 border-b border-white/10 pb-4 md:flex-row md:items-end md:justify-between">
+    <details className="mt-4 rounded-2xl border border-white/[0.08] bg-black/20 p-4">
+      <summary className="cursor-pointer list-none">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+              New here?
+            </div>
+            <p className="mt-1 text-sm font-bold leading-6 text-zinc-300">
+              Pick a market, test one opportunity, then copy launch assets.
+            </p>
+          </div>
+          <div className="text-xs font-bold text-zinc-600">Open workflow</div>
+        </div>
+      </summary>
+
+      <div className="mt-4 flex flex-col gap-3 border-t border-white/10 pt-4 md:flex-row md:items-end md:justify-between">
         <div>
           <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
             New here?
@@ -4530,7 +4544,7 @@ function GuidedWorkflow({ currentStep }: { currentStep: 1 | 2 | 3 }) {
           );
         })}
       </div>
-    </section>
+    </details>
   );
 }
 
@@ -4551,7 +4565,21 @@ function EvidenceInboxSummary({
   ).length;
 
   return (
-    <div className="mt-4 rounded-2xl border border-white/10 bg-black/25 p-4">
+    <details className="mt-4 rounded-2xl border border-white/[0.08] bg-black/20 p-4">
+      <summary className="cursor-pointer list-none">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+              Evidence Inbox
+            </div>
+            <p className="mt-1 text-sm font-bold leading-6 text-zinc-300">
+              {signals.length} signals feeding the ranking engine.
+            </p>
+          </div>
+          <div className="text-xs font-bold text-zinc-600">Open evidence</div>
+        </div>
+      </summary>
+      <div className="mt-4 rounded-2xl border border-white/10 bg-black/25 p-4">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
@@ -4595,7 +4623,8 @@ function EvidenceInboxSummary({
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </details>
   );
 }
 
@@ -4611,13 +4640,13 @@ function MarketSelectionSection({
   selectedMarket: (typeof marketOptions)[number];
 }) {
   return (
-    <section className="mt-4 rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.045] p-4">
+    <section className="rounded-3xl border border-emerald-300/25 bg-emerald-300/[0.055] p-5 shadow-2xl md:p-6">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-            Market Selection First
+            Start here
           </div>
-          <h3 className="mt-1 text-xl font-black text-white">
+          <h3 className="mt-1 text-2xl font-black text-white md:text-3xl">
             Choose the right market before you build.
           </h3>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
@@ -4653,17 +4682,17 @@ function MarketSelectionSection({
 
       <div className="mt-4 grid gap-3">
         <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
-          Top opportunities for {selectedMarket}
+          Top Opportunity To Test in {selectedMarket}
         </div>
         {opportunities.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-white/10 bg-black/25 p-4 text-sm leading-6 text-zinc-500">
             No approved evidence yet for this market. Paste or approve evidence to teach Bilion what money moved here.
           </div>
         ) : (
-          opportunities.map((signal) => (
+          opportunities.slice(0, 1).map((signal) => (
             <article
               key={signal.id}
-              className="rounded-2xl border border-white/10 bg-black/30 p-4"
+              className="rounded-3xl border border-emerald-300/35 bg-black/35 p-5 shadow-lg shadow-emerald-950/20"
             >
               <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div>
@@ -4691,9 +4720,9 @@ function MarketSelectionSection({
                 <button
                   type="button"
                   onClick={() => onSelectOpportunity(signal)}
-                  className="rounded-xl bg-emerald-300 px-4 py-3 text-xs font-black text-black transition hover:bg-emerald-200"
+                  className="rounded-2xl bg-emerald-300 px-5 py-4 text-sm font-black text-black transition hover:bg-emerald-200"
                 >
-                  Test this first
+                  Reveal and sell first
                 </button>
               </div>
 
