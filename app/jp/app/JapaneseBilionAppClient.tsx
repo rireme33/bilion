@@ -18,6 +18,19 @@ type SourceOutput = {
   masterPrompt: string;
 };
 
+type JapaneseMarketKey =
+  | "education"
+  | "healthcare"
+  | "local"
+  | "ecommerce"
+  | "aiAgency"
+  | "creators"
+  | "construction"
+  | "finance"
+  | "legal"
+  | "realEstate"
+  | "developer";
+
 type JapaneseBilionAppClientProps = {
   hasFounderAccess: boolean;
 };
@@ -60,6 +73,23 @@ const audiences = [
   "clinics",
   "contractors",
   "solo developers",
+];
+
+const japaneseMarketOptions: Array<{
+  key: JapaneseMarketKey;
+  label: string;
+}> = [
+  { key: "education", label: "教育" },
+  { key: "healthcare", label: "医療" },
+  { key: "local", label: "ローカルビジネス" },
+  { key: "ecommerce", label: "EC" },
+  { key: "aiAgency", label: "AIエージェンシー" },
+  { key: "creators", label: "クリエイター" },
+  { key: "construction", label: "建設" },
+  { key: "finance", label: "金融" },
+  { key: "legal", label: "法務" },
+  { key: "realEstate", label: "不動産" },
+  { key: "developer", label: "開発者ワークフロー" },
 ];
 
 function createSourceOutput({
@@ -411,6 +441,200 @@ function getOpportunityValueByLabelJa(output: SourceOutput, targetLabel: string)
     getOpportunityFieldsJa(output).find(([label]) => label === targetLabel)?.[1] ||
     ""
   );
+}
+
+function getSourceOutputTextJa(output: SourceOutput) {
+  return [
+    output.label,
+    output.proof,
+    output.title,
+    ...output.businessFields.flat(),
+    ...output.validationSteps,
+  ].join(" ");
+}
+
+function getJapaneseMarketForOutput(output: SourceOutput): JapaneseMarketKey {
+  const text = getSourceOutputTextJa(output).toLowerCase();
+
+  if (/教育|学校|先生|教師|worksheet|student|homeschool|preschool/.test(text)) return "education";
+  if (/医療|歯科|患者|clinic|patient|キャンセル|整体|予約/.test(text)) return "healthcare";
+  if (/ローカル|口コミ|美容室|サロン|飲食|レストラン|店舗|local|review/.test(text)) return "local";
+  if (/ec|ecommerce|shopify|etsy|amazon|ストア|商品ページ/.test(text)) return "ecommerce";
+  if (/agency|エージェンシー|受託|consultant|client|codex/.test(text)) return "aiAgency";
+  if (/creator|クリエイター|youtube|tiktok|newsletter|x投稿|instagram/.test(text)) return "creators";
+  if (/建設|工事|現場|施工|contractor|jobsite/.test(text)) return "construction";
+  if (/金融|請求|invoice|会計|経理|finance|cash/.test(text)) return "finance";
+  if (/法務|契約|legal|law|compliance/.test(text)) return "legal";
+  if (/不動産|入居者|tenant|property|real estate/.test(text)) return "realEstate";
+  if (/github|developer|開発者|repo|issue|pr|mcp/.test(text)) return "developer";
+
+  return "aiAgency";
+}
+
+function getJapaneseOpportunityScore(output: SourceOutput) {
+  const text = getSourceOutputTextJa(output);
+  const moneySignals = (text.match(/\$|円|月額|setup|paid|価格|売上|購入|有料/gi) || []).length;
+  const buyerSignals = (text.match(/買う|払う|buyer|会社|店舗|クリニック|開発者|ビルダー|管理/gi) || []).length;
+  const distributionSignals = (text.match(/x|dm|投稿|デモ|送る|メール|github|コミュニティ/gi) || []).length;
+  const validationSignals = (text.match(/48時間|20|30|β|検証|有料β|購入/gi) || []).length;
+
+  return Math.min(
+    50,
+    22 +
+      Math.min(10, moneySignals * 2) +
+      Math.min(8, buyerSignals) +
+      Math.min(6, distributionSignals) +
+      Math.min(4, validationSignals),
+  );
+}
+
+function getJapaneseEvidenceLevel(output: SourceOutput) {
+  const score = getJapaneseOpportunityScore(output);
+
+  if (score >= 42) return "Strong";
+  if (score >= 34) return "Medium";
+  return "Directional";
+}
+
+function getMarketLabelJa(key: JapaneseMarketKey) {
+  return japaneseMarketOptions.find((market) => market.key === key)?.label || "市場";
+}
+
+function getMarketFallbackOutputJa(market: JapaneseMarketKey): SourceOutput {
+  const label = getMarketLabelJa(market);
+  const details: Record<JapaneseMarketKey, {
+    buyer: string;
+    pain: string;
+    product: string;
+    price: string;
+    channel: string;
+  }> = {
+    education: {
+      buyer: "幼児教育の先生、教材販売者、ホームスクール家庭",
+      pain: "名前入り教材や個別ワークシートを毎回手作業で作るのが面倒。",
+      product: "名前なぞりワークシート生成ツール",
+      price: "$9 worksheet pack",
+      channel: "Pinterest、TikTok、先生向けコミュニティ",
+    },
+    healthcare: {
+      buyer: "歯科、整体、予約制クリニック",
+      pain: "キャンセル後の再予約フォローが漏れ、空き枠が売上損失になる。",
+      product: "予約キャンセル回収アシスタント",
+      price: "$399 setup + $49/month",
+      channel: "クリニック向けDM、Loom監査、紹介",
+    },
+    local: {
+      buyer: "地域店舗、サロン、飲食店、ローカル代理店",
+      pain: "口コミ返信や低評価対応が遅れ、来店前の信頼を落とす。",
+      product: "口コミ監視・返信ドラフトツール",
+      price: "$29/month",
+      channel: "Google Maps監査、DM、無料レビュー診断",
+    },
+    ecommerce: {
+      buyer: "小規模EC運営者、Shopifyストア、商品ページ担当",
+      pain: "商品説明、FAQ、レビュー要約、改善案を継続的に作れない。",
+      product: "EC商品ページ改善パック",
+      price: "$19 report",
+      channel: "X投稿、Shopifyコミュニティ、商品ページ無料診断",
+    },
+    aiAgency: {
+      buyer: "AI受託開発者、AIエージェンシー、業務自動化コンサル",
+      pain: "顧客要望をCodexで作れる仕様・検収条件・納品物に変換するのが毎回重い。",
+      product: "Codex納品ブリーフ生成パック",
+      price: "$49 template pack",
+      channel: "X投稿、LinkedIn、AI agencyコミュニティ、DM",
+    },
+    creators: {
+      buyer: "YouTuber、ニュースレター運営者、X発信者",
+      pain: "ネタはあるが、投稿・カルーセル・CTAに変換するのに時間がかかる。",
+      product: "Signal to Carousel Pack",
+      price: "$19 one-time",
+      channel: "X、TikTok、ニュースレター返信",
+    },
+    construction: {
+      buyer: "小規模工務店、造園会社、現場保守チーム",
+      pain: "現場メモから日報や顧客報告を作るのに毎日時間がかかる。",
+      product: "工事現場日報ジェネレーター",
+      price: "$49/month",
+      channel: "施工会社へのデモDM、現場日報Before/After",
+    },
+    finance: {
+      buyer: "フリーランス、小規模事業者、経理代行",
+      pain: "請求催促、入金確認、月次メモが散らばりキャッシュ回収が遅れる。",
+      product: "請求フォローアップ文面生成ツール",
+      price: "$19 one-time",
+      channel: "フリーランス向け投稿、テンプレ配布、DM",
+    },
+    legal: {
+      buyer: "小規模法律事務所、契約レビュー担当、士業",
+      pain: "問い合わせや契約メモを整理し、確認事項に変換する作業が重い。",
+      product: "契約確認メモ整理ツール",
+      price: "$49 report pack",
+      channel: "士業向けメール、LinkedIn、無料チェックリスト",
+    },
+    realEstate: {
+      buyer: "不動産管理会社、物件管理担当、大家",
+      pain: "入居者連絡や修理依頼を緊急度・業者指示に変換するのが遅い。",
+      product: "入居者修理依頼ルーター",
+      price: "$299 setup + $29/month",
+      channel: "管理会社へのDM、修理依頼Before/Afterデモ",
+    },
+    developer: {
+      buyer: "Codex/Cursorユーザー、個人開発者、Dev tool創業者",
+      pain: "GitHubの公開シグナルを商品機会、価格、検証文に変換できない。",
+      product: "GitHub Repo Signal Brief Generator",
+      price: "$19 one-time",
+      channel: "X、GitHubコミュニティ、AIビルダーDM",
+    },
+  };
+  const item = details[market];
+
+  return createSourceOutput({
+    label: "市場サンプル",
+    proof: `参照元 mock evidence / ${label}`,
+    title: item.product,
+    signal: `${label}市場では、すでに手作業で行われている反復業務に小さな有料ツールの余地がある。`,
+    buyer: item.buyer,
+    pain: item.pain,
+    product: item.product,
+    price: item.price,
+    whyNow: "AIで作るコストは下がったが、先に買う相手と販売導線を検証する必要があるから。",
+    validationSteps: [
+      "Before/Afterデモを1つ作る。",
+      "想定購入者20人に投稿またはDMする。",
+      "3件以上の返信、1件の購入意思、または実データ提供を確認する。",
+      "反応があった場合だけCodexで小さく作る。",
+    ],
+    masterPrompt: createMasterPrompt({
+      productName: item.product,
+      buyer: item.buyer,
+      pain: item.pain,
+      productAngle: item.product,
+      firstVersion: "入力、生成結果、コピー、検証ログだけを持つ小さな1ページ版。",
+      price: item.price,
+      validationSteps: [
+        "Before/Afterデモを1つ作る。",
+        "想定購入者20人に投稿またはDMする。",
+        "3件以上の返信、1件の購入意思、または実データ提供を確認する。",
+        "反応があった場合だけCodexで小さく作る。",
+      ],
+    }),
+  });
+}
+
+function getTopMarketOpportunityJa(market: JapaneseMarketKey) {
+  const allOutputs = Object.values(sourceOutputPools).flat();
+  const match = allOutputs
+    .filter((output) => getJapaneseMarketForOutput(output) === market)
+    .sort((a, b) => getJapaneseOpportunityScore(b) - getJapaneseOpportunityScore(a))[0];
+
+  return match || getMarketFallbackOutputJa(market);
+}
+
+function getWhyThisOpportunityJa(output: SourceOutput) {
+  const why = getOpportunityValueByLabelJa(output, "なぜ売れたか");
+
+  return `${why} スコア理由: 買う相手、価格仮説、配布導線、48時間検証が見えているため。`;
 }
 
 function buildJapaneseMobileXPost(output: SourceOutput) {
@@ -1029,6 +1253,178 @@ function ButtonLink({
   );
 }
 
+function JapaneseMarketSelectionSection({
+  canGenerate,
+  onMarketChange,
+  onReveal,
+  opportunity,
+  selectedMarket,
+}: {
+  canGenerate: boolean;
+  onMarketChange: (market: JapaneseMarketKey) => void;
+  onReveal: () => void;
+  opportunity: SourceOutput;
+  selectedMarket: JapaneseMarketKey;
+}) {
+  const marketLabel = getMarketLabelJa(selectedMarket);
+  const buyer = getOpportunityValueByLabelJa(opportunity, "誰が払うか");
+  const pain = getOpportunityValueByLabelJa(opportunity, "なぜ売れたか");
+  const firstOffer = getOpportunityValueByLabelJa(opportunity, "初回有料オファー");
+  const price = getOpportunityValueByLabelJa(opportunity, "価格");
+
+  return (
+    <section className="rounded-3xl border border-emerald-300/25 bg-emerald-300/[0.055] p-5 shadow-2xl md:p-6">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+            Start here
+          </div>
+          <h2 className="mt-2 text-3xl font-black tracking-tight text-white md:text-4xl">
+            作る前に市場を選ぶ
+          </h2>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-zinc-400">
+            BilionはAIアイデア生成ツールではありません。市場を選び、証拠のある収益機会を見つけ、先に投稿/DMで売り、反応があったらCodexで作るための市場選定OSです。
+          </p>
+        </div>
+        <div className="rounded-full border border-white/10 bg-black/30 px-4 py-2 text-xs font-black uppercase tracking-wide text-zinc-400">
+          市場 → 証拠 → 機会 → Launch Pack → 反応 → Winner
+        </div>
+      </div>
+
+      <div className="mt-5 flex gap-2 overflow-x-auto pb-1">
+        {japaneseMarketOptions.map((market) => {
+          const active = selectedMarket === market.key;
+
+          return (
+            <button
+              key={market.key}
+              type="button"
+              onClick={() => onMarketChange(market.key)}
+              className={[
+                "shrink-0 rounded-full border px-3 py-2 text-xs font-black transition",
+                active
+                  ? "border-emerald-300 bg-emerald-300 text-black"
+                  : "border-white/10 bg-black/25 text-zinc-400 hover:border-white/20 hover:text-white",
+              ].join(" ")}
+            >
+              {market.label}
+            </button>
+          );
+        })}
+      </div>
+
+      <article className="mt-5 rounded-3xl border border-emerald-300/35 bg-black/35 p-5 shadow-lg shadow-emerald-950/20">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <div className="flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-wide">
+              <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-zinc-400">
+                {marketLabel}
+              </span>
+              <span className="rounded-full border border-emerald-300/25 bg-emerald-300/[0.08] px-2 py-1 text-emerald-200">
+                スコア {getJapaneseOpportunityScore(opportunity)}/50
+              </span>
+              <span className="rounded-full border border-white/10 bg-black/25 px-2 py-1 text-zinc-500">
+                証拠レベル {getJapaneseEvidenceLevel(opportunity)}
+              </span>
+            </div>
+            <div className="mt-4 text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+              今テストすべき機会
+            </div>
+            <h3 className="mt-2 text-2xl font-black tracking-tight text-white">
+              {opportunity.title}
+            </h3>
+            <p className="mt-3 text-sm leading-7 text-zinc-400">
+              買う相手: {buyer}
+            </p>
+            <p className="mt-2 text-sm leading-7 text-zinc-200">
+              有料の痛み: {pain}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onReveal}
+            disabled={!canGenerate}
+            className="rounded-2xl bg-emerald-300 px-5 py-4 text-sm font-black text-black transition hover:bg-emerald-200 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            先に売るために表示
+          </button>
+        </div>
+
+        <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <JapaneseMarketField label="なぜこの機会か" value={getWhyThisOpportunityJa(opportunity)} />
+          <JapaneseMarketField label="最初のオファー" value={`${firstOffer} / ${price}`} />
+          <JapaneseMarketField label="販売導線" value={opportunity.proof} />
+          <JapaneseMarketField
+            label="検証/構築タイミング"
+            value="48時間で投稿/DMを検証。返信があった場合だけCodexで小さく作る。"
+          />
+        </div>
+      </article>
+    </section>
+  );
+}
+
+function JapaneseMarketField({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-black/25 p-3">
+      <div className="text-[11px] font-black uppercase tracking-wide text-zinc-600">
+        {label}
+      </div>
+      <p className="mt-2 text-sm leading-6 text-zinc-200">{value}</p>
+    </div>
+  );
+}
+
+function JapaneseEvidenceToolsSection() {
+  return (
+    <div className="mt-4 grid gap-3">
+      <details className="rounded-2xl border border-white/[0.08] bg-black/20 p-4">
+        <summary className="cursor-pointer list-none">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+                証拠インボックス
+              </div>
+              <p className="mt-1 text-sm font-bold leading-6 text-zinc-300">
+                収益、価格、買う相手、販売導線など「お金が動いた証拠」を見る場所です。
+              </p>
+            </div>
+            <div className="text-xs font-bold text-zinc-600">開く</div>
+          </div>
+        </summary>
+        <p className="mt-4 border-t border-white/10 pt-4 text-sm leading-7 text-zinc-500">
+          証拠はランキングエンジンに入ります。承認された証拠が増えるほど、Bilionは「どの市場で、何を先に売るべきか」を判断しやすくなります。
+        </p>
+      </details>
+
+      <details className="rounded-2xl border border-white/[0.08] bg-black/20 p-4">
+        <summary className="cursor-pointer list-none">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+                証拠貼り付けインポート
+              </div>
+              <p className="mt-1 text-sm font-bold leading-6 text-zinc-300">
+                市場の証拠を貼り付けて、シグナル化する前に確認する。
+              </p>
+            </div>
+            <div className="text-xs font-bold text-zinc-600">準備中</div>
+          </div>
+        </summary>
+        <p className="mt-4 border-t border-white/10 pt-4 text-sm leading-7 text-zinc-500">
+          現時点の日本語版ではローカルのサンプル証拠を使います。外部API、DB、OAuthは追加していません。
+        </p>
+      </details>
+    </div>
+  );
+}
+
 export default function JapaneseBilionAppClient({
   hasFounderAccess,
 }: JapaneseBilionAppClientProps) {
@@ -1036,6 +1432,8 @@ export default function JapaneseBilionAppClient({
   const [showOutput, setShowOutput] = useState(false);
   const [copiedPrompt, setCopiedPrompt] = useState(false);
   const [sourceType, setSourceType] = useState<SourceType>("indie");
+  const [selectedMarket, setSelectedMarket] =
+    useState<JapaneseMarketKey>("aiAgency");
   const [currentOutputIndex, setCurrentOutputIndex] = useState(0);
   const [currentOutput, setCurrentOutput] = useState<SourceOutput | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -1054,6 +1452,7 @@ export default function JapaneseBilionAppClient({
   const selectedPool = sourceOutputPools[sourceType];
   const selectedOutput =
     currentOutput ?? selectedPool[currentOutputIndex] ?? selectedPool[0]!;
+  const topMarketOpportunity = getTopMarketOpportunityJa(selectedMarket);
   const freeRunsRemaining = hasFounderAccess
     ? Infinity
     : Math.max(0, FREE_DAILY_LIMIT_JP - freeUsageCount);
@@ -1130,6 +1529,17 @@ export default function JapaneseBilionAppClient({
     }
   }
 
+  function revealMarketOpportunity() {
+    if (!canGenerate || isGenerating) {
+      return;
+    }
+
+    setCurrentOutput(topMarketOpportunity);
+    setShowOutput(true);
+    setCopiedPrompt(false);
+    incrementFreeUsage();
+  }
+
   async function copyMasterPrompt() {
     await navigator.clipboard.writeText(selectedOutput.masterPrompt);
     setCopiedPrompt(true);
@@ -1154,16 +1564,31 @@ export default function JapaneseBilionAppClient({
           <LanguageSwitch />
         </header>
 
-        <section className="grid gap-8 py-14 md:py-18 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+        <section className="py-10 md:py-12">
+          <JapaneseMarketSelectionSection
+            canGenerate={canGenerate}
+            onMarketChange={(market) => {
+              setSelectedMarket(market);
+              setShowOutput(false);
+              setCopiedPrompt(false);
+            }}
+            onReveal={revealMarketOpportunity}
+            opportunity={topMarketOpportunity}
+            selectedMarket={selectedMarket}
+          />
+          <JapaneseEvidenceToolsSection />
+        </section>
+
+        <section className="grid gap-8 pb-14 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
           <div>
             <div className="text-xs font-semibold tracking-[0.18em] text-zinc-500">
-              今日のシグナル
+              その他のシグナル
             </div>
             <h1 className="mt-5 max-w-2xl text-4xl font-semibold leading-tight tracking-tight md:text-5xl">
-              1時間実装＆リリース
+              まずは上の“今テストすべき機会”から始めてください。
             </h1>
             <p className="mt-5 max-w-xl text-base leading-7 text-zinc-400">
-              GitHubシグナルとIndie Hackers DBから、需要のある商品ネタを厳選。買う相手・痛み・価格・48時間検証・AIビルド用プロンプトまで生成します。
+              追加で見たい場合だけ、GitHubシグナルとIndie Hackers DBから別の市場証拠を探せます。BilionはランダムなAIアイデアではなく、作る前に市場と販売導線を選ぶためのツールです。
             </p>
 
             <div className="mt-7 rounded-2xl border border-white/10 bg-[#111214] p-4">
@@ -1210,7 +1635,7 @@ export default function JapaneseBilionAppClient({
                   disabled={isGenerating}
                   className="rounded-xl bg-white px-4 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  商品を作成する
+                  別の機会を表示
                 </button>
               ) : (
                 <ButtonLink href="/jp/founder">実装プロンプトアクセスを見る</ButtonLink>
@@ -1226,8 +1651,7 @@ export default function JapaneseBilionAppClient({
               </p>
             )}
             <p className="mt-3 max-w-xl text-xs leading-5 text-zinc-500">
-              Bilionは、伸びた投稿のスワイプファイルが投稿作成を助けたように、
-              売れたビジネスパターンを次に検証できる商品オファーへ変換します。
+              先に売る。反応があったら作る。Codex Promptは市場反応を見たあとに使います。
             </p>
             {hasFounderAccess && (
               <p className="mt-4 max-w-xl text-sm leading-6 text-zinc-500">
@@ -1239,17 +1663,20 @@ export default function JapaneseBilionAppClient({
           <div className="rounded-2xl border border-white/10 bg-[#111214] p-5 shadow-xl shadow-black/20">
             <div className="border-b border-white/10 pb-4">
               <div className="text-xs font-semibold tracking-[0.16em] text-zinc-500">
-                {showOutput ? "商品化ブリーフ" : "未生成"}
+                {showOutput ? "Launch Pack" : "未生成"}
               </div>
               {showOutput ? (
                 <>
                   <h2 className="mt-1 text-lg font-semibold text-white">{selectedOutput.title}</h2>
                   <p className="mt-2 text-xs leading-5 text-zinc-500">{selectedOutput.proof}</p>
+                  <p className="mt-3 rounded-xl border border-emerald-300/20 bg-emerald-300/[0.06] px-3 py-2 text-xs leading-5 text-emerald-100">
+                    まず投稿/DMで売る。返信、保存、クリック、購入意思が出たらCodexで作る。
+                  </p>
                 </>
               ) : (
                 <>
                   <p className="mt-2 text-sm leading-7 text-zinc-400">
-                    ソースを選んで、商品を作成するを押してください。
+                    市場を選び、「先に売るために表示」を押してください。
                   </p>
                   <p className="mt-3 rounded-xl border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-500">
                     参照元 IH42kDB + GitHubシグナル
@@ -1327,10 +1754,10 @@ export default function JapaneseBilionAppClient({
                     BUILD PROMPT
                   </div>
                   <h2 className="mt-2 text-2xl font-semibold tracking-tight">
-                    最後に作るためのBuild Prompt
+                    反応があったら作るためのBuild Prompt
                   </h2>
                   <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-400">
-                    売れる商品角度、コピー、検証プランを確認したあとで使う実装用プロンプトです。
+                    投稿、DM、48時間検証で市場反応を確認したあとに使う実装用プロンプトです。Codex Promptを最初に主役にしないでください。
                   </p>
                 </div>
                 <button
@@ -1347,6 +1774,20 @@ export default function JapaneseBilionAppClient({
             </div>
           </section>
         )}
+
+        <section className="border-t border-white/10 py-8">
+          <div className="rounded-2xl border border-white/10 bg-[#111214] p-5">
+            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
+              Winner Loop
+            </div>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight">
+              Winnerは、市場で反応があった機会です。
+            </h2>
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-400">
+              証拠 → 機会 → Launch Pack → 市場反応 → Winner。返信、保存、クリック、DM、購入意思が出たものだけを次の判断材料にします。
+            </p>
+          </div>
+        </section>
 
         <JapaneseInlineShowcaseSection />
       </section>
