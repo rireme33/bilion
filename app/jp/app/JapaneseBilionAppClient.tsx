@@ -125,7 +125,7 @@ function createSourceOutput({
       ["売れた型", signal],
       ["なぜ売れたか", whyNow],
       ["誰が払うか", buyer],
-      ["あなたの商品角度", product],
+      ["収益機会の角度", product],
       ["最初の有料オファー", title],
       ["価格", price],
       ["リードマグネット", `${product}のBefore/After例を1つ無料で見せる。`],
@@ -223,10 +223,10 @@ function pickRandom(items: string[]) {
 
 function deriveBuyerFromPatternMatches(patternMatches?: string[]) {
   if (!patternMatches || patternMatches.length === 0) {
-    return "AIで小型商品を作りたい個人開発者・小規模事業者";
+    return "AIで小さな収益機会を検証したい個人開発者・小規模事業者";
   }
 
-  return `${patternMatches.slice(0, 3).join(" / ")} 向けの小型AI商品を探している人`;
+  return `${patternMatches.slice(0, 3).join(" / ")} 向けの小型AI収益機会を探している人`;
 }
 
 function buildGoldmineFallbackPrompt(free: GoldmineFreeResult) {
@@ -282,16 +282,16 @@ function mapGoldmineResultToSourceOutput(free: GoldmineFreeResult): SourceOutput
         "売れた型",
         free.latest_signal ||
           free.what_happened ||
-          "海外の小型AI商品シグナル",
+          "海外の小型AI収益シグナル",
       ],
       [
         "なぜ売れたか",
         free.why_its_useful ||
           free.what_happened ||
-          "手作業の業務をAIで短縮したいが、何を商品化すべきか分からない。",
+          "手作業の業務をAIで短縮したいが、どの収益機会から検証すべきか分からない。",
       ],
       ["誰が払うか", deriveBuyerFromPatternMatches(free.pattern_matches)],
-      ["あなたの商品角度", free.what_you_can_build || free.title || "小型AIワークフロー商品"],
+      ["収益機会の角度", free.what_you_can_build || free.title || "小型AIワークフロー収益機会"],
       ["最初の有料オファー", title],
       [
         "価格",
@@ -328,7 +328,7 @@ function opportunityLabelJa(label: string) {
     "何が金になるか": "最初の有料オファー",
     "誰が買うか": "誰が払うか",
     "どんな痛みを解決するか": "なぜ売れたか",
-    "何を売るか": "あなたの商品角度",
+    "何を売るか": "収益機会の角度",
     "いくらで売るか": "価格",
     "なぜ今買うか": "48時間検証の理由",
   };
@@ -350,7 +350,7 @@ function opportunityValueJa(label: string, value: string, title: string) {
   }
 
   if (label === "何を売るか") {
-    return `${value}。LP見出し、X投稿、DM文まで一緒に作る。`;
+    return `${value}。LP見出し、X投稿、DM文まで含めて先に売る。`;
   }
 
   return value || title;
@@ -383,7 +383,7 @@ function getOpportunityFieldsJa(output: SourceOutput): [string, string][] {
   );
   const productAngle = getFieldValueJa(
     output,
-    ["あなたの商品角度", "何を売るか"],
+    ["収益機会の角度", "あなたの商品角度", "何を売るか"],
     output.title,
   );
   const firstOffer = getFieldValueJa(
@@ -427,7 +427,7 @@ function getOpportunityFieldsJa(output: SourceOutput): [string, string][] {
     ["なぜ売れたか", whySold],
     ["市場の証拠", marketProof],
     ["誰が払うか", whoPays],
-    ["あなた向けの商品角度", productAngle],
+    ["あなた向けの収益機会", productAngle],
     ["初回有料オファー", firstOffer],
     ["価格", price],
     ["リードマグネット", leadMagnet],
@@ -581,7 +581,7 @@ function getMarketFallbackOutputJa(market: JapaneseMarketKey): SourceOutput {
     },
     developer: {
       buyer: "Codex/Cursorユーザー、個人開発者、Dev tool創業者",
-      pain: "GitHubの公開シグナルを商品機会、価格、検証文に変換できない。",
+      pain: "GitHubの公開シグナルを収益機会、価格、検証文に変換できない。",
       product: "GitHub Repo Signal Brief Generator",
       price: "$19 one-time",
       channel: "X、GitHubコミュニティ、AIビルダーDM",
@@ -638,7 +638,7 @@ function getWhyThisOpportunityJa(output: SourceOutput) {
 }
 
 function buildJapaneseMobileXPost(output: SourceOutput) {
-  return `Bilionで売れた型を商品化してみた。
+  return `Bilionで証拠つきの収益機会を見つけた。
 
 売れた型：
 ${getOpportunityValueByLabelJa(output, "売れた型")}
@@ -646,7 +646,7 @@ ${getOpportunityValueByLabelJa(output, "売れた型")}
 誰が払うか：
 ${getOpportunityValueByLabelJa(output, "誰が払うか")}
 
-初回商品：
+初回オファー：
 ${getOpportunityValueByLabelJa(output, "初回有料オファー")}
 
 価格：
@@ -655,18 +655,18 @@ ${getOpportunityValueByLabelJa(output, "価格")}
 48時間検証：
 ${output.validationSteps.map((step, index) => `${index + 1}. ${step}`).join("\n")}
 
-作る前に、売れるかを見ろ。`;
+作る前に、投稿/DMで売れるかを見る。`;
 }
 
 const japaneseMobileReplyCopy = `売りたい相手・自分の強み・考えてる案を送ってください。
 Bilionで無料Roastして、最初に何を売るべきか返します。`;
 
-const japaneseMobileDmCopy = `Bilionを検証中です。売れたビジネスの型から、初回商品・価格・投稿文・48時間検証まで出します。
+const japaneseMobileDmCopy = `Bilionを検証中です。売れたビジネスの型から、収益機会・価格・投稿文・48時間検証まで出します。
 あなたの案で1回無料診断しましょうか？`;
 
-const japaneseMobileSalesCtaCopy = `完全版Personal Product Briefを見る — $19
+const japaneseMobileSalesCtaCopy = `完全版Launch Packを見る — $19
 
-3つの商品角度、LPコピー、X投稿10本、DMスクリプト、価格、Codex用Build Promptを含みます。`;
+3つの市場角度、LPコピー、X投稿10本、DMスクリプト、価格、反応後に使うCodex用Build Promptを含みます。`;
 
 async function writeClipboardTextJa(text: string) {
   if (!navigator.clipboard?.writeText) {
@@ -934,7 +934,7 @@ Acceptance criteria:
     businessFields: [
       [
         "シグナル",
-        "GitHubでAIエージェント、ローカル自動化、開発者ワークフロー系のリポジトリが伸びている。AIビルダーは毎日トレンドを見るが、それを「誰に売るか」「何を作るか」「いくらで売るか」に変換できていない。",
+        "GitHubでAIエージェント、ローカル自動化、開発者ワークフロー系のリポジトリが伸びている。AIビルダーは毎日トレンドを見るが、それを「誰に売るか」「どの収益機会を検証するか」「いくらで売るか」に変換できていない。",
       ],
       ["何が金になるか", "GitHub Repo Signal Brief Generator"],
       [
@@ -943,20 +943,20 @@ Acceptance criteria:
       ],
       [
         "どんな痛みを解決するか",
-        "GitHubトレンドやAIリポジトリを見ても、そこから売れる小型商品、買う相手、価格、検証手順に変換できない。",
+        "GitHubトレンドやAIリポジトリを見ても、そこから売れる小さな収益機会、買う相手、価格、検証手順に変換できない。",
       ],
       [
         "何を売るか",
-        "GitHubリポジトリURLやトレンド名を入力すると、商品案、買う相手、痛み、価格、48時間検証、実装プロンプトに変換する小型AIツール。",
+        "GitHubリポジトリURLやトレンド名を入力すると、買う相手、痛み、価格、48時間検証、Launch Pack、反応後のBuild Promptに変換する市場検証ツール。",
       ],
       ["いくらで売るか", "$19 one-time または $9/month"],
       [
         "なぜ今買うか",
-        "Codex、Cursor、Claude Codeで作れる人が増えたが、作る前の「何を作れば売れるか」がボトルネックになっているから。",
+        "Codex、Cursor、Claude Codeで作れる人が増えたが、作る前の「どの市場に先に売るか」がボトルネックになっているから。",
       ],
     ],
     validationSteps: [
-      "GitHubトレンド1件を商品案に変換する60秒デモを作る。",
+      "GitHubトレンド1件を収益機会とLaunch Packに変換する60秒デモを作る。",
       "XでAIビルダー向けに投稿する。",
       "Codex / Cursor / Claude Codeユーザー30人にDMする。",
       "5人から「使いたい」または$19購入を取れるか確認する。",
@@ -1016,10 +1016,10 @@ UI requirements:
 Acceptance criteria:
 - The page loads successfully.
 - User can select GitHubシグナル or Indie Hackers DB.
-- User clicks 商品を作成する.
+- User clicks Launch Packを作る.
 - Output appears only after click.
 - Output changes based on selected source.
-- Copy button copies the selected source's Master Prompt.`,
+- Copy button copies the selected source's Build Prompt.`,
   },
   createSourceOutput({
     label: "GitHubシグナル",
@@ -1064,17 +1064,17 @@ Acceptance criteria:
     proof: "参照元 GitHub issues / maintainer comment patterns",
     title: "PR / Issue Summary Brief Tool",
     signal:
-      "GitHubのIssue、PR、メンテナーコメントには、ユーザーの不満、未解決ニーズ、導入障壁が集まっている。だが読むだけでは商品判断に変換しづらい。",
+      "GitHubのIssue、PR、メンテナーコメントには、ユーザーの不満、未解決ニーズ、導入障壁が集まっている。だが読むだけでは市場判断に変換しづらい。",
     buyer: "OSSを追うAIビルダー、開発者向けSaaS創業者、DevRel、技術マーケター",
     pain:
-      "IssueやPRを読んでも、どの不満が買う痛みなのか、どの機能が商品化できるのか、検証すべき相手が誰か整理できない。",
+      "IssueやPRを読んでも、どの不満が買う痛みなのか、どの機能が収益機会になるのか、検証すべき相手が誰か整理できない。",
     product:
-      "IssueやPRメモを貼ると、ユーザー痛み、頻出要望、商品機会、検証メッセージ、Code X用プロンプトに変換する分析ツール。",
+      "IssueやPRメモを貼ると、ユーザー痛み、頻出要望、収益機会、検証メッセージ、Code X用プロンプトに変換する分析ツール。",
     price: "$19 one-time",
     whyNow:
-      "OSS周辺のユーザー発言は公開された市場調査データであり、AIビルダーが商品選定に使えるから。",
+      "OSS周辺のユーザー発言は公開された市場調査データであり、AIビルダーが市場選定に使えるから。",
     validationSteps: [
-      "人気OSSのIssue 5件を商品ブリーフに変換するデモを作る。",
+      "人気OSSのIssue 5件を市場検証ブリーフに変換するデモを作る。",
       "開発者向けにXへ投稿する。",
       "Dev tool創業者とAIビルダー30人に送る。",
       "$19で5件の購入または反論を取る。",
@@ -1107,7 +1107,7 @@ Acceptance criteria:
     pain:
       "日次ファイル整理、CSVチェック、請求前確認、メール下書きなどの作業が散らばり、AI自動化できそうでも設計できない。",
     product:
-      "業務メモを入力すると、自動化候補、コマンド手順、リスク、実装プロンプトを生成するローカル自動化設計ツール。",
+      "業務メモを入力すると、自動化候補、コマンド手順、リスク、反応後のBuild Promptを生成するローカル自動化設計ツール。",
     price: "$49 setup template",
     whyNow:
       "ローカル自動化とAI coding toolsが揃い、非エンジニア業務でも小さな自動化を売りやすくなったから。",
@@ -1145,10 +1145,10 @@ Acceptance criteria:
     pain:
       "MCPの技術例は多いが、買う相手、業務痛み、価格、最初のデモに落とせないため、作る対象が決まらない。",
     product:
-      "業務カテゴリを選ぶと、MCPツール案、接続対象、ユーザー痛み、最初のデモ、実装プロンプトを生成するアイデア発見ツール。",
+      "業務カテゴリを選ぶと、MCPツール案、接続対象、ユーザー痛み、最初のデモ、反応後のBuild Promptを生成する市場検証ツール。",
     price: "$19 one-time",
     whyNow:
-      "MCPは開発者の注目が高く、早い段階で業務別テンプレートや商品案を欲しがる層がいるから。",
+      "MCPは開発者の注目が高く、早い段階で業務別テンプレートや証拠つきの収益機会を欲しがる層がいるから。",
     validationSteps: [
       "Gmail、Notion、GitHub向けMCPアイデア3件を作る。",
       "AIビルダー向けにXで投稿する。",
@@ -1433,7 +1433,7 @@ function JapaneseEvidenceToolsSection() {
           </div>
         </summary>
         <p className="mt-4 border-t border-white/10 pt-4 text-sm leading-7 text-zinc-500">
-          現時点の日本語版ではローカルのサンプル証拠を使います。外部API、DB、OAuthは追加していません。
+          証拠貼り付けインポートは英語版で先行テスト中。日本語版では、まず市場選定とLaunch Pack生成を使ってください。
         </p>
       </details>
     </div>
@@ -1573,7 +1573,7 @@ export default function JapaneseBilionAppClient({
               <div className="text-lg font-black tracking-tight transition group-hover:text-zinc-200">
                 Bilion
               </div>
-              <div className="text-xs text-zinc-500">AIビルダー向け商品シグナル</div>
+              <div className="text-xs text-zinc-500">AIビルダー向け市場シグナル</div>
             </div>
           </Link>
           <LanguageSwitch />
@@ -1603,7 +1603,7 @@ export default function JapaneseBilionAppClient({
               まずは上の“今テストすべき機会”から始めてください。
             </h1>
             <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-400 md:mt-5 md:text-base md:leading-7">
-              追加で見たい場合だけ、GitHubシグナルとIndie Hackers DBから別の市場証拠を探せます。BilionはランダムなAIアイデアではなく、作る前に市場と販売導線を選ぶためのツールです。
+              追加で見たい場合だけ、GitHubシグナルとIndie Hackers DBから別の市場証拠を探せます。BilionはランダムなAIアイデアではなく、作る前に市場と販売導線を選ぶための市場選定OSです。
             </p>
 
             <div className="mt-4 rounded-2xl border border-white/10 bg-[#111214] p-3 md:mt-7 md:p-4">
@@ -1650,10 +1650,10 @@ export default function JapaneseBilionAppClient({
                   disabled={isGenerating}
                   className="rounded-xl bg-white px-4 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  別の機会を表示
+                  別の市場角度を表示
                 </button>
               ) : (
-                <ButtonLink href="/jp/founder">実装プロンプトアクセスを見る</ButtonLink>
+                <ButtonLink href="/jp/founder">Founder Accessを見る</ButtonLink>
               )}
               <ButtonLink href="/jp" variant="secondary">
                 トップに戻る
@@ -1670,7 +1670,7 @@ export default function JapaneseBilionAppClient({
             </p>
             {hasFounderAccess && (
               <p className="mt-4 max-w-xl text-sm leading-6 text-zinc-500">
-                Unlimited access unlocked. 何度でも商品案とMaster Promptを生成できます。
+                Unlimited access unlocked. 何度でも収益機会とLaunch Packを生成できます。
               </p>
             )}
           </div>
@@ -1728,10 +1728,10 @@ export default function JapaneseBilionAppClient({
                 {!hasFounderAccess && (
                   <div className="rounded-xl border border-emerald-400/20 bg-emerald-400/[0.06] p-4">
                     <h3 className="text-lg font-semibold text-white">
-                      完全版Personal Product Briefを見る — $19
+                      完全版Launch Packを見る — $19
                     </h3>
                     <p className="mt-2 text-sm leading-6 text-zinc-400">
-                      3つの商品角度、LPコピー、X投稿10本、DMスクリプト、価格、Codex用Build Promptを含みます。
+                      3つの市場角度、LPコピー、X投稿10本、DMスクリプト、価格、反応後に使うCodex用Build Promptを含みます。
                     </p>
                     <div className="mt-4">
                       <ButtonLink href="/jp/founder">完全版を見る</ButtonLink>
@@ -1751,10 +1751,10 @@ export default function JapaneseBilionAppClient({
                 今日の無料生成3回を使用済みです。
               </h2>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-400">
-                無料でも有料版と同じ品質の出力を確認できます。追加の生成、無制限コピー、追加角度の生成は実装プロンプトアクセスで解放されます。
+                無料でも有料版と同じ品質の出力を確認できます。追加の生成、無制限コピー、追加の市場角度はFounder Accessで解放されます。
               </p>
               <div className="mt-5">
-                <ButtonLink href="/jp/founder">実装プロンプトアクセスを見る</ButtonLink>
+                <ButtonLink href="/jp/founder">Founder Accessを見る</ButtonLink>
               </div>
             </div>
           </section>
@@ -1780,7 +1780,7 @@ export default function JapaneseBilionAppClient({
                   onClick={copyMasterPrompt}
                   className="rounded-xl bg-white px-4 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200"
                 >
-                  {copiedPrompt ? "コピー済み" : "Master Promptをコピー"}
+                  {copiedPrompt ? "コピー済み" : "Build Promptをコピー"}
                 </button>
               </div>
               <pre className="mt-5 max-h-[620px] overflow-auto whitespace-pre-wrap rounded-xl border border-white/10 bg-black/35 p-4 font-sans text-sm leading-6 text-zinc-100">
@@ -1799,7 +1799,7 @@ export default function JapaneseBilionAppClient({
               Winnerは、市場で反応があった機会です。
             </h2>
             <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-400">
-              証拠 → 機会 → Launch Pack → 市場反応 → Winner。返信、保存、クリック、DM、購入意思が出たものだけを次の判断材料にします。
+              投稿/DMの反応を見て、勝ちそうな市場・Buyer・Hook・Offerを手動でWinner候補として保存してください。
             </p>
           </div>
         </section>
@@ -1818,7 +1818,7 @@ function JapaneseInlineShowcaseSection() {
           展示場
         </h2>
         <p className="mt-2 text-sm leading-6 text-zinc-500">
-          Bilionのシグナルから作ったデモ商品です。
+          Bilionのシグナルから作った市場検証デモです。
         </p>
       </div>
 
@@ -1829,7 +1829,7 @@ function JapaneseInlineShowcaseSection() {
             className="rounded-2xl border border-white/10 bg-[#111214] p-5"
           >
             <div className="text-xs font-semibold tracking-wide text-zinc-500">
-              作った商品
+                  検証デモ
             </div>
             <h3 className="mt-2 text-base font-semibold text-white">
               {item.name}
@@ -1893,7 +1893,7 @@ function JapaneseMobileShareKit({ output }: { output: SourceOutput }) {
     {
       key: "sales-cta",
       label: "販売CTAをコピー",
-      helper: "Offer the $19 Personal Product Brief",
+      helper: "Offer the $19 Launch Pack",
       text: japaneseMobileSalesCtaCopy,
     },
   ];
@@ -1911,7 +1911,7 @@ function JapaneseMobileShareKit({ output }: { output: SourceOutput }) {
       </div>
       <p className="mt-2 text-sm leading-6 text-zinc-400">
         Post this brief on X → Reply to interested people with this → Offer the
-        $19 Personal Product Brief.
+        $19 Launch Pack.
       </p>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         {shareItems.map((item) => (
