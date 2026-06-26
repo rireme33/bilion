@@ -1273,25 +1273,25 @@ function JapaneseMarketSelectionSection({
   const price = getOpportunityValueByLabelJa(opportunity, "価格");
 
   return (
-    <section className="rounded-3xl border border-emerald-300/25 bg-emerald-300/[0.055] p-5 shadow-2xl md:p-6">
+    <section className="rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.055] p-3 shadow-2xl md:rounded-3xl md:p-6">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
             Start here
           </div>
-          <h2 className="mt-2 text-3xl font-black tracking-tight text-white md:text-4xl">
+          <h2 className="mt-1 text-2xl font-black tracking-tight text-white md:mt-2 md:text-4xl">
             作る前に市場を選ぶ
           </h2>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-zinc-400">
+          <p className="mt-2 max-w-2xl text-xs leading-5 text-zinc-400 md:mt-3 md:text-sm md:leading-7">
             BilionはAIアイデア生成ツールではありません。市場を選び、証拠のある収益機会を見つけ、先に投稿/DMで売り、反応があったらCodexで作るための市場選定OSです。
           </p>
         </div>
-        <div className="rounded-full border border-white/10 bg-black/30 px-4 py-2 text-xs font-black uppercase tracking-wide text-zinc-400">
+        <div className="hidden rounded-full border border-white/10 bg-black/30 px-4 py-2 text-xs font-black uppercase tracking-wide text-zinc-400 md:block">
           市場 → 証拠 → 機会 → Launch Pack → 反応 → Winner
         </div>
       </div>
 
-      <div className="mt-5 flex gap-2 overflow-x-auto pb-1">
+      <div className="mt-3 flex gap-2 overflow-x-auto pb-1 md:mt-5">
         {japaneseMarketOptions.map((market) => {
           const active = selectedMarket === market.key;
 
@@ -1301,7 +1301,7 @@ function JapaneseMarketSelectionSection({
               type="button"
               onClick={() => onMarketChange(market.key)}
               className={[
-                "shrink-0 rounded-full border px-3 py-2 text-xs font-black transition",
+                "shrink-0 rounded-full border px-3 py-1.5 text-xs font-black transition md:py-2",
                 active
                   ? "border-emerald-300 bg-emerald-300 text-black"
                   : "border-white/10 bg-black/25 text-zinc-400 hover:border-white/20 hover:text-white",
@@ -1313,8 +1313,8 @@ function JapaneseMarketSelectionSection({
         })}
       </div>
 
-      <article className="mt-5 rounded-3xl border border-emerald-300/35 bg-black/35 p-5 shadow-lg shadow-emerald-950/20">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <article className="mt-3 rounded-2xl border border-emerald-300/35 bg-black/35 p-3 shadow-lg shadow-emerald-950/20 md:mt-5 md:rounded-3xl md:p-5">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <div className="flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-wide">
               <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-zinc-400">
@@ -1327,16 +1327,16 @@ function JapaneseMarketSelectionSection({
                 証拠レベル {getJapaneseEvidenceLevel(opportunity)}
               </span>
             </div>
-            <div className="mt-4 text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+            <div className="mt-3 text-xs font-black uppercase tracking-[0.16em] text-zinc-500 md:mt-4">
               今テストすべき機会
             </div>
-            <h3 className="mt-2 text-2xl font-black tracking-tight text-white">
+            <h3 className="mt-2 text-xl font-black tracking-tight text-white md:text-2xl">
               {opportunity.title}
             </h3>
-            <p className="mt-3 text-sm leading-7 text-zinc-400">
+            <p className="mt-2 text-xs leading-5 text-zinc-400 md:mt-3 md:text-sm md:leading-7">
               買う相手: {buyer}
             </p>
-            <p className="mt-2 text-sm leading-7 text-zinc-200">
+            <p className="mt-2 line-clamp-2 text-xs leading-5 text-zinc-200 md:line-clamp-none md:text-sm md:leading-7">
               有料の痛み: {pain}
             </p>
           </div>
@@ -1344,13 +1344,28 @@ function JapaneseMarketSelectionSection({
             type="button"
             onClick={onReveal}
             disabled={!canGenerate}
-            className="rounded-2xl bg-emerald-300 px-5 py-4 text-sm font-black text-black transition hover:bg-emerald-200 disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full rounded-xl bg-emerald-300 px-4 py-3 text-sm font-black text-black transition hover:bg-emerald-200 disabled:cursor-not-allowed disabled:opacity-50 lg:w-auto lg:rounded-2xl lg:px-5 lg:py-4"
           >
             先に売るために表示
           </button>
         </div>
 
-        <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        <details className="mt-3 rounded-xl border border-white/10 bg-black/20 p-3 md:hidden">
+          <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-wide text-zinc-500">
+            詳細を見る
+          </summary>
+          <div className="mt-3 grid gap-2">
+            <JapaneseMarketField label="なぜこの機会か" value={getWhyThisOpportunityJa(opportunity)} />
+            <JapaneseMarketField label="最初のオファー" value={`${firstOffer} / ${price}`} />
+            <JapaneseMarketField label="販売導線" value={opportunity.proof} />
+            <JapaneseMarketField
+              label="検証/構築タイミング"
+              value="48時間で投稿/DMを検証。返信があった場合だけCodexで小さく作る。"
+            />
+          </div>
+        </details>
+
+        <div className="mt-4 hidden gap-3 md:grid md:grid-cols-2 xl:grid-cols-4">
           <JapaneseMarketField label="なぜこの機会か" value={getWhyThisOpportunityJa(opportunity)} />
           <JapaneseMarketField label="最初のオファー" value={`${firstOffer} / ${price}`} />
           <JapaneseMarketField label="販売導線" value={opportunity.proof} />
@@ -1548,7 +1563,7 @@ export default function JapaneseBilionAppClient({
 
   return (
     <main className="min-h-screen bg-[#0b0c0e] text-white">
-      <section className="mx-auto max-w-6xl px-5 py-5 sm:px-6 md:py-7">
+      <section className="mx-auto max-w-6xl px-3 py-4 sm:px-6 md:py-7">
         <header className="flex items-center justify-between gap-4">
           <Link href="/jp" className="group flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white text-sm font-black text-zinc-950">
@@ -1564,7 +1579,7 @@ export default function JapaneseBilionAppClient({
           <LanguageSwitch />
         </header>
 
-        <section className="py-10 md:py-12">
+        <section className="py-4 md:py-12">
           <JapaneseMarketSelectionSection
             canGenerate={canGenerate}
             onMarketChange={(market) => {
@@ -1579,19 +1594,19 @@ export default function JapaneseBilionAppClient({
           <JapaneseEvidenceToolsSection />
         </section>
 
-        <section className="grid gap-8 pb-14 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+        <section className="grid gap-5 pb-10 md:gap-8 md:pb-14 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
           <div>
             <div className="text-xs font-semibold tracking-[0.18em] text-zinc-500">
               その他のシグナル
             </div>
-            <h1 className="mt-5 max-w-2xl text-4xl font-semibold leading-tight tracking-tight md:text-5xl">
+            <h1 className="mt-3 max-w-2xl text-2xl font-semibold leading-tight tracking-tight md:mt-5 md:text-5xl">
               まずは上の“今テストすべき機会”から始めてください。
             </h1>
-            <p className="mt-5 max-w-xl text-base leading-7 text-zinc-400">
+            <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-400 md:mt-5 md:text-base md:leading-7">
               追加で見たい場合だけ、GitHubシグナルとIndie Hackers DBから別の市場証拠を探せます。BilionはランダムなAIアイデアではなく、作る前に市場と販売導線を選ぶためのツールです。
             </p>
 
-            <div className="mt-7 rounded-2xl border border-white/10 bg-[#111214] p-4">
+            <div className="mt-4 rounded-2xl border border-white/10 bg-[#111214] p-3 md:mt-7 md:p-4">
               <div className="text-xs font-semibold tracking-[0.16em] text-zinc-500">
                 ソースを選択
               </div>

@@ -3811,21 +3811,21 @@ export default function BilionAppClient({
             : "lg:grid-cols-1",
         ].join(" ")}
       >
-        <section className="p-4 md:p-8">
-          <header className="mb-8">
+        <section className="px-3 py-4 md:p-8">
+          <header className="mb-4 md:mb-8">
             <div className="flex items-center justify-between gap-4">
               <div />
               <LanguageSwitch />
             </div>
 
-            <h1 className="mt-4 max-w-4xl text-4xl font-black tracking-tight md:text-6xl">
+            <h1 className="mt-3 max-w-4xl text-3xl font-black tracking-tight md:mt-4 md:text-6xl">
               Bilion
             </h1>
-            <div className="mt-2 text-xl font-bold text-zinc-200">
+            <div className="mt-1 text-base font-bold text-zinc-200 md:mt-2 md:text-xl">
               Find leverage before everyone else.
             </div>
 
-            <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-400">
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400 md:mt-4 md:text-base md:leading-7">
               Pick a market-backed opportunity, sell it with a carousel or DM,
               then build with Codex only after replies.
             </p>
@@ -3838,19 +3838,19 @@ export default function BilionAppClient({
           )}
 
           {(activeWorkflowTab === "library" || (activeWorkflowTab === "studio" && !result)) && (
-            <div className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl md:p-8">
-              <h2 className="text-2xl font-black tracking-tight">
+            <div className="rounded-2xl border border-white/10 bg-[#101011] p-3 shadow-2xl md:rounded-3xl md:p-8">
+              <h2 className="text-xl font-black tracking-tight md:text-2xl">
                 {activeWorkflowTab === "library"
                   ? "Choose market. Test opportunity."
                   : "Opportunity Reveal Studio"}
               </h2>
-              <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-400">
+              <p className="mt-2 max-w-xl text-xs leading-5 text-zinc-400 md:mt-3 md:text-sm md:leading-6">
                 {activeWorkflowTab === "library"
                   ? "This is not an idea generator. Start with evidence, reveal the opportunity, then test demand before building."
                   : `Free Opportunity Reveals today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used.`}
               </p>
 
-              <div className="mt-6 grid gap-6">
+              <div className="mt-4 grid gap-4 md:mt-6 md:gap-6">
                 {activeWorkflowTab === "library" && (
                 <section>
                   <MarketSelectionSection
@@ -4640,25 +4640,25 @@ function MarketSelectionSection({
   selectedMarket: (typeof marketOptions)[number];
 }) {
   return (
-    <section className="rounded-3xl border border-emerald-300/25 bg-emerald-300/[0.055] p-5 shadow-2xl md:p-6">
+    <section className="rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.055] p-3 shadow-2xl md:rounded-3xl md:p-6">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
             Start here
           </div>
-          <h3 className="mt-1 text-2xl font-black text-white md:text-3xl">
+          <h3 className="mt-1 text-xl font-black text-white md:text-3xl">
             Choose the right market before you build.
           </h3>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
+          <p className="mt-2 max-w-2xl text-xs leading-5 text-zinc-400 md:text-sm md:leading-6">
             Pick a market, review evidence-backed opportunities, sell one today, then build with Codex after replies.
           </p>
         </div>
-        <div className="rounded-full border border-white/10 bg-black/30 px-4 py-2 text-xs font-black uppercase tracking-wide text-zinc-400">
+        <div className="hidden rounded-full border border-white/10 bg-black/30 px-4 py-2 text-xs font-black uppercase tracking-wide text-zinc-400 md:block">
           Evidence &rarr; Opportunity &rarr; Launch Pack &rarr; Response &rarr; Winner
         </div>
       </div>
 
-      <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
+      <div className="mt-3 flex gap-2 overflow-x-auto pb-1 md:mt-4">
         {marketOptions.map((market) => {
           const active = selectedMarket === market;
 
@@ -4668,7 +4668,7 @@ function MarketSelectionSection({
               type="button"
               onClick={() => onMarketChange(market)}
               className={[
-                "shrink-0 rounded-full border px-3 py-2 text-xs font-black transition",
+                "shrink-0 rounded-full border px-3 py-1.5 text-xs font-black transition md:py-2",
                 active
                   ? "border-emerald-300 bg-emerald-300 text-black"
                   : "border-white/10 bg-black/25 text-zinc-400 hover:border-white/20 hover:text-white",
@@ -4680,7 +4680,7 @@ function MarketSelectionSection({
         })}
       </div>
 
-      <div className="mt-4 grid gap-3">
+      <div className="mt-3 grid gap-3 md:mt-4">
         <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
           Top Opportunity To Test in {selectedMarket}
         </div>
@@ -4692,9 +4692,9 @@ function MarketSelectionSection({
           opportunities.slice(0, 1).map((signal) => (
             <article
               key={signal.id}
-              className="rounded-3xl border border-emerald-300/35 bg-black/35 p-5 shadow-lg shadow-emerald-950/20"
+              className="rounded-2xl border border-emerald-300/35 bg-black/35 p-3 shadow-lg shadow-emerald-950/20 md:rounded-3xl md:p-5"
             >
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                 <div>
                   <div className="flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-wide">
                     <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-zinc-400">
@@ -4707,26 +4707,50 @@ function MarketSelectionSection({
                       {getSignalEvidenceLevel(signal)} evidence
                     </span>
                   </div>
-                  <h4 className="mt-3 text-lg font-black text-white">
+                  <h4 className="mt-2 text-base font-black text-white md:mt-3 md:text-lg">
                     {truncateDisplayText(getDisplaySignalTitle(signal).title, 78)}
                   </h4>
-                  <p className="mt-2 text-sm leading-6 text-zinc-400">
+                  <p className="mt-2 text-xs leading-5 text-zinc-400 md:text-sm md:leading-6">
                     Buyer: {signal.buyer}
                   </p>
-                  <p className="mt-2 text-sm leading-6 text-zinc-300">
+                  <p className="mt-2 line-clamp-2 text-xs leading-5 text-zinc-300 md:line-clamp-none md:text-sm md:leading-6">
                     Paid pain: {truncateDisplayText(signal.pain, 160)}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => onSelectOpportunity(signal)}
-                  className="rounded-2xl bg-emerald-300 px-5 py-4 text-sm font-black text-black transition hover:bg-emerald-200"
+                  className="w-full rounded-xl bg-emerald-300 px-4 py-3 text-sm font-black text-black transition hover:bg-emerald-200 lg:w-auto lg:rounded-2xl lg:px-5 lg:py-4"
                 >
                   Reveal and sell first
                 </button>
               </div>
 
-              <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+              <details className="mt-3 rounded-xl border border-white/10 bg-black/20 p-3 md:hidden">
+                <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-wide text-zinc-500">
+                  Details
+                </summary>
+                <div className="mt-3 grid gap-2">
+                  <MarketOpportunityField
+                    label="Why this opportunity"
+                    value={getScoreReason(signal)}
+                  />
+                  <MarketOpportunityField
+                    label="Expected first offer"
+                    value={getExpectedFirstOffer(signal)}
+                  />
+                  <MarketOpportunityField
+                    label="Distribution"
+                    value={signal.patternMatches[2] || signal.sourceNote || "Post the insight, then DM likely buyers."}
+                  />
+                  <MarketOpportunityField
+                    label="Timing"
+                    value="Validate in 48h / build in 1-3 days after replies"
+                  />
+                </div>
+              </details>
+
+              <div className="mt-4 hidden gap-3 md:grid md:grid-cols-2 xl:grid-cols-4">
                 <MarketOpportunityField
                   label="Why this opportunity"
                   value={getScoreReason(signal)}
