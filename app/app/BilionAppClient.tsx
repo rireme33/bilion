@@ -62,6 +62,13 @@ type BilionAppClientProps = {
 type SourceMode = "indie" | "github";
 type NextAction = "build" | "sell" | "post";
 type WorkflowTab = "library" | "studio" | "queue" | "validation" | "winners";
+type MarketClassification =
+  | "Creator Distribution"
+  | "Local Operations"
+  | "Developer Workflow"
+  | "Productivity Workflow"
+  | "Revenue Ops"
+  | "Market Evidence";
 type DistributionStatus = "Draft" | "Posted" | "Sent" | "Tested";
 type DistributionKind = "X post" | "DM script" | "Validation log" | "Short video angle";
 type ValidationVerdict = "Build" | "Kill" | "Pivot";
@@ -107,6 +114,43 @@ type ValidationRecord = {
   verdict: ValidationVerdict;
   winner: boolean;
 };
+
+type EvidenceDraft = {
+  id: string;
+  createdAt: string;
+  rawText: string;
+  sourceType: string;
+  market: string;
+  product: string;
+  buyer: string;
+  paidPain: string;
+  offer: string;
+  price: string;
+  revenueEvidence: string;
+  sourceEvidence: string;
+  distributionChannel: string;
+  leadMagnet: string;
+  whyItWorked: string;
+  adaptationIdea: string;
+  opportunityScore: number;
+  evidenceLevel: "strong" | "medium" | "weak";
+  recommendedUse: "build_sell_post" | "sell_post" | "research_more";
+  launchPackSeed: string;
+};
+
+const marketOptions = [
+  "Education",
+  "Healthcare",
+  "Local Business",
+  "Ecommerce",
+  "AI Agency",
+  "Creators",
+  "Construction",
+  "Finance",
+  "Legal",
+  "Real Estate",
+  "Developer Workflow",
+] as const;
 
 const nextActionOptions: Array<{
   action: NextAction;
@@ -263,6 +307,8 @@ const CHECKOUT_URL = process.env.NEXT_PUBLIC_LEMONSQUEZY_CHECKOUT_URL || "";
 const SAVED_SIGNALS_STORAGE_KEY = "bilion.savedSignals";
 const DISTRIBUTION_QUEUE_STORAGE_KEY = "bilion.distributionQueue";
 const VALIDATION_RECORDS_STORAGE_KEY = "bilion.validationRecords";
+const EVIDENCE_DRAFTS_STORAGE_KEY = "bilion.evidenceDrafts";
+const APPROVED_EVIDENCE_STORAGE_KEY = "bilion.approvedEvidenceSignals";
 const FREE_GENERATION_LIMIT = 3;
 const FREE_USAGE_STORAGE_KEY_EN = "bilion_free_generation_count_en";
 const MAX_SAVED_SIGNALS = 10;
@@ -1441,6 +1487,420 @@ function isNewsletterSignal(signal: BuildSignal) {
   );
 }
 
+function getMarketClassification(signal: BuildSignal): MarketClassification {
+  const haystack = [
+    signal.sourceTitle,
+    signal.latestSignal,
+    signal.sourceType,
+    signal.sourceNote,
+    signal.buyer,
+    signal.pain,
+    signal.whatYouCanBuild,
+    signal.patternMatches.join(" "),
+  ].join(" ").toLowerCase();
+
+  if (/creator|video|tiktok|youtube|newsletter|content|x post|short/i.test(haystack)) {
+    return "Creator Distribution";
+  }
+
+  if (/restaurant|clinic|local|field|contractor|appointment|review|shop/i.test(haystack)) {
+    return "Local Operations";
+  }
+
+  if (/github|developer|repo|api|code|pull request|issue|monitoring/i.test(haystack)) {
+    return "Developer Workflow";
+  }
+
+  if (/revenue|churn|sales|crm|analytics|customer success|pricing/i.test(haystack)) {
+    return "Revenue Ops";
+  }
+
+  if (/gmail|calendar|email|notes|brief|task|productivity|workflow/i.test(haystack)) {
+    return "Productivity Workflow";
+  }
+
+  return "Market Evidence";
+}
+
+function getSignalEvidenceLevel(signal: BuildSignal) {
+  const hasPrice = /\d|\$|mrr|arr|revenue|paid|month|year/i.test(signal.comparablePrice);
+  const hasPatterns = signal.patternMatches.length > 0;
+  const hasSpecificSource = Boolean(signal.sourceTitle && signal.latestSignal);
+
+  if (hasPrice && hasPatterns && hasSpecificSource) {
+    return "Strong";
+  }
+
+  if ((hasPrice && hasSpecificSource) || (hasPatterns && hasSpecificSource)) {
+    return "Medium";
+  }
+
+  return "Directional";
+}
+
+function getSignalOpportunityScore(signal: BuildSignal) {
+  const evidenceLevel = getSignalEvidenceLevel(signal);
+  const evidenceScore =
+    evidenceLevel === "Strong" ? 14 : evidenceLevel === "Medium" ? 10 : 7;
+  const buyerScore = signal.buyer.length > 18 ? 10 : 7;
+  const painScore = signal.pain.length > 32 ? 10 : 7;
+  const distributionScore =
+    /x|twitter|youtube|tiktok|reddit|seo|newsletter|github|community|ads/i.test(
+      `${signal.sourceNote} ${signal.whyNow} ${signal.patternMatches.join(" ")}`,
+    )
+      ? 9
+      : 6;
+  const buildScore = signal.whatYouCanBuild.length > 24 ? 7 : 5;
+
+  return Math.min(50, evidenceScore + buyerScore + painScore + distributionScore + buildScore);
+}
+
+function getTopOpportunitySignal(signals: BuildSignal[]) {
+  return signals
+    .slice()
+    .sort((a, b) => getSignalOpportunityScore(b) - getSignalOpportunityScore(a))[0];
+}
+
+function getSignalMarket(signal: BuildSignal) {
+  const haystack = [
+    signal.sourceTitle,
+    signal.latestSignal,
+    signal.sourceType,
+    signal.sourceNote,
+    signal.buyer,
+    signal.pain,
+    signal.whyNow,
+    signal.whatYouCanBuild,
+    signal.patternMatches.join(" "),
+  ].join(" ").toLowerCase();
+
+  if (/school|teacher|student|worksheet|education|homeschool|preschool/.test(haystack)) {
+    return "Education";
+  }
+
+  if (/clinic|patient|healthcare|medical|dentist|therapy|appointment/.test(haystack)) {
+    return "Healthcare";
+  }
+
+  if (/local|restaurant|review|salon|shop|contractor|home service|google business/.test(haystack)) {
+    return "Local Business";
+  }
+
+  if (/ecommerce|shopify|store|cart|product page|amazon|etsy/.test(haystack)) {
+    return "Ecommerce";
+  }
+
+  if (/codex|agency|automation consultant|client build|service business/.test(haystack)) {
+    return "AI Agency";
+  }
+
+  if (/creator|youtube|tiktok|newsletter|content|x post|instagram|short video/.test(haystack)) {
+    return "Creators";
+  }
+
+  if (/construction|jobsite|contractor|field crew|site report/.test(haystack)) {
+    return "Construction";
+  }
+
+  if (/finance|invoice|accounting|bookkeeping|tax|cash flow/.test(haystack)) {
+    return "Finance";
+  }
+
+  if (/legal|law firm|lawyer|contract|compliance/.test(haystack)) {
+    return "Legal";
+  }
+
+  if (/real estate|realtor|property|tenant|listing|landlord/.test(haystack)) {
+    return "Real Estate";
+  }
+
+  if (/github|developer|repo|api|code|readme|issue|pull request/.test(haystack)) {
+    return "Developer Workflow";
+  }
+
+  return getMarketClassification(signal) === "Developer Workflow"
+    ? "Developer Workflow"
+    : "AI Agency";
+}
+
+function getTopMarketOpportunities(signals: BuildSignal[], market: string) {
+  return signals
+    .filter((signal) => getSignalMarket(signal) === market)
+    .sort((a, b) => getSignalOpportunityScore(b) - getSignalOpportunityScore(a))
+    .slice(0, 3);
+}
+
+function getScoreReason(signal: BuildSignal) {
+  const reasons = [
+    getSignalEvidenceLevel(signal) === "Strong"
+      ? "strong money or source evidence"
+      : "directional evidence to validate",
+    signal.buyer.length > 18 ? "clear buyer" : "buyer needs sharpening",
+    /x|twitter|youtube|tiktok|reddit|seo|newsletter|github|community|ads/i.test(
+      `${signal.sourceNote} ${signal.whyNow} ${signal.patternMatches.join(" ")}`,
+    )
+      ? "clear distribution path"
+      : "distribution needs testing",
+    signal.whatYouCanBuild.length > 24 ? "small buildable wedge" : "simple wedge",
+  ];
+
+  return reasons.join(" / ");
+}
+
+function getExpectedFirstOffer(signal: BuildSignal) {
+  if (/\$|month|mrr|arr|paid/i.test(signal.comparablePrice)) {
+    return `${signal.comparablePrice} first offer`;
+  }
+
+  return `$19-$49 ${workflowOutputTitle(signal)} starter offer`;
+}
+
+function truncateEvidenceText(value: string, maxLength = 220) {
+  const normalized = normalizeDisplayText(value).replace(/\s+/g, " ").trim();
+
+  if (normalized.length <= maxLength) {
+    return normalized;
+  }
+
+  return `${normalized.slice(0, maxLength - 1).trim()}...`;
+}
+
+function getEvidenceLine(rawText: string, labels: string[]) {
+  const lines = rawText
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  for (const label of labels) {
+    const match = lines.find((line) =>
+      line.toLowerCase().startsWith(`${label.toLowerCase()}:`),
+    );
+
+    if (match) {
+      return match.slice(match.indexOf(":") + 1).trim();
+    }
+  }
+
+  return "";
+}
+
+function getEvidencePrice(rawText: string) {
+  const explicitPrice = getEvidenceLine(rawText, ["price", "pricing"]);
+  const priceMatch =
+    rawText.match(/\$[\d,]+(?:\s?\/\s?(?:month|mo|year|yr))?/i) ||
+    rawText.match(/\b\d+\s?(?:usd|dollars)\b/i);
+
+  return explicitPrice || priceMatch?.[0] || "Test a $19-$49 first offer.";
+}
+
+function getEvidenceMarket(rawText: string) {
+  const explicitMarket = getEvidenceLine(rawText, ["market", "category"]);
+  const lowerText = rawText.toLowerCase();
+
+  if (explicitMarket) return explicitMarket;
+  if (/codex|agency|automation consultant/.test(lowerText)) return "AI agency workflow";
+  if (/worksheet|teacher|preschool|homeschool|student|education/.test(lowerText)) return "Education printables";
+  if (/review|restaurant|clinic|contractor|local business|google business/.test(lowerText)) return "Local business operations";
+  if (/github|repo|issue|developer|readme/.test(lowerText)) return "Developer workflow";
+  if (/youtube|tiktok|creator|newsletter|x post/.test(lowerText)) return "Creator distribution";
+
+  return "Market evidence";
+}
+
+function getEvidenceBuyer(rawText: string) {
+  const explicitBuyer = getEvidenceLine(rawText, ["buyer", "who buys", "customer"]);
+  const lowerText = rawText.toLowerCase();
+
+  if (explicitBuyer) return explicitBuyer;
+  if (/codex|agency|automation consultant/.test(lowerText)) return "AI agency founders and automation consultants";
+  if (/worksheet|teacher|preschool|homeschool/.test(lowerText)) return "Teachers, homeschool parents, and printable sellers";
+  if (/review|restaurant|clinic|contractor|local business/.test(lowerText)) return "Local business owners and office managers";
+  if (/github|repo|developer/.test(lowerText)) return "Developers and technical founders";
+
+  return "Buyers already trying to solve this workflow manually";
+}
+
+function getEvidenceProduct(rawText: string, market: string) {
+  const explicitProduct = getEvidenceLine(rawText, ["product", "product idea"]);
+
+  if (explicitProduct) return explicitProduct;
+  return `${market} action brief`;
+}
+
+function getEvidenceScore(rawText: string) {
+  const moneySignals = (
+    rawText.match(/\$|mrr|arr|revenue|paid|customers?|pricing|subscription|bought|sales/gi) ||
+    []
+  ).length;
+  const buyerSignals = (
+    rawText.match(/buyer|customer|founder|teacher|owner|agency|consultant|business|parent/gi) ||
+    []
+  ).length;
+  const distributionSignals = (
+    rawText.match(/x post|twitter|tiktok|youtube|newsletter|seo|community|dm|cold email|github/gi) ||
+    []
+  ).length;
+  const workflowSignals = (
+    rawText.match(/workflow|repeat|manual|template|dashboard|monitor|report|generator|checklist/gi) ||
+    []
+  ).length;
+
+  return Math.min(
+    100,
+    42 +
+      Math.min(24, moneySignals * 6) +
+      Math.min(14, buyerSignals * 3) +
+      Math.min(10, distributionSignals * 3) +
+      Math.min(10, workflowSignals * 2),
+  );
+}
+
+function getEvidenceLevelFromScore(score: number): EvidenceDraft["evidenceLevel"] {
+  if (score >= 82) return "strong";
+  if (score >= 65) return "medium";
+  return "weak";
+}
+
+function getRecommendedUse(score: number): EvidenceDraft["recommendedUse"] {
+  if (score >= 78) return "build_sell_post";
+  if (score >= 60) return "sell_post";
+  return "research_more";
+}
+
+function createEvidenceDraft(rawText: string, index: number, sourceType = "Raw Paste"): EvidenceDraft {
+  const market = getEvidenceMarket(rawText);
+  const product = getEvidenceProduct(rawText, market);
+  const buyer = getEvidenceBuyer(rawText);
+  const paidPain =
+    getEvidenceLine(rawText, ["paid pain", "pain"]) ||
+    truncateEvidenceText(rawText, 180) ||
+    "The buyer has a repeated workflow pain worth validating.";
+  const price = getEvidencePrice(rawText);
+  const distributionChannel =
+    getEvidenceLine(rawText, ["distribution", "distribution channel", "channel"]) ||
+    "X posts, direct DMs, niche communities, and buyer-specific teardown posts.";
+  const leadMagnet =
+    getEvidenceLine(rawText, ["lead magnet", "free offer"]) ||
+    `Free ${product} teardown or checklist`;
+  const offer =
+    getEvidenceLine(rawText, ["offer"]) ||
+    `${price} ${product} starter pack for ${buyer}`;
+  const revenueEvidence =
+    getEvidenceLine(rawText, ["revenue evidence", "revenue"]) ||
+    "Look for paid behavior: price, MRR, ARR, customers, subscriptions, or repeated buying behavior in the source.";
+  const sourceEvidence =
+    getEvidenceLine(rawText, ["source evidence", "source"]) ||
+    truncateEvidenceText(rawText, 220);
+  const whyItWorked =
+    getEvidenceLine(rawText, ["why it worked"]) ||
+    "The evidence points to a repeated buyer workflow, a visible pain, and a small offer that can be tested before building.";
+  const adaptationIdea =
+    getEvidenceLine(rawText, ["adaptation", "adaptation idea"]) ||
+    `Turn this into a Bilion Opportunity Reveal for ${buyer}: post the insight, DM the offer, and build only after replies.`;
+  const opportunityScore = getEvidenceScore(rawText);
+
+  return {
+    id: `evidence-draft-${Date.now()}-${index}`,
+    createdAt: new Date().toISOString(),
+    rawText: rawText.trim(),
+    sourceType,
+    market,
+    product,
+    buyer,
+    paidPain,
+    offer,
+    price,
+    revenueEvidence,
+    sourceEvidence,
+    distributionChannel,
+    leadMagnet,
+    whyItWorked,
+    adaptationIdea,
+    opportunityScore,
+    evidenceLevel: getEvidenceLevelFromScore(opportunityScore),
+    recommendedUse: getRecommendedUse(opportunityScore),
+    launchPackSeed: [
+      `Hook: ${adaptationIdea}`,
+      `DM: I noticed this paid pain for ${buyer}. Want a quick teardown of the workflow and first offer?`,
+      `48h test: post the insight, DM 15 buyers, track replies, then build only after interest.`,
+    ].join("\n"),
+  };
+}
+
+function convertEvidenceDraftToSignal(draft: EvidenceDraft): BuildSignal {
+  return {
+    id: `approved-${draft.id}`,
+    latestSignal: draft.sourceEvidence,
+    sourceTitle: `Evidence Intake: ${draft.product}`,
+    sourceUrl: "",
+    sourceType: "Evidence Intake",
+    sourceNote: [
+      `Source: ${draft.sourceType}`,
+      `Market: ${draft.market}`,
+      `Revenue evidence: ${draft.revenueEvidence}`,
+      `Evidence: ${draft.evidenceLevel}`,
+      `Recommended: ${draft.recommendedUse}`,
+    ].join(" | "),
+    buyer: draft.buyer,
+    pain: draft.paidPain,
+    whyNow: draft.whyItWorked,
+    whatYouCanBuild: draft.adaptationIdea,
+    coreFeatures: [
+      "Evidence summary",
+      "Buyer and paid pain",
+      "Launch pack seed",
+      "48-hour validation plan",
+    ],
+    comparablePrice: draft.price,
+    buildSteps: [
+      "Turn the evidence into one sharp public post.",
+      "Send the offer to 15 likely buyers.",
+      "Track replies, objections, and willingness to pay.",
+      "Build the narrow version only after buyer replies.",
+    ],
+    patternMatches: [
+      draft.market,
+      draft.distributionChannel,
+      draft.leadMagnet,
+      `Opportunity score ${draft.opportunityScore}/100`,
+    ],
+    codeXPrompt: `Build a local-only Opportunity Reveal prototype from this approved evidence record.
+
+Market:
+${draft.market}
+
+Product:
+${draft.product}
+
+Buyer:
+${draft.buyer}
+
+Paid pain:
+${draft.paidPain}
+
+Offer:
+${draft.offer}
+
+Price:
+${draft.price}
+
+Distribution:
+${draft.distributionChannel}
+
+Lead magnet:
+${draft.leadMagnet}
+
+Launch pack seed:
+${draft.launchPackSeed}
+
+Requirements:
+- Use local React state only.
+- Do not add auth, payments, external APIs, or a database.
+- Show the opportunity, sell-first assets, validation tracker, and build prompt after replies.`,
+    signalSourceLabel: "Evidence Intake",
+  };
+}
+
 function getSignalGroups(signals: BuildSignal[], githubSignal?: BuildSignal) {
   const newsletterSignals = signals.filter(isNewsletterSignal);
   const nonNewsletterSignals = signals.filter((signal) => !isNewsletterSignal(signal));
@@ -2233,6 +2693,54 @@ function buildCarouselCopy(masterPrompt: MasterPrompt, hasFounderAccess: boolean
     .join("\n\n---\n\n");
 }
 
+function buildLaunchPackCopy(masterPrompt: MasterPrompt, hasFounderAccess: boolean) {
+  const carouselCopy = buildCarouselCopy(masterPrompt, hasFounderAccess);
+  const killCriteria = [
+    "No replies after 20 targeted DMs.",
+    "No saves, comments, or profile clicks from the public post.",
+    "Buyers understand the idea but will not commit to a call, preorder, or paid pilot.",
+  ].join("\n");
+  const codexPrompt = hasFounderAccess
+    ? masterPrompt.fullCodeXMasterPrompt
+    : "Founder/Paid unlock: full Codex-ready build prompt after demand is validated.";
+
+  return [
+    "Bilion Launch Pack",
+    "",
+    "X post:",
+    masterPrompt.launchCopy.xPost,
+    "",
+    "TikTok carousel text:",
+    carouselCopy,
+    "",
+    "Instagram carousel text:",
+    carouselCopy,
+    "",
+    "DM pitch:",
+    masterPrompt.launchCopy.dmMessage,
+    "",
+    "Landing page headline:",
+    masterPrompt.launchCopy.lpHeadline,
+    "",
+    "First offer:",
+    masterPrompt.firstPaidOffer,
+    "",
+    "Price:",
+    masterPrompt.price,
+    "",
+    "48h validation checklist:",
+    masterPrompt.validationPlan
+      .map((step, index) => `${index + 1}. ${step}`)
+      .join("\n"),
+    "",
+    "Kill criteria:",
+    killCriteria,
+    "",
+    "Codex-ready build prompt:",
+    codexPrompt,
+  ].join("\n");
+}
+
 function applyAiRevealToMasterPrompt(
   aiReveal: AiOpportunityReveal,
   fallbackPrompt: MasterPrompt,
@@ -2666,6 +3174,82 @@ function writeValidationRecords(records: ValidationRecord[]) {
   }
 }
 
+function isEvidenceDraft(value: unknown): value is EvidenceDraft {
+  return (
+    Boolean(value) &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    typeof (value as EvidenceDraft).id === "string" &&
+    typeof (value as EvidenceDraft).market === "string" &&
+    typeof (value as EvidenceDraft).product === "string" &&
+    typeof (value as EvidenceDraft).buyer === "string" &&
+    typeof (value as EvidenceDraft).paidPain === "string" &&
+    typeof (value as EvidenceDraft).offer === "string" &&
+    typeof (value as EvidenceDraft).price === "string" &&
+    typeof (value as EvidenceDraft).opportunityScore === "number"
+  );
+}
+
+function readEvidenceDrafts() {
+  try {
+    const raw = window.localStorage.getItem(EVIDENCE_DRAFTS_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+
+    return Array.isArray(parsed) ? parsed.filter(isEvidenceDraft) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeEvidenceDrafts(drafts: EvidenceDraft[]) {
+  try {
+    window.localStorage.setItem(
+      EVIDENCE_DRAFTS_STORAGE_KEY,
+      JSON.stringify(drafts.slice(0, 50)),
+    );
+  } catch {
+    // localStorage can be unavailable in private modes or locked-down browsers.
+  }
+}
+
+function isBuildSignal(value: unknown): value is BuildSignal {
+  return (
+    Boolean(value) &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    typeof (value as BuildSignal).id === "string" &&
+    typeof (value as BuildSignal).latestSignal === "string" &&
+    typeof (value as BuildSignal).sourceTitle === "string" &&
+    typeof (value as BuildSignal).buyer === "string" &&
+    typeof (value as BuildSignal).pain === "string" &&
+    Array.isArray((value as BuildSignal).coreFeatures) &&
+    Array.isArray((value as BuildSignal).buildSteps) &&
+    Array.isArray((value as BuildSignal).patternMatches)
+  );
+}
+
+function readApprovedEvidenceSignals() {
+  try {
+    const raw = window.localStorage.getItem(APPROVED_EVIDENCE_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+
+    return Array.isArray(parsed) ? parsed.filter(isBuildSignal) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeApprovedEvidenceSignals(signals: BuildSignal[]) {
+  try {
+    window.localStorage.setItem(
+      APPROVED_EVIDENCE_STORAGE_KEY,
+      JSON.stringify(signals.slice(0, 50)),
+    );
+  } catch {
+    // localStorage can be unavailable in private modes or locked-down browsers.
+  }
+}
+
 function getLocalDateKey() {
   const today = new Date();
   const year = today.getFullYear();
@@ -2714,7 +3298,13 @@ export default function BilionAppClient({
   hasFounderAccess,
 }: BilionAppClientProps) {
   const searchParams = useSearchParams();
-  const marketSignals: BuildSignal[] = [...buildSignals, ...gmailMarketSignals];
+  const baseMarketSignals: BuildSignal[] = [...buildSignals, ...gmailMarketSignals];
+  const [evidenceDrafts, setEvidenceDrafts] = useState<EvidenceDraft[]>([]);
+  const [approvedEvidenceSignals, setApprovedEvidenceSignals] = useState<BuildSignal[]>([]);
+  const marketSignals: BuildSignal[] = [
+    ...baseMarketSignals,
+    ...approvedEvidenceSignals,
+  ];
   const [dailySignalSeed] = useState(() => Math.floor(Date.now() / 86400000));
   const todayIndex =
     marketSignals.length > 0
@@ -2738,6 +3328,7 @@ export default function BilionAppClient({
   const [masterPrompt, setMasterPrompt] = useState<MasterPrompt | null>(null);
   const [masterPromptAngleIndex, setMasterPromptAngleIndex] = useState(0);
   const [freeUsageCount, setFreeUsageCount] = useState(0);
+  const [selectedMarket, setSelectedMarket] = useState<(typeof marketOptions)[number]>("AI Agency");
   const [openSignalGroups, setOpenSignalGroups] = useState<string[]>([
     "Recommended",
     "GitHub Signal",
@@ -2745,6 +3336,12 @@ export default function BilionAppClient({
   const [sourceMode, setSourceMode] = useState<SourceMode>("indie");
   const [githubInput, setGithubInput] = useState("");
   const githubLibrarySignal = buildGitHubLibrarySignal(githubInput);
+  const evidenceInboxSignals = [...marketSignals, githubLibrarySignal];
+  const topOpportunitySignal = getTopOpportunitySignal(evidenceInboxSignals);
+  const topMarketOpportunities = getTopMarketOpportunities(
+    evidenceInboxSignals,
+    selectedMarket,
+  );
   const signalGroups = getSignalGroups(marketSignals, githubLibrarySignal);
   const [selectedSignalId, setSelectedSignalId] = useState(
     marketSignals[todayIndex]?.id || marketSignals[0]?.id || "",
@@ -2774,6 +3371,8 @@ export default function BilionAppClient({
       setSavedSignals(readSavedSignals());
       setDistributionQueue(readDistributionQueue());
       setValidationRecords(readValidationRecords());
+      setEvidenceDrafts(readEvidenceDrafts());
+      setApprovedEvidenceSignals(readApprovedEvidenceSignals());
       setFreeUsageCount(readFreeUsageCount());
 
       const source = new URLSearchParams(window.location.search).get("source");
@@ -3069,6 +3668,75 @@ export default function BilionAppClient({
     });
   }
 
+  function importEvidenceSnippets(rawInput: string, sourceType: string) {
+    const snippets = rawInput
+      .split(/\n\s*---+\s*\n/g)
+      .map((snippet) => snippet.trim())
+      .filter((snippet) => snippet.length > 24);
+
+    if (!snippets.length) {
+      setCopyFeedback({
+        message: "Paste at least one evidence snippet before importing.",
+        tone: "error",
+      });
+      return;
+    }
+
+    const nextDrafts = snippets.map((snippet, index) =>
+      createEvidenceDraft(snippet, index, sourceType),
+    );
+
+    setEvidenceDrafts((currentDrafts) => {
+      const mergedDrafts = [...nextDrafts, ...currentDrafts].slice(0, 50);
+      writeEvidenceDrafts(mergedDrafts);
+      return mergedDrafts;
+    });
+    setCopyFeedback({
+      message: `Created ${nextDrafts.length} Evidence Draft${nextDrafts.length === 1 ? "" : "s"}.`,
+      tone: "success",
+    });
+  }
+
+  function approveEvidenceDraft(draft: EvidenceDraft) {
+    const approvedSignal = convertEvidenceDraftToSignal(draft);
+
+    setApprovedEvidenceSignals((currentSignals) => {
+      const nextSignals = [
+        approvedSignal,
+        ...currentSignals.filter((signal) => signal.id !== approvedSignal.id),
+      ].slice(0, 50);
+
+      writeApprovedEvidenceSignals(nextSignals);
+      return nextSignals;
+    });
+    setEvidenceDrafts((currentDrafts) => {
+      const nextDrafts = currentDrafts.filter((item) => item.id !== draft.id);
+
+      writeEvidenceDrafts(nextDrafts);
+      return nextDrafts;
+    });
+    setSelectedSignalId(approvedSignal.id);
+    setSelectedBuyer(approvedSignal.buyer);
+    setActiveWorkflowTab("library");
+    setCopyFeedback({
+      message: "Approved evidence and added it to Signal Library.",
+      tone: "success",
+    });
+  }
+
+  function rejectEvidenceDraft(draftId: string) {
+    setEvidenceDrafts((currentDrafts) => {
+      const nextDrafts = currentDrafts.filter((draft) => draft.id !== draftId);
+
+      writeEvidenceDrafts(nextDrafts);
+      return nextDrafts;
+    });
+    setCopyFeedback({
+      message: "Rejected evidence draft.",
+      tone: "success",
+    });
+  }
+
   async function copyMasterPrompt() {
     if (!masterPrompt) return;
 
@@ -3158,8 +3826,8 @@ export default function BilionAppClient({
             </div>
 
             <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-400">
-              Turn proven business patterns into Aha Moments, carousel posts,
-              first offers, and 48-hour validation plans.
+              Pick a market-backed opportunity, sell it with a carousel or DM,
+              then build with Codex only after replies.
             </p>
             <GuidedWorkflow currentStep={guidedWorkflowStep} />
           </header>
@@ -3179,7 +3847,7 @@ export default function BilionAppClient({
               </h2>
               <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-400">
                 {activeWorkflowTab === "library"
-                  ? "Pick a proven business signal, then choose Build, Sell, or Post."
+                  ? "This is not an idea generator. Start with evidence, reveal the opportunity, then test demand before building."
                   : `Free Opportunity Reveals today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used.`}
               </p>
 
@@ -3199,6 +3867,36 @@ export default function BilionAppClient({
                       Success Records, Pattern Library, Gmail/newsletter signals, and GitHub Signal
                     </p>
                   </div>
+                  <MarketSelectionSection
+                    opportunities={topMarketOpportunities}
+                    selectedMarket={selectedMarket}
+                    onMarketChange={setSelectedMarket}
+                    onSelectOpportunity={(signal) => {
+                      setSourceMode(signal.id === "github-sample" ? "github" : "indie");
+                      setSelectedSignalId(signal.id);
+                      setSelectedBuyer(signal.buyer);
+                      setSelectedAction("sell");
+                      setActiveWorkflowTab("studio");
+                    }}
+                  />
+                  <EvidenceInboxSummary
+                    signals={evidenceInboxSignals}
+                    topSignal={topOpportunitySignal}
+                    onRevealTop={(signal) => {
+                      setSourceMode(signal.id === "github-sample" ? "github" : "indie");
+                      setSelectedSignalId(signal.id);
+                      setSelectedBuyer(signal.buyer);
+                      setSelectedAction("build");
+                      setActiveWorkflowTab("studio");
+                    }}
+                  />
+                  <EvidenceIntakeSection
+                    approvedCount={approvedEvidenceSignals.length}
+                    drafts={evidenceDrafts}
+                    onApprove={approveEvidenceDraft}
+                    onImport={importEvidenceSnippets}
+                    onReject={rejectEvidenceDraft}
+                  />
                   <div className="mt-4 grid gap-4">
                     {signalGroups.map((group) => {
                       const groupOpen = openSignalGroups.includes(group.label);
@@ -3245,6 +3943,9 @@ export default function BilionAppClient({
                               signal.sourceType ||
                               "Market Signal";
                             const displayTitle = getDisplaySignalTitle(signal);
+                            const classification = getMarketClassification(signal);
+                            const evidenceLevel = getSignalEvidenceLevel(signal);
+                            const opportunityScore = getSignalOpportunityScore(signal);
 
                             return (
                               <article
@@ -3266,6 +3967,17 @@ export default function BilionAppClient({
                                 <span className="mb-2 inline-flex rounded-full border border-white/10 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-emerald-200">
                                   {signalLabel}
                                 </span>
+                                <div className="mb-2 flex flex-wrap gap-1.5">
+                                  <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-zinc-400">
+                                    {classification}
+                                  </span>
+                                  <span className="rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-emerald-200">
+                                    Score {opportunityScore}/50
+                                  </span>
+                                  <span className="rounded-full border border-white/10 bg-black/25 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-zinc-500">
+                                    {evidenceLevel}
+                                  </span>
+                                </div>
                                 <span className="block text-sm font-black leading-5">
                                   {displayTitle.title}
                                 </span>
@@ -3822,6 +4534,430 @@ function GuidedWorkflow({ currentStep }: { currentStep: 1 | 2 | 3 }) {
   );
 }
 
+function EvidenceInboxSummary({
+  onRevealTop,
+  signals,
+  topSignal,
+}: {
+  onRevealTop: (signal: BuildSignal) => void;
+  signals: BuildSignal[];
+  topSignal?: BuildSignal;
+}) {
+  const classifications = Array.from(
+    new Set(signals.map((signal) => getMarketClassification(signal))),
+  ).slice(0, 4);
+  const strongCount = signals.filter(
+    (signal) => getSignalEvidenceLevel(signal) === "Strong",
+  ).length;
+
+  return (
+    <div className="mt-4 rounded-2xl border border-white/10 bg-black/25 p-4">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+            Evidence Inbox
+          </div>
+          <h3 className="mt-1 text-lg font-black text-white">
+            Market-backed opportunities, ranked before generation.
+          </h3>
+          <p className="mt-2 text-sm leading-6 text-zinc-300">
+            {signals.length} market signals / {strongCount} strong evidence /{" "}
+            {classifications.join(", ")}
+          </p>
+          <p className="mt-1 text-xs font-bold leading-5 text-zinc-500">
+            Evidence feeds the ranking engine. Approved evidence makes Bilion smarter about what to post, DM, and build after replies.
+          </p>
+        </div>
+
+        {topSignal && (
+          <div className="rounded-2xl border border-emerald-300/40 bg-emerald-300/[0.09] p-4 shadow-lg shadow-emerald-950/20 lg:min-w-80">
+            <div className="text-xs font-black uppercase tracking-[0.14em] text-emerald-300">
+              Top Opportunity To Test
+            </div>
+            <div className="mt-1 text-sm font-black text-white">
+              {truncateDisplayText(getDisplaySignalTitle(topSignal).title, 64)}
+            </div>
+            <div className="mt-2 flex flex-wrap gap-2 text-xs font-bold">
+              <span className="rounded-full border border-white/10 bg-black/25 px-2 py-1 text-zinc-300">
+                {getMarketClassification(topSignal)}
+              </span>
+              <span className="rounded-full border border-emerald-300/25 bg-emerald-300/[0.1] px-2 py-1 text-emerald-200">
+                Opportunity Score {getSignalOpportunityScore(topSignal)}/50
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => onRevealTop(topSignal)}
+              className="mt-3 w-full rounded-xl bg-emerald-300 px-3 py-2.5 text-xs font-black text-black transition hover:bg-emerald-200"
+            >
+              Reveal and sell first
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function MarketSelectionSection({
+  onMarketChange,
+  onSelectOpportunity,
+  opportunities,
+  selectedMarket,
+}: {
+  onMarketChange: (market: (typeof marketOptions)[number]) => void;
+  onSelectOpportunity: (signal: BuildSignal) => void;
+  opportunities: BuildSignal[];
+  selectedMarket: (typeof marketOptions)[number];
+}) {
+  return (
+    <section className="mt-4 rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.045] p-4">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+            Market Selection First
+          </div>
+          <h3 className="mt-1 text-xl font-black text-white">
+            Choose the right market before you build.
+          </h3>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
+            Pick a market, review evidence-backed opportunities, sell one today, then build with Codex after replies.
+          </p>
+        </div>
+        <div className="rounded-full border border-white/10 bg-black/30 px-4 py-2 text-xs font-black uppercase tracking-wide text-zinc-400">
+          Evidence &rarr; Opportunity &rarr; Launch Pack &rarr; Response &rarr; Winner
+        </div>
+      </div>
+
+      <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
+        {marketOptions.map((market) => {
+          const active = selectedMarket === market;
+
+          return (
+            <button
+              key={market}
+              type="button"
+              onClick={() => onMarketChange(market)}
+              className={[
+                "shrink-0 rounded-full border px-3 py-2 text-xs font-black transition",
+                active
+                  ? "border-emerald-300 bg-emerald-300 text-black"
+                  : "border-white/10 bg-black/25 text-zinc-400 hover:border-white/20 hover:text-white",
+              ].join(" ")}
+            >
+              {market}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-4 grid gap-3">
+        <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+          Top opportunities for {selectedMarket}
+        </div>
+        {opportunities.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-white/10 bg-black/25 p-4 text-sm leading-6 text-zinc-500">
+            No approved evidence yet for this market. Paste or approve evidence to teach Bilion what money moved here.
+          </div>
+        ) : (
+          opportunities.map((signal) => (
+            <article
+              key={signal.id}
+              className="rounded-2xl border border-white/10 bg-black/30 p-4"
+            >
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                <div>
+                  <div className="flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-wide">
+                    <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-zinc-400">
+                      {getSignalMarket(signal)}
+                    </span>
+                    <span className="rounded-full border border-emerald-300/25 bg-emerald-300/[0.08] px-2 py-1 text-emerald-200">
+                      Score {getSignalOpportunityScore(signal)}/50
+                    </span>
+                    <span className="rounded-full border border-white/10 bg-black/25 px-2 py-1 text-zinc-500">
+                      {getSignalEvidenceLevel(signal)} evidence
+                    </span>
+                  </div>
+                  <h4 className="mt-3 text-lg font-black text-white">
+                    {truncateDisplayText(getDisplaySignalTitle(signal).title, 78)}
+                  </h4>
+                  <p className="mt-2 text-sm leading-6 text-zinc-400">
+                    Buyer: {signal.buyer}
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-zinc-300">
+                    Paid pain: {truncateDisplayText(signal.pain, 160)}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onSelectOpportunity(signal)}
+                  className="rounded-xl bg-emerald-300 px-4 py-3 text-xs font-black text-black transition hover:bg-emerald-200"
+                >
+                  Test this first
+                </button>
+              </div>
+
+              <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                <MarketOpportunityField
+                  label="Why this opportunity"
+                  value={getScoreReason(signal)}
+                />
+                <MarketOpportunityField
+                  label="Expected first offer"
+                  value={getExpectedFirstOffer(signal)}
+                />
+                <MarketOpportunityField
+                  label="Distribution"
+                  value={signal.patternMatches[2] || signal.sourceNote || "Post the insight, then DM likely buyers."}
+                />
+                <MarketOpportunityField
+                  label="Timing"
+                  value="Validate in 48h / build in 1-3 days after replies"
+                />
+              </div>
+            </article>
+          ))
+        )}
+      </div>
+    </section>
+  );
+}
+
+function MarketOpportunityField({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-black/25 p-3">
+      <div className="text-[11px] font-black uppercase tracking-wide text-zinc-600">
+        {label}
+      </div>
+      <p className="mt-2 text-sm leading-6 text-zinc-200">
+        {normalizeDisplayText(value)}
+      </p>
+    </div>
+  );
+}
+
+function EvidenceIntakeSection({
+  approvedCount,
+  drafts,
+  onApprove,
+  onImport,
+  onReject,
+}: {
+  approvedCount: number;
+  drafts: EvidenceDraft[];
+  onApprove: (draft: EvidenceDraft) => void;
+  onImport: (rawInput: string, sourceType: string) => void;
+  onReject: (draftId: string) => void;
+}) {
+  const [rawInput, setRawInput] = useState("");
+  const [sourceType, setSourceType] = useState("Gmail/newsletter");
+
+  function handleImport() {
+    onImport(rawInput, sourceType);
+    setRawInput("");
+  }
+
+  return (
+    <details className="mt-4 rounded-2xl border border-white/[0.08] bg-black/20 p-4">
+      <summary className="cursor-pointer list-none">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+              Evidence Paste Importer
+            </div>
+            <h3 className="mt-1 text-lg font-black text-white">
+              Paste market proof. Review it before it becomes a signal.
+            </h3>
+          </div>
+          <div className="text-xs font-bold text-zinc-500">
+            {drafts.length} drafts / {approvedCount} approved
+          </div>
+        </div>
+      </summary>
+
+      <div className="mt-4 grid gap-4">
+        <div className="rounded-2xl border border-white/10 bg-[#101011] p-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <label
+              className="text-xs font-black uppercase tracking-[0.14em] text-emerald-300"
+              htmlFor="evidence-paste-input"
+            >
+              Bulk paste mode
+            </label>
+            <label className="text-xs font-bold text-zinc-500">
+              Source type
+              <select
+                value={sourceType}
+                onChange={(event) => setSourceType(event.target.value)}
+                className="mt-1 block rounded-xl border border-white/10 bg-black px-3 py-2 text-xs font-bold text-zinc-200"
+              >
+                {[
+                  "Gmail/newsletter",
+                  "Indie Hackers",
+                  "YouTube transcript",
+                  "X post",
+                  "GitHub README/Issue",
+                  "Article",
+                ].map((option) => (
+                  <option key={option}>{option}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <p className="mt-2 text-sm leading-6 text-zinc-500">
+            Paste Gmail, Indie Hackers, YouTube transcript, X post, GitHub issue, README, or article notes.
+            Separate multiple snippets with a line containing three hyphens. Prioritize money evidence: revenue, MRR, ARR, paid customers, price,
+            buyer behavior, distribution, and repeatable workflow.
+          </p>
+          <textarea
+            id="evidence-paste-input"
+            value={rawInput}
+            onChange={(event) => setRawInput(event.target.value)}
+            placeholder={[
+              "Market: Local business reviews",
+              "Buyer: clinic owners",
+              "Paid pain: unanswered reviews hurt trust and leads",
+              "Price: $29/month",
+              "Revenue evidence: reputation tools and agencies already charge for review management",
+              "---",
+              "Paste another evidence snippet here",
+            ].join("\n")}
+            className="mt-3 min-h-44 w-full rounded-2xl border border-white/10 bg-black/40 p-4 text-sm leading-6 text-white outline-none transition placeholder:text-zinc-700 focus:border-emerald-300/50"
+          />
+          <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs font-bold text-zinc-600">
+              Local mock conversion only. No external API, database, or app route changes.
+            </p>
+            <button
+              type="button"
+              onClick={handleImport}
+              className="rounded-xl bg-emerald-300 px-4 py-2.5 text-xs font-black text-black transition hover:bg-emerald-200"
+            >
+              Create Evidence Drafts
+            </button>
+          </div>
+        </div>
+
+        <div className="grid gap-3">
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+              Evidence Draft Review
+            </div>
+            <div className="text-xs font-bold text-zinc-600">
+              Approve records to add them to Signal Library and Evidence Inbox.
+            </div>
+          </div>
+
+          {drafts.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 p-4 text-sm leading-6 text-zinc-500">
+              No drafts yet. Paste one or more snippets to create reviewable market evidence.
+            </div>
+          ) : (
+            drafts.map((draft) => (
+              <EvidenceDraftCard
+                key={draft.id}
+                draft={draft}
+                onApprove={onApprove}
+                onReject={onReject}
+              />
+            ))
+          )}
+        </div>
+      </div>
+    </details>
+  );
+}
+
+function EvidenceDraftCard({
+  draft,
+  onApprove,
+  onReject,
+}: {
+  draft: EvidenceDraft;
+  onApprove: (draft: EvidenceDraft) => void;
+  onReject: (draftId: string) => void;
+}) {
+  return (
+    <article className="rounded-2xl border border-white/10 bg-[#101011] p-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <div className="flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-wide">
+            <span className="rounded-full border border-white/10 bg-black/25 px-2 py-1 text-zinc-400">
+              {draft.evidenceLevel} evidence
+            </span>
+            <span className="rounded-full border border-emerald-300/25 bg-emerald-300/[0.08] px-2 py-1 text-emerald-200">
+              Score {draft.opportunityScore}/100
+            </span>
+            <span className="rounded-full border border-white/10 bg-white/[0.03] px-2 py-1 text-zinc-400">
+              {draft.recommendedUse.replaceAll("_", " ")}
+            </span>
+          </div>
+          <h4 className="mt-3 text-lg font-black text-white">{draft.product}</h4>
+          <p className="mt-1 text-sm leading-6 text-zinc-500">{draft.market}</p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => onApprove(draft)}
+            className="rounded-xl bg-emerald-300 px-3 py-2 text-xs font-black text-black transition hover:bg-emerald-200"
+          >
+            Approve
+          </button>
+          <button
+            type="button"
+            onClick={() => onReject(draft.id)}
+            className="rounded-xl border border-white/10 px-3 py-2 text-xs font-black text-zinc-400 transition hover:border-red-300/30 hover:text-red-200"
+          >
+            Reject
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-3 md:grid-cols-2">
+        <EvidenceDraftField label="Buyer" value={draft.buyer} />
+        <EvidenceDraftField label="Source type" value={draft.sourceType || "Raw Paste"} />
+        <EvidenceDraftField label="Paid pain" value={draft.paidPain} />
+        <EvidenceDraftField label="Offer" value={draft.offer} />
+        <EvidenceDraftField label="Price" value={draft.price} />
+        <EvidenceDraftField label="Revenue evidence" value={draft.revenueEvidence} />
+        <EvidenceDraftField label="Source evidence" value={draft.sourceEvidence} />
+        <EvidenceDraftField label="Distribution channel" value={draft.distributionChannel} />
+        <EvidenceDraftField label="Lead magnet" value={draft.leadMagnet} />
+        <EvidenceDraftField label="Why it worked" value={draft.whyItWorked} />
+        <EvidenceDraftField label="Adaptation idea" value={draft.adaptationIdea} />
+      </div>
+      <div className="mt-3">
+        <EvidenceDraftField label="Launch pack seed" value={draft.launchPackSeed} />
+      </div>
+    </article>
+  );
+}
+
+function EvidenceDraftField({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-black/25 p-3">
+      <div className="text-[11px] font-black uppercase tracking-wide text-zinc-600">
+        {label}
+      </div>
+      <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-zinc-200">
+        {normalizeDisplayText(value)}
+      </p>
+    </div>
+  );
+}
+
 function DistributionQueueSection({
   canSaveAssets,
   onSaveAssets,
@@ -4143,15 +5279,16 @@ function WinnersSection({
         Winners
       </div>
       <h2 className="mt-2 text-3xl font-black tracking-tight">
-        Signals with traction.
+        What worked in the market.
       </h2>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-500">
-        Anything with replies, interest, or a Build verdict becomes a winner.
+        Winners are opportunities that earned replies, likes, saves, clicks, DMs, purchases, or a strong manual signal.
+        Feed winners back into future market decisions.
       </p>
 
       {winners.length === 0 ? (
         <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-5 text-sm leading-6 text-zinc-500">
-          No winners yet. Track replies in Validation Tracker first.
+          No winners yet. Run the loop first: Evidence &rarr; Opportunity &rarr; Launch Pack &rarr; Market response &rarr; Winner.
         </div>
       ) : (
         <div className="mt-6 grid gap-3 md:grid-cols-2">
@@ -4217,6 +5354,7 @@ function MasterPromptCard({
   signalNumber: number;
 }) {
   const [copiedCarousel, setCopiedCarousel] = useState(false);
+  const [copiedLaunchPack, setCopiedLaunchPack] = useState(false);
   const [carouselCopyError, setCarouselCopyError] = useState(false);
   const opportunityScore = getOpportunityScore(masterPrompt);
   const shortSignalTitle = truncateDisplayText(masterPrompt.provenPattern);
@@ -4232,6 +5370,19 @@ function MasterPromptCard({
     setCarouselCopyError(!copiedText);
     window.setTimeout(() => {
       setCopiedCarousel(false);
+      setCarouselCopyError(false);
+    }, 1200);
+  }
+
+  async function copyLaunchPack() {
+    const copiedText = await writeClipboardText(
+      buildLaunchPackCopy(masterPrompt, hasFounderAccess),
+    );
+
+    setCopiedLaunchPack(copiedText);
+    setCarouselCopyError(!copiedText);
+    window.setTimeout(() => {
+      setCopiedLaunchPack(false);
       setCarouselCopyError(false);
     }, 1200);
   }
@@ -4346,12 +5497,26 @@ function MasterPromptCard({
       />
 
       <section className="rounded-3xl border border-white/10 bg-[#101011] p-5 shadow-2xl md:p-6">
-        <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-          Sell This First
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+              Launch Pack
+            </div>
+            <h3 className="mt-2 text-2xl font-black tracking-tight">
+              Sell this first. Build after replies.
+            </h3>
+            <p className="mt-2 text-sm leading-6 text-zinc-500">
+              Copy the post, carousel, DM pitch, first offer, validation checklist, kill criteria, and Codex prompt gate.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={copyLaunchPack}
+            className="rounded-2xl bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-zinc-200"
+          >
+            {copiedLaunchPack ? "Copied Launch Pack" : "Copy Launch Pack"}
+          </button>
         </div>
-        <h3 className="mt-2 text-2xl font-black tracking-tight">
-          Test demand before building.
-        </h3>
         <div className="mt-5 grid gap-4 md:grid-cols-2">
           <MasterPromptField label="First paid offer" value={masterPrompt.firstPaidOffer} />
           <MasterPromptField label="Price" value={masterPrompt.price} />
