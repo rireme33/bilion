@@ -63,12 +63,11 @@ type SourceMode = "indie" | "github";
 type NextAction = "build" | "sell" | "post";
 type WorkflowTab = "library" | "studio" | "queue" | "validation" | "winners";
 type MarketClassification =
-  | "Creator Distribution"
-  | "Local Operations"
-  | "Developer Workflow"
-  | "Productivity Workflow"
-  | "Revenue Ops"
-  | "Market Evidence";
+  | "Micro SaaS"
+  | "Freelance Dev"
+  | "Business Automation"
+  | "Digital Product"
+  | "AI Agency";
 type DistributionStatus = "Draft" | "Posted" | "Sent" | "Tested";
 type DistributionKind = "X post" | "DM script" | "Validation log" | "Short video angle";
 type ValidationVerdict = "Build" | "Kill" | "Pivot";
@@ -139,17 +138,11 @@ type EvidenceDraft = {
 };
 
 const marketOptions = [
-  "Education",
-  "Healthcare",
-  "Local Business",
-  "Ecommerce",
+  "Micro SaaS",
+  "Freelance Dev",
+  "Business Automation",
+  "Digital Product",
   "AI Agency",
-  "Creators",
-  "Construction",
-  "Finance",
-  "Legal",
-  "Real Estate",
-  "Developer Workflow",
 ] as const;
 
 const nextActionOptions: Array<{
@@ -159,18 +152,18 @@ const nextActionOptions: Array<{
 }> = [
   {
     action: "build",
-    label: "Build it",
-    helper: "Turn the signal into a focused MVP brief.",
+    label: "Build after replies",
+    helper: "Use the Codex prompt only after someone responds.",
   },
   {
     action: "sell",
-    label: "Sell it",
-    helper: "Turn the signal into an offer and outreach sprint.",
+    label: "Sell first",
+    helper: "Turn the spark into an offer and outreach sprint.",
   },
   {
     action: "post",
-    label: "Post it",
-    helper: "Turn the signal into a shareable market insight.",
+    label: "Run 48h test",
+    helper: "Post, DM, and track demand before building.",
   },
 ];
 
@@ -296,10 +289,10 @@ type AiOpportunityReveal = {
 
 /*
 const lockedItems = [
-  "Core Features 🔒",
-  "Comparable Price 🔒",
-  "Full Code X Prompt 🔒",
-  "Pattern Matches 🔒",
+  "Core Features locked",
+  "Comparable Price locked",
+  "Full Code X Prompt locked",
+  "Pattern Matches locked",
 ];
 */
 
@@ -1421,7 +1414,7 @@ function getActionAngleIndex(action: NextAction) {
 }
 
 function getActionLabel(action: NextAction) {
-  return nextActionOptions.find((option) => option.action === action)?.label || "Build it";
+  return nextActionOptions.find((option) => option.action === action)?.label || "Build after replies";
 }
 
 function cleanSignalText(value: string) {
@@ -1499,27 +1492,23 @@ function getMarketClassification(signal: BuildSignal): MarketClassification {
     signal.patternMatches.join(" "),
   ].join(" ").toLowerCase();
 
-  if (/creator|video|tiktok|youtube|newsletter|content|x post|short/i.test(haystack)) {
-    return "Creator Distribution";
+  if (/freelance|bug|client|api integration|fix|coding service|developer service|upwork|fiverr/i.test(haystack)) {
+    return "Freelance Dev";
   }
 
-  if (/restaurant|clinic|local|field|contractor|appointment|review|shop/i.test(haystack)) {
-    return "Local Operations";
+  if (/automation|spreadsheet|rpa|email|report|lead|workflow|operations|restaurant|clinic|local|field|contractor|appointment|review/i.test(haystack)) {
+    return "Business Automation";
   }
 
-  if (/github|developer|repo|api|code|pull request|issue|monitoring/i.test(haystack)) {
-    return "Developer Workflow";
+  if (/plugin|extension|template|gumroad|etsy|prompt pack|script|shopify|chrome|digital product|bundle/i.test(haystack)) {
+    return "Digital Product";
   }
 
-  if (/revenue|churn|sales|crm|analytics|customer success|pricing/i.test(haystack)) {
-    return "Revenue Ops";
+  if (/agency|consultant|client delivery|dashboard|chatbot|internal tool|implementation/i.test(haystack)) {
+    return "AI Agency";
   }
 
-  if (/gmail|calendar|email|notes|brief|task|productivity|workflow/i.test(haystack)) {
-    return "Productivity Workflow";
-  }
-
-  return "Market Evidence";
+  return "Micro SaaS";
 }
 
 function getSignalEvidenceLevel(signal: BuildSignal) {
@@ -1574,53 +1563,23 @@ function getSignalMarket(signal: BuildSignal) {
     signal.patternMatches.join(" "),
   ].join(" ").toLowerCase();
 
-  if (/school|teacher|student|worksheet|education|homeschool|preschool/.test(haystack)) {
-    return "Education";
+  if (/freelance|bug|client|api integration|fix|coding service|developer service|upwork|fiverr/.test(haystack)) {
+    return "Freelance Dev";
   }
 
-  if (/clinic|patient|healthcare|medical|dentist|therapy|appointment/.test(haystack)) {
-    return "Healthcare";
+  if (/automation|spreadsheet|rpa|email|report|lead|workflow|operations|restaurant|clinic|local|field|contractor|appointment|review/.test(haystack)) {
+    return "Business Automation";
   }
 
-  if (/local|restaurant|review|salon|shop|contractor|home service|google business/.test(haystack)) {
-    return "Local Business";
+  if (/plugin|extension|template|gumroad|etsy|prompt pack|script|shopify|chrome|digital product|bundle/.test(haystack)) {
+    return "Digital Product";
   }
 
-  if (/ecommerce|shopify|store|cart|product page|amazon|etsy/.test(haystack)) {
-    return "Ecommerce";
-  }
-
-  if (/codex|agency|automation consultant|client build|service business/.test(haystack)) {
+  if (/agency|consultant|client delivery|dashboard|chatbot|internal tool|implementation/.test(haystack)) {
     return "AI Agency";
   }
 
-  if (/creator|youtube|tiktok|newsletter|content|x post|instagram|short video/.test(haystack)) {
-    return "Creators";
-  }
-
-  if (/construction|jobsite|contractor|field crew|site report/.test(haystack)) {
-    return "Construction";
-  }
-
-  if (/finance|invoice|accounting|bookkeeping|tax|cash flow/.test(haystack)) {
-    return "Finance";
-  }
-
-  if (/legal|law firm|lawyer|contract|compliance/.test(haystack)) {
-    return "Legal";
-  }
-
-  if (/real estate|realtor|property|tenant|listing|landlord/.test(haystack)) {
-    return "Real Estate";
-  }
-
-  if (/github|developer|repo|api|code|readme|issue|pull request/.test(haystack)) {
-    return "Developer Workflow";
-  }
-
-  return getMarketClassification(signal) === "Developer Workflow"
-    ? "Developer Workflow"
-    : "AI Agency";
+  return "Micro SaaS";
 }
 
 function getTopMarketOpportunities(signals: BuildSignal[], market: string) {
@@ -2247,7 +2206,7 @@ ${signal.whyNow}`;
 }
 
 function buildFreeMasterPromptCopy(masterPrompt: MasterPrompt) {
-  return `Bilion Opportunity Reveal preview
+  return `Bilion Business Spark preview
 
 What already sold:
 ${masterPrompt.provenPattern}
@@ -2284,8 +2243,8 @@ ${masterPrompt.launchCopy.dmMessage}
 48-hour validation plan:
 ${masterPrompt.validationPlan.map((step, index) => `${index + 1}. ${step}`).join("\n")}
 
-Get the full Opportunity Reveal \u2014 $19
-Includes: 3 angles, launch copy, pricing, DM scripts, landing headline, and Codex prompt.`;
+Get the full Business Spark \u2014 $19
+Includes: full launch copy, 48h test, saved Winners, and the Codex Build Prompt.`;
 }
 
 function buildValidationPlanCopy(masterPrompt: MasterPrompt) {
@@ -2465,7 +2424,7 @@ This is not a guaranteed business outcome. It is a sell-first brief designed to 
 }
 
 function buildShortBriefCopy(masterPrompt: MasterPrompt) {
-  return `Holy Shit:
+  return `Why it works:
 ${buildHolyShit(masterPrompt)}
 
 Buyer:
@@ -2592,7 +2551,7 @@ function truncateDisplayText(value: string, maxLength = 80) {
     return normalized;
   }
 
-  return `${normalized.slice(0, maxLength - 1).trim()}…`;
+  return `${normalized.slice(0, maxLength - 1).trim()}...`;
 }
 
 function formatDisplayText(value: string) {
@@ -2625,13 +2584,13 @@ function buildActionBriefFields(
   includeCodexPrompt: boolean,
 ) {
   return [
-    ["💥 Holy Shit", buildHolyShit(masterPrompt)],
-    ["🤯 What Everyone Misses", buildWhatEveryoneMisses(masterPrompt)],
-    ["💰 Money Angle", buildMoneyAngle(masterPrompt)],
-    ["🔥 Opportunity Score", buildOpportunityScore(masterPrompt)],
-    ["🚀 First Wedge", buildFirstWedge(masterPrompt)],
-    ["⚔️ 48h Attack", buildAttackPlan(masterPrompt)],
-    ["🧱 Build", buildBuildAngle(masterPrompt, includeCodexPrompt)],
+    ["Why it works", buildHolyShit(masterPrompt)],
+    ["Buyer", buildWhatEveryoneMisses(masterPrompt)],
+    ["First Offer", buildMoneyAngle(masterPrompt)],
+    ["Spark Score", buildOpportunityScore(masterPrompt)],
+    ["First Wedge", buildFirstWedge(masterPrompt)],
+    ["48h Test", buildAttackPlan(masterPrompt)],
+    ["Codex Build Prompt", buildBuildAngle(masterPrompt, includeCodexPrompt)],
   ] satisfies [string, string][];
 }
 
@@ -2646,7 +2605,7 @@ function buildActionBriefCopy(
     includeCodexPrompt,
   );
 
-  return `${getActionLabel(action)} Opportunity Reveal
+  return `${getActionLabel(action)} Business Spark
 
 ${fields.map(([label, value]) => `${label}:\n${value}`).join("\n\n")}`;
 }
@@ -2676,7 +2635,7 @@ function buildCarouselSlides(masterPrompt: MasterPrompt) {
       body: `The product is not the goldmine.\nThe buying behavior is:\n${buildWhatEveryoneMisses(masterPrompt)}`,
     },
     {
-      title: "Slide 4: Holy Shit",
+      title: "Slide 4: Why it works",
       body: buildHolyShit(masterPrompt),
     },
     {
@@ -3328,7 +3287,7 @@ export default function BilionAppClient({
   const [masterPrompt, setMasterPrompt] = useState<MasterPrompt | null>(null);
   const [masterPromptAngleIndex, setMasterPromptAngleIndex] = useState(0);
   const [freeUsageCount, setFreeUsageCount] = useState(0);
-  const [selectedMarket, setSelectedMarket] = useState<(typeof marketOptions)[number]>("AI Agency");
+  const [selectedMarket, setSelectedMarket] = useState<(typeof marketOptions)[number]>("Micro SaaS");
   const [openSignalGroups, setOpenSignalGroups] = useState<string[]>([
     "Recommended",
     "GitHub Signal",
@@ -3464,7 +3423,7 @@ export default function BilionAppClient({
     } catch {
       saveResult(nextResult);
       setCopyFeedback({
-        message: "AI generation failed. Showing fallback Opportunity Reveal.",
+        message: "AI generation failed. Showing fallback Business Spark.",
         tone: "error",
       });
     } finally {
@@ -3802,52 +3761,53 @@ export default function BilionAppClient({
   }
 
   return (
-    <main className="min-h-screen bg-[#070707] text-white">
+    <main className="min-h-screen w-full max-w-full overflow-hidden bg-[#070707] text-white">
       <div
         className={[
-          "grid min-h-screen grid-cols-1",
+          "grid min-h-screen w-full max-w-full grid-cols-1 overflow-hidden",
           result && activeWorkflowTab === "studio"
             ? "lg:grid-cols-[1fr_340px]"
             : "lg:grid-cols-1",
         ].join(" ")}
       >
-        <section className="px-3 py-4 md:p-8">
+        <section className="w-full max-w-full overflow-hidden px-4 py-4 sm:px-6 md:p-8">
           <header className="mb-4 md:mb-8">
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex min-w-0 items-center justify-between gap-4">
               <div />
               <LanguageSwitch />
             </div>
 
-            <h1 className="mt-3 max-w-4xl text-3xl font-black tracking-tight md:mt-4 md:text-6xl">
+            <h1 className="mt-3 max-w-4xl break-words text-3xl font-black tracking-tight md:mt-4 md:text-6xl">
               Bilion
             </h1>
             <div className="mt-1 text-base font-bold text-zinc-200 md:mt-2 md:text-xl">
-              Find leverage before everyone else.
+              Find a Codex business spark before you build.
             </div>
 
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400 md:mt-4 md:text-base md:leading-7">
-              Pick a market-backed opportunity, sell it with a carousel or DM,
-              then build with Codex only after replies.
+            <p className="mt-3 max-w-2xl break-words text-sm leading-relaxed text-zinc-400 md:mt-4 md:text-base md:leading-7">
+              Stop asking AI what to build. Get a Codex business spark from
+              proven patterns: buyer, pain, first offer, 48h test, and Codex
+              prompt.
             </p>
           </header>
 
           {selectedPatternLabel && (
-            <div className="mb-5 rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.06] px-4 py-3 text-sm font-bold text-emerald-100">
+            <div className="mb-5 min-w-0 break-words rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.06] px-4 py-3 text-sm font-bold text-emerald-100">
               Selected pattern: {selectedPatternLabel}
             </div>
           )}
 
           {(activeWorkflowTab === "library" || (activeWorkflowTab === "studio" && !result)) && (
-            <div className="rounded-2xl border border-white/10 bg-[#101011] p-3 shadow-2xl md:rounded-3xl md:p-8">
+            <div className="min-w-0 rounded-2xl border border-white/10 bg-[#101011] p-4 shadow-2xl md:rounded-3xl md:p-8">
               <h2 className="text-xl font-black tracking-tight md:text-2xl">
                 {activeWorkflowTab === "library"
-                  ? "Choose market. Test opportunity."
-                  : "Opportunity Reveal Studio"}
+                  ? "Choose a path. Get a Business Spark."
+                  : "Business Spark Studio"}
               </h2>
-              <p className="mt-2 max-w-xl text-xs leading-5 text-zinc-400 md:mt-3 md:text-sm md:leading-6">
+              <p className="mt-2 max-w-xl break-words text-sm leading-relaxed text-zinc-400 md:mt-3 md:leading-6">
                 {activeWorkflowTab === "library"
-                  ? "This is not an idea generator. Start with evidence, reveal the opportunity, then test demand before building."
-                  : `Free Opportunity Reveals today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used.`}
+                  ? "This is not an idea generator. Pick a path, test the offer, then build with Codex after replies."
+                  : `Free Business Sparks today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used.`}
               </p>
 
               <div className="mt-4 grid gap-4 md:mt-6 md:gap-6">
@@ -3866,16 +3826,16 @@ export default function BilionAppClient({
                     }}
                   />
                   <GuidedWorkflow currentStep={guidedWorkflowStep} />
-                  <div className="mt-5 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-                    <div>
+                  <div className="mt-5 flex min-w-0 flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                    <div className="min-w-0">
                       <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
                         More signals
                       </div>
-                      <h3 className="mt-1 text-lg font-black text-white">
+                      <h3 className="mt-1 break-words text-lg font-black text-white">
                         Browse other evidence-backed signals.
                       </h3>
                     </div>
-                    <p className="text-xs font-bold text-zinc-600">
+                    <p className="min-w-0 break-words text-xs font-bold text-zinc-600">
                       Secondary. Start with the Top Opportunity above.
                     </p>
                   </div>
@@ -3897,14 +3857,14 @@ export default function BilionAppClient({
                           );
                         }}
                         className={[
-                          "rounded-2xl border p-3",
+                          "min-w-0 rounded-2xl border p-3",
                           group.label === "Recommended" || group.label === "GitHub Signal"
                             ? "border-emerald-300/20 bg-emerald-300/[0.045]"
                             : "border-white/[0.07] bg-black/15",
                         ].join(" ")}
                       >
-                        <summary className="mb-3 flex cursor-pointer list-none items-center justify-between gap-3">
-                          <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-400">
+                        <summary className="mb-3 flex cursor-pointer list-none flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="min-w-0 break-words text-xs font-black uppercase tracking-[0.16em] text-zinc-400">
                             {group.label}
                           </div>
                           <div className="flex items-center gap-2 text-xs font-bold text-zinc-600">
@@ -3917,7 +3877,7 @@ export default function BilionAppClient({
                           </div>
                         </summary>
                         {groupOpen && (
-                        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                        <div className="grid min-w-0 gap-2 sm:grid-cols-2 xl:grid-cols-3">
                           {group.signals.map((signal) => {
                             const active = selectedSignalId === signal.id;
                             const signalLabel =
@@ -3940,13 +3900,13 @@ export default function BilionAppClient({
                                   setSelectedBuyer(signal.buyer);
                                 }}
                                 className={[
-                                  "min-h-36 rounded-2xl border px-4 py-3 text-left transition",
+                                  "min-h-36 min-w-0 overflow-hidden rounded-2xl border px-4 py-3 text-left transition",
                                   active
                                     ? "border-emerald-300/70 bg-emerald-300/[0.12] text-white shadow-lg shadow-emerald-950/30"
                                     : "border-white/10 bg-black/30 text-zinc-400 hover:bg-white/[0.04] hover:text-white",
                                 ].join(" ")}
                               >
-                                <span className="mb-2 inline-flex rounded-full border border-white/10 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-emerald-200">
+                                <span className="mb-2 inline-flex max-w-full rounded-full border border-white/10 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-emerald-200 break-words">
                                   {signalLabel}
                                 </span>
                                 <div className="mb-2 flex flex-wrap gap-1.5">
@@ -3960,15 +3920,15 @@ export default function BilionAppClient({
                                     {evidenceLevel}
                                   </span>
                                 </div>
-                                <span className="block text-sm font-black leading-5">
+                                <span className="block break-words text-sm font-black leading-5">
                                   {displayTitle.title}
                                 </span>
                                 {displayTitle.detail && (
-                                  <span className="mt-1 line-clamp-2 block text-xs font-bold leading-5 text-zinc-300">
+                                  <span className="mt-1 line-clamp-2 block break-words text-xs font-bold leading-5 text-zinc-300">
                                     {displayTitle.detail}
                                   </span>
                                 )}
-                                <span className="mt-2 block text-xs leading-5 text-zinc-500">
+                                <span className="mt-2 block break-words text-xs leading-5 text-zinc-500">
                                   {signal.buyer}
                                 </span>
                                 <button
@@ -3985,9 +3945,9 @@ export default function BilionAppClient({
                                   }}
                                   className="mt-3 w-full rounded-xl bg-emerald-300 px-3 py-2.5 text-xs font-black text-black transition hover:bg-emerald-200"
                                 >
-                                  Reveal Opportunity
+                                  Test first
                                 </button>
-                                <div className="mt-2 grid grid-cols-3 gap-1.5">
+                                <div className="mt-2 grid grid-cols-1 gap-1.5 sm:grid-cols-3">
                                   {nextActionOptions.map((option) => (
                                     <button
                                       key={option.action}
@@ -4002,7 +3962,7 @@ export default function BilionAppClient({
                                         setSelectedAction(option.action);
                                         setActiveWorkflowTab("studio");
                                       }}
-                                      className="rounded-lg border border-white/10 bg-white/[0.03] px-2 py-1.5 text-[11px] font-bold text-zinc-400 transition hover:bg-white/[0.08] hover:text-white"
+                                      className="rounded-lg border border-white/10 bg-white/[0.03] px-2 py-2 text-xs font-bold text-zinc-400 transition hover:bg-white/[0.08] hover:text-white"
                                     >
                                       {option.label.split(" ")[0]}
                                     </button>
@@ -4050,7 +4010,7 @@ export default function BilionAppClient({
                       Choose a buyer
                     </h3>
                   </div>
-                  <div className="mt-3 flex flex-wrap gap-2">
+                  <div className="mt-3 flex min-w-0 flex-wrap gap-2">
                     {buyerOptions.map((buyer) => {
                       const active = selectedBuyer === buyer;
 
@@ -4060,7 +4020,7 @@ export default function BilionAppClient({
                           type="button"
                           onClick={() => setSelectedBuyer(buyer)}
                           className={[
-                            "rounded-full border px-4 py-2 text-sm font-bold transition",
+                            "min-h-11 rounded-full border px-4 py-2 text-sm font-bold transition",
                             active
                               ? "border-white/40 bg-white text-zinc-950"
                               : "border-white/10 bg-white/[0.03] text-zinc-400 hover:bg-white/[0.06] hover:text-white",
@@ -4082,7 +4042,7 @@ export default function BilionAppClient({
                       Choose your next action
                     </h3>
                   </div>
-                  <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                  <div className="mt-3 grid min-w-0 gap-2 sm:grid-cols-3">
                     {nextActionOptions.map((option) => {
                       const active = selectedAction === option.action;
 
@@ -4092,16 +4052,16 @@ export default function BilionAppClient({
                           type="button"
                           onClick={() => setSelectedAction(option.action)}
                           className={[
-                            "rounded-2xl border px-4 py-4 text-left transition",
+                            "min-w-0 rounded-2xl border px-4 py-4 text-left transition",
                             active
                               ? "border-emerald-300/70 bg-emerald-300/[0.12] text-white shadow-lg shadow-emerald-950/30"
                               : "border-white/10 bg-black/30 text-zinc-400 hover:bg-white/[0.04] hover:text-white",
                           ].join(" ")}
                         >
-                          <span className="block text-sm font-black">
+                          <span className="block break-words text-sm font-black">
                             {option.label}
                           </span>
-                          <span className="mt-1 block text-xs leading-5 text-zinc-500">
+                          <span className="mt-1 block break-words text-xs leading-5 text-zinc-500">
                             {option.helper}
                           </span>
                         </button>
@@ -4126,12 +4086,12 @@ export default function BilionAppClient({
               )}
 
               {selectedSignal && (
-                <div className="mt-5 rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.04] p-4">
+                <div className="mt-5 min-w-0 rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.04] p-4">
                   <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
                     You are about to generate:
                   </div>
-                  <div className="mt-3 grid gap-3 text-sm leading-6 md:grid-cols-3">
-                    <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
+                  <div className="mt-3 grid min-w-0 gap-3 text-sm leading-6 md:grid-cols-3">
+                    <div className="min-w-0 break-words rounded-2xl border border-white/10 bg-black/30 p-4">
                       <div className="text-zinc-500">Signal</div>
                       <div className="font-bold text-zinc-100">
                         {selectedSignalDisplayTitle?.title || selectedSignal.sourceTitle}
@@ -4147,11 +4107,11 @@ export default function BilionAppClient({
                           "Market Signal"}
                       </div>
                     </div>
-                    <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
+                    <div className="min-w-0 break-words rounded-2xl border border-white/10 bg-black/30 p-4">
                       <div className="text-zinc-500">Buyer</div>
                       <div className="font-bold text-zinc-100">{selectedBuyer}</div>
                     </div>
-                    <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
+                    <div className="min-w-0 break-words rounded-2xl border border-white/10 bg-black/30 p-4">
                       <div className="text-zinc-500">Action</div>
                       <div className="font-bold text-zinc-100">
                         {getActionLabel(selectedAction)}
@@ -4166,29 +4126,29 @@ export default function BilionAppClient({
                 disabled={loading || !canGenerate}
                 className="mt-6 w-full rounded-2xl bg-white px-5 py-4 text-sm font-black text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
               >
-                {loading ? "Revealing..." : "💰 Reveal Hidden Opportunity"}
+                {loading ? "Generating..." : "Generate 1 free Business Spark"}
               </button>
               {!canGenerate && (
                 <div className="mt-5 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-5">
                   <h3 className="text-lg font-black text-yellow-100">
-                    You&apos;ve used your 3 free Opportunity Reveals today.
+                    You&apos;ve used your 3 free Business Sparks today.
                   </h3>
                   <p className="mt-2 text-sm leading-6 text-zinc-400">
-                    Founder Access unlocks unlimited Opportunity Reveals, launch copy, saved signals, and build prompts.
+                    Founder Access unlocks unlimited Sparks, full Launch Packs, saved Winners, and full Codex Build Prompts.
                   </p>
                   {CHECKOUT_URL ? (
                     <a
                       href={CHECKOUT_URL}
-                      className="mt-4 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
+                      className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-white px-5 py-3 text-center text-sm font-bold text-black transition hover:bg-zinc-200 sm:w-auto"
                     >
-                      Get unlimited Opportunity Reveals
+                      Unlock Founder Access — $19
                     </a>
                   ) : (
                     <a
                       href="/founder"
-                      className="mt-4 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
+                      className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-white px-5 py-3 text-center text-sm font-bold text-black transition hover:bg-zinc-200 sm:w-auto"
                     >
-                      Get unlimited Opportunity Reveals
+                      Unlock Founder Access — $19
                     </a>
                   )}
                 </div>
@@ -4203,14 +4163,14 @@ export default function BilionAppClient({
           {result && activeWorkflowTab === "studio" && (
             <div className="mt-8 grid gap-6">
               {!masterPrompt && (
-              <div className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl">
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-                  <div>
+              <div className="min-w-0 overflow-hidden rounded-3xl border border-white/10 bg-[#101011] p-5 shadow-2xl md:p-6">
+                <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                  <div className="min-w-0">
                     <div className="inline-flex rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-300">
-                      Opportunity Reveal
+                      Business Spark
                     </div>
-                    <h2 className="mt-4 text-3xl font-black tracking-tight">
-                      Opportunity Revealed
+                    <h2 className="mt-4 break-words text-2xl font-black tracking-tight sm:text-3xl">
+                      Business Spark generated
                     </h2>
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-xs font-bold uppercase tracking-wide text-zinc-400">
@@ -4218,9 +4178,9 @@ export default function BilionAppClient({
                   </div>
                 </div>
 
-                <div className="mt-6 grid gap-4 md:grid-cols-2">
+                <div className="mt-6 grid min-w-0 gap-4 md:grid-cols-2">
                   <InfoBlock
-                    label="💥 Holy Shit"
+                    label="Why it works"
                     value={
                       masterPrompt
                         ? buildHolyShit(masterPrompt)
@@ -4228,7 +4188,7 @@ export default function BilionAppClient({
                     }
                   />
                   <InfoBlock
-                    label="🤯 What Everyone Misses"
+                    label="Buyer"
                     value={
                       masterPrompt
                         ? buildWhatEveryoneMisses(masterPrompt)
@@ -4236,7 +4196,7 @@ export default function BilionAppClient({
                     }
                   />
                   <InfoBlock
-                    label="💰 Money Angle"
+                    label="First Offer"
                     value={
                       masterPrompt
                         ? buildMoneyAngle(masterPrompt)
@@ -4244,7 +4204,7 @@ export default function BilionAppClient({
                     }
                   />
                   <InfoBlock
-                    label="🔥 Opportunity Score"
+                    label="Spark Score"
                     value={
                       masterPrompt
                         ? buildOpportunityScore(masterPrompt)
@@ -4252,7 +4212,7 @@ export default function BilionAppClient({
                     }
                   />
                   <InfoBlock
-                    label="🚀 First Wedge"
+                    label="First Wedge"
                     value={
                       masterPrompt
                         ? buildFirstWedge(masterPrompt)
@@ -4260,63 +4220,63 @@ export default function BilionAppClient({
                     }
                   />
                   <InfoBlock
-                    label="⚔️ 48h Attack"
+                    label="48h Test"
                     value={
                       masterPrompt
                         ? buildAttackPlan(masterPrompt)
                         : result.free.why_now
                     }
                   />
-                  <InfoBlock label="🧱 Build" value={result.free.what_you_can_build} />
+                  <InfoBlock label="Codex Build Prompt" value={result.free.what_you_can_build} />
                 </div>
               </div>
               )}
 
               {canGenerate ? (
-              <section className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl">
-                <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                  <div>
+              <section className="min-w-0 overflow-hidden rounded-3xl border border-white/10 bg-[#101011] p-5 shadow-2xl md:p-6">
+                <div className="flex min-w-0 flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                  <div className="min-w-0">
                     <div className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-wide text-black">
-                      Opportunity Reveal
+                      Business Spark
                     </div>
-                    <h2 className="mt-4 text-3xl font-black tracking-tight">
+                    <h2 className="mt-4 break-words text-2xl font-black tracking-tight sm:text-3xl">
                       Generate from your selected signal, buyer, and action.
                     </h2>
-                    <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
+                    <p className="mt-3 max-w-2xl break-words text-sm leading-relaxed text-zinc-400">
                       {hasFounderAccess
-                        ? "Paid users can reveal more hidden opportunities and copy the full build prompt when Build it is selected."
-                        : `Free Opportunity Reveals today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used. Founder Access unlocks unlimited Opportunity Reveals.`}
+                        ? "Founder Access unlocks unlimited Sparks and the full Codex Build Prompt after demand is validated."
+                        : `Free Business Sparks today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used. Founder Access unlocks unlimited Sparks.`}
                     </p>
                   </div>
 
-                  <div className="flex flex-col gap-2 sm:flex-row">
+                  <div className="flex w-full min-w-0 flex-col gap-2 sm:w-auto sm:flex-row">
                     <button
                       type="button"
                       onClick={generateMasterPrompt}
                       disabled={!canGenerate}
-                      className="rounded-2xl bg-white px-5 py-4 text-sm font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="w-full rounded-2xl bg-white px-5 py-4 text-center text-sm font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                     >
-                      💰 Reveal Hidden Opportunity
+                      Generate Business Spark
                     </button>
                     <button
                       type="button"
                       onClick={generateAnotherAngle}
                       disabled={!masterPrompt || !canGenerate}
-                      className="rounded-2xl border border-white/10 px-5 py-4 text-sm font-bold text-white transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-50"
+                      className="w-full rounded-2xl border border-white/10 px-5 py-4 text-center text-sm font-bold text-white transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                     >
                       Try Next Action
                     </button>
                     <button
                       type="button"
                       onClick={saveDistributionAssets}
-                      className="rounded-2xl border border-emerald-300/30 px-5 py-4 text-sm font-bold text-emerald-100 transition hover:bg-emerald-300/10"
+                      className="w-full rounded-2xl border border-emerald-300/30 px-5 py-4 text-center text-sm font-bold text-emerald-100 transition hover:bg-emerald-300/10 sm:w-auto"
                     >
                       Save to Queue
                     </button>
                     <button
                       type="button"
                       onClick={addValidationRecord}
-                      className="rounded-2xl border border-white/10 px-5 py-4 text-sm font-bold text-white transition hover:bg-white/[0.04]"
+                      className="w-full rounded-2xl border border-white/10 px-5 py-4 text-center text-sm font-bold text-white transition hover:bg-white/[0.04] sm:w-auto"
                     >
                       Track Validation
                     </button>
@@ -4330,24 +4290,24 @@ export default function BilionAppClient({
                     Founder/Paid Access
                   </div>
                   <h2 className="mt-4 text-3xl font-black tracking-tight">
-                    You&apos;ve used your 3 free Opportunity Reveals today.
+                    You&apos;ve used your 3 free Business Sparks today.
                   </h2>
                   <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
-                    Founder Access unlocks unlimited Opportunity Reveals, launch copy, saved signals, and build prompts.
+                    Founder Access unlocks unlimited Sparks, full Launch Packs, saved Winners, and full Codex Build Prompts.
                   </p>
                   {CHECKOUT_URL ? (
                     <a
                       href={CHECKOUT_URL}
-                      className="mt-5 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
+                      className="mt-5 inline-flex w-full items-center justify-center rounded-2xl bg-white px-5 py-3 text-center text-sm font-bold text-black transition hover:bg-zinc-200 sm:w-auto"
                     >
-                      Get unlimited Opportunity Reveals
+                      Unlock Founder Access — $19
                     </a>
                   ) : (
                     <a
                       href="/founder"
-                      className="mt-5 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
+                      className="mt-5 inline-flex w-full items-center justify-center rounded-2xl bg-white px-5 py-3 text-center text-sm font-bold text-black transition hover:bg-zinc-200 sm:w-auto"
                     >
-                      Get unlimited Opportunity Reveals
+                      Unlock Founder Access — $19
                     </a>
                   )}
                 </section>
@@ -4403,7 +4363,7 @@ export default function BilionAppClient({
                 <p className="mt-3 text-sm leading-6 text-zinc-500">
                   Use the Mobile Share Kit at the bottom of the brief to post on
                   X, reply to interest, DM likely buyers, and offer the paid
-                  Opportunity Reveal.
+                  Business Spark.
                 </p>
 
                 <div className="mt-5 space-y-3">
@@ -4426,19 +4386,19 @@ function GuidedWorkflow({ currentStep }: { currentStep: 1 | 2 | 3 }) {
     {
       id: 1,
       eyebrow: "Step 1",
-      title: "📡 Pick a Signal",
+      title: "Pick a Signal",
       body: "Choose a proven market signal from the Signal Library.",
     },
     {
       id: 2,
       eyebrow: "Step 2",
-      title: "💰 Reveal Hidden Opportunity",
-      body: "Generate the Opportunity Reveal and discover the leverage behind the signal.",
+      title: "Generate Business Spark",
+      body: "Get the buyer, pain, first offer, 48h test, and Codex prompt.",
     },
     {
       id: 3,
       eyebrow: "Step 3",
-      title: "📣 Copy & Distribute",
+      title: "Copy & Distribute",
       body: "Use Carousel Generator and Distribution Assets to publish the insight.",
     },
   ] satisfies Array<{
@@ -4449,14 +4409,14 @@ function GuidedWorkflow({ currentStep }: { currentStep: 1 | 2 | 3 }) {
   }>;
 
   return (
-    <details className="mt-4 rounded-2xl border border-white/[0.08] bg-black/20 p-4">
+    <details className="mt-4 min-w-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-black/20 p-4">
       <summary className="cursor-pointer list-none">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div>
+        <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
             <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
               New here?
             </div>
-            <p className="mt-1 text-sm font-bold leading-6 text-zinc-300">
+            <p className="mt-1 break-words text-sm font-bold leading-6 text-zinc-300">
               Pick a market, test one opportunity, then copy launch assets.
             </p>
           </div>
@@ -4536,8 +4496,8 @@ function GuidedWorkflow({ currentStep }: { currentStep: 1 | 2 | 3 }) {
 
               {index < steps.length - 1 && (
                 <div className="flex items-center justify-center text-zinc-600">
-                  <span className="hidden text-2xl font-black lg:block">→</span>
-                  <span className="text-xl font-black lg:hidden">↓</span>
+                  <span className="hidden text-2xl font-black lg:block">-&gt;</span>
+                  <span className="text-xl font-black lg:hidden">down</span>
                 </div>
               )}
             </Fragment>
@@ -4579,30 +4539,30 @@ function EvidenceInboxSummary({
           <div className="text-xs font-bold text-zinc-600">Open evidence</div>
         </div>
       </summary>
-      <div className="mt-4 rounded-2xl border border-white/10 bg-black/25 p-4">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div>
+      <div className="mt-4 min-w-0 rounded-2xl border border-white/10 bg-black/25 p-4">
+      <div className="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="min-w-0">
           <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
             Evidence Inbox
           </div>
-          <h3 className="mt-1 text-lg font-black text-white">
+          <h3 className="mt-1 break-words text-lg font-black text-white">
             Market-backed opportunities, ranked before generation.
           </h3>
-          <p className="mt-2 text-sm leading-6 text-zinc-300">
+          <p className="mt-2 break-words text-sm leading-6 text-zinc-300">
             {signals.length} market signals / {strongCount} strong evidence /{" "}
             {classifications.join(", ")}
           </p>
-          <p className="mt-1 text-xs font-bold leading-5 text-zinc-500">
+          <p className="mt-1 break-words text-xs font-bold leading-5 text-zinc-500">
             Evidence feeds the ranking engine. Approved evidence makes Bilion smarter about what to post, DM, and build after replies.
           </p>
         </div>
 
         {topSignal && (
-          <div className="rounded-2xl border border-emerald-300/40 bg-emerald-300/[0.09] p-4 shadow-lg shadow-emerald-950/20 lg:min-w-80">
+          <div className="min-w-0 rounded-2xl border border-emerald-300/40 bg-emerald-300/[0.09] p-4 shadow-lg shadow-emerald-950/20 lg:min-w-80">
             <div className="text-xs font-black uppercase tracking-[0.14em] text-emerald-300">
-              Top Opportunity To Test
+              Business Spark
             </div>
-            <div className="mt-1 text-sm font-black text-white">
+            <div className="mt-1 break-words text-sm font-black text-white">
               {truncateDisplayText(getDisplaySignalTitle(topSignal).title, 64)}
             </div>
             <div className="mt-2 flex flex-wrap gap-2 text-xs font-bold">
@@ -4618,7 +4578,7 @@ function EvidenceInboxSummary({
               onClick={() => onRevealTop(topSignal)}
               className="mt-3 w-full rounded-xl bg-emerald-300 px-3 py-2.5 text-xs font-black text-black transition hover:bg-emerald-200"
             >
-              Reveal and sell first
+              Test first
             </button>
           </div>
         )}
@@ -4640,25 +4600,25 @@ function MarketSelectionSection({
   selectedMarket: (typeof marketOptions)[number];
 }) {
   return (
-    <section className="rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.055] p-3 shadow-2xl md:rounded-3xl md:p-6">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-        <div>
+    <section className="w-full max-w-full overflow-hidden rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.055] p-4 shadow-2xl md:rounded-3xl md:p-6">
+      <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div className="min-w-0">
           <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
             Start here
           </div>
-          <h3 className="mt-1 text-xl font-black text-white md:text-3xl">
-            Choose the right market before you build.
+          <h3 className="mt-1 break-words text-xl font-black text-white md:text-3xl">
+            Pick a Codex business path.
           </h3>
-          <p className="mt-2 max-w-2xl text-xs leading-5 text-zinc-400 md:text-sm md:leading-6">
-            Pick a market, review evidence-backed opportunities, sell one today, then build with Codex after replies.
+          <p className="mt-2 max-w-2xl break-words text-sm leading-relaxed text-zinc-400 md:leading-6">
+            Choose one path, get a buyer, pain, first offer, 48h test, and Codex prompt.
           </p>
         </div>
         <div className="hidden rounded-full border border-white/10 bg-black/30 px-4 py-2 text-xs font-black uppercase tracking-wide text-zinc-400 md:block">
-          Evidence &rarr; Opportunity &rarr; Launch Pack &rarr; Response &rarr; Winner
+          Path &rarr; Spark &rarr; Test &rarr; Reply &rarr; Build
         </div>
       </div>
 
-      <div className="mt-3 flex gap-2 overflow-x-auto pb-1 md:mt-4">
+      <div className="mt-3 flex min-w-0 flex-wrap gap-2 pb-1 md:mt-4">
         {marketOptions.map((market) => {
           const active = selectedMarket === market;
 
@@ -4668,7 +4628,7 @@ function MarketSelectionSection({
               type="button"
               onClick={() => onMarketChange(market)}
               className={[
-                "shrink-0 rounded-full border px-3 py-1.5 text-xs font-black transition md:py-2",
+                "min-h-11 rounded-full border px-3 py-2 text-sm font-black transition",
                 active
                   ? "border-emerald-300 bg-emerald-300 text-black"
                   : "border-white/10 bg-black/25 text-zinc-400 hover:border-white/20 hover:text-white",
@@ -4680,9 +4640,9 @@ function MarketSelectionSection({
         })}
       </div>
 
-      <div className="mt-3 grid gap-3 md:mt-4">
-        <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
-          Top Opportunity To Test in {selectedMarket}
+      <div className="mt-3 grid min-w-0 gap-3 md:mt-4">
+        <div className="break-words text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+          Business Spark in {selectedMarket}
         </div>
         {opportunities.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-white/10 bg-black/25 p-4 text-sm leading-6 text-zinc-500">
@@ -4692,10 +4652,10 @@ function MarketSelectionSection({
           opportunities.slice(0, 1).map((signal) => (
             <article
               key={signal.id}
-              className="rounded-2xl border border-emerald-300/35 bg-black/35 p-3 shadow-lg shadow-emerald-950/20 md:rounded-3xl md:p-5"
+              className="min-w-0 overflow-hidden rounded-2xl border border-emerald-300/35 bg-black/35 p-4 shadow-lg shadow-emerald-950/20 md:rounded-3xl md:p-5"
             >
-              <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                <div>
+              <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                <div className="min-w-0">
                   <div className="flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-wide">
                     <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-zinc-400">
                       {getSignalMarket(signal)}
@@ -4707,22 +4667,22 @@ function MarketSelectionSection({
                       {getSignalEvidenceLevel(signal)} evidence
                     </span>
                   </div>
-                  <h4 className="mt-2 text-base font-black text-white md:mt-3 md:text-lg">
+                  <h4 className="mt-2 break-words text-base font-black text-white md:mt-3 md:text-lg">
                     {truncateDisplayText(getDisplaySignalTitle(signal).title, 78)}
                   </h4>
-                  <p className="mt-2 text-xs leading-5 text-zinc-400 md:text-sm md:leading-6">
+                  <p className="mt-2 break-words text-sm leading-relaxed text-zinc-400 md:leading-6">
                     Buyer: {signal.buyer}
                   </p>
-                  <p className="mt-2 line-clamp-2 text-xs leading-5 text-zinc-300 md:line-clamp-none md:text-sm md:leading-6">
+                  <p className="mt-2 line-clamp-3 break-words text-sm leading-relaxed text-zinc-300 md:line-clamp-none md:leading-6">
                     Paid pain: {truncateDisplayText(signal.pain, 160)}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => onSelectOpportunity(signal)}
-                  className="w-full rounded-xl bg-emerald-300 px-4 py-3 text-sm font-black text-black transition hover:bg-emerald-200 lg:w-auto lg:rounded-2xl lg:px-5 lg:py-4"
+                  className="w-full rounded-xl bg-emerald-300 px-4 py-3 text-center text-sm font-black text-black transition hover:bg-emerald-200 lg:w-auto lg:rounded-2xl lg:px-5 lg:py-4"
                 >
-                  Reveal and sell first
+                  Generate Business Spark
                 </button>
               </div>
 
@@ -4732,11 +4692,11 @@ function MarketSelectionSection({
                 </summary>
                 <div className="mt-3 grid gap-2">
                   <MarketOpportunityField
-                    label="Why this opportunity"
+                    label="Why it works"
                     value={getScoreReason(signal)}
                   />
                   <MarketOpportunityField
-                    label="Expected first offer"
+                    label="First Offer"
                     value={getExpectedFirstOffer(signal)}
                   />
                   <MarketOpportunityField
@@ -4744,19 +4704,19 @@ function MarketSelectionSection({
                     value={signal.patternMatches[2] || signal.sourceNote || "Post the insight, then DM likely buyers."}
                   />
                   <MarketOpportunityField
-                    label="Timing"
+                    label="48h Test"
                     value="Validate in 48h / build in 1-3 days after replies"
                   />
                 </div>
               </details>
 
-              <div className="mt-4 hidden gap-3 md:grid md:grid-cols-2 xl:grid-cols-4">
+              <div className="mt-4 hidden min-w-0 gap-3 md:grid md:grid-cols-2 xl:grid-cols-4">
                 <MarketOpportunityField
-                  label="Why this opportunity"
+                  label="Why it works"
                   value={getScoreReason(signal)}
                 />
                 <MarketOpportunityField
-                  label="Expected first offer"
+                  label="First Offer"
                   value={getExpectedFirstOffer(signal)}
                 />
                 <MarketOpportunityField
@@ -4764,7 +4724,7 @@ function MarketSelectionSection({
                   value={signal.patternMatches[2] || signal.sourceNote || "Post the insight, then DM likely buyers."}
                 />
                 <MarketOpportunityField
-                  label="Timing"
+                  label="48h Test"
                   value="Validate in 48h / build in 1-3 days after replies"
                 />
               </div>
@@ -4784,11 +4744,11 @@ function MarketOpportunityField({
   value: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/25 p-3">
-      <div className="text-[11px] font-black uppercase tracking-wide text-zinc-600">
+    <div className="min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-black/25 p-3">
+      <div className="break-words text-[11px] font-black uppercase tracking-wide text-zinc-600">
         {label}
       </div>
-      <p className="mt-2 text-sm leading-6 text-zinc-200">
+      <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-zinc-200">
         {normalizeDisplayText(value)}
       </p>
     </div>
@@ -5023,7 +4983,7 @@ function DistributionQueueSection({
   queue: DistributionAsset[];
 }) {
   return (
-    <section className="rounded-3xl border border-white/10 bg-[#101011] p-6 shadow-2xl">
+    <section className="min-w-0 overflow-hidden rounded-3xl border border-white/10 bg-[#101011] p-5 shadow-2xl md:p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
@@ -5331,31 +5291,31 @@ function WinnersSection({
       <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
         Winners
       </div>
-      <h2 className="mt-2 text-3xl font-black tracking-tight">
+      <h2 className="mt-2 break-words text-2xl font-black tracking-tight sm:text-3xl">
         What worked in the market.
       </h2>
-      <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-500">
+      <p className="mt-3 max-w-2xl break-words text-sm leading-relaxed text-zinc-500">
         Winners are opportunities that earned replies, likes, saves, clicks, DMs, purchases, or a strong manual signal.
         Feed winners back into future market decisions.
       </p>
 
       {winners.length === 0 ? (
-        <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-5 text-sm leading-6 text-zinc-500">
+        <div className="mt-6 min-w-0 break-words rounded-2xl border border-white/10 bg-black/30 p-4 text-sm leading-6 text-zinc-500 md:p-5">
           No winners yet. Run the loop first: Evidence &rarr; Opportunity &rarr; Launch Pack &rarr; Market response &rarr; Winner.
         </div>
       ) : (
-        <div className="mt-6 grid gap-3 md:grid-cols-2">
+        <div className="mt-6 grid min-w-0 gap-3 md:grid-cols-2">
           {winners.map((record) => (
             <article
               key={record.id}
-              className="rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.05] p-4"
+              className="min-w-0 overflow-hidden rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.05] p-4"
             >
               <div className="text-xs font-black uppercase tracking-wide text-emerald-300">
                 Winner
               </div>
-              <h3 className="mt-2 text-lg font-black text-white">{record.signalTitle}</h3>
-              <p className="mt-1 text-sm leading-6 text-zinc-400">{record.buyer}</p>
-              <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs font-black text-zinc-300">
+              <h3 className="mt-2 break-words text-lg font-black text-white">{record.signalTitle}</h3>
+              <p className="mt-1 break-words text-sm leading-6 text-zinc-400">{record.buyer}</p>
+              <div className="mt-4 grid grid-cols-1 gap-2 text-center text-xs font-black text-zinc-300 sm:grid-cols-3">
                 <div className="rounded-xl border border-white/10 bg-black/25 p-3">
                   {record.replies} replies
                 </div>
@@ -5370,7 +5330,7 @@ function WinnersSection({
                 <button
                   type="button"
                   onClick={() => onMarkWinner(record.id)}
-                  className="mt-4 rounded-xl bg-white px-4 py-2 text-xs font-black text-black transition hover:bg-zinc-200"
+                  className="mt-4 w-full rounded-xl bg-white px-4 py-3 text-xs font-black text-black transition hover:bg-zinc-200 sm:w-auto"
                 >
                   Save as Winner
                 </button>
@@ -5441,56 +5401,56 @@ function MasterPromptCard({
   }
 
   return (
-    <article className="space-y-5">
-      <section className="rounded-3xl border border-emerald-400/20 bg-[#0f1512] p-5 shadow-2xl md:p-6">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-          <div className="max-w-3xl">
+    <article className="min-w-0 space-y-5">
+      <section className="min-w-0 overflow-hidden rounded-3xl border border-emerald-400/20 bg-[#0f1512] p-5 shadow-2xl md:p-6">
+        <div className="flex min-w-0 flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+          <div className="min-w-0 max-w-3xl">
             <div className="flex flex-wrap gap-2">
               <div className="inline-flex rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-300">
-                Hero Summary
+                Business Spark
               </div>
               <div className="inline-flex rounded-full border border-white/10 px-3 py-1 text-xs font-bold text-zinc-400">
                 Signal #{signalNumber} / Angle #{angleNumber}
               </div>
             </div>
-            <h2 className="mt-4 text-3xl font-black tracking-tight md:text-4xl">
+            <h2 className="mt-4 break-words text-3xl font-black tracking-tight md:text-4xl">
               {shortProductTitle}
             </h2>
-            <p className="mt-3 text-sm font-bold leading-6 text-emerald-200">
+            <p className="mt-3 break-words text-sm font-bold leading-6 text-emerald-200">
               {shortSignalTitle}
             </p>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-200">
+            <p className="mt-4 max-w-2xl break-words text-base leading-7 text-zinc-200">
               {oneLineAha}
             </p>
           </div>
 
-          <div className="grid min-w-full gap-3 sm:grid-cols-2 lg:min-w-80 lg:grid-cols-1">
+          <div className="grid w-full min-w-0 gap-3 sm:grid-cols-2 lg:w-80 lg:grid-cols-1">
             <button
               type="button"
               onClick={copyCarouselFromSummary}
-              className="rounded-2xl bg-emerald-300 px-5 py-4 text-sm font-black text-black shadow-lg shadow-emerald-950/40 transition hover:bg-emerald-200"
+              className="w-full rounded-2xl bg-emerald-300 px-5 py-4 text-center text-sm font-black text-black shadow-lg shadow-emerald-950/40 transition hover:bg-emerald-200"
             >
               {copiedCarousel ? "Copied Carousel" : "Copy Carousel"}
             </button>
             <button
               type="button"
               onClick={onCopyBrief}
-              className="rounded-2xl border border-white/10 px-5 py-4 text-sm font-bold text-white transition hover:bg-white/[0.04]"
+              className="w-full rounded-2xl border border-white/10 px-5 py-4 text-center text-sm font-bold text-white transition hover:bg-white/[0.04]"
             >
               {copiedSafe ? "Copied Short Brief" : "Copy Short Brief"}
             </button>
           </div>
         </div>
 
-        <div className="mt-5 grid gap-3 md:grid-cols-5">
-          <SummaryMetric label="Opportunity Score" value={`${opportunityScore.total}/50`} />
+        <div className="mt-5 grid min-w-0 gap-3 md:grid-cols-5">
+          <SummaryMetric label="Why it works" value={`${opportunityScore.total}/50 spark score`} />
           <SummaryMetric label="Buyer" value={truncateDisplayText(masterPrompt.buyer, 72)} />
-          <SummaryMetric label="Price" value={truncateDisplayText(masterPrompt.price, 60)} />
+          <SummaryMetric label="Pain" value={truncateDisplayText(masterPrompt.pain, 72)} />
           <SummaryMetric
-            label="First Wedge"
+            label="First Offer"
             value={truncateDisplayText(masterPrompt.firstPaidOffer, 80)}
           />
-          <SummaryMetric label="Action" value={getActionLabel(selectedAction)} />
+          <SummaryMetric label="48h Test" value={getActionLabel(selectedAction)} />
         </div>
 
         {(copyFeedback || carouselCopyError) && (
@@ -5512,42 +5472,54 @@ function MasterPromptCard({
         {!hasFounderAccess && (
           <div className="mt-5 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-4">
             <div className="text-xs font-bold uppercase tracking-wide text-yellow-300">
-              Free preview
+              Free
             </div>
             <p className="mt-2 text-sm leading-6 text-zinc-300">
-              Free users can preview the signal, carousel starter, offer, price,
-              and validation plan. Founder/Paid access unlocks all carousel slides
-              and the final Codex build prompt.
+              3 Business Sparks per day. See the buyer, pain, first offer, and
+              48h test. Founder Access unlocks full Launch Packs, saved Winners,
+              and full Codex Build Prompts.
             </p>
           </div>
         )}
       </section>
 
-      <section className="rounded-3xl border border-white/10 bg-[#101011] p-5 shadow-2xl md:p-6">
-        <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-          Why This Matters
-        </div>
-        <h3 className="mt-2 text-2xl font-black tracking-tight">
-          Why this signal is worth attention.
-        </h3>
+      <details className="rounded-3xl border border-white/10 bg-[#101011] p-5 shadow-2xl md:p-6">
+        <summary className="cursor-pointer list-none">
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+            Advanced / Archive
+          </div>
+          <h3 className="mt-2 text-2xl font-black tracking-tight">
+            Why this spark works.
+          </h3>
+        </summary>
         <div className="mt-5 grid gap-3 md:grid-cols-2">
-          <StarterStoryCard label="Holy Shit" value={buildHolyShit(masterPrompt)} />
+          <StarterStoryCard label="Why it works" value={buildHolyShit(masterPrompt)} />
           <StarterStoryCard
-            label="What Everyone Misses"
+            label="Buyer"
             value={buildWhatEveryoneMisses(masterPrompt)}
           />
-          <StarterStoryCard label="Money Angle" value={buildMoneyAngle(masterPrompt)} />
+          <StarterStoryCard label="First Offer" value={buildMoneyAngle(masterPrompt)} />
           <StarterStoryCard
-            label="Market Shift"
+            label="Why now"
             value={normalizeDisplayText(masterPrompt.whyItSold)}
           />
         </div>
-      </section>
+      </details>
 
-      <CarouselGenerator
-        hasFounderAccess={hasFounderAccess}
-        masterPrompt={masterPrompt}
-      />
+      <details className="rounded-3xl border border-white/10 bg-black/30 p-5 md:p-6">
+        <summary className="cursor-pointer list-none">
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+            Advanced / Carousel
+          </div>
+          <h3 className="mt-2 text-2xl font-black tracking-tight">
+            Optional post assets.
+          </h3>
+        </summary>
+        <CarouselGenerator
+          hasFounderAccess={hasFounderAccess}
+          masterPrompt={masterPrompt}
+        />
+      </details>
 
       <section className="rounded-3xl border border-white/10 bg-[#101011] p-5 shadow-2xl md:p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -5571,14 +5543,17 @@ function MasterPromptCard({
           </button>
         </div>
         <div className="mt-5 grid gap-4 md:grid-cols-2">
-          <MasterPromptField label="First paid offer" value={masterPrompt.firstPaidOffer} />
-          <MasterPromptField label="Price" value={masterPrompt.price} />
+          <MasterPromptField label="Business Spark" value={masterPrompt.promptTitle} />
+          <MasterPromptField label="Why it works" value={masterPrompt.whyItSold} />
+          <MasterPromptField label="Buyer" value={masterPrompt.buyer} />
+          <MasterPromptField label="Pain" value={masterPrompt.pain} />
+          <MasterPromptField label="First Offer" value={`${masterPrompt.firstPaidOffer}\n${masterPrompt.price}`} />
           <MasterPromptField label="DM script" value={masterPrompt.launchCopy.dmMessage} />
           <MasterPromptField label="X post" value={masterPrompt.launchCopy.xPost} />
         </div>
         <div className="mt-4 rounded-2xl border border-white/10 bg-black/40 p-4">
           <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
-            48-hour validation plan
+            48h Test
           </div>
           <ol className="mt-3 space-y-2 text-sm leading-6 text-zinc-100">
             {masterPrompt.validationPlan.map((step, index) => (
@@ -5594,13 +5569,13 @@ function MasterPromptCard({
       <details className="rounded-3xl border border-white/10 bg-[#101011] p-5 shadow-2xl md:p-6">
         <summary className="cursor-pointer list-none">
           <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
-            Build Only After Replies
+            Codex Build Prompt
           </div>
           <h3 className="mt-2 text-2xl font-black tracking-tight">
             Open this after the carousel or DM gets a reply.
           </h3>
           <p className="mt-2 text-sm leading-6 text-zinc-500">
-            Build summary, core workflow, core features, and Codex prompt are kept here.
+            Build after replies. Use this Codex prompt only after someone replies, clicks, or asks for the offer.
           </p>
         </summary>
 
@@ -5622,35 +5597,43 @@ function MasterPromptCard({
           />
         </div>
 
-        {selectedAction === "build" &&
-          (hasFounderAccess ? (
-            <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 p-4">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
-                  Codex build prompt
-                </div>
-                <button
-                  type="button"
-                  onClick={onCopy}
-                  className="rounded-2xl bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-zinc-200"
-                >
-                  {copied ? "Copied Codex prompt" : "Copy Codex Prompt"}
-                </button>
-              </div>
-              <pre className="mt-3 max-h-[520px] overflow-auto whitespace-pre-wrap rounded-xl border border-white/10 bg-black/60 p-4 font-sans text-sm leading-6 text-zinc-100">
-                {masterPrompt.fullCodeXMasterPrompt}
-              </pre>
-            </div>
-          ) : (
-            <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 p-4">
+        {hasFounderAccess ? (
+          <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 p-4">
+            <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
-                Codex build prompt
+                Full Codex Build Prompt
               </div>
-              <p className="mt-3 text-sm leading-6 text-zinc-400">
-                The full Codex build prompt is available with Founder/Paid access.
-              </p>
+              <button
+                type="button"
+                onClick={onCopy}
+                className="w-full rounded-2xl bg-white px-5 py-3 text-center text-sm font-black text-black transition hover:bg-zinc-200 sm:w-auto"
+              >
+                {copied ? "Copied Codex prompt" : "Copy Codex Prompt"}
+              </button>
             </div>
-          ))}
+            <pre className="mt-3 max-h-[520px] max-w-full overflow-auto whitespace-pre-wrap break-words rounded-xl border border-white/10 bg-black/60 p-4 font-sans text-sm leading-6 text-zinc-100">
+              {masterPrompt.fullCodeXMasterPrompt}
+            </pre>
+          </div>
+        ) : (
+          <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 p-4">
+            <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+              Codex Build Prompt Preview
+            </div>
+            <pre className="mt-3 max-h-[260px] max-w-full overflow-auto whitespace-pre-wrap break-words rounded-xl border border-white/10 bg-black/60 p-4 font-sans text-sm leading-6 text-zinc-100">
+              {masterPrompt.fullCodeXMasterPrompt.split("\n").slice(0, 12).join("\n")}
+            </pre>
+            <p className="mt-3 text-sm leading-6 text-zinc-400">
+              Full Prompt is locked. Founder Access unlocks the full Codex Build Prompt after demand is validated.
+            </p>
+            <a
+              href={CHECKOUT_URL || "/founder"}
+              className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-white px-5 py-3 text-center text-sm font-black text-black transition hover:bg-zinc-200 sm:w-auto"
+            >
+              Unlock Founder Access — $19
+            </a>
+          </div>
+        )}
       </details>
 
       <details className="rounded-3xl border border-white/10 bg-black/30 p-5 md:p-6">
@@ -5702,17 +5685,16 @@ function MasterPromptCard({
       {!hasFounderAccess && (
         <div className="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.06] p-5">
           <h3 className="text-xl font-black text-white">
-            Get unlimited Opportunity Reveals
+            Unlock Founder Access — $19
           </h3>
           <p className="mt-2 text-sm leading-6 text-zinc-300">
-            Includes: 3 angles, launch copy, pricing, DM scripts, landing
-            headline, and Codex prompt.
+            Get unlimited Sparks, full launch copy, saved Winners, and Codex prompts.
           </p>
           <a
             href={CHECKOUT_URL || "/founder"}
-            className="mt-4 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-zinc-200"
+            className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-white px-5 py-3 text-center text-sm font-black text-black transition hover:bg-zinc-200 sm:w-auto"
           >
-            Get unlimited Opportunity Reveals
+            Unlock Founder Access — $19
           </a>
         </div>
       )}
@@ -5750,7 +5732,7 @@ function CarouselGenerator({
             Carousel Generator
           </div>
           <h3 className="mt-2 text-2xl font-black text-white">
-            5-slide Opportunity Reveal carousel
+            5-slide Business Spark carousel
           </h3>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-500">
             Turn this hidden opportunity into TikTok, Instagram, or X carousel copy.
@@ -5773,25 +5755,25 @@ function CarouselGenerator({
         </div>
       )}
 
-      <div className="mt-4 grid gap-3 lg:grid-cols-5">
+      <div className="mt-4 grid min-w-0 gap-3 lg:grid-cols-5">
         {visibleSlides.map((slide, index) => (
           <article
             key={slide.title}
-            className="flex min-h-56 flex-col rounded-2xl border border-white/10 bg-white/[0.035] p-4"
+            className="flex min-h-56 min-w-0 flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.035] p-4"
           >
             <div className="text-xs font-black uppercase tracking-wide text-zinc-500">
               Slide {index + 1}
             </div>
-            <h4 className="mt-2 text-base font-black leading-6 text-white">
+            <h4 className="mt-2 break-words text-base font-black leading-6 text-white">
               {slide.title.replace(/^Slide \d+:\s*/, "")}
             </h4>
-            <p className="mt-3 flex-1 whitespace-pre-wrap text-sm leading-6 text-zinc-300">
+            <p className="mt-3 flex-1 whitespace-pre-wrap break-words text-sm leading-6 text-zinc-300">
               {slide.body}
             </p>
             <button
               type="button"
               onClick={() => copyText(slide.title, `${slide.title}\n${slide.body}`)}
-              className="mt-4 rounded-xl border border-white/10 px-3 py-2 text-xs font-black text-white transition hover:bg-white/[0.06]"
+              className="mt-4 w-full rounded-xl border border-white/10 px-3 py-3 text-xs font-black text-white transition hover:bg-white/[0.06]"
             >
               {copiedKey === slide.title ? "Copied" : "Copy Slide"}
             </button>
@@ -5839,7 +5821,7 @@ function ActionBriefSection({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-            Opportunity Reveal
+            Business Spark
           </div>
           <h3 className="mt-2 text-2xl font-black text-white">
             {getActionLabel(action)}
@@ -5850,7 +5832,7 @@ function ActionBriefSection({
           onClick={copyActionBrief}
           className="rounded-2xl bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-zinc-200"
         >
-          {copied ? "Copied Opportunity Reveal" : "Copy Opportunity Reveal"}
+          {copied ? "Copied Business Spark" : "Copy Business Spark"}
         </button>
       </div>
 
@@ -5930,36 +5912,36 @@ function ExportAssets({
   }
 
   return (
-    <div className="mt-4 rounded-2xl border border-white/10 bg-black/35 p-5">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
+    <div className="mt-4 min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-black/35 p-4 md:p-5">
+      <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
           <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
             Distribution Assets
           </div>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-300">
-            Copy the current Opportunity Reveal into carousel, post, DM, lead magnet,
+          <p className="mt-2 max-w-2xl break-words text-sm leading-6 text-zinc-300">
+            Copy the current Business Spark into carousel, post, DM, lead magnet,
             and product listing assets.
           </p>
         </div>
         {!hasFounderAccess && (
-          <div className="rounded-xl border border-yellow-400/20 bg-yellow-400/[0.06] px-3 py-2 text-xs font-bold leading-5 text-yellow-100">
+          <div className="break-words rounded-xl border border-yellow-400/20 bg-yellow-400/[0.06] px-3 py-2 text-xs font-bold leading-5 text-yellow-100">
             Codex prompt excluded until Founder/Paid access
           </div>
         )}
       </div>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="mt-4 grid min-w-0 gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {exportItems.map((item) => (
           <button
             key={item.key}
             type="button"
             onClick={() => copyExportAsset(item.key, item.text)}
-            className="min-h-24 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4 text-left text-sm font-black text-white transition hover:border-emerald-300/40 hover:bg-emerald-300/10"
+            className="min-h-24 min-w-0 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4 text-left text-sm font-black text-white transition hover:border-emerald-300/40 hover:bg-emerald-300/10"
           >
-            <span className="block">
+            <span className="block break-words">
               {copiedKey === item.key ? "Copied" : item.label}
             </span>
-            <span className="mt-1 block text-xs font-bold leading-5 text-zinc-400">
+            <span className="mt-1 block break-words text-xs font-bold leading-5 text-zinc-400">
               {item.helper}
             </span>
           </button>
@@ -5977,11 +5959,11 @@ function ExportAssets({
 
 function SummaryMetric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-      <div className="text-xs font-black uppercase tracking-[0.14em] text-zinc-500">
+    <div className="min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-black/30 p-4">
+      <div className="break-words text-xs font-black uppercase tracking-[0.14em] text-zinc-500">
         {label}
       </div>
-      <div className="mt-2 text-sm font-black leading-5 text-white">
+      <div className="mt-2 break-words text-sm font-black leading-5 text-white">
         {formatDisplayText(value)}
       </div>
     </div>
@@ -5990,11 +5972,11 @@ function SummaryMetric({ label, value }: { label: string; value: string }) {
 
 function StarterStoryCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-      <div className="text-xs font-black uppercase tracking-[0.14em] text-zinc-500">
+    <div className="min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-black/30 p-4">
+      <div className="break-words text-xs font-black uppercase tracking-[0.14em] text-zinc-500">
         {label}
       </div>
-      <p className="mt-2 text-sm leading-6 text-zinc-100">
+      <p className="mt-2 break-words text-sm leading-6 text-zinc-100">
         {normalizeDisplayText(value)}
       </p>
     </div>
@@ -6003,11 +5985,11 @@ function StarterStoryCard({ label, value }: { label: string; value: string }) {
 
 function MasterPromptField({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/40 p-4">
-      <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+    <div className="min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-black/40 p-4">
+      <div className="break-words text-xs font-bold uppercase tracking-wide text-zinc-500">
         {label}
       </div>
-      <div className="mt-2 whitespace-pre-wrap text-sm leading-6 text-zinc-100">
+      <div className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-zinc-100">
         {normalizeDisplayText(value)}
       </div>
     </div>
@@ -6044,26 +6026,26 @@ function MobileShareKit({ masterPrompt }: { masterPrompt: MasterPrompt }) {
   }
 
   return (
-    <div className="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.05] p-5">
+    <div className="mt-4 min-w-0 overflow-hidden rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.05] p-4 md:p-5">
       <div className="text-xs font-bold uppercase tracking-wide text-emerald-300">
         Mobile Share Kit
       </div>
-      <p className="mt-2 text-sm leading-6 text-zinc-300">
+      <p className="mt-2 break-words text-sm leading-6 text-zinc-300">
         Copy the sales-facing pieces from this brief, then test buyer response
         before building.
       </p>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+      <div className="mt-4 grid min-w-0 gap-3 sm:grid-cols-2">
         {shareItems.map((item) => (
           <button
             key={item.key}
             type="button"
             onClick={() => copyShareText(item.key, item.text)}
-            className="min-h-20 rounded-2xl bg-white px-5 py-4 text-left text-sm font-black text-black transition hover:bg-zinc-200"
+            className="min-h-20 min-w-0 rounded-2xl bg-white px-5 py-4 text-left text-sm font-black text-black transition hover:bg-zinc-200"
           >
-            <span className="block">
+            <span className="block break-words">
               {copiedKey === item.key ? "Copied" : item.label}
             </span>
-            <span className="mt-1 block text-xs font-bold leading-5 text-zinc-600">
+            <span className="mt-1 block break-words text-xs font-bold leading-5 text-zinc-600">
               {item.helper}
             </span>
           </button>
@@ -6175,18 +6157,18 @@ function SavedSignalsSection({
                   </div>
                 </div>
 
-                <div className="grid shrink-0 grid-cols-3 gap-2 lg:w-36 lg:grid-cols-1">
+                <div className="grid w-full shrink-0 grid-cols-1 gap-2 sm:grid-cols-3 lg:w-36 lg:grid-cols-1">
                   <button
                     type="button"
                     onClick={() => onView(signal)}
-                    className="rounded-xl border border-white/10 px-3 py-2 text-xs font-bold text-white transition hover:bg-white/[0.04]"
+                    className="rounded-xl border border-white/10 px-3 py-3 text-xs font-bold text-white transition hover:bg-white/[0.04]"
                   >
                     View
                   </button>
                   <button
                     type="button"
                     onClick={() => onCopyPrompt(signal)}
-                    className="rounded-xl bg-white px-3 py-2 text-xs font-bold text-black transition hover:bg-zinc-200"
+                    className="rounded-xl bg-white px-3 py-3 text-xs font-bold text-black transition hover:bg-zinc-200"
                   >
                     {copiedSignalId === signal.id
                       ? "Copied"
@@ -6197,7 +6179,7 @@ function SavedSignalsSection({
                   <button
                     type="button"
                     onClick={() => onDelete(signal.id)}
-                    className="rounded-xl border border-red-400/20 px-3 py-2 text-xs font-bold text-red-300 transition hover:bg-red-400/10"
+                    className="rounded-xl border border-red-400/20 px-3 py-3 text-xs font-bold text-red-300 transition hover:bg-red-400/10"
                   >
                     Delete
                   </button>
@@ -6214,12 +6196,12 @@ function SavedSignalsSection({
 
 function InlineShowcaseSection() {
   return (
-    <section className="mt-8 rounded-3xl border border-white/[0.08] bg-white/[0.025] p-5">
+    <section className="mt-8 min-w-0 overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.025] p-4 md:p-5">
       <details>
-        <summary className="flex cursor-pointer list-none flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
+        <summary className="flex min-w-0 cursor-pointer list-none flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div className="min-w-0">
             <h2 className="text-lg font-black tracking-tight text-zinc-300">Showcase</h2>
-            <p className="mt-1 text-sm leading-6 text-zinc-600">
+            <p className="mt-1 break-words text-sm leading-6 text-zinc-600">
               Secondary examples. Open when you want reference builds.
             </p>
           </div>
@@ -6232,16 +6214,16 @@ function InlineShowcaseSection() {
           </Link>
         </summary>
 
-        <div className="mt-6 grid gap-3 lg:grid-cols-3">
+        <div className="mt-6 grid min-w-0 gap-3 lg:grid-cols-3">
           {showcaseItems.slice(0, 5).map((item) => (
           <article
             key={item.route}
-            className="rounded-2xl border border-white/[0.08] bg-black/25 p-4"
+            className="min-w-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-black/25 p-4"
           >
             <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
               Product built
             </div>
-            <h3 className="mt-2 text-base font-bold text-zinc-100">
+            <h3 className="mt-2 break-words text-base font-bold text-zinc-100">
               {item.name}
             </h3>
             <div className="mt-4 grid gap-3 text-sm leading-6">
@@ -6249,24 +6231,24 @@ function InlineShowcaseSection() {
                 <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
                   Source signal
                 </div>
-                <p className="mt-1 text-zinc-300">{item.signal}</p>
+                <p className="mt-1 break-words text-zinc-300">{item.signal}</p>
               </div>
               <div>
                 <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
                   Buyer
                 </div>
-                <p className="mt-1 text-zinc-300">{item.buyer}</p>
+                <p className="mt-1 break-words text-zinc-300">{item.buyer}</p>
               </div>
               <div>
                 <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
                   Revenue idea
                 </div>
-                <p className="mt-1 text-zinc-300">{item.revenueIdea}</p>
+                <p className="mt-1 break-words text-zinc-300">{item.revenueIdea}</p>
               </div>
             </div>
             <Link
               href={item.route}
-              className="mt-5 inline-flex rounded-xl border border-white/10 px-3 py-2 text-xs font-bold text-white transition hover:bg-white/[0.04]"
+              className="mt-5 inline-flex w-full rounded-xl border border-white/10 px-3 py-3 text-center text-xs font-bold text-white transition hover:bg-white/[0.04] sm:w-auto"
             >
               Open demo route
             </Link>
@@ -6513,20 +6495,18 @@ function LanguageSwitch() {
   return (
     <div className="flex rounded-full border border-white/10 bg-white/[0.03] p-1 text-xs font-medium text-zinc-500">
       <span className="rounded-full bg-white px-3 py-1.5 text-zinc-950">English</span>
-      <Link href="/jp/app" className="rounded-full px-3 py-1.5 transition hover:text-white">
-        日本語
-      </Link>
+      <Link href="/jp/app" className="rounded-full px-3 py-1.5 transition hover:text-white">日本語</Link>
     </div>
   );
 }
 
 function InfoBlock({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/40 p-4">
-      <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
+    <div className="min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-black/40 p-4">
+      <div className="break-words text-xs font-bold uppercase tracking-wide text-zinc-500">
         {label}
       </div>
-      <div className="mt-2 text-sm leading-6 text-zinc-100">{value}</div>
+      <div className="mt-2 break-words text-sm leading-6 text-zinc-100">{value}</div>
     </div>
   );
 }

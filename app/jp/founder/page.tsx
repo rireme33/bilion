@@ -34,40 +34,40 @@ export default async function JapaneseFounderPage({
   }
 
   return (
-    <main className="min-h-screen bg-[#0b0c0e] px-5 py-5 text-white sm:px-6 md:py-7">
-      <section className="mx-auto max-w-3xl">
-        <header className="flex items-center justify-between gap-4">
-          <Link href="/jp" className="group flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white text-sm font-black text-zinc-950">
+    <main className="min-h-screen w-full max-w-full overflow-hidden bg-[#0b0c0e] px-4 py-5 text-white sm:px-6 md:py-7">
+      <section className="mx-auto w-full max-w-3xl overflow-hidden">
+        <header className="flex min-w-0 items-center justify-between gap-4">
+          <Link href="/jp" className="group flex min-w-0 items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white text-sm font-black text-zinc-950">
               B
             </div>
-            <div>
-              <div className="text-lg font-black tracking-tight transition group-hover:text-zinc-200">
+            <div className="min-w-0">
+              <div className="truncate text-lg font-black tracking-tight transition group-hover:text-zinc-200">
                 Bilion
               </div>
-              <div className="text-xs text-zinc-500">AIビルダー向け商品シグナル</div>
+              <div className="truncate text-xs text-zinc-500">Codex Business Spark</div>
             </div>
           </Link>
           <Link
             href="/founder?next=/jp/app"
-            className="rounded-full border border-white/10 px-3 py-1.5 text-xs font-medium text-zinc-400 transition hover:text-white"
+            className="shrink-0 rounded-full border border-white/10 px-3 py-1.5 text-xs font-medium text-zinc-400 transition hover:text-white"
           >
-            英語
+            English
           </Link>
         </header>
 
-        <div className="mt-14 rounded-2xl border border-white/10 bg-[#111214] p-6 shadow-xl shadow-black/20 md:p-8">
+        <div className="mt-14 min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-[#111214] p-5 shadow-xl shadow-black/20 sm:p-6 md:p-8">
           <div className="text-xs font-semibold tracking-[0.18em] text-zinc-500">
-            実装プロンプトアクセス
+            FOUNDER ACCESS
           </div>
-          <h1 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">
-            実装プロンプトアクセスが必要です。
+          <h1 className="mt-4 break-words text-3xl font-semibold tracking-tight md:text-4xl">
+            Founder Accessを解除 — $19
           </h1>
-          <p className="mt-4 text-sm leading-7 text-zinc-400">
-            実装プロンプトアクセスでは、買う相手・痛み・価格・48時間検証手順・Full Code X Master Promptを確認できます。
+          <p className="mt-4 break-words text-sm leading-7 text-zinc-400">
+            Business Spark、Launch Pack全文、Winner保存、Codex Build Prompt全文を無制限に使えます。
           </p>
-          <p className="mt-3 text-sm leading-7 text-zinc-500">
-            アクセス後は日本語UIの /jp/app に戻ります。
+          <p className="mt-3 break-words text-sm leading-7 text-zinc-500">
+            作る前に市場を選び、先に売るためのAIビルダー向けアクセスです。反応があったものだけ、Codexで小さく作ります。
           </p>
 
           {error === "invalid_access" && (
@@ -79,22 +79,22 @@ export default async function JapaneseFounderPage({
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             <Link
               href="/jp/app"
-              className="rounded-xl border border-white/10 px-4 py-3 text-center text-sm font-semibold text-zinc-100 transition hover:bg-white/[0.04]"
+              className="w-full rounded-xl border border-white/10 px-4 py-3 text-center text-sm font-semibold text-zinc-100 transition hover:bg-white/[0.04] sm:w-auto"
             >
-              日本語シグナルに戻る
+              日本語アプリに戻る
             </Link>
             {CHECKOUT_URL ? (
               <a
                 href={CHECKOUT_URL}
-                className="rounded-xl bg-white px-4 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200"
+                className="w-full rounded-xl bg-white px-4 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200 sm:w-auto"
               >
-                $19で実装プロンプトアクセスを購入
+                Founder Accessを解除 — $19
               </a>
             ) : (
               <button
                 type="button"
                 disabled
-                className="rounded-xl border border-white/10 px-4 py-3 text-center text-sm font-semibold text-zinc-500"
+                className="w-full rounded-xl border border-white/10 px-4 py-3 text-center text-sm font-semibold text-zinc-500 sm:w-auto"
               >
                 Checkout link not configured
               </button>

@@ -79,17 +79,11 @@ const japaneseMarketOptions: Array<{
   key: JapaneseMarketKey;
   label: string;
 }> = [
-  { key: "education", label: "教育" },
-  { key: "healthcare", label: "医療" },
-  { key: "local", label: "ローカルビジネス" },
-  { key: "ecommerce", label: "EC" },
+  { key: "education", label: "小さなSaaS" },
+  { key: "developer", label: "開発代行" },
+  { key: "local", label: "業務自動化" },
+  { key: "ecommerce", label: "デジタル商品" },
   { key: "aiAgency", label: "AIエージェンシー" },
-  { key: "creators", label: "クリエイター" },
-  { key: "construction", label: "建設" },
-  { key: "finance", label: "金融" },
-  { key: "legal", label: "法務" },
-  { key: "realEstate", label: "不動産" },
-  { key: "developer", label: "開発者ワークフロー" },
 ];
 
 function createSourceOutput({
@@ -396,24 +390,6 @@ function getOpportunityFieldsJa(output: SourceOutput): [string, string][] {
     ["価格", "いくらで売るか"],
     "$19 one-time または $29/month",
   );
-  const marketProof = [
-    `類似ビジネス/比較パターン: ${output.title}`,
-    `収益または価格シグナル: ${price}`,
-    `買い手が払う理由: ${whySold}`,
-    `効いた配布チャネル: ${output.proof}`,
-    "信頼度: Medium",
-    "Proof is directional, not guaranteed.",
-  ].join("\n");
-  const leadMagnet = getFieldValueJa(
-    output,
-    ["リードマグネット"],
-    `${output.title}のBefore/After例を1つ無料で見せて、購入者の反応を取る。`,
-  );
-  const launchCopy = getFieldValueJa(
-    output,
-    ["ローンチコピー"],
-    `X投稿: 売れた型を${output.title}に変換しました。\nLP見出し: ${output.title}\nDM文: Before/Afterサンプルを送ってもいいですか？`,
-  );
   const firstCustomerPlan = [
     `最初に連絡する相手: ${whoPays}`,
     `見つける場所: ${output.proof}`,
@@ -423,16 +399,13 @@ function getOpportunityFieldsJa(output: SourceOutput): [string, string][] {
   ].join("\n");
 
   return [
-    ["売れた型", pattern],
-    ["なぜ売れたか", whySold],
-    ["市場の証拠", marketProof],
-    ["誰が払うか", whoPays],
-    ["あなた向けの収益機会", productAngle],
-    ["初回有料オファー", firstOffer],
-    ["価格", price],
-    ["リードマグネット", leadMagnet],
-    ["ローンチコピー", launchCopy],
-    ["最初の顧客獲得プラン", firstCustomerPlan],
+    ["Business Spark", productAngle || pattern],
+    ["なぜ販売になるか", whySold],
+    ["買う相手", whoPays],
+    ["痛み", whySold],
+    ["初回オファー", `${firstOffer}\n${price}`],
+    ["48時間検証", firstCustomerPlan],
+    ["Codex Build Prompt", output.masterPrompt.split("\n").slice(0, 8).join("\n")],
   ];
 }
 
@@ -456,19 +429,13 @@ function getSourceOutputTextJa(output: SourceOutput) {
 function getJapaneseMarketForOutput(output: SourceOutput): JapaneseMarketKey {
   const text = getSourceOutputTextJa(output).toLowerCase();
 
-  if (/教育|学校|先生|教師|worksheet|student|homeschool|preschool/.test(text)) return "education";
-  if (/医療|歯科|患者|clinic|patient|キャンセル|整体|予約/.test(text)) return "healthcare";
-  if (/ローカル|口コミ|美容室|サロン|飲食|レストラン|店舗|local|review/.test(text)) return "local";
-  if (/ec|ecommerce|shopify|etsy|amazon|ストア|商品ページ/.test(text)) return "ecommerce";
-  if (/agency|エージェンシー|受託|consultant|client|codex/.test(text)) return "aiAgency";
-  if (/creator|クリエイター|youtube|tiktok|newsletter|x投稿|instagram/.test(text)) return "creators";
-  if (/建設|工事|現場|施工|contractor|jobsite/.test(text)) return "construction";
-  if (/金融|請求|invoice|会計|経理|finance|cash/.test(text)) return "finance";
-  if (/法務|契約|legal|law|compliance/.test(text)) return "legal";
-  if (/不動産|入居者|tenant|property|real estate/.test(text)) return "realEstate";
-  if (/github|developer|開発者|repo|issue|pr|mcp/.test(text)) return "developer";
+  if (/bug|api|freelance|開発代行|受託|issue|pr/.test(text)) return "developer";
+  if (/automation|自動化|spreadsheet|email|report|レポート|メール|業務|ローカル|口コミ|clinic|restaurant|review/.test(text)) return "local";
+  if (/plugin|extension|template|gumroad|etsy|shopify|chrome|テンプレ|プラグイン|デジタル/.test(text)) return "ecommerce";
+  if (/agency|エージェンシー|consultant|client|コンサル|納品/.test(text)) return "aiAgency";
+  if (/教育|学校|先生|教師|worksheet|student|homeschool|preschool|saas|micro/.test(text)) return "education";
 
-  return "aiAgency";
+  return "education";
 }
 
 function getJapaneseOpportunityScore(output: SourceOutput) {
@@ -634,7 +601,7 @@ function getTopMarketOpportunityJa(market: JapaneseMarketKey) {
 function getWhyThisOpportunityJa(output: SourceOutput) {
   const why = getOpportunityValueByLabelJa(output, "なぜ売れたか");
 
-  return `${why} スコア理由: 買う相手、価格仮説、配布導線、48時間検証が見えているため。`;
+  return `${why} 買う相手、価格仮説、配布導線、48時間以内の検証方法が見えているため、今すぐテストする価値があります。`;
 }
 
 function buildJapaneseMobileXPost(output: SourceOutput) {
@@ -664,9 +631,9 @@ Bilionで無料Roastして、最初に何を売るべきか返します。`;
 const japaneseMobileDmCopy = `Bilionを検証中です。売れたビジネスの型から、収益機会・価格・投稿文・48時間検証まで出します。
 あなたの案で1回無料診断しましょうか？`;
 
-const japaneseMobileSalesCtaCopy = `完全版Launch Packを見る — $19
+const japaneseMobileSalesCtaCopy = `Founder Accessを解除 — $19
 
-3つの市場角度、LPコピー、X投稿10本、DMスクリプト、価格、反応後に使うCodex用Build Promptを含みます。`;
+Business Spark、売るための文章、Codex Promptを無制限に使えます。`;
 
 async function writeClipboardTextJa(text: string) {
   if (!navigator.clipboard?.writeText) {
@@ -1032,9 +999,9 @@ Acceptance criteria:
       "エージェント構成、ツール権限、入力例、失敗時の処理を毎回ゼロから考えるため、デモまでは作れても実運用の型にならない。",
     product:
       "目的を選ぶと、AIエージェントの役割、ツール、入力例、制約、テスト手順を含む実装テンプレートを生成するワークフローツール。",
-    price: "$29 one-time または $12/month",
+    price: "$29買い切り、または $12/月",
     whyNow:
-      "AIエージェントを試す人は増えたが、実務で使える設計テンプレートが不足しているから。",
+      "AIエージェントを試す人は増えていますが、実務に落とし込める設計テンプレートはまだ不足しています。",
     validationSteps: [
       "営業リサーチ、議事録、請求チェックの3テンプレートを作る。",
       "XでAIビルダー向けに60秒デモを出す。",
@@ -1242,7 +1209,7 @@ function ButtonLink({
     <Link
       href={href}
       className={[
-        "rounded-xl px-4 py-3 text-center text-sm font-semibold transition",
+        "inline-flex w-full items-center justify-center rounded-xl px-4 py-3 text-center text-sm font-semibold transition sm:w-auto",
         variant === "primary"
           ? "bg-white text-zinc-950 hover:bg-zinc-200"
           : "border border-white/10 text-zinc-100 hover:bg-white/[0.04]",
@@ -1273,25 +1240,25 @@ function JapaneseMarketSelectionSection({
   const price = getOpportunityValueByLabelJa(opportunity, "価格");
 
   return (
-    <section className="rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.055] p-3 shadow-2xl md:rounded-3xl md:p-6">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-        <div>
+    <section className="w-full max-w-full overflow-hidden rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.055] p-4 shadow-2xl md:rounded-3xl md:p-6">
+      <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div className="min-w-0">
           <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
             Start here
           </div>
-          <h2 className="mt-1 text-2xl font-black tracking-tight text-white md:mt-2 md:text-4xl">
-            作る前に市場を選ぶ
+          <h2 className="mt-1 break-words text-2xl font-black tracking-tight text-white md:mt-2 md:text-4xl">
+            AIに「何を作ればいいか」を聞くのをやめる
           </h2>
-          <p className="mt-2 max-w-2xl text-xs leading-5 text-zinc-400 md:mt-3 md:text-sm md:leading-7">
-            BilionはAIアイデア生成ツールではありません。市場を選び、証拠のある収益機会を見つけ、先に投稿/DMで売り、反応があったらCodexで作るための市場選定OSです。
+          <p className="mt-2 max-w-2xl break-words text-sm leading-relaxed text-zinc-400 md:mt-3 md:leading-7">
+            Codexで商売を始めるために、最初の火種を出します。種と方向を選ぶだけで、買う相手、痛み、初回オファー、48時間検証、Codex Promptまで整理します。
           </p>
         </div>
         <div className="hidden rounded-full border border-white/10 bg-black/30 px-4 py-2 text-xs font-black uppercase tracking-wide text-zinc-400 md:block">
-          市場 → 証拠 → 機会 → Launch Pack → 反応 → Winner
+          Path → Business Spark → 48時間検証 → 反応 → Codex
         </div>
       </div>
 
-      <div className="mt-3 flex gap-2 overflow-x-auto pb-1 md:mt-5">
+      <div className="mt-3 flex min-w-0 flex-wrap gap-2 pb-1 md:mt-5">
         {japaneseMarketOptions.map((market) => {
           const active = selectedMarket === market.key;
 
@@ -1301,7 +1268,7 @@ function JapaneseMarketSelectionSection({
               type="button"
               onClick={() => onMarketChange(market.key)}
               className={[
-                "shrink-0 rounded-full border px-3 py-1.5 text-xs font-black transition md:py-2",
+                "min-h-11 rounded-full border px-3 py-2 text-sm font-black transition",
                 active
                   ? "border-emerald-300 bg-emerald-300 text-black"
                   : "border-white/10 bg-black/25 text-zinc-400 hover:border-white/20 hover:text-white",
@@ -1313,9 +1280,9 @@ function JapaneseMarketSelectionSection({
         })}
       </div>
 
-      <article className="mt-3 rounded-2xl border border-emerald-300/35 bg-black/35 p-3 shadow-lg shadow-emerald-950/20 md:mt-5 md:rounded-3xl md:p-5">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-          <div>
+      <article className="mt-3 min-w-0 overflow-hidden rounded-2xl border border-emerald-300/35 bg-black/35 p-4 shadow-lg shadow-emerald-950/20 md:mt-5 md:rounded-3xl md:p-5">
+        <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+          <div className="min-w-0">
             <div className="flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-wide">
               <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-zinc-400">
                 {marketLabel}
@@ -1328,25 +1295,25 @@ function JapaneseMarketSelectionSection({
               </span>
             </div>
             <div className="mt-3 text-xs font-black uppercase tracking-[0.16em] text-zinc-500 md:mt-4">
-              今テストすべき機会
+              Business Spark
             </div>
-            <h3 className="mt-2 text-xl font-black tracking-tight text-white md:text-2xl">
+            <h3 className="mt-2 break-words text-xl font-black tracking-tight text-white md:text-2xl">
               {opportunity.title}
             </h3>
-            <p className="mt-2 text-xs leading-5 text-zinc-400 md:mt-3 md:text-sm md:leading-7">
+            <p className="mt-2 break-words text-sm leading-relaxed text-zinc-400 md:mt-3 md:leading-7">
               買う相手: {buyer}
             </p>
-            <p className="mt-2 line-clamp-2 text-xs leading-5 text-zinc-200 md:line-clamp-none md:text-sm md:leading-7">
-              有料の痛み: {pain}
+            <p className="mt-2 line-clamp-3 break-words text-sm leading-relaxed text-zinc-200 md:line-clamp-none md:leading-7">
+              お金を払ってでも解決したい課題: {pain}
             </p>
           </div>
           <button
             type="button"
             onClick={onReveal}
             disabled={!canGenerate}
-            className="w-full rounded-xl bg-emerald-300 px-4 py-3 text-sm font-black text-black transition hover:bg-emerald-200 disabled:cursor-not-allowed disabled:opacity-50 lg:w-auto lg:rounded-2xl lg:px-5 lg:py-4"
+            className="w-full rounded-xl bg-emerald-300 px-4 py-3 text-center text-sm font-black text-black transition hover:bg-emerald-200 disabled:cursor-not-allowed disabled:opacity-50 lg:w-auto lg:rounded-2xl lg:px-5 lg:py-4"
           >
-            先に売るために表示
+            無料でBusiness Sparkを出す
           </button>
         </div>
 
@@ -1355,22 +1322,22 @@ function JapaneseMarketSelectionSection({
             詳細を見る
           </summary>
           <div className="mt-3 grid gap-2">
-            <JapaneseMarketField label="なぜこの機会か" value={getWhyThisOpportunityJa(opportunity)} />
-            <JapaneseMarketField label="最初のオファー" value={`${firstOffer} / ${price}`} />
-            <JapaneseMarketField label="販売導線" value={opportunity.proof} />
+            <JapaneseMarketField label="なぜ販売になるか" value={getWhyThisOpportunityJa(opportunity)} />
+            <JapaneseMarketField label="初回オファー" value={`${firstOffer}\n${price}`} />
+            <JapaneseMarketField label="参照元" value={opportunity.proof} />
             <JapaneseMarketField
-              label="検証/構築タイミング"
+              label="48時間検証"
               value="48時間で投稿/DMを検証。返信があった場合だけCodexで小さく作る。"
             />
           </div>
         </details>
 
-        <div className="mt-4 hidden gap-3 md:grid md:grid-cols-2 xl:grid-cols-4">
-          <JapaneseMarketField label="なぜこの機会か" value={getWhyThisOpportunityJa(opportunity)} />
-          <JapaneseMarketField label="最初のオファー" value={`${firstOffer} / ${price}`} />
-          <JapaneseMarketField label="販売導線" value={opportunity.proof} />
+        <div className="mt-4 hidden min-w-0 gap-3 md:grid md:grid-cols-2 xl:grid-cols-4">
+          <JapaneseMarketField label="なぜ販売になるか" value={getWhyThisOpportunityJa(opportunity)} />
+          <JapaneseMarketField label="初回オファー" value={`${firstOffer}\n${price}`} />
+          <JapaneseMarketField label="参照元" value={opportunity.proof} />
           <JapaneseMarketField
-            label="検証/構築タイミング"
+            label="48時間検証"
             value="48時間で投稿/DMを検証。返信があった場合だけCodexで小さく作る。"
           />
         </div>
@@ -1387,53 +1354,53 @@ function JapaneseMarketField({
   value: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/25 p-3">
-      <div className="text-[11px] font-black uppercase tracking-wide text-zinc-600">
+    <div className="min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-black/25 p-3">
+      <div className="break-words text-[11px] font-black uppercase tracking-wide text-zinc-600">
         {label}
       </div>
-      <p className="mt-2 text-sm leading-6 text-zinc-200">{value}</p>
+      <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-zinc-200">{value}</p>
     </div>
   );
 }
 
 function JapaneseEvidenceToolsSection() {
   return (
-    <div className="mt-4 grid gap-3">
-      <details className="rounded-2xl border border-white/[0.08] bg-black/20 p-4">
+    <div className="mt-4 grid min-w-0 gap-3">
+      <details className="min-w-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-black/20 p-4">
         <summary className="cursor-pointer list-none">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div>
+          <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
               <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
                 証拠インボックス
               </div>
-              <p className="mt-1 text-sm font-bold leading-6 text-zinc-300">
-                収益、価格、買う相手、販売導線など「お金が動いた証拠」を見る場所です。
+              <p className="mt-1 break-words text-sm font-bold leading-6 text-zinc-300">
+                収益、価格、買う相手、販売導線など、「実際にお金が動いた可能性がある証拠」を確認する場所です。
               </p>
             </div>
             <div className="text-xs font-bold text-zinc-600">開く</div>
           </div>
         </summary>
-        <p className="mt-4 border-t border-white/10 pt-4 text-sm leading-7 text-zinc-500">
+        <p className="mt-4 break-words border-t border-white/10 pt-4 text-sm leading-7 text-zinc-500">
           証拠はランキングエンジンに入ります。承認された証拠が増えるほど、Bilionは「どの市場で、何を先に売るべきか」を判断しやすくなります。
         </p>
       </details>
 
-      <details className="rounded-2xl border border-white/[0.08] bg-black/20 p-4">
+      <details className="min-w-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-black/20 p-4">
         <summary className="cursor-pointer list-none">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div>
+          <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
               <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
                 証拠貼り付けインポート
               </div>
-              <p className="mt-1 text-sm font-bold leading-6 text-zinc-300">
-                市場の証拠を貼り付けて、シグナル化する前に確認する。
+              <p className="mt-1 break-words text-sm font-bold leading-6 text-zinc-300">
+                市場の証拠を貼り付けて、収益機会に変換できるかを確認します。
               </p>
             </div>
             <div className="text-xs font-bold text-zinc-600">準備中</div>
           </div>
         </summary>
-        <p className="mt-4 border-t border-white/10 pt-4 text-sm leading-7 text-zinc-500">
-          証拠貼り付けインポートは英語版で先行テスト中。日本語版では、まず市場選定とLaunch Pack生成を使ってください。
+        <p className="mt-4 break-words border-t border-white/10 pt-4 text-sm leading-7 text-zinc-500">
+          証拠貼り付けインポートは英語版で先行テスト中です。日本語版では、まず市場選定とLaunch Pack生成を使ってください。
         </p>
       </details>
     </div>
@@ -1448,7 +1415,7 @@ export default function JapaneseBilionAppClient({
   const [copiedPrompt, setCopiedPrompt] = useState(false);
   const [sourceType, setSourceType] = useState<SourceType>("indie");
   const [selectedMarket, setSelectedMarket] =
-    useState<JapaneseMarketKey>("aiAgency");
+    useState<JapaneseMarketKey>("education");
   const [currentOutputIndex, setCurrentOutputIndex] = useState(0);
   const [currentOutput, setCurrentOutput] = useState<SourceOutput | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -1556,21 +1523,25 @@ export default function JapaneseBilionAppClient({
   }
 
   async function copyMasterPrompt() {
-    await navigator.clipboard.writeText(selectedOutput.masterPrompt);
+    const promptText = hasFounderAccess
+      ? selectedOutput.masterPrompt
+      : selectedOutput.masterPrompt.split("\n").slice(0, 12).join("\n");
+
+    await navigator.clipboard.writeText(promptText);
     setCopiedPrompt(true);
     window.setTimeout(() => setCopiedPrompt(false), 1200);
   }
 
   return (
-    <main className="min-h-screen bg-[#0b0c0e] text-white">
-      <section className="mx-auto max-w-6xl px-3 py-4 sm:px-6 md:py-7">
-        <header className="flex items-center justify-between gap-4">
-          <Link href="/jp" className="group flex items-center gap-3">
+    <main className="min-h-screen w-full max-w-full overflow-hidden bg-[#0b0c0e] text-white">
+      <section className="mx-auto w-full max-w-6xl overflow-hidden px-4 py-4 sm:px-6 md:py-7">
+        <header className="flex min-w-0 items-center justify-between gap-4">
+          <Link href="/jp" className="group flex min-w-0 items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white text-sm font-black text-zinc-950">
               B
             </div>
-            <div>
-              <div className="text-lg font-black tracking-tight transition group-hover:text-zinc-200">
+            <div className="min-w-0">
+              <div className="break-words text-lg font-black tracking-tight transition group-hover:text-zinc-200">
                 Bilion
               </div>
               <div className="text-xs text-zinc-500">AIビルダー向け市場シグナル</div>
@@ -1579,7 +1550,7 @@ export default function JapaneseBilionAppClient({
           <LanguageSwitch />
         </header>
 
-        <section className="py-4 md:py-12">
+        <section className="w-full max-w-full overflow-hidden py-4 md:py-12">
           <JapaneseMarketSelectionSection
             canGenerate={canGenerate}
             onMarketChange={(market) => {
@@ -1594,23 +1565,23 @@ export default function JapaneseBilionAppClient({
           <JapaneseEvidenceToolsSection />
         </section>
 
-        <section className="grid gap-5 pb-10 md:gap-8 md:pb-14 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
-          <div>
+        <section className="grid min-w-0 gap-5 pb-10 md:gap-8 md:pb-14 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+          <div className="min-w-0">
             <div className="text-xs font-semibold tracking-[0.18em] text-zinc-500">
               その他のシグナル
             </div>
-            <h1 className="mt-3 max-w-2xl text-2xl font-semibold leading-tight tracking-tight md:mt-5 md:text-5xl">
-              まずは上の“今テストすべき機会”から始めてください。
+            <h1 className="mt-3 max-w-2xl break-words text-3xl font-semibold leading-tight tracking-tight md:mt-5 md:text-5xl">
+              まずは上の「Business Spark」から始めてください。
             </h1>
-            <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-400 md:mt-5 md:text-base md:leading-7">
-              追加で見たい場合だけ、GitHubシグナルとIndie Hackers DBから別の市場証拠を探せます。BilionはランダムなAIアイデアではなく、作る前に市場と販売導線を選ぶための市場選定OSです。
+            <p className="mt-3 max-w-xl break-words text-sm leading-relaxed text-zinc-400 md:mt-5 md:text-base md:leading-7">
+              さらに探したい場合は、GitHubシグナルやIndie Hackers DBから別の火種を確認できます。BilionはランダムにAIアイデアを出すツールではなく、作る前に買う相手・痛み・初回オファーを決めるためのツールです。
             </p>
 
-            <div className="mt-4 rounded-2xl border border-white/10 bg-[#111214] p-3 md:mt-7 md:p-4">
+            <div className="mt-4 min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-[#111214] p-4 md:mt-7">
               <div className="text-xs font-semibold tracking-[0.16em] text-zinc-500">
                 ソースを選択
               </div>
-              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              <div className="mt-3 grid min-w-0 gap-2 sm:grid-cols-2">
                 {(Object.keys(sourceOutputPools) as SourceType[]).map((source) => {
                   const active = sourceType === source;
 
@@ -1626,7 +1597,7 @@ export default function JapaneseBilionAppClient({
                         setCopiedPrompt(false);
                       }}
                       className={[
-                        "rounded-xl border px-4 py-3 text-left text-sm font-semibold transition",
+                        "min-w-0 rounded-xl border px-4 py-3 text-left text-sm font-semibold transition break-words",
                         active
                           ? "border-white/30 bg-white text-zinc-950"
                           : "border-white/10 bg-black/20 text-zinc-300 hover:bg-white/[0.04]",
@@ -1637,7 +1608,7 @@ export default function JapaneseBilionAppClient({
                   );
                 })}
               </div>
-              <div className="mt-3 rounded-xl border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-500">
+              <div className="mt-3 break-words rounded-xl border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-500">
                 参照元 IH42kDB + GitHubシグナル
               </div>
             </div>
@@ -1648,9 +1619,9 @@ export default function JapaneseBilionAppClient({
                   type="button"
                   onClick={generateOutput}
                   disabled={isGenerating}
-                  className="rounded-xl bg-white px-4 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="w-full rounded-xl bg-white px-4 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                 >
-                  別の市場角度を表示
+                  別のBusiness Sparkを表示
                 </button>
               ) : (
                 <ButtonLink href="/jp/founder">Founder Accessを見る</ButtonLink>
@@ -1660,40 +1631,40 @@ export default function JapaneseBilionAppClient({
               </ButtonLink>
             </div>
             {!hasFounderAccess && (
-              <p className="mt-4 max-w-xl text-sm leading-6 text-zinc-500">
+              <p className="mt-4 max-w-xl break-words text-sm leading-6 text-zinc-500">
                 無料でも有料版と同じ品質の出力を1日3回まで確認できます。Founder
                 Accessでは、無制限生成・無制限コピー・追加角度の生成が使えます。
               </p>
             )}
-            <p className="mt-3 max-w-xl text-xs leading-5 text-zinc-500">
-              先に売る。反応があったら作る。Codex Promptは市場反応を見たあとに使います。
+            <p className="mt-3 max-w-xl break-words text-xs leading-5 text-zinc-500">
+              まず売る。反応があったものだけ作る。Codex Build Promptは、市場反応を見たあとに使います。
             </p>
             {hasFounderAccess && (
-              <p className="mt-4 max-w-xl text-sm leading-6 text-zinc-500">
-                Unlimited access unlocked. 何度でも収益機会とLaunch Packを生成できます。
+              <p className="mt-4 max-w-xl break-words text-sm leading-6 text-zinc-500">
+                Founder Access unlocked. Business Spark、Launch Pack、Codex Build Promptを無制限に使えます。
               </p>
             )}
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-[#111214] p-5 shadow-xl shadow-black/20">
+          <div className="min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-[#111214] p-4 shadow-xl shadow-black/20 md:p-5">
             <div className="border-b border-white/10 pb-4">
               <div className="text-xs font-semibold tracking-[0.16em] text-zinc-500">
-                {showOutput ? "Launch Pack" : "未生成"}
+                {showOutput ? "Launch Pack" : "まだ表示されていません"}
               </div>
               {showOutput ? (
                 <>
-                  <h2 className="mt-1 text-lg font-semibold text-white">{selectedOutput.title}</h2>
-                  <p className="mt-2 text-xs leading-5 text-zinc-500">{selectedOutput.proof}</p>
-                  <p className="mt-3 rounded-xl border border-emerald-300/20 bg-emerald-300/[0.06] px-3 py-2 text-xs leading-5 text-emerald-100">
+                  <h2 className="mt-1 break-words text-lg font-semibold text-white">{selectedOutput.title}</h2>
+                  <p className="mt-2 break-words text-xs leading-5 text-zinc-500">{selectedOutput.proof}</p>
+                  <p className="mt-3 break-words rounded-xl border border-emerald-300/20 bg-emerald-300/[0.06] px-3 py-2 text-xs leading-5 text-emerald-100">
                     まず投稿/DMで売る。返信、保存、クリック、購入意思が出たらCodexで作る。
                   </p>
                 </>
               ) : (
                 <>
-                  <p className="mt-2 text-sm leading-7 text-zinc-400">
-                    市場を選び、「先に売るために表示」を押してください。
+                  <p className="mt-2 break-words text-sm leading-7 text-zinc-400">
+                    Pathを選び、「無料でBusiness Sparkを出す」を押してください。
                   </p>
-                  <p className="mt-3 rounded-xl border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-500">
+                  <p className="mt-3 break-words rounded-xl border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-500">
                     参照元 IH42kDB + GitHubシグナル
                   </p>
                 </>
@@ -1701,37 +1672,37 @@ export default function JapaneseBilionAppClient({
             </div>
 
             {showOutput && (
-              <div className="mt-4 grid gap-3">
+              <div className="mt-4 grid min-w-0 gap-3">
                 {getOpportunityFieldsJa(selectedOutput).map(([label, value]) => (
-                  <div key={label} className="rounded-xl border border-white/10 bg-black/25 p-3.5">
+                  <div key={label} className="min-w-0 overflow-hidden rounded-xl border border-white/10 bg-black/25 p-3.5">
                     <div className="text-xs font-semibold tracking-wide text-zinc-500">
                       {label}
                     </div>
-                    <div className="mt-1.5 whitespace-pre-wrap text-sm leading-6 text-zinc-100">
+                    <div className="mt-1.5 whitespace-pre-wrap break-words text-sm leading-6 text-zinc-100">
                       {value}
                     </div>
                   </div>
                 ))}
-                <div className="rounded-xl border border-white/10 bg-black/25 p-3.5">
+                <div className="min-w-0 overflow-hidden rounded-xl border border-white/10 bg-black/25 p-3.5">
                   <div className="text-xs font-semibold tracking-wide text-zinc-500">
                     48時間検証プラン
                   </div>
                   <ol className="mt-2 space-y-1 text-sm leading-6 text-zinc-100">
                     {selectedOutput.validationSteps.map((step, index) => (
-                      <li key={step} className="flex gap-2">
+                      <li key={step} className="flex min-w-0 gap-2">
                         <span className="text-zinc-500">{index + 1}.</span>
-                        <span>{step}</span>
+                        <span className="min-w-0 break-words">{step}</span>
                       </li>
                     ))}
                   </ol>
                 </div>
                 {!hasFounderAccess && (
-                  <div className="rounded-xl border border-emerald-400/20 bg-emerald-400/[0.06] p-4">
-                    <h3 className="text-lg font-semibold text-white">
-                      完全版Launch Packを見る — $19
+                  <div className="min-w-0 overflow-hidden rounded-xl border border-emerald-400/20 bg-emerald-400/[0.06] p-4">
+                    <h3 className="break-words text-lg font-semibold text-white">
+                      Founder Accessを解除 — $19
                     </h3>
-                    <p className="mt-2 text-sm leading-6 text-zinc-400">
-                      3つの市場角度、LPコピー、X投稿10本、DMスクリプト、価格、反応後に使うCodex用Build Promptを含みます。
+                    <p className="mt-2 break-words text-sm leading-6 text-zinc-400">
+                      Business Spark、売るための文章、Launch Pack、反応後に使うCodex Build Promptを含みます。
                     </p>
                     <div className="mt-4">
                       <ButtonLink href="/jp/founder">完全版を見る</ButtonLink>
@@ -1745,61 +1716,76 @@ export default function JapaneseBilionAppClient({
         </section>
 
         {!hasFounderAccess && freeUsageCount >= FREE_DAILY_LIMIT_JP && (
-          <section className="border-t border-white/10 py-10">
-            <div className="rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-6">
-              <h2 className="text-2xl font-semibold tracking-tight text-yellow-100">
-                今日の無料生成3回を使用済みです。
+          <section className="w-full max-w-full overflow-hidden border-t border-white/10 py-10">
+            <div className="min-w-0 overflow-hidden rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-4 md:p-6">
+              <h2 className="break-words text-2xl font-semibold tracking-tight text-yellow-100">
+                本日の無料Business Spark 3件を使い切りました。
               </h2>
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-400">
-                無料でも有料版と同じ品質の出力を確認できます。追加の生成、無制限コピー、追加の市場角度はFounder Accessで解放されます。
+              <p className="mt-3 max-w-3xl break-words text-sm leading-7 text-zinc-400">
+                Founder Accessでは、Business Spark、Launch Pack全文、Winner保存、Codex Build Prompt全文を無制限に使えます。
               </p>
               <div className="mt-5">
-                <ButtonLink href="/jp/founder">Founder Accessを見る</ButtonLink>
+                <ButtonLink href="/jp/founder">Founder Accessを解除 — $19</ButtonLink>
               </div>
             </div>
           </section>
         )}
 
         {showOutput && (
-          <section className="border-t border-white/10 py-10">
-            <div className="rounded-2xl border border-white/10 bg-[#111214] p-5 md:p-6">
-              <div className="flex flex-col gap-4 border-b border-white/10 pb-4 sm:flex-row sm:items-end sm:justify-between">
-                <div>
+          <section className="w-full max-w-full overflow-hidden border-t border-white/10 py-10">
+            <div className="min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-[#111214] p-4 md:p-6">
+              <div className="flex min-w-0 flex-col gap-4 border-b border-white/10 pb-4 sm:flex-row sm:items-end sm:justify-between">
+                <div className="min-w-0">
                   <div className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
-                    BUILD PROMPT
+                    CODEX BUILD PROMPT
                   </div>
-                  <h2 className="mt-2 text-2xl font-semibold tracking-tight">
-                    反応があったら作るためのBuild Prompt
+                  <h2 className="mt-2 break-words text-2xl font-semibold tracking-tight">
+                    反応があったら作る。
                   </h2>
-                  <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-400">
-                    投稿、DM、48時間検証で市場反応を確認したあとに使う実装用プロンプトです。Codex Promptを最初に主役にしないでください。
+                  <p className="mt-3 max-w-3xl break-words text-sm leading-7 text-zinc-400">
+                    返信、クリック、購入意思が出たあとに、このCodex Promptを使ってください。
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={copyMasterPrompt}
-                  className="rounded-xl bg-white px-4 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200"
+                  className="w-full rounded-xl bg-white px-4 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200 sm:w-auto"
                 >
-                  {copiedPrompt ? "コピー済み" : "Build Promptをコピー"}
+                  {copiedPrompt ? "コピー済み" : "Codex Promptをコピー"}
                 </button>
               </div>
-              <pre className="mt-5 max-h-[620px] overflow-auto whitespace-pre-wrap rounded-xl border border-white/10 bg-black/35 p-4 font-sans text-sm leading-6 text-zinc-100">
-                {selectedOutput.masterPrompt}
+              <pre className="mt-5 max-h-[620px] max-w-full overflow-auto whitespace-pre-wrap break-words rounded-xl border border-white/10 bg-black/35 p-4 font-sans text-sm leading-6 text-zinc-100">
+                {hasFounderAccess
+                  ? selectedOutput.masterPrompt
+                  : selectedOutput.masterPrompt.split("\n").slice(0, 12).join("\n")}
               </pre>
+              {!hasFounderAccess && (
+                <div className="mt-4 rounded-xl border border-white/10 bg-black/25 p-4">
+                  <div className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
+                    Codex Build Prompt Preview
+                  </div>
+                  <p className="mt-2 break-words text-sm leading-6 text-zinc-400">
+                    Full Promptはロックされています。Founder AccessでCodex Build Prompt全文を解除できます。
+                  </p>
+                  <div className="mt-4">
+                    <ButtonLink href="/jp/founder">Founder Accessを解除 — $19</ButtonLink>
+                  </div>
+                </div>
+              )}
             </div>
           </section>
         )}
 
-        <section className="border-t border-white/10 py-8">
-          <div className="rounded-2xl border border-white/10 bg-[#111214] p-5">
+        <section className="w-full max-w-full overflow-hidden border-t border-white/10 py-8">
+          <div className="min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-[#111214] p-4 md:p-5">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
               Winner Loop
             </div>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight">
-              Winnerは、市場で反応があった機会です。
+            <h2 className="mt-2 break-words text-2xl font-semibold tracking-tight">
+              Winnerは、市場から反応があった収益機会です。
             </h2>
-            <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-400">
-              投稿/DMの反応を見て、勝ちそうな市場・Buyer・Hook・Offerを手動でWinner候補として保存してください。
+            <p className="mt-3 max-w-3xl break-words text-sm leading-7 text-zinc-400">
+              証拠 → 収益機会 → Launch Pack → 市場反応 → Winner。返信、保存、クリック、DM、購入意思が出たものだけを、次に作るべき候補として残します。
             </p>
           </div>
         </section>
@@ -1812,53 +1798,53 @@ export default function JapaneseBilionAppClient({
 
 function JapaneseInlineShowcaseSection() {
   return (
-    <section className="border-t border-white/10 py-10">
+    <section className="w-full max-w-full overflow-hidden border-t border-white/10 py-10">
       <div className="mb-5">
-        <h2 className="text-2xl font-semibold tracking-tight text-white">
-          展示場
+        <h2 className="break-words text-2xl font-semibold tracking-tight text-white">
+          検証デモ
         </h2>
-        <p className="mt-2 text-sm leading-6 text-zinc-500">
-          Bilionのシグナルから作った市場検証デモです。
+        <p className="mt-2 break-words text-sm leading-6 text-zinc-500">
+          Bilionのシグナルから作った、検証用の小さなデモです。
         </p>
       </div>
 
-      <div className="grid gap-3 lg:grid-cols-3">
+      <div className="grid min-w-0 gap-3 lg:grid-cols-3">
         {showcaseItems.slice(0, 5).map((item) => (
           <article
             key={item.route}
-            className="rounded-2xl border border-white/10 bg-[#111214] p-5"
+            className="min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-[#111214] p-4 md:p-5"
           >
             <div className="text-xs font-semibold tracking-wide text-zinc-500">
                   検証デモ
             </div>
-            <h3 className="mt-2 text-base font-semibold text-white">
+            <h3 className="mt-2 break-words text-base font-semibold text-white">
               {item.name}
             </h3>
 
-            <div className="mt-4 grid gap-3 text-sm leading-6">
+            <div className="mt-4 grid min-w-0 gap-3 text-sm leading-6">
               <div>
                 <div className="text-xs font-semibold tracking-wide text-zinc-500">
                   元シグナル
                 </div>
-                <p className="mt-1 text-zinc-300">{item.signal}</p>
+                <p className="mt-1 break-words text-zinc-300">{item.signal}</p>
               </div>
               <div>
                 <div className="text-xs font-semibold tracking-wide text-zinc-500">
                   買う相手
                 </div>
-                <p className="mt-1 text-zinc-300">{item.buyer}</p>
+                <p className="mt-1 break-words text-zinc-300">{item.buyer}</p>
               </div>
               <div>
                 <div className="text-xs font-semibold tracking-wide text-zinc-500">
-                  収益案
+                  価格仮説
                 </div>
-                <p className="mt-1 text-zinc-300">{item.revenueIdea}</p>
+                <p className="mt-1 break-words text-zinc-300">{item.revenueIdea}</p>
               </div>
             </div>
 
             <Link
               href={item.route}
-              className="mt-5 inline-flex rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-white transition hover:bg-white/[0.04]"
+              className="mt-5 inline-flex w-full rounded-xl border border-white/10 px-3 py-3 text-center text-xs font-semibold text-white transition hover:bg-white/[0.04] sm:w-auto"
             >
               デモを見る
             </Link>
@@ -1905,26 +1891,26 @@ function JapaneseMobileShareKit({ output }: { output: SourceOutput }) {
   }
 
   return (
-    <div className="rounded-xl border border-emerald-400/20 bg-emerald-400/[0.06] p-4">
+    <div className="min-w-0 overflow-hidden rounded-xl border border-emerald-400/20 bg-emerald-400/[0.06] p-4">
       <div className="text-xs font-semibold tracking-wide text-emerald-300">
         Mobile Share Kit
       </div>
-      <p className="mt-2 text-sm leading-6 text-zinc-400">
+      <p className="mt-2 break-words text-sm leading-6 text-zinc-400">
         Post this brief on X → Reply to interested people with this → Offer the
         $19 Launch Pack.
       </p>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+      <div className="mt-4 grid min-w-0 gap-3 sm:grid-cols-2">
         {shareItems.map((item) => (
           <button
             key={item.key}
             type="button"
             onClick={() => copyShareText(item.key, item.text)}
-            className="min-h-20 rounded-xl bg-white px-4 py-4 text-left text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200"
+            className="min-h-20 min-w-0 rounded-xl bg-white px-4 py-4 text-left text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200"
           >
-            <span className="block">
+            <span className="block break-words">
               {copiedKey === item.key ? "コピー済み" : item.label}
             </span>
-            <span className="mt-1 block text-xs leading-5 text-zinc-600">
+            <span className="mt-1 block break-words text-xs leading-5 text-zinc-600">
               {item.helper}
             </span>
           </button>

@@ -30,14 +30,15 @@ export default async function FounderPage({ searchParams }: FounderPageProps) {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#070707] px-6 text-white">
-      <section className="max-w-md rounded-3xl border border-white/10 bg-[#101011] p-8 text-center">
-        <h1 className="text-xl font-black tracking-tight">
-          Founder access required
+    <main className="flex min-h-screen w-full max-w-full items-center justify-center overflow-hidden bg-[#070707] px-4 text-white sm:px-6">
+      <section className="w-full max-w-md overflow-hidden rounded-3xl border border-white/10 bg-[#101011] p-6 text-center sm:p-8">
+        <h1 className="break-words text-xl font-black tracking-tight">
+          Unlock Founder Access — $19
         </h1>
-        <p className="mt-3 text-sm leading-6 text-zinc-500">
-          Founder access unlocks the full Build Prompt Engine output in the
-          Bilion app.
+        <p className="mt-3 break-words text-sm leading-6 text-zinc-500">
+          Get unlimited Sparks, full Launch Packs, saved Winners, and full
+          Codex Build Prompts. Built for AI builders who want to sell before
+          they build.
         </p>
       </section>
     </main>
