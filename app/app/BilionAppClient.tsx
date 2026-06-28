@@ -156,6 +156,19 @@ const marketOptions = [
 
 type MarketOption = (typeof marketOptions)[number];
 
+const appMarketOptions = [
+  "Local Business",
+  "Healthcare",
+  "Construction",
+  "Ecommerce",
+  "Creators",
+  "Legal",
+  "Real Estate",
+  "Finance",
+  "Developer Workflow",
+  "AI Agency",
+] as const satisfies readonly MarketOption[];
+
 type MarketSpecificOpportunity = {
   buyer: string;
   paidPain: string;
@@ -797,6 +810,127 @@ function buildMarketSpecificSignal(market: MarketOption): BuildSignal {
     ],
     codeXPrompt: `Build this only after someone replies, clicks, or asks for the offer. Build a mobile-first MVP for ${opportunity.buyer}. Paid pain: ${opportunity.paidPain}. First offer: ${firstOffer}. Start with: ${opportunity.buildAfterReplies}. Include launch copy, DM script, validation tracker, copy buttons, and mock data. Use local state/localStorage only. No auth, no database, no payment integration, and no external APIs.`,
   };
+}
+
+function buildMarketFallbackSignal(
+  market: MarketOption,
+  index: number,
+  title: string,
+  proof: string,
+  offer: string,
+): BuildSignal {
+  const base = marketSpecificOpportunities[market];
+  const normalized = normalizeFromMarketOpportunity(market, {
+    ...base,
+    whyNow: proof,
+    firstOffer: offer,
+  });
+  const firstOffer = getFirstOfferText(normalized);
+
+  return {
+    id: `market-fallback-${market.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${index}`,
+    latestSignal: proof,
+    sourceTitle: title,
+    sourceUrl: "",
+    sourceType: market,
+    sourceNote: normalized.postHook,
+    signalSourceLabel: market,
+    buyer: normalized.buyer,
+    pain: normalized.paidPain,
+    whyNow: proof,
+    whatYouCanBuild: normalized.buildAfterReplies,
+    coreFeatures: normalized.buildAfterReplies
+      .split("->")
+      .map((feature) => feature.trim())
+      .filter(Boolean),
+    comparablePrice: firstOffer,
+    buildSteps: [normalized.postHook, normalized.dmScript, ...normalized.validationSteps],
+    patternMatches: [
+      `Money proof: ${normalized.proofLabel}`,
+      `Market: ${market}`,
+      normalized.validationSteps.join(" "),
+    ],
+    codeXPrompt: `Build this only after replies. Market: ${market}. Buyer: ${normalized.buyer}. Pain: ${normalized.paidPain}. First offer: ${firstOffer}. Build later: ${normalized.buildAfterReplies}.`,
+  };
+}
+
+function getStaticMoneySignalsForMarket(market: MarketOption): BuildSignal[] {
+  const fallbackByMarket: Partial<Record<MarketOption, Array<[string, string, string]>>> = {
+    Construction: [
+      [
+        "Contractor daily report cleanup",
+        "Small contractors already pay for client-ready daily reports when field notes are messy.",
+        "$99 Daily Report Cleanup Pack",
+      ],
+      [
+        "Jobsite photo summary signal",
+        "Roofing and remodeling teams lose time turning photos and voice notes into client updates.",
+        "$79 Field Notes Cleanup Pack",
+      ],
+      [
+        "Construction handoff signal",
+        "Ops managers need yesterday's WhatsApp updates turned into a clear work summary.",
+        "$149 Jobsite Handoff Audit",
+      ],
+    ],
+    Healthcare: [
+      [
+        "Clinic cancellation recovery signal",
+        "Front desks lose billable slots when cancellations and voicemail callbacks pile up.",
+        "$199 Cancellation Recovery Script Pack",
+      ],
+      [
+        "Dental front desk callback signal",
+        "Dental offices pay when missed callbacks become same-day patient recovery scripts.",
+        "$149 Callback Cleanup Pack",
+      ],
+      [
+        "Therapy office intake signal",
+        "Therapy offices need messy patient notes turned into clean front-desk follow-up tasks.",
+        "$199 Intake Follow-up Audit",
+      ],
+    ],
+    "Developer Workflow": [
+      [
+        "GitHub setup questions signal",
+        "Devtool teams spend support time answering the same setup questions across issues and discussions.",
+        "$19 Repo Setup FAQ Pack",
+      ],
+      [
+        "AI pull request risk signal",
+        "Maintainers need AI-generated PRs turned into reviewable scope, test, and rollback notes.",
+        "$19 PR Risk Summary Pack",
+      ],
+      [
+        "Issue triage signal",
+        "Open-source maintainers pay in time when repeated issues are not turned into clear maintainer replies.",
+        "$29 Issue Reply Cleanup Pack",
+      ],
+    ],
+  };
+  const fallbacks =
+    fallbackByMarket[market] ||
+    [
+      [
+        `${market} paid pain signal`,
+        marketSpecificOpportunities[market].whyNow,
+        marketSpecificOpportunities[market].firstOffer,
+      ],
+      [
+        `${market} buyer reply signal`,
+        marketSpecificOpportunities[market].paidPain,
+        marketSpecificOpportunities[market].firstOffer,
+      ],
+      [
+        `${market} manual cleanup signal`,
+        marketSpecificOpportunities[market].postHook,
+        marketSpecificOpportunities[market].firstOffer,
+      ],
+    ];
+
+  return fallbacks.map(([title, proof, offer], index) =>
+    buildMarketFallbackSignal(market, index + 1, title, proof, offer),
+  );
 }
 
 const nextActionOptions: Array<{
@@ -2421,6 +2555,25 @@ function getTopMarketOpportunities(signals: BuildSignal[], market: MarketOption)
     .filter((signal) => signal.id !== marketSignal.id);
 
   return [marketSignal, ...matchedSignals].slice(0, 3);
+}
+
+function getTopMoneySignalsForMarket(signals: BuildSignal[], market: MarketOption) {
+  const matchedSignals = signals
+    .filter((signal) => getSignalMarket(signal) === market)
+    .sort((a, b) => getSignalOpportunityScore(b) - getSignalOpportunityScore(a));
+  const fallbackSignals = getStaticMoneySignalsForMarket(market);
+  const seenIds = new Set<string>();
+
+  return [...matchedSignals, ...fallbackSignals]
+    .filter((signal) => {
+      if (seenIds.has(signal.id)) {
+        return false;
+      }
+
+      seenIds.add(signal.id);
+      return true;
+    })
+    .slice(0, 3);
 }
 
 function getScoreReason(signal: BuildSignal) {
@@ -4564,7 +4717,7 @@ export default function BilionAppClient({
   const [masterPrompt, setMasterPrompt] = useState<MasterPrompt | null>(null);
   const [masterPromptAngleIndex, setMasterPromptAngleIndex] = useState(0);
   const [freeUsageCount, setFreeUsageCount] = useState(0);
-  const [selectedMarket, setSelectedMarket] = useState<(typeof marketOptions)[number]>("Micro SaaS");
+  const [selectedMarket, setSelectedMarket] = useState<(typeof marketOptions)[number]>("Construction");
   const [openSignalGroups, setOpenSignalGroups] = useState<string[]>([
     "Recommended",
     "GitHub Signal",
@@ -4575,6 +4728,10 @@ export default function BilionAppClient({
   const evidenceInboxSignals = [...marketSignals, githubLibrarySignal];
   const topOpportunitySignal = getTopOpportunitySignal(evidenceInboxSignals);
   const topMarketOpportunities = getTopMarketOpportunities(
+    evidenceInboxSignals,
+    selectedMarket,
+  );
+  const topMoneySignalsForMarket = getTopMoneySignalsForMarket(
     evidenceInboxSignals,
     selectedMarket,
   );
@@ -4593,7 +4750,7 @@ export default function BilionAppClient({
   const selectedSignal =
     selectedSignalId === "github-sample"
       ? githubLibrarySignal
-      : [...topMarketOpportunities, ...marketSignals].find(
+      : [...topMoneySignalsForMarket, ...topMarketOpportunities, ...marketSignals].find(
           (signal) => signal.id === selectedSignalId,
         ) ||
         marketSignals[todayIndex] ||
@@ -5080,6 +5237,7 @@ export default function BilionAppClient({
                 <section>
                   <MarketSelectionSection
                     opportunities={topMarketOpportunities}
+                    moneySignals={topMoneySignalsForMarket}
                     selectedMarket={selectedMarket}
                     onMarketChange={setSelectedMarket}
                     onSelectOpportunity={(signal) => {
@@ -5887,18 +6045,27 @@ function StartHereBlock() {
 }
 
 function MarketSelectionSection({
+  moneySignals,
   onMarketChange,
   onSelectOpportunity,
   opportunities,
   selectedMarket,
 }: {
+  moneySignals: BuildSignal[];
   onMarketChange: (market: (typeof marketOptions)[number]) => void;
   onSelectOpportunity: (signal: BuildSignal) => void;
   opportunities: BuildSignal[];
   selectedMarket: (typeof marketOptions)[number];
 }) {
-  const displayOpportunities =
-    opportunities.length > 0 ? opportunities : [buildMarketSpecificSignal(selectedMarket)];
+  const topMoneySignals = moneySignals.length
+    ? moneySignals
+    : getStaticMoneySignalsForMarket(selectedMarket);
+  const displayOpportunities = topMoneySignals.length
+    ? topMoneySignals
+    : opportunities.length > 0
+      ? opportunities
+      : [buildMarketSpecificSignal(selectedMarket)];
+  const bestSignal = displayOpportunities[0] || buildMarketSpecificSignal(selectedMarket);
 
   return (
     <section className="w-full max-w-full overflow-hidden rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.055] p-4 shadow-2xl md:rounded-3xl md:p-6">
@@ -5908,10 +6075,10 @@ function MarketSelectionSection({
             Start here
           </div>
           <h3 className="mt-1 break-words text-xl font-black text-white md:text-3xl">
-            Today's Opportunity
+            Choose a market with money signals
           </h3>
           <p className="mt-2 max-w-2xl break-words text-sm leading-relaxed text-zinc-400 md:leading-6">
-            Pick one proven money pattern, sell the small version, then build only after replies.
+            Pick a market, see proof that money already moves there, then test the best offer today.
           </p>
         </div>
         <div className="hidden rounded-full border border-white/10 bg-black/30 px-4 py-2 text-xs font-black uppercase tracking-wide text-zinc-400 md:block">
@@ -5922,13 +6089,13 @@ function MarketSelectionSection({
       <div className="mt-3 flex min-w-0 flex-wrap gap-2 pb-1 md:mt-4">
         <div className="basis-full">
           <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
-            Choose how you want to make money
+            Choose a market
           </div>
           <p className="mt-1 break-words text-xs font-bold leading-5 text-zinc-500">
-            This changes the first offer and how you sell it.
+            Micro SaaS, Freelance Dev, and Digital Product are paths. This selector is for markets.
           </p>
         </div>
-        {marketOptions.map((market) => {
+        {appMarketOptions.map((market) => {
           const active = selectedMarket === market;
 
           return (
@@ -5951,9 +6118,37 @@ function MarketSelectionSection({
 
       <div className="mt-3 grid min-w-0 gap-3 md:mt-4">
         <div className="break-words text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
-          Today's Opportunity in {selectedMarket}
+          Top 3 Money Signals for this market
         </div>
-        {displayOpportunities.slice(0, 1).map((signal) => {
+        <div className="grid min-w-0 gap-3 md:grid-cols-3">
+          {topMoneySignals.slice(0, 3).map((signal) => {
+            const detail = getOpportunityDetailFields(signal);
+
+            return (
+              <article
+                key={signal.id}
+                className="min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-black/25 p-3"
+              >
+                <div className="text-[11px] font-black uppercase tracking-wide text-emerald-300">
+                  {signal.signalSourceLabel || signal.sourceType || "Money signal"}
+                </div>
+                <h4 className="mt-2 break-words text-sm font-black text-white">
+                  {truncateDisplayText(getDisplaySignalTitle(signal).title, 70)}
+                </h4>
+                <MarketOpportunityField label="Proof / source" value={detail.proof} />
+                <MarketOpportunityField label="What money moved" value={detail.whatSold} />
+                <MarketOpportunityField label="Buyer" value={detail.buyer} />
+                <MarketOpportunityField label="Paid pain" value={detail.paidPain} />
+                <MarketOpportunityField label="Possible first offer" value={detail.firstOffer} />
+              </article>
+            );
+          })}
+        </div>
+
+        <div className="mt-2 break-words text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+          Best offer to test today
+        </div>
+        {[bestSignal].map((signal) => {
           const detail = getOpportunityDetailFields(signal);
 
           return (
