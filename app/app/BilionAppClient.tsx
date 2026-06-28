@@ -140,6 +140,8 @@ type EvidenceDraft = {
 const marketOptions = [
   "Micro SaaS",
   "Freelance Dev",
+  "Business Automation",
+  "Digital Product",
   "AI Agency",
   "Local Business",
   "Healthcare",
@@ -165,6 +167,187 @@ type MarketSpecificOpportunity = {
   dmTarget: string;
   fortyEightHourValidation: string[];
   whatToBuildOnlyAfterReplies: string;
+};
+
+type ProvenMoneyPattern = {
+  id: string;
+  proofLabel: string;
+  patternTitle: string;
+  whatSold: string;
+  buyer: string;
+  paidPain: string;
+  moneyReason: string;
+  smallVersion: string;
+  firstOffer: string;
+  postHook: string;
+  dmScript: string;
+  validationSteps: string[];
+  buildAfterReplies: string;
+  suggestedPaths: MarketOption[];
+};
+
+type PathOfferRule = {
+  angle: string;
+  price: string;
+  firstOffer: (pattern: ProvenMoneyPattern) => string;
+  buildAfterReplies: (pattern: ProvenMoneyPattern) => string;
+  salesMotion: string;
+};
+
+const provenMoneyPatterns: ProvenMoneyPattern[] = [
+  {
+    id: "discord-community-tool",
+    proofLabel: "$30K MRR",
+    patternTitle: "Discord Community Tool",
+    whatSold: "A Discord community management tool",
+    buyer: "paid community owners and Discord operators",
+    paidPain: "member onboarding, repeated questions, and messy community operations",
+    moneyReason:
+      "paid communities lose trust when onboarding, FAQs, and member handoffs feel disorganized",
+    smallVersion: "Discord Community Cleanup Pack",
+    firstOffer: "$49 Discord onboarding and FAQ cleanup pack",
+    postHook:
+      "Paid Discord communities do not need more channels. They need onboarding and FAQs that stop the same member questions.",
+    dmScript:
+      "Quick idea: I am testing a Discord Community Cleanup Pack. I can turn one messy onboarding flow and FAQ list into a cleaner member-ready version before building anything. Want to see a sample?",
+    validationSteps: [
+      "Post 3 before/after examples of messy Discord onboarding and cleaner FAQ sections.",
+      "DM 25 paid community owners or Discord operators.",
+      "Offer to clean one onboarding checklist manually before building.",
+    ],
+    buildAfterReplies: "onboarding checklist generator and member FAQ copilot",
+    suggestedPaths: ["Micro SaaS", "Digital Product", "AI Agency"],
+  },
+  {
+    id: "demo-creation-saas",
+    proofLabel: "$250K MRR",
+    patternTitle: "Demo Creation SaaS",
+    whatSold: "A product demo creation tool",
+    buyer: "SaaS founders and sales teams",
+    paidPain: "turning product features into clear demos that help sales conversations",
+    moneyReason:
+      "sales calls improve when product features become a tight walkthrough instead of a feature dump",
+    smallVersion: "Demo Cleanup Pack",
+    firstOffer: "$99 demo script and walkthrough cleanup pack",
+    postHook:
+      "SaaS teams do not need a prettier demo. They need one walkthrough that makes the buyer ask the next question.",
+    dmScript:
+      "Quick idea: I am testing a Demo Cleanup Pack. I can turn one feature list into a tighter demo script and walkthrough before building software. Want me to do one?",
+    validationSteps: [
+      "Rewrite 3 public product pages into short demo scripts.",
+      "Post one before/after demo outline.",
+      "DM 20 SaaS founders or sales leads offering one manual demo cleanup.",
+    ],
+    buildAfterReplies: "demo script generator and walkthrough builder",
+    suggestedPaths: ["Micro SaaS", "Freelance Dev", "AI Agency"],
+  },
+  {
+    id: "automation-business",
+    proofLabel: "$3M ARR",
+    patternTitle: "Automation Business",
+    whatSold: "Repetitive task automation software/service",
+    buyer: "operators, agencies, and business teams doing repeatable admin work",
+    paidPain: "manual repeated tasks that delay responses, reporting, or handoffs",
+    moneyReason:
+      "operators pay when one annoying recurring task becomes a reliable intake, output, and handoff system",
+    smallVersion: "Manual Automation Setup",
+    firstOffer: "$299 AI automation setup for one repeated task",
+    postHook:
+      "The first paid automation is not a platform. It is one repeated task turned into a cleaner intake and output.",
+    dmScript:
+      "Quick idea: I am testing a Manual Automation Setup. Pick one repeated admin task and I will map the intake, output, and handoff manually before building. Want a sample?",
+    validationSteps: [
+      "Post 3 examples of one repeated admin task becoming a clear intake and output.",
+      "DM 25 operators or agency owners asking for one task they repeat weekly.",
+      "Build only if people send a real task or ask for the setup.",
+    ],
+    buildAfterReplies: "intake-to-output automation dashboard",
+    suggestedPaths: ["Business Automation", "AI Agency", "Freelance Dev"],
+  },
+  {
+    id: "mobile-utility-app",
+    proofLabel: "$100K/mo",
+    patternTitle: "Mobile Utility App",
+    whatSold: "A simple niche mobile utility",
+    buyer: "users with one repeated daily annoyance",
+    paidPain: "small but frequent problems people want solved without a complex platform",
+    moneyReason:
+      "people pay for tiny utilities when the pain happens often and the product gives a clear answer fast",
+    smallVersion: "Niche Utility Template",
+    firstOffer: "$19 checklist or lightweight utility template",
+    postHook:
+      "The best small app ideas are not giant platforms. They solve one repeated daily annoyance in under a minute.",
+    dmScript:
+      "Quick idea: I am testing a Niche Utility Template for one daily annoyance. I can mock the checklist and first screen before building. Want to see it?",
+    validationSteps: [
+      "List 5 repeated daily annoyances from one niche.",
+      "Post 3 one-screen mockups with a clear before/after.",
+      "DM 20 people in that niche asking which one they would pay to remove.",
+    ],
+    buildAfterReplies: "single-purpose mobile-first app",
+    suggestedPaths: ["Micro SaaS", "Digital Product"],
+  },
+  {
+    id: "seo-content-tool",
+    proofLabel: "$25K/mo",
+    patternTitle: "SEO Content Tool",
+    whatSold: "Content and SEO assistance tool",
+    buyer: "creators, SaaS teams, and niche site operators",
+    paidPain: "turning rough ideas into search-friendly content briefs consistently",
+    moneyReason:
+      "content teams pay when rough ideas become briefs they can publish from without starting over",
+    smallVersion: "SEO Content Fix Pack",
+    firstOffer: "$49 content brief cleanup pack",
+    postHook:
+      "Niche sites do not need 100 content ideas. They need one rough idea turned into a brief a writer can actually use.",
+    dmScript:
+      "Quick idea: I am testing an SEO Content Fix Pack. Send one rough topic and I will turn it into a cleaner content brief before building a tool. Want one?",
+    validationSteps: [
+      "Turn 3 rough topic ideas into search-friendly content briefs.",
+      "Post one before/after brief.",
+      "DM 20 creators or niche site operators offering one manual cleanup.",
+    ],
+    buildAfterReplies: "keyword brief generator and content scoring tool",
+    suggestedPaths: ["Digital Product", "Micro SaaS", "Freelance Dev"],
+  },
+];
+
+const pathOfferRules: Partial<Record<MarketOption, PathOfferRule>> = {
+  "Micro SaaS": {
+    angle: "small monthly software angle",
+    price: "$19-$49/month",
+    firstOffer: (pattern) => `$19/month ${pattern.smallVersion} app`,
+    buildAfterReplies: (pattern) => `${pattern.buildAfterReplies} as a tiny monthly SaaS`,
+    salesMotion: "post the proof, show one demo screen, and ask for 5 paid beta users",
+  },
+  "Freelance Dev": {
+    angle: "implementation service angle",
+    price: "$299-$1,500 one-time",
+    firstOffer: (pattern) => `$499 implementation sprint for ${pattern.smallVersion}`,
+    buildAfterReplies: (pattern) => `${pattern.buildAfterReplies} as a client-specific internal tool`,
+    salesMotion: "DM buyers with one before/after sample and offer a fixed-scope implementation",
+  },
+  "Business Automation": {
+    angle: "setup + retainer angle",
+    price: "$299-$500 setup + $49-$150/month",
+    firstOffer: (pattern) => `$299 setup for ${pattern.smallVersion}`,
+    buildAfterReplies: (pattern) => `${pattern.buildAfterReplies} as an automation dashboard`,
+    salesMotion: "sell one repeated task setup, then add a monthly monitoring retainer",
+  },
+  "Digital Product": {
+    angle: "template/checklist/prompt pack angle",
+    price: "$9-$49 one-time",
+    firstOffer: (pattern) => `$29 ${pattern.smallVersion} template pack`,
+    buildAfterReplies: (pattern) => `${pattern.smallVersion} as a downloadable pack or generator`,
+    salesMotion: "post the before/after asset and sell the pack from replies",
+  },
+  "AI Agency": {
+    angle: "audit to setup angle",
+    price: "$49 audit -> $500 setup",
+    firstOffer: (pattern) => `$49 audit for ${pattern.smallVersion}`,
+    buildAfterReplies: (pattern) => `${pattern.buildAfterReplies} as a client-facing audit/report generator`,
+    salesMotion: "sell a small audit first, then offer the setup after the buyer sends real inputs",
+  },
 };
 
 const marketSpecificOpportunities: Record<MarketOption, MarketSpecificOpportunity> = {
@@ -199,6 +382,38 @@ const marketSpecificOpportunities: Record<MarketOption, MarketSpecificOpportunit
       "DM 25 freelance developers offering to clean up one real client issue manually.",
     ],
     whatToBuildOnlyAfterReplies: "bug report intake -> repro steps generator -> priority tag -> Codex-ready fix brief",
+  },
+  "Business Automation": {
+    buyer: "operations leads and agency owners with one repeated admin task every week",
+    paidPain: "lead replies, client updates, reports, and handoffs are still copied between inboxes, spreadsheets, and chat threads",
+    whyNow: "buyers can test value with one manual before/after task cleanup before trusting a full system",
+    firstOffer: "$299 Manual Automation Setup",
+    price: "$299 setup + $99/month",
+    distributionChannel: "LinkedIn operator posts + agency owner DMs + niche operations communities",
+    postHook: "The first paid automation is not a platform. It is one repeated task turned into a cleaner intake and output.",
+    dmTarget: "agency owners, operations managers, client success leads, solo operators doing weekly admin handoffs",
+    fortyEightHourValidation: [
+      "Post 3 examples of one repeated admin task becoming a clear intake and output.",
+      "DM 25 operators asking for one task they repeat every week.",
+      "Build only if buyers send a real task or ask for the setup.",
+    ],
+    whatToBuildOnlyAfterReplies: "task intake -> output generator -> handoff checklist -> status tracker",
+  },
+  "Digital Product": {
+    buyer: "creators, consultants, and niche operators selling templates, checklists, or prompt packs",
+    paidPain: "they know the repeatable process but have not packaged it into a clear asset buyers can use without a call",
+    whyNow: "one before/after example can sell before a generator or full product exists",
+    firstOffer: "$29 Template Cleanup Pack",
+    price: "$29 one-time",
+    distributionChannel: "X proof posts + Gumroad audience DMs + niche community posts with before/after examples",
+    postHook: "Digital products do not need to start as software. Start with one before/after asset people can buy today.",
+    dmTarget: "Gumroad sellers, newsletter operators, consultants, prompt pack creators, Notion template sellers",
+    fortyEightHourValidation: [
+      "Create 3 before/after examples from one repeatable process.",
+      "Post the strongest example with a clear $29 offer.",
+      "DM 20 creators asking if they want the pack before a tool exists.",
+    ],
+    whatToBuildOnlyAfterReplies: "input checklist -> template generator -> example library -> download-ready pack",
   },
   "AI Agency": {
     buyer: "solo AI agency freelancers selling lead follow-up systems to local service businesses",
@@ -362,6 +577,55 @@ const marketSpecificOpportunities: Record<MarketOption, MarketSpecificOpportunit
   },
 };
 
+function getProvenMoneyPatternForMarket(market: MarketOption) {
+  return (
+    provenMoneyPatterns.find((pattern) => pattern.suggestedPaths.includes(market)) ||
+    provenMoneyPatterns[0]!
+  );
+}
+
+function getProvenMoneyPatternForSignal(signal: BuildSignal) {
+  return provenMoneyPatterns.find((pattern) =>
+    [signal.id, signal.sourceTitle, signal.latestSignal, signal.sourceNote, signal.patternMatches.join(" ")]
+      .join(" ")
+      .toLowerCase()
+      .includes(pattern.id),
+  );
+}
+
+function getPathAdjustedOpportunity(
+  market: MarketOption,
+  opportunity: MarketSpecificOpportunity,
+) {
+  const pattern = getProvenMoneyPatternForMarket(market);
+  const rule = pathOfferRules[market];
+
+  if (!rule) {
+    return {
+      opportunity,
+      pattern,
+      rule: null,
+    };
+  }
+
+  return {
+    opportunity: {
+      ...opportunity,
+      whyNow: `Money proof: ${pattern.proofLabel} for ${pattern.whatSold}. ${pattern.moneyReason}`,
+      firstOffer: rule.firstOffer(pattern),
+      price: rule.price,
+      postHook: pattern.postHook,
+      fortyEightHourValidation: [
+        ...pattern.validationSteps,
+        `Path angle: ${rule.salesMotion}.`,
+      ],
+      whatToBuildOnlyAfterReplies: rule.buildAfterReplies(pattern),
+    },
+    pattern,
+    rule,
+  };
+}
+
 function getMarketSpecificSignalId(market: MarketOption) {
   return `market-specific-${market.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
 }
@@ -377,6 +641,22 @@ function getMarketSpecificOpportunityForSignal(signal: BuildSignal) {
   return market ? marketSpecificOpportunities[market] : null;
 }
 
+function getMarketSpecificContextForSignal(signal: BuildSignal) {
+  const market = marketOptions.find(
+    (option) =>
+      signal.id === getMarketSpecificSignalId(option) ||
+      signal.sourceType === option ||
+      signal.signalSourceLabel === option,
+  );
+
+  return market
+    ? {
+        market,
+        ...getPathAdjustedOpportunity(market, marketSpecificOpportunities[market]),
+      }
+    : null;
+}
+
 function getMarketSpecificTitle(opportunity: MarketSpecificOpportunity) {
   return opportunity.firstOffer
     .replace(/^\$[\d,]+(?:\s*[a-z]+)?\s*/i, "")
@@ -385,12 +665,15 @@ function getMarketSpecificTitle(opportunity: MarketSpecificOpportunity) {
 }
 
 function buildMarketSpecificSignal(market: MarketOption): BuildSignal {
-  const opportunity = marketSpecificOpportunities[market];
+  const adjusted = getPathAdjustedOpportunity(market, marketSpecificOpportunities[market]);
+  const opportunity = adjusted.opportunity;
+  const pattern = adjusted.pattern;
+  const rule = adjusted.rule;
   const title = getMarketSpecificTitle(opportunity);
 
   return {
     id: getMarketSpecificSignalId(market),
-    latestSignal: opportunity.postHook,
+    latestSignal: `${pattern.proofLabel}: ${pattern.whatSold}. ${opportunity.postHook}`,
     sourceTitle: title,
     sourceUrl: "",
     sourceType: market,
@@ -411,7 +694,9 @@ function buildMarketSpecificSignal(market: MarketOption): BuildSignal {
       ...opportunity.fortyEightHourValidation,
     ],
     patternMatches: [
-      opportunity.distributionChannel,
+      `Money proof: ${pattern.proofLabel}`,
+      `Proven pattern: ${pattern.patternTitle}`,
+      rule ? `Path angle: ${rule.angle}` : opportunity.distributionChannel,
       `DM target: ${opportunity.dmTarget}`,
       opportunity.fortyEightHourValidation.join(" "),
     ],
@@ -2018,6 +2303,14 @@ function getSignalMarket(signal: BuildSignal) {
     return "Local Business";
   }
 
+  if (/plugin|extension|template|prompt pack|script|chrome|digital product|bundle|downloadable/.test(haystack)) {
+    return "Digital Product";
+  }
+
+  if (/automation|spreadsheet|rpa|email|report|lead|operations|handoff|admin task|manual task/.test(haystack)) {
+    return "Business Automation";
+  }
+
   if (/agency|consultant|client delivery|dashboard|chatbot|internal tool|implementation/.test(haystack)) {
     return "AI Agency";
   }
@@ -2058,6 +2351,37 @@ function getExpectedFirstOffer(signal: BuildSignal) {
   }
 
   return `$19-$49 ${workflowOutputTitle(signal)} starter offer`;
+}
+
+function getOpportunityDetailFields(signal: BuildSignal) {
+  const context = getMarketSpecificContextForSignal(signal);
+
+  if (context) {
+    return {
+      proof: `${context.pattern.proofLabel}: ${context.pattern.whatSold}`,
+      pattern: context.pattern.patternTitle,
+      whyMoneyChangedHands: context.opportunity.whyNow,
+      firstOffer: `${context.opportunity.firstOffer} / ${context.opportunity.price}`,
+      distribution: context.opportunity.distributionChannel,
+      fortyEightHourTest: context.opportunity.fortyEightHourValidation.join("\n"),
+      buildAfterReplies: context.opportunity.whatToBuildOnlyAfterReplies,
+    };
+  }
+
+  const pattern = getProvenMoneyPatternForSignal(signal);
+
+  return {
+    proof: pattern ? `${pattern.proofLabel}: ${pattern.whatSold}` : getSignalEvidenceLevel(signal),
+    pattern: pattern?.patternTitle || signal.sourceType || "Evidence-backed signal",
+    whyMoneyChangedHands: pattern?.moneyReason || getScoreReason(signal),
+    firstOffer: getExpectedFirstOffer(signal),
+    distribution:
+      signal.patternMatches[2] ||
+      signal.sourceNote ||
+      "Post the insight, then DM likely buyers.",
+    fortyEightHourTest: "Validate in 48h / build in 1-3 days after replies",
+    buildAfterReplies: signal.whatYouCanBuild,
+  };
 }
 
 function truncateEvidenceText(value: string, maxLength = 220) {
@@ -2647,13 +2971,13 @@ function getSeedSearchText(signal: BuildSignal) {
 }
 
 function buildHighQualitySparkFromMarketSignal(signal: BuildSignal): HighQualityBusinessSpark | null {
-  const opportunity = getMarketSpecificOpportunityForSignal(signal);
-  const market = getSignalMarket(signal);
+  const context = getMarketSpecificContextForSignal(signal);
 
-  if (!opportunity) {
+  if (!context) {
     return null;
   }
 
+  const { market, opportunity, pattern, rule } = context;
   const sparkTitle = getMarketSpecificTitle(opportunity);
   const validationText = opportunity.fortyEightHourValidation.join(" ");
 
@@ -2667,10 +2991,10 @@ function buildHighQualitySparkFromMarketSignal(signal: BuildSignal): HighQuality
     distributionChannel: opportunity.distributionChannel,
     dmTarget: opportunity.dmTarget,
     fortyEightHourTest: opportunity.fortyEightHourValidation,
-    launchPost: `${opportunity.postHook}\n\nBusiness Spark: ${sparkTitle}\nBuyer: ${opportunity.buyer}\nPain: ${opportunity.paidPain}\nFirst offer: ${opportunity.firstOffer} (${opportunity.price})\nTest: ${validationText}`,
+    launchPost: `${opportunity.postHook}\n\nMoney proof: ${pattern.proofLabel} - ${pattern.whatSold}\nPattern: ${pattern.patternTitle}\nBusiness Spark: ${sparkTitle}\nBuyer: ${opportunity.buyer}\nPain: ${opportunity.paidPain}\nFirst offer: ${opportunity.firstOffer} (${opportunity.price})\nTest: ${validationText}`,
     dmScript: `Quick idea: I am testing ${opportunity.firstOffer} for ${opportunity.buyer}. The pain is: ${opportunity.paidPain}. I can do one manual sample before building anything. Worth seeing?`,
     codexPromptPreview: `Build a mobile-first MVP for ${sparkTitle}. Start with ${opportunity.whatToBuildOnlyAfterReplies}.`,
-    codexBuildPrompt: `Build this only after someone replies, clicks, or asks for the offer. Build a mobile-first MVP called ${sparkTitle} for ${opportunity.buyer}. The buyer pain is: ${opportunity.paidPain}. Why now: ${opportunity.whyNow}. First offer: ${opportunity.firstOffer} at ${opportunity.price}. Distribution channel: ${opportunity.distributionChannel}. DM target: ${opportunity.dmTarget}. Build only this first version: ${opportunity.whatToBuildOnlyAfterReplies}. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no payment integration, and no external APIs. Include an offer overview, input form, generated output, saved examples, launch copy, DM script, copy buttons, and validation panel. The validation panel must include this 48-hour plan: ${validationText}. Done criteria: it should be demo-ready, mobile-first, and useful for testing demand before building a real SaaS.`,
+    codexBuildPrompt: `Build this only after someone replies, clicks, or asks for the offer. Money proof: ${pattern.proofLabel} for ${pattern.whatSold}. Pattern: ${pattern.patternTitle}. Path: ${market}${rule ? ` (${rule.angle})` : ""}. Build a mobile-first MVP called ${sparkTitle} for ${opportunity.buyer}. The buyer pain is: ${opportunity.paidPain}. Why money changed hands: ${opportunity.whyNow}. First offer: ${opportunity.firstOffer} at ${opportunity.price}. Distribution channel: ${opportunity.distributionChannel}. DM target: ${opportunity.dmTarget}. Build only this first version: ${opportunity.whatToBuildOnlyAfterReplies}. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no payment integration, and no external APIs. Include an offer overview, input form, generated output, saved examples, launch copy, DM script, copy buttons, and validation panel. The validation panel must include this 48-hour plan: ${validationText}. Done criteria: it should be demo-ready, mobile-first, and useful for testing demand before building a real SaaS.`,
   };
 }
 
@@ -3238,43 +3562,82 @@ ${fields.map(([label, value]) => `${label}:\n${value}`).join("\n\n")}`;
 }
 
 function buildCarouselSlides(masterPrompt: MasterPrompt) {
-  if (masterPrompt.aiReveal?.carousel.length) {
-    return masterPrompt.aiReveal.carousel
-      .slice()
-      .sort((a, b) => a.slide - b.slide)
-      .map((slide) => ({
-        title: `Slide ${slide.slide}: ${slide.title}`,
-        body: slide.body,
-      }));
-  }
+  const forbiddenCarouselTitle =
+    /\b(are scattered|already used daily|transform|unlock|streamline|optimize|productivity)\b/i;
+  const cleanSentence = (value: string, fallback: string) => {
+    const cleaned = normalizeDisplayText(value)
+      .replace(/^Slide\s*\d+:\s*/i, "")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    return cleaned || fallback;
+  };
+
+  const shortProofTitle = (value: string, fallback: string) => {
+    const sentence = cleanSentence(value, fallback).split(/[.!?]/)[0]?.trim() || fallback;
+
+    if (
+      forbiddenCarouselTitle.test(sentence) ||
+      !/\b(used|paid|sold|grew|reached|made|built|launched|mrr|arr|\$|revenue|customer|buyer)\b/i.test(sentence)
+    ) {
+      return fallback;
+    }
+
+    const words = sentence.split(/\s+/).filter(Boolean);
+
+    return words.slice(0, 8).join(" ");
+  };
+
+  const moneyProof = cleanSentence(
+    masterPrompt.originalCase || masterPrompt.provenPattern,
+    "A real buyer paid for a narrow business outcome.",
+  );
+  const paidPain = cleanSentence(
+    masterPrompt.pain || masterPrompt.marketProof.whyBuyersPay,
+    "The buyer has a repeated paid pain that is expensive to leave messy.",
+  );
+  const firstOffer = cleanSentence(
+    masterPrompt.firstPaidOffer || masterPrompt.revenueSignal,
+    "$99 cleanup pack",
+  );
+  const validationStep = cleanSentence(
+    masterPrompt.validationPlan[0] ||
+      masterPrompt.firstCustomerPlan.validationWithin48h ||
+      masterPrompt.firstCustomerPlan.whatToSay,
+    "DM 20 likely buyers and offer to do one manual cleanup before building.",
+  );
+  const buildAfterReplies = cleanSentence(
+    masterPrompt.firstVersion || masterPrompt.whatToBuild || masterPrompt.productAngle,
+    "Build the smallest Codex tool only after buyers reply.",
+  );
 
   return [
     {
-      title: "Slide 1: Contrarian hook",
-      body: `Most AI builders are looking for ideas.\nThe money is usually hiding inside signals everyone else scrolls past.`,
+      title: `Slide 1: ${shortProofTitle(moneyProof, "Real money proof")}`,
+      body: moneyProof,
     },
     {
-      title: "Slide 2: What most people see",
-      body: `Most people see this as another product idea:\n${masterPrompt.whatToBuild}`,
+      title: "Slide 2: Why money changes hands",
+      body: paidPain,
     },
     {
-      title: "Slide 3: Why they are wrong",
-      body: `The product is not the goldmine.\nThe buying behavior is:\n${buildWhatEveryoneMisses(masterPrompt)}`,
+      title: "Slide 3: Sell the small version first",
+      body: `Offer ${firstOffer} before building software.`,
     },
     {
-      title: "Slide 4: Why it works",
-      body: buildHolyShit(masterPrompt),
+      title: "Slide 4: Validate in 48 hours",
+      body: validationStep,
     },
     {
-      title: "Slide 5: Opportunity / Bilion Signal",
-      body: `${buildFirstWedge(masterPrompt)}\n\nOpportunity Score:\n${buildOpportunityScore(masterPrompt)}\n\nBilion Signal:\n${masterPrompt.provenPattern}`,
+      title: "Slide 5: Build after replies",
+      body: `If buyers respond, build ${buildAfterReplies} with Codex.`,
     },
   ];
 }
 
-function buildCarouselCopy(masterPrompt: MasterPrompt, hasFounderAccess: boolean) {
+function buildCarouselCopy(masterPrompt: MasterPrompt, _hasFounderAccess: boolean) {
   return buildCarouselSlides(masterPrompt)
-    .slice(0, hasFounderAccess ? 5 : 2)
+    .slice(0, 5)
     .map((slide) => `${slide.title}\n${slide.body}`)
     .join("\n\n---\n\n");
 }
@@ -3943,7 +4306,9 @@ export default function BilionAppClient({
   const selectedSignal =
     selectedSignalId === "github-sample"
       ? githubLibrarySignal
-      : marketSignals.find((signal) => signal.id === selectedSignalId) ||
+      : [...topMarketOpportunities, ...marketSignals].find(
+          (signal) => signal.id === selectedSignalId,
+        ) ||
         marketSignals[todayIndex] ||
         marketSignals[0];
   const selectedSignalDisplayTitle = selectedSignal
@@ -4017,10 +4382,9 @@ export default function BilionAppClient({
     const actionSignal = getActionSignal(nextSignal, selectedBuyer);
     const seed = selectHighQualityBusinessSpark(actionSignal);
     const nextResult = applyBusinessSparkSeedToResult(buildResult(actionSignal), seed);
-    const builtMaster = buildActionMasterPrompt(
-      nextSignal,
-      selectedBuyer,
-      selectedAction,
+    const builtMaster = applyBusinessSparkSeed(
+      buildActionMasterPrompt(nextSignal, selectedBuyer, selectedAction),
+      seed,
     );
     const nextSignalIndex =
       selectedSignalId === "github-sample" ? 0 : marketSignals.indexOf(nextSignal);
@@ -4089,6 +4453,10 @@ export default function BilionAppClient({
     const actionSignal = getActionSignal(nextSignal, selectedBuyer);
     const seed = selectHighQualityBusinessSpark(actionSignal);
     const nextResult = applyBusinessSparkSeedToResult(buildResult(actionSignal), seed);
+    const builtMaster = applyBusinessSparkSeed(
+      buildActionMasterPrompt(nextSignal, selectedBuyer, nextAction),
+      seed,
+    );
     const nextSignalIndex =
       selectedSignalId === "github-sample" ? 0 : marketSignals.indexOf(nextSignal);
 
@@ -4099,7 +4467,7 @@ export default function BilionAppClient({
     setSignalIndex(nextSignalIndex < 0 ? 0 : nextSignalIndex);
     setMasterPromptAngleIndex(getActionAngleIndex(nextAction));
     setResult(nextResult);
-    setMasterPrompt(buildActionMasterPrompt(nextSignal, selectedBuyer, nextAction));
+    setMasterPrompt(builtMaster);
     saveResult(nextResult);
     incrementFreeUsage();
     setActiveWorkflowTab("studio");
@@ -4390,13 +4758,12 @@ export default function BilionAppClient({
               Bilion
             </h1>
             <div className="mt-1 text-base font-bold text-zinc-200 md:mt-2 md:text-xl">
-              Find a Codex business spark before you build.
+              Pick a proven money pattern.
             </div>
 
             <p className="mt-3 max-w-2xl break-words text-sm leading-relaxed text-zinc-400 md:mt-4 md:text-base md:leading-7">
-              Stop asking AI what to build. Get a Codex business spark from
-              proven patterns: buyer, pain, first offer, 48h test, and Codex
-              prompt.
+              Turn what already sold into your first offer. Sell first. Build
+              with Codex after replies.
             </p>
           </header>
 
@@ -5216,14 +5583,14 @@ function MarketSelectionSection({
             Start here
           </div>
           <h3 className="mt-1 break-words text-xl font-black text-white md:text-3xl">
-            Pick a Codex business path.
+            Pick a proven money pattern.
           </h3>
           <p className="mt-2 max-w-2xl break-words text-sm leading-relaxed text-zinc-400 md:leading-6">
-            Choose one path, get a buyer, pain, first offer, 48h test, and Codex prompt.
+            You do not need a new idea. Start from a pattern people already paid for.
           </p>
         </div>
         <div className="hidden rounded-full border border-white/10 bg-black/30 px-4 py-2 text-xs font-black uppercase tracking-wide text-zinc-400 md:block">
-          Path &rarr; Spark &rarr; Test &rarr; Reply &rarr; Build
+          Money Proof &rarr; Pattern &rarr; Offer &rarr; Sell &rarr; Build
         </div>
       </div>
 
@@ -5301,64 +5668,64 @@ function MarketSelectionSection({
                 </summary>
                 <div className="mt-3 grid gap-2">
                   <MarketOpportunityField
-                    label="Why it works"
-                    value={getMarketSpecificOpportunityForSignal(signal)?.whyNow || getScoreReason(signal)}
+                    label="Money proof"
+                    value={getOpportunityDetailFields(signal).proof}
                   />
                   <MarketOpportunityField
-                    label="First Offer"
-                    value={
-                      getMarketSpecificOpportunityForSignal(signal)
-                        ? `${getMarketSpecificOpportunityForSignal(signal)?.firstOffer} / ${getMarketSpecificOpportunityForSignal(signal)?.price}`
-                        : getExpectedFirstOffer(signal)
-                    }
+                    label="Proven pattern"
+                    value={getOpportunityDetailFields(signal).pattern}
                   />
                   <MarketOpportunityField
-                    label="Distribution"
-                    value={
-                      getMarketSpecificOpportunityForSignal(signal)?.distributionChannel ||
-                      signal.patternMatches[2] ||
-                      signal.sourceNote ||
-                      "Post the insight, then DM likely buyers."
-                    }
+                    label="Why money changed hands"
+                    value={getOpportunityDetailFields(signal).whyMoneyChangedHands}
                   />
                   <MarketOpportunityField
-                    label="48h Test"
-                    value={
-                      getMarketSpecificOpportunityForSignal(signal)?.fortyEightHourValidation.join("\n") ||
-                      "Validate in 48h / build in 1-3 days after replies"
-                    }
+                    label="Your first offer"
+                    value={getOpportunityDetailFields(signal).firstOffer}
+                  />
+                  <MarketOpportunityField
+                    label="Sell"
+                    value={getOpportunityDetailFields(signal).distribution}
+                  />
+                  <MarketOpportunityField
+                    label="48h validation"
+                    value={getOpportunityDetailFields(signal).fortyEightHourTest}
+                  />
+                  <MarketOpportunityField
+                    label="Build after replies"
+                    value={getOpportunityDetailFields(signal).buildAfterReplies}
                   />
                 </div>
               </details>
 
-              <div className="mt-4 hidden min-w-0 gap-3 md:grid md:grid-cols-2 xl:grid-cols-4">
+              <div className="mt-4 hidden min-w-0 gap-3 md:grid md:grid-cols-2 xl:grid-cols-3">
                 <MarketOpportunityField
-                  label="Why it works"
-                  value={getMarketSpecificOpportunityForSignal(signal)?.whyNow || getScoreReason(signal)}
+                  label="Money proof"
+                  value={getOpportunityDetailFields(signal).proof}
                 />
                 <MarketOpportunityField
-                  label="First Offer"
-                  value={
-                    getMarketSpecificOpportunityForSignal(signal)
-                      ? `${getMarketSpecificOpportunityForSignal(signal)?.firstOffer} / ${getMarketSpecificOpportunityForSignal(signal)?.price}`
-                      : getExpectedFirstOffer(signal)
-                  }
+                  label="Proven pattern"
+                  value={getOpportunityDetailFields(signal).pattern}
                 />
                 <MarketOpportunityField
-                  label="Distribution"
-                  value={
-                    getMarketSpecificOpportunityForSignal(signal)?.distributionChannel ||
-                    signal.patternMatches[2] ||
-                    signal.sourceNote ||
-                    "Post the insight, then DM likely buyers."
-                  }
+                  label="Why money changed hands"
+                  value={getOpportunityDetailFields(signal).whyMoneyChangedHands}
                 />
                 <MarketOpportunityField
-                  label="48h Test"
-                  value={
-                    getMarketSpecificOpportunityForSignal(signal)?.fortyEightHourValidation.join("\n") ||
-                    "Validate in 48h / build in 1-3 days after replies"
-                  }
+                  label="Your first offer"
+                  value={getOpportunityDetailFields(signal).firstOffer}
+                />
+                <MarketOpportunityField
+                  label="Sell"
+                  value={getOpportunityDetailFields(signal).distribution}
+                />
+                <MarketOpportunityField
+                  label="48h validation"
+                  value={getOpportunityDetailFields(signal).fortyEightHourTest}
+                />
+                <MarketOpportunityField
+                  label="Build after replies"
+                  value={getOpportunityDetailFields(signal).buildAfterReplies}
                 />
               </div>
             </article>
