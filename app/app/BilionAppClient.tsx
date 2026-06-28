@@ -4960,14 +4960,16 @@ export default function BilionAppClient({
               Bilion
             </h1>
             <div className="mt-1 text-base font-bold text-zinc-200 md:mt-2 md:text-xl">
-              Pick a proven money pattern.
+              Bilion tells you what to sell this week.
             </div>
 
             <p className="mt-3 max-w-2xl break-words text-sm leading-relaxed text-zinc-400 md:mt-4 md:text-base md:leading-7">
-              Turn what already sold into your first offer. Sell first. Build
-              with Codex after replies.
+              Pick a proven money pattern, copy a post or DM, and build with
+              Codex only after someone replies.
             </p>
           </header>
+
+          <StartHereBlock />
 
           {selectedPatternLabel && (
             <div className="mb-5 min-w-0 break-words rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.06] px-4 py-3 text-sm font-bold text-emerald-100">
@@ -4979,12 +4981,12 @@ export default function BilionAppClient({
             <div className="min-w-0 rounded-2xl border border-white/10 bg-[#101011] p-4 shadow-2xl md:rounded-3xl md:p-8">
               <h2 className="text-xl font-black tracking-tight md:text-2xl">
                 {activeWorkflowTab === "library"
-                  ? "Choose a path. Get a Business Spark."
+                  ? "Today's Opportunity"
                   : "Business Spark Studio"}
               </h2>
               <p className="mt-2 max-w-xl break-words text-sm leading-relaxed text-zinc-400 md:mt-3 md:leading-6">
                 {activeWorkflowTab === "library"
-                  ? "This is not an idea generator. Pick a path, test the offer, then build with Codex after replies."
+                  ? "Pick one money pattern. Sell the small offer first. Build only after replies."
                   : `Free Business Sparks today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used.`}
               </p>
 
@@ -5007,10 +5009,10 @@ export default function BilionAppClient({
                   <div className="mt-5 flex min-w-0 flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                     <div className="min-w-0">
                       <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
-                        More signals
+                        More money patterns
                       </div>
                       <h3 className="mt-1 break-words text-lg font-black text-white">
-                        Browse other evidence-backed signals.
+                        Pick another proven pattern if this one does not fit.
                       </h3>
                     </div>
                     <p className="min-w-0 break-words text-xs font-bold text-zinc-600">
@@ -5444,6 +5446,13 @@ export default function BilionAppClient({
                     >
                       Try Next Action
                     </button>
+                  </div>
+                </div>
+                <details className="mt-4 rounded-2xl border border-white/10 bg-black/25 p-3">
+                  <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-wide text-zinc-500">
+                    Advanced actions
+                  </summary>
+                  <div className="mt-3 flex flex-col gap-2 sm:flex-row">
                     <button
                       type="button"
                       onClick={saveDistributionAssets}
@@ -5459,7 +5468,7 @@ export default function BilionAppClient({
                       Track Validation
                     </button>
                   </div>
-                </div>
+                </details>
 
               </section>
               ) : (
@@ -5766,6 +5775,32 @@ function EvidenceInboxSummary({
   );
 }
 
+function StartHereBlock() {
+  return (
+    <section className="mb-4 min-w-0 overflow-hidden rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.06] p-4 md:mb-6 md:rounded-3xl md:p-5">
+      <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+        START HERE
+      </div>
+      <ol className="mt-3 grid gap-2 text-sm font-bold leading-6 text-zinc-100 sm:grid-cols-2 lg:grid-cols-4">
+        {[
+          "Pick one money pattern",
+          "Sell the small offer",
+          "Copy a post or DM",
+          "Build with Codex only after replies",
+        ].map((step, index) => (
+          <li
+            key={step}
+            className="min-w-0 rounded-xl border border-white/10 bg-black/25 px-3 py-2"
+          >
+            <span className="mr-2 text-emerald-300">{index + 1}.</span>
+            <span className="break-words">{step}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
 function MarketSelectionSection({
   onMarketChange,
   onSelectOpportunity,
@@ -5788,10 +5823,10 @@ function MarketSelectionSection({
             Start here
           </div>
           <h3 className="mt-1 break-words text-xl font-black text-white md:text-3xl">
-            Pick a proven money pattern.
+            Today's Opportunity
           </h3>
           <p className="mt-2 max-w-2xl break-words text-sm leading-relaxed text-zinc-400 md:leading-6">
-            You do not need a new idea. Start from a pattern people already paid for.
+            Pick one proven money pattern, sell the small version, then build only after replies.
           </p>
         </div>
         <div className="hidden rounded-full border border-white/10 bg-black/30 px-4 py-2 text-xs font-black uppercase tracking-wide text-zinc-400 md:block">
@@ -5800,6 +5835,14 @@ function MarketSelectionSection({
       </div>
 
       <div className="mt-3 flex min-w-0 flex-wrap gap-2 pb-1 md:mt-4">
+        <div className="basis-full">
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+            Choose how you want to make money
+          </div>
+          <p className="mt-1 break-words text-xs font-bold leading-5 text-zinc-500">
+            This changes the first offer and how you sell it.
+          </p>
+        </div>
         {marketOptions.map((market) => {
           const active = selectedMarket === market;
 
@@ -5823,7 +5866,7 @@ function MarketSelectionSection({
 
       <div className="mt-3 grid min-w-0 gap-3 md:mt-4">
         <div className="break-words text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
-          Business Spark in {selectedMarket}
+          Today's Opportunity in {selectedMarket}
         </div>
         {displayOpportunities.slice(0, 1).map((signal) => {
           const detail = getOpportunityDetailFields(signal);
@@ -6603,6 +6646,8 @@ function MasterPromptCard({
 }) {
   const [copiedCarousel, setCopiedCarousel] = useState(false);
   const [copiedLaunchPack, setCopiedLaunchPack] = useState(false);
+  const [copiedPost, setCopiedPost] = useState(false);
+  const [copiedDm, setCopiedDm] = useState(false);
   const [carouselCopyError, setCarouselCopyError] = useState(false);
   const opportunityScore = getOpportunityScore(masterPrompt);
   const shortSignalTitle = truncateDisplayText(masterPrompt.provenPattern);
@@ -6635,6 +6680,28 @@ function MasterPromptCard({
     }, 1200);
   }
 
+  async function copyPostFromSummary() {
+    const copiedText = await writeClipboardText(masterPrompt.launchCopy.xPost);
+
+    setCopiedPost(copiedText);
+    setCarouselCopyError(!copiedText);
+    window.setTimeout(() => {
+      setCopiedPost(false);
+      setCarouselCopyError(false);
+    }, 1200);
+  }
+
+  async function copyDmFromSummary() {
+    const copiedText = await writeClipboardText(masterPrompt.launchCopy.dmMessage);
+
+    setCopiedDm(copiedText);
+    setCarouselCopyError(!copiedText);
+    window.setTimeout(() => {
+      setCopiedDm(false);
+      setCarouselCopyError(false);
+    }, 1200);
+  }
+
   return (
     <article className="min-w-0 space-y-5">
       <section className="min-w-0 overflow-hidden rounded-3xl border border-emerald-400/20 bg-[#0f1512] p-5 shadow-2xl md:p-6">
@@ -6642,7 +6709,7 @@ function MasterPromptCard({
           <div className="min-w-0 max-w-3xl">
             <div className="flex flex-wrap gap-2">
               <div className="inline-flex rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-300">
-                Business Spark
+                Today's Opportunity
               </div>
               <div className="inline-flex rounded-full border border-white/10 px-3 py-1 text-xs font-bold text-zinc-400">
                 Signal #{signalNumber} / Angle #{angleNumber}
@@ -6659,33 +6726,40 @@ function MasterPromptCard({
             </p>
           </div>
 
-          <div className="grid w-full min-w-0 gap-3 sm:grid-cols-2 lg:w-80 lg:grid-cols-1">
+          <div className="grid w-full min-w-0 gap-3 sm:grid-cols-3 lg:w-[420px]">
             <button
               type="button"
-              onClick={copyCarouselFromSummary}
+              onClick={copyPostFromSummary}
               className="w-full rounded-2xl bg-emerald-300 px-5 py-4 text-center text-sm font-black text-black shadow-lg shadow-emerald-950/40 transition hover:bg-emerald-200"
             >
-              {copiedCarousel ? "Copied Carousel" : "Copy Carousel"}
+              {copiedPost ? "Copied Post" : "Copy Post"}
             </button>
             <button
               type="button"
-              onClick={onCopyBrief}
-              className="w-full rounded-2xl border border-white/10 px-5 py-4 text-center text-sm font-bold text-white transition hover:bg-white/[0.04]"
+              onClick={copyDmFromSummary}
+              className="w-full rounded-2xl bg-white px-5 py-4 text-center text-sm font-black text-black transition hover:bg-zinc-200"
             >
-              {copiedSafe ? "Copied Short Brief" : "Copy Short Brief"}
+              {copiedDm ? "Copied DM" : "Copy DM"}
+            </button>
+            <button
+              type="button"
+              onClick={copyCarouselFromSummary}
+              className="w-full rounded-2xl border border-emerald-300/30 bg-emerald-300/[0.08] px-5 py-4 text-center text-sm font-black text-emerald-100 transition hover:bg-emerald-300/[0.14]"
+            >
+              {copiedCarousel ? "Copied Carousel" : "Copy Carousel"}
             </button>
           </div>
         </div>
 
         <div className="mt-5 grid min-w-0 gap-3 md:grid-cols-5">
-          <SummaryMetric label="Why it works" value={`${opportunityScore.total}/50 spark score`} />
-          <SummaryMetric label="Buyer" value={truncateDisplayText(masterPrompt.buyer, 72)} />
-          <SummaryMetric label="Pain" value={truncateDisplayText(masterPrompt.pain, 72)} />
+          <SummaryMetric label="Money proof" value={`${opportunityScore.total}/50 spark score`} />
+          <SummaryMetric label="Who buys" value={truncateDisplayText(masterPrompt.buyer, 72)} />
+          <SummaryMetric label="Paid pain" value={truncateDisplayText(masterPrompt.pain, 72)} />
           <SummaryMetric
-            label="First Offer"
+            label="Sell this first"
             value={truncateDisplayText(masterPrompt.firstPaidOffer, 80)}
           />
-          <SummaryMetric label="48h Test" value={getActionLabel(selectedAction)} />
+          <SummaryMetric label="Do this in 48h" value={getActionLabel(selectedAction)} />
         </div>
 
         {(copyFeedback || carouselCopyError) && (
@@ -6727,6 +6801,13 @@ function MasterPromptCard({
             Why this spark works.
           </h3>
         </summary>
+        <button
+          type="button"
+          onClick={onCopyBrief}
+          className="mt-5 w-full rounded-2xl border border-white/10 px-5 py-4 text-center text-sm font-bold text-white transition hover:bg-white/[0.04] sm:w-auto"
+        >
+          {copiedSafe ? "Copied Short Brief" : "Copy Short Brief"}
+        </button>
         <div className="mt-5 grid gap-3 md:grid-cols-2">
           <StarterStoryCard label="Why it works" value={buildHolyShit(masterPrompt)} />
           <StarterStoryCard
