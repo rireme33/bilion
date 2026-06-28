@@ -140,10 +140,284 @@ type EvidenceDraft = {
 const marketOptions = [
   "Micro SaaS",
   "Freelance Dev",
-  "Business Automation",
-  "Digital Product",
   "AI Agency",
+  "Local Business",
+  "Healthcare",
+  "Construction",
+  "Ecommerce",
+  "Creators",
+  "Legal",
+  "Real Estate",
+  "Finance",
+  "Developer Workflow",
 ] as const;
+
+type MarketOption = (typeof marketOptions)[number];
+
+type MarketSpecificOpportunity = {
+  buyer: string;
+  paidPain: string;
+  whyNow: string;
+  firstOffer: string;
+  price: string;
+  distributionChannel: string;
+  postHook: string;
+  dmTarget: string;
+  fortyEightHourValidation: string[];
+  whatToBuildOnlyAfterReplies: string;
+};
+
+const marketSpecificOpportunities: Record<MarketOption, MarketSpecificOpportunity> = {
+  "Micro SaaS": {
+    buyer: "parents, preschool teachers, and homeschool creators selling printable learning materials",
+    paidPain: "custom name worksheets take 15-30 minutes to design for each child, so teachers reuse generic sheets instead of personalized practice",
+    whyNow: "worksheet examples spread well on X, Pinterest, and teacher groups, and a simple preview generator can be validated before a full download product exists",
+    firstOffer: "$9 Custom Name Tracing Worksheet Pack",
+    price: "$9 one-time or $5/month",
+    distributionChannel: "Pinterest examples + Facebook homeschool groups + DMs to preschool worksheet sellers",
+    postHook: "Parents do not need another learning app. They need a printable worksheet with their child's actual name on it.",
+    dmTarget: "preschool teachers, homeschool creators, Etsy worksheet sellers, parenting newsletter writers",
+    fortyEightHourValidation: [
+      "Post 3 name tracing worksheet examples with different child names and themes.",
+      "DM 20 preschool teachers or worksheet sellers offering one free custom sample.",
+      "Build only if people request their own worksheet or ask how to buy the template.",
+    ],
+    whatToBuildOnlyAfterReplies: "name input -> worksheet style selector -> printable preview -> download placeholder",
+  },
+  "Freelance Dev": {
+    buyer: "freelance web developers maintaining client sites on retainers",
+    paidPain: "clients send vague bug reports by email and screenshots, forcing the developer to rewrite each issue into reproducible steps before fixing it",
+    whyNow: "freelancers already use Codex or Cursor to fix code, but the bottleneck is turning messy client messages into clean implementation tasks",
+    firstOffer: "$49 Bug Report Cleanup Sprint",
+    price: "$49 one-time or $99/month",
+    distributionChannel: "X posts + DMs to freelancers posting about client maintenance, WordPress fixes, and Cursor/Codex workflows",
+    postHook: "Freelance developers do not need more AI coding tips. They need messy client bug reports turned into clean fix tickets.",
+    dmTarget: "WordPress freelancers, Webflow developers, solo SaaS maintainers, agency subcontractors",
+    fortyEightHourValidation: [
+      "Collect 5 public examples of vague client bug reports.",
+      "Publish 3 before/after examples turning them into fix tickets.",
+      "DM 25 freelance developers offering to clean up one real client issue manually.",
+    ],
+    whatToBuildOnlyAfterReplies: "bug report intake -> repro steps generator -> priority tag -> Codex-ready fix brief",
+  },
+  "AI Agency": {
+    buyer: "solo AI agency freelancers selling lead follow-up systems to local service businesses",
+    paidPain: "leads arrive from website forms, Instagram DMs, and email, but nobody follows up within 5 minutes",
+    whyNow: "AI agency beginners are selling chatbots while local businesses lose money in the first reply window",
+    firstOffer: "$49 Lead Leak Audit",
+    price: "$49 audit or $199 setup",
+    distributionChannel: "X posts + cold DM to AI agency beginners",
+    postHook: "Most local businesses do not need an AI chatbot. They need a 5-minute follow-up system.",
+    dmTarget: "people posting about AI agency, GoHighLevel, Zapier, Make, and local lead generation",
+    fortyEightHourValidation: [
+      "Post 3 hooks about missed local leads and 5-minute follow-up.",
+      "DM 30 AI agency beginners offering to make 3 lead follow-up audits manually.",
+      "Build only if they ask for the audit template or want a reusable client delivery tool.",
+    ],
+    whatToBuildOnlyAfterReplies: "lead intake -> missed lead detector -> follow-up script generator",
+  },
+  "Local Business": {
+    buyer: "independent restaurant, clinic, salon, and home-service owners with public reviews",
+    paidPain: "Google reviews sit unanswered because owners are busy and staff are unsure how to reply to complaints without making them worse",
+    whyNow: "review replies are visible to every future buyer, and owners can judge value from 5 before/after examples",
+    firstOffer: "$150 Review Reply Cleanup Pack",
+    price: "$150 one-time or $99/month",
+    distributionChannel: "Google Maps prospecting + local owner Facebook groups + direct email with rewritten reviews",
+    postHook: "Local businesses do not need a brand voice strategy. They need yesterday's bad reviews answered without sounding defensive.",
+    dmTarget: "restaurants with unanswered reviews, clinics with booking-site reviews, salons with low-star Google reviews",
+    fortyEightHourValidation: [
+      "Rewrite 5 public unanswered reviews from one niche.",
+      "Send before/after replies to 20 owners with the exact review link.",
+      "Build only if owners ask you to handle the next batch.",
+    ],
+    whatToBuildOnlyAfterReplies: "review input -> tone selector -> safe reply options -> owner approval queue",
+  },
+  Healthcare: {
+    buyer: "small dental clinics, therapy offices, and appointment-based clinics with front-desk staff",
+    paidPain: "cancellation notes and voicemail callbacks pile up, so open appointment slots are not recovered before the day ends",
+    whyNow: "one recovered appointment can pay for the tool, and clinics can validate with a simple cancellation list sample",
+    firstOffer: "$199 Cancellation Recovery Script Pack",
+    price: "$199 setup + $49/month",
+    distributionChannel: "LinkedIn clinic operators + dental office manager groups + direct email to clinics with visible booking pages",
+    postHook: "Clinics do not need a patient portal first. They need canceled slots turned into same-day recovery messages.",
+    dmTarget: "dental office managers, therapy clinic owners, chiropractic clinics, med spa operators",
+    fortyEightHourValidation: [
+      "Create 3 cancellation recovery scripts from realistic patient notes.",
+      "DM or email 20 clinic managers asking what one filled cancellation is worth.",
+      "Build only if clinics send a sample cancellation note or ask for the script pack.",
+    ],
+    whatToBuildOnlyAfterReplies: "cancellation intake -> recovery priority -> SMS/email script -> follow-up status board",
+  },
+  Construction: {
+    buyer: "small contractors with 3-20 field workers",
+    paidPain: "site updates are buried in WhatsApp, photos, and voice notes, so daily reports to clients are late or inconsistent",
+    whyNow: "owners already have the raw notes on their phones, and a before/after client report proves value in one screenshot",
+    firstOffer: "$99 Daily Report Cleanup Pack",
+    price: "$99 one-time or $49/month",
+    distributionChannel: "LinkedIn contractor operators + Facebook construction groups",
+    postHook: "Small contractors do not need full project management software. They need clean daily reports from messy field notes.",
+    dmTarget: "remodelers, roofing contractors, small GC owners, construction ops managers",
+    fortyEightHourValidation: [
+      "Collect 5 public contractor posts or sample field notes.",
+      "Publish 3 before/after examples turning messy notes into client-ready reports.",
+      "DM 20 contractors offering to turn yesterday's field notes into a clean report.",
+    ],
+    whatToBuildOnlyAfterReplies: "mobile note intake -> photo summary -> daily report PDF",
+  },
+  Ecommerce: {
+    buyer: "Shopify store owners with 20-200 SKUs and abandoned product pages",
+    paidPain: "product pages have weak benefits, missing FAQs, and inconsistent sizing/shipping answers that create support tickets and lost carts",
+    whyNow: "store owners can test a rewritten product page before installing an app or changing their theme",
+    firstOffer: "$79 Product Page Conversion Cleanup",
+    price: "$79 one-time or $29/month",
+    distributionChannel: "Shopify founder X posts + ecommerce Facebook groups + DMs to stores with thin product descriptions",
+    postHook: "Most Shopify stores do not need another popup. They need product pages that answer the questions buyers ask before checkout.",
+    dmTarget: "Shopify owners, DTC operators, Etsy-to-Shopify sellers, ecommerce copywriters",
+    fortyEightHourValidation: [
+      "Rewrite 3 public product pages with stronger bullets and FAQs.",
+      "Post before/after screenshots for one niche.",
+      "DM 25 store owners offering one manual product page cleanup.",
+    ],
+    whatToBuildOnlyAfterReplies: "product URL/input -> benefit bullets -> FAQ generator -> copy-ready product page sections",
+  },
+  Creators: {
+    buyer: "newsletter writers, YouTube educators, and short-form creators selling templates or mini-products",
+    paidPain: "audience questions and comments are scattered across replies, DMs, and comments, so creators miss repeatable paid product angles",
+    whyNow: "creators can validate by posting one audience-question teardown before building a product",
+    firstOffer: "$29 Audience Question Product Map",
+    price: "$29 one-time or $19/month",
+    distributionChannel: "X creator threads + newsletter communities + DMs to creators with repeated audience Q&A",
+    postHook: "Creators do not need 100 content ideas. They need the 3 audience questions that can become a paid mini-product.",
+    dmTarget: "newsletter operators, YouTube tutorial creators, Gumroad sellers, cohort-based course creators",
+    fortyEightHourValidation: [
+      "Collect 20 comments from one creator niche.",
+      "Post 3 examples mapping repeated questions to paid mini-products.",
+      "DM 20 creators offering to map their replies into one paid offer.",
+    ],
+    whatToBuildOnlyAfterReplies: "comment import -> repeated-question clustering -> paid offer map -> launch post generator",
+  },
+  Legal: {
+    buyer: "solo lawyers and small law firms handling intake for estate planning, immigration, and small business clients",
+    paidPain: "prospect emails lack key facts, so staff spend back-and-forth time collecting matter type, deadlines, documents, and eligibility details",
+    whyNow: "firms can validate with intake checklists and internal summaries without giving legal advice",
+    firstOffer: "$299 Intake Summary Setup",
+    price: "$299 setup + $99/month",
+    distributionChannel: "LinkedIn legal ops posts + local bar association groups + email to small firm intake managers",
+    postHook: "Small law firms do not need an AI lawyer. They need messy prospect emails turned into clean intake summaries.",
+    dmTarget: "estate planning lawyers, immigration firms, small business attorneys, legal intake coordinators",
+    fortyEightHourValidation: [
+      "Create 3 anonymized prospect email to intake-summary examples.",
+      "Post one compliance-safe before/after with no legal advice.",
+      "DM 20 small firm owners asking if their intake team would use the summary format.",
+    ],
+    whatToBuildOnlyAfterReplies: "prospect email intake -> missing facts checklist -> internal matter summary -> next-step email draft",
+  },
+  "Real Estate": {
+    buyer: "property managers handling 50-500 rental units",
+    paidPain: "tenant maintenance messages arrive through email, portals, and texts, but staff still rewrite them into vendor-ready work orders",
+    whyNow: "maintenance routing is concrete, frequent, and easy to demonstrate with one tenant message",
+    firstOffer: "$199 Maintenance Request Router Setup",
+    price: "$199 setup + $49/month",
+    distributionChannel: "property manager Facebook groups + LinkedIn multifamily ops posts + email to local management firms",
+    postHook: "Property managers do not need a bigger portal. They need tenant repair messages turned into vendor-ready work orders.",
+    dmTarget: "property managers, leasing coordinators, maintenance dispatchers, small multifamily operators",
+    fortyEightHourValidation: [
+      "Turn 5 sample tenant messages into vendor-ready work orders.",
+      "Post 2 before/after examples for plumbing and appliance issues.",
+      "DM 20 property managers offering to route one real anonymized request.",
+    ],
+    whatToBuildOnlyAfterReplies: "tenant message intake -> urgency/category detector -> vendor work order -> tenant reply draft",
+  },
+  Finance: {
+    buyer: "bookkeepers and fractional CFOs serving freelancers and small agencies",
+    paidPain: "client transaction notes and receipts are incomplete, so month-end cleanup requires repeated clarification emails",
+    whyNow: "bookkeepers can test one cleaned transaction packet before trusting a full finance tool",
+    firstOffer: "$99 Month-End Cleanup Brief",
+    price: "$99 one-time or $149/month",
+    distributionChannel: "bookkeeper Facebook groups + LinkedIn fractional CFO posts + DMs to finance operators",
+    postHook: "Bookkeepers do not need AI to do the books. They need clients to answer the missing transaction questions faster.",
+    dmTarget: "bookkeepers, fractional CFOs, agency finance operators, freelancer accountants",
+    fortyEightHourValidation: [
+      "Create 3 messy transaction to client-question examples.",
+      "Post a before/after showing a cleaned month-end clarification brief.",
+      "DM 20 bookkeepers offering to clean one anonymized client note packet.",
+    ],
+    whatToBuildOnlyAfterReplies: "transaction note intake -> missing-info detector -> client question email -> cleanup status board",
+  },
+  "Developer Workflow": {
+    buyer: "open-source maintainers and small devtool teams reviewing AI-generated pull requests",
+    paidPain: "AI-generated PRs arrive large, under-explained, and risky, so maintainers spend time asking for scope, tests, and rollback notes",
+    whyNow: "Codex and Cursor make PR volume rise, but maintainers still need review-ready summaries and risk checks",
+    firstOffer: "$19 PR Risk Summary Pack",
+    price: "$19 one-time or $12/month",
+    distributionChannel: "GitHub maintainer posts + devtool X threads + DMs to repo owners discussing AI PRs",
+    postHook: "Developers do not need more AI-generated code. Maintainers need AI PRs turned into reviewable risk summaries.",
+    dmTarget: "open-source maintainers, devtool founders, engineering managers at small teams, repo owners with active issues",
+    fortyEightHourValidation: [
+      "Pick 5 public PRs and write review-ready risk summaries.",
+      "Post 3 examples showing scope, files touched, tests, and rollback notes.",
+      "DM 20 maintainers asking if they want one PR summarized manually.",
+    ],
+    whatToBuildOnlyAfterReplies: "PR URL/input -> changed-file summary -> risk checklist -> maintainer reply draft",
+  },
+};
+
+function getMarketSpecificSignalId(market: MarketOption) {
+  return `market-specific-${market.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+}
+
+function getMarketSpecificOpportunityForSignal(signal: BuildSignal) {
+  const market = marketOptions.find(
+    (option) =>
+      signal.id === getMarketSpecificSignalId(option) ||
+      signal.sourceType === option ||
+      signal.signalSourceLabel === option,
+  );
+
+  return market ? marketSpecificOpportunities[market] : null;
+}
+
+function getMarketSpecificTitle(opportunity: MarketSpecificOpportunity) {
+  return opportunity.firstOffer
+    .replace(/^\$[\d,]+(?:\s*[a-z]+)?\s*/i, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function buildMarketSpecificSignal(market: MarketOption): BuildSignal {
+  const opportunity = marketSpecificOpportunities[market];
+  const title = getMarketSpecificTitle(opportunity);
+
+  return {
+    id: getMarketSpecificSignalId(market),
+    latestSignal: opportunity.postHook,
+    sourceTitle: title,
+    sourceUrl: "",
+    sourceType: market,
+    sourceNote: opportunity.distributionChannel,
+    signalSourceLabel: market,
+    buyer: opportunity.buyer,
+    pain: opportunity.paidPain,
+    whyNow: opportunity.whyNow,
+    whatYouCanBuild: opportunity.whatToBuildOnlyAfterReplies,
+    coreFeatures: opportunity.whatToBuildOnlyAfterReplies
+      .split("->")
+      .map((feature) => feature.trim())
+      .filter(Boolean),
+    comparablePrice: `${opportunity.firstOffer} / ${opportunity.price}`,
+    buildSteps: [
+      opportunity.postHook,
+      `DM target: ${opportunity.dmTarget}`,
+      ...opportunity.fortyEightHourValidation,
+    ],
+    patternMatches: [
+      opportunity.distributionChannel,
+      `DM target: ${opportunity.dmTarget}`,
+      opportunity.fortyEightHourValidation.join(" "),
+    ],
+    codeXPrompt: `Build this only after someone replies, clicks, or asks for the offer. Build a mobile-first MVP for ${opportunity.buyer}. Paid pain: ${opportunity.paidPain}. First offer: ${opportunity.firstOffer} at ${opportunity.price}. Start with: ${opportunity.whatToBuildOnlyAfterReplies}. Include launch copy, DM script, validation tracker, copy buttons, and mock data. Use local state/localStorage only. No auth, no database, no payment integration, and no external APIs.`,
+  };
+}
 
 const nextActionOptions: Array<{
   action: NextAction;
@@ -234,6 +508,136 @@ type MasterPrompt = {
   fullCodeXMasterPrompt: string;
   aiReveal?: AiOpportunityReveal;
 };
+
+type HighQualityBusinessSpark = {
+  path: string;
+  sparkTitle: string;
+  whyItWorks: string;
+  buyer: string;
+  pain: string;
+  firstOffer: string;
+  distributionChannel?: string;
+  dmTarget?: string;
+  fortyEightHourTest: string[];
+  launchPost: string;
+  dmScript: string;
+  codexPromptPreview: string;
+  codexBuildPrompt: string;
+};
+
+const highQualityBusinessSparks: HighQualityBusinessSpark[] = [
+  {
+    path: "Business Automation",
+    sparkTitle: "Invoice Follow-up Sprint",
+    whyItWorks:
+      "Freelancers hate chasing overdue invoices. AI can turn invoice status and client context into polite follow-up emails while keeping the owner in control.",
+    buyer: "Freelancers and solo agencies",
+    pain: "Invoice follow-up is awkward, easy to postpone, and scattered across email and spreadsheets.",
+    firstOffer:
+      "$500 setup + $150/month. Set up a simple overdue invoice follow-up workflow.",
+    fortyEightHourTest: [
+      "Create one before/after sample from a messy overdue invoice note.",
+      "Send it to 20 freelancers or solo agencies.",
+      "Build only if people reply, click, or ask for the workflow.",
+    ],
+    launchPost:
+      "Freelancers lose money because invoice follow-up is awkward. A simple offer: Invoice Follow-up Sprint. Turn overdue invoice notes into polite follow-up emails and a simple tracker. $500 setup + $150/month. Build after replies.",
+    dmScript:
+      "Quick idea: I am testing an invoice follow-up workflow for freelancers. It turns overdue invoice details into polite follow-up emails and a simple tracker. Want me to send a before/after sample?",
+    codexPromptPreview:
+      "Build a mobile-first invoice follow-up MVP for freelancers. Include invoice input, generated follow-up email, saved records, and copy buttons.",
+    codexBuildPrompt:
+      "Build this only after someone replies, clicks, or asks for the offer. Build a mobile-first MVP called Invoice Follow-up Sprint for freelancers and solo agencies. The tool helps users paste overdue invoice details, generate polite follow-up emails, track follow-up status, and copy next actions. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no external APIs, no payment integration. Include screens for landing/offer, invoice input form, generated email output, saved follow-up records, and validation panel. Input fields: client name, invoice amount, due date, days overdue, relationship tone, previous follow-up status, context notes. Outputs: subject line, polite follow-up email, priority, next action, internal note. Include 3 mock invoices. Add copy buttons. Make the UI mobile-first with no horizontal scroll. Include a validation panel with DM script, 48-hour test, kill criteria, and first offer. Done criteria: it should feel like a demo-ready internal tool that can be shown to freelancers before building a real SaaS.",
+  },
+  {
+    path: "Business Automation",
+    sparkTitle: "Field Notes to Reports",
+    whyItWorks:
+      "Contractors already write daily updates from messy notes, photos, and texts. AI can turn that scattered input into a consistent client-ready report.",
+    buyer: "Small contractors and field service teams",
+    pain: "Daily reports are copied from texts, photos, and messy site notes.",
+    firstOffer: "$49/month jobsite report generator.",
+    fortyEightHourTest: [
+      "Create one before/after daily report sample.",
+      "Send it to 10 small contractors.",
+      "Build only if they ask for weekly reports or a reusable tool.",
+    ],
+    launchPost:
+      "Small contractors still turn messy field notes into daily reports by hand. Business Spark: Field Notes to Reports. Buyer: small contractors. Offer: $49/month jobsite report generator. Test it with one before/after report before building.",
+    dmScript:
+      "Quick idea: I am testing a workflow that turns messy jobsite notes into clean daily reports. Want me to turn one sample note into a client-ready report?",
+    codexPromptPreview:
+      "Build a mobile-first daily report generator for small contractors with note input, generated report, saved reports, and copy/export actions.",
+    codexBuildPrompt:
+      "Build this only after someone replies, clicks, or asks for the offer. Build a mobile-first MVP called Field Notes to Reports for small contractors. The tool turns messy jobsite notes into client-ready daily reports. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no external APIs. Include screens for offer overview, report input, generated report, saved reports, and validation panel. Inputs: jobsite name, date, crew, weather, work completed, blockers, materials, safety notes, client notes. Outputs: daily report summary, work completed section, issues section, next steps, client-ready message. Include 3 mock reports. Add copy/export buttons. Mobile-first UI. Include validation panel with DM script, 48-hour test, kill criteria, and first offer.",
+  },
+  {
+    path: "Local Business",
+    sparkTitle: "Review Reply Copilot",
+    whyItWorks:
+      "Local businesses know reviews matter, but writing replies is repetitive and easy to delay. AI can create polite, brand-safe responses quickly.",
+    buyer: "Restaurants, clinics, salons, and local shops",
+    pain: "Owners know reviews matter, but replying is repetitive and easy to delay.",
+    firstOffer: "$500 setup + $150/month managed review reply workflow.",
+    fortyEightHourTest: [
+      "Rewrite 5 real reviews for local owners.",
+      "Send the before/after samples.",
+      "Build only if they want the next month handled.",
+    ],
+    launchPost:
+      "Local businesses lose trust when reviews sit unanswered. Business Spark: Review Reply Copilot. Buyer: restaurants, clinics, salons. Offer: $500 setup + $150/month. Test by rewriting 5 reviews before building.",
+    dmScript:
+      "Quick idea: I rewrote a few review replies for local businesses using a simple AI workflow. Want me to send 5 before/after examples for your reviews?",
+    codexPromptPreview:
+      "Build a mobile-first review reply tool with review input, tone selection, generated replies, saved examples, and copy buttons.",
+    codexBuildPrompt:
+      "Build this only after someone replies, clicks, or asks for the offer. Build a mobile-first MVP called Review Reply Copilot for local service businesses. The tool helps owners paste customer reviews and generate polite, brand-safe replies. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no external APIs. Screens: offer overview, review input, generated reply output, saved replies, validation panel. Inputs: business type, review text, star rating, tone, owner note. Outputs: short reply, warm reply, recovery reply, internal note. Include 5 mock reviews. Add copy buttons. Mobile-first UI. Include validation panel with DM script, 48-hour test, kill criteria, and first offer.",
+  },
+  {
+    path: "Micro SaaS",
+    sparkTitle: "Name Tracing Worksheets",
+    whyItWorks:
+      "Parents and teachers already pay for printable learning materials. A simple generator can turn a child's name into a personalized worksheet.",
+    buyer: "Parents, preschool teachers, and homeschool creators",
+    pain: "They want personalized worksheets but do not want to design them manually.",
+    firstOffer: "$9 one-time or $5/month custom worksheet generator.",
+    fortyEightHourTest: [
+      "Post 3 worksheet examples.",
+      "Offer custom samples to 20 parent or teacher creators.",
+      "Build only if people request their own worksheet.",
+    ],
+    launchPost:
+      "Tiny SaaS idea: personalized name tracing worksheets. Buyer: parents and preschool teachers. Offer: $9 one-time or $5/month. Test with 3 examples before building.",
+    dmScript:
+      "Quick idea: I am testing custom name tracing worksheets for parents and teachers. Want me to make one free sample and see if it is useful?",
+    codexPromptPreview:
+      "Build a simple worksheet generator with name input, style options, preview, and download/copy actions.",
+    codexBuildPrompt:
+      "Build this only after someone replies, clicks, or asks for the offer. Build a mobile-first MVP called Name Tracing Worksheets. The tool lets parents and teachers enter a child's name and generate a printable tracing worksheet. Use Next.js, React, and TypeScript. Use local state only. No auth, no database, no external APIs, no payment integration. Screens: landing/offer, worksheet form, worksheet preview, saved examples, validation panel. Inputs: child name, letter size, line style, number of rows, theme. Outputs: printable worksheet preview and copy/download placeholder. Include 3 sample names. Mobile-first UI. Include validation panel with launch post, DM script, 48-hour test, kill criteria, and first offer.",
+  },
+  {
+    path: "AI Agency",
+    sparkTitle: "AI Workflow Setup Pack",
+    whyItWorks:
+      "AI consultants need reusable workflow templates instead of rebuilding every client delivery from scratch.",
+    buyer: "AI consultants, automation agencies, and internal AI leads",
+    pain: "They need reusable client workflow templates instead of one-off AI demos.",
+    firstOffer: "$29 template pack or $199 setup.",
+    fortyEightHourTest: [
+      "Post 3 workflow examples.",
+      "DM 20 AI consultants.",
+      "Build only if they ask for the template pack or setup help.",
+    ],
+    launchPost:
+      "AI agency idea: do not sell vague chatbot setups. Sell a client delivery setup pack. Buyer: AI consultants. Offer: $29 template pack or $199 setup. Test with 3 examples before building.",
+    dmScript:
+      "Quick idea: I am testing an AI workflow setup pack for consultants. It turns client use cases into reusable workflow templates. Want me to send an example?",
+    codexPromptPreview:
+      "Build a workflow template generator for AI consultants with client type, process, pain, output, and proposal sections.",
+    codexBuildPrompt:
+      "Build this only after someone replies, clicks, or asks for the offer. Build a mobile-first MVP called AI Workflow Setup Pack for AI consultants and automation agencies. The tool turns client use cases into reusable workflow templates. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no external APIs. Screens: offer overview, workflow input, generated workflow, saved templates, validation panel. Inputs: client type, workflow name, current tools, pain, desired outcome, delivery format. Outputs: workflow map, implementation steps, proposal copy, delivery checklist. Include 3 mock client workflows. Add copy buttons. Mobile-first UI. Include validation panel with DM script, 48-hour test, kill criteria, and first offer.",
+  },
+];
 
 type AiOpportunityReveal = {
   heroSummary: {
@@ -1551,6 +1955,17 @@ function getTopOpportunitySignal(signals: BuildSignal[]) {
 }
 
 function getSignalMarket(signal: BuildSignal) {
+  const explicitMarket = marketOptions.find(
+    (market) =>
+      signal.id === getMarketSpecificSignalId(market) ||
+      signal.sourceType === market ||
+      signal.signalSourceLabel === market,
+  );
+
+  if (explicitMarket) {
+    return explicitMarket;
+  }
+
   const haystack = [
     signal.sourceTitle,
     signal.latestSignal,
@@ -1567,12 +1982,40 @@ function getSignalMarket(signal: BuildSignal) {
     return "Freelance Dev";
   }
 
-  if (/automation|spreadsheet|rpa|email|report|lead|workflow|operations|restaurant|clinic|local|field|contractor|appointment|review/.test(haystack)) {
-    return "Business Automation";
+  if (/healthcare|clinic|dental|therapy|appointment|patient|cancellation|voicemail/.test(haystack)) {
+    return "Healthcare";
   }
 
-  if (/plugin|extension|template|gumroad|etsy|prompt pack|script|shopify|chrome|digital product|bundle/.test(haystack)) {
-    return "Digital Product";
+  if (/construction|contractor|jobsite|field note|daily report|roofing|remodel/.test(haystack)) {
+    return "Construction";
+  }
+
+  if (/shopify|ecommerce|cart|sku|product page|dtc|etsy/.test(haystack)) {
+    return "Ecommerce";
+  }
+
+  if (/creator|newsletter|youtube|gumroad|course|audience|comment/.test(haystack)) {
+    return "Creators";
+  }
+
+  if (/legal|law firm|lawyer|attorney|intake|estate|immigration/.test(haystack)) {
+    return "Legal";
+  }
+
+  if (/real estate|property manager|tenant|maintenance|rental|leasing/.test(haystack)) {
+    return "Real Estate";
+  }
+
+  if (/finance|bookkeeper|cfo|receipt|transaction|month-end|accountant/.test(haystack)) {
+    return "Finance";
+  }
+
+  if (/developer|github|pull request|pr risk|repo|devtool|maintainer/.test(haystack)) {
+    return "Developer Workflow";
+  }
+
+  if (/restaurant|salon|review|google business|local owner|home-service/.test(haystack)) {
+    return "Local Business";
   }
 
   if (/agency|consultant|client delivery|dashboard|chatbot|internal tool|implementation/.test(haystack)) {
@@ -1582,11 +2025,14 @@ function getSignalMarket(signal: BuildSignal) {
   return "Micro SaaS";
 }
 
-function getTopMarketOpportunities(signals: BuildSignal[], market: string) {
-  return signals
+function getTopMarketOpportunities(signals: BuildSignal[], market: MarketOption) {
+  const marketSignal = buildMarketSpecificSignal(market);
+  const matchedSignals = signals
     .filter((signal) => getSignalMarket(signal) === market)
     .sort((a, b) => getSignalOpportunityScore(b) - getSignalOpportunityScore(a))
-    .slice(0, 3);
+    .filter((signal) => signal.id !== marketSignal.id);
+
+  return [marketSignal, ...matchedSignals].slice(0, 3);
 }
 
 function getScoreReason(signal: BuildSignal) {
@@ -1906,6 +2352,7 @@ function buildActionMasterPrompt(
 ) {
   const actionSignal = getActionSignal(signal, buyer);
   const prompt = buildMasterPrompt(actionSignal, getActionAngleIndex(action));
+  const seed = selectHighQualityBusinessSpark(actionSignal);
   const actionLabel = getActionLabel(action);
   const actionTitle =
     action === "build"
@@ -1915,7 +2362,7 @@ function buildActionMasterPrompt(
         : `${workflowOutputTitle(actionSignal)} Market Post for ${titleCase(buyer || actionSignal.buyer)}`;
   const postCopy = `Hook: ${actionSignal.buyer} do not need another AI idea. They need a faster way to handle ${workflowName(actionSignal)}.\n\nSignal: ${actionSignal.latestSignal}\n\nWhy it matters: ${actionSignal.whyNow}\n\nWhat to build: ${actionSignal.whatYouCanBuild}\n\nCTA: Want the 48h validation plan for this pattern?`;
 
-  return {
+  return applyBusinessSparkSeed({
     ...prompt,
     angleLabel: actionLabel,
     promptTitle: actionTitle,
@@ -1937,7 +2384,7 @@ function buildActionMasterPrompt(
       action === "sell"
         ? `${workflowOutputTitle(actionSignal)} Sprint for ${actionSignal.buyer}: ${prompt.firstVersion}`
         : prompt.firstPaidOffer,
-  };
+  }, seed);
 }
 
 function buildMasterPrompt(signal: BuildSignal, angleIndex: number): MasterPrompt {
@@ -2183,6 +2630,186 @@ ${(signal.patternMatches.length ? signal.patternMatches : ["AI workflow", "Local
     copyExportBehavior,
     constraints,
     fullCodeXMasterPrompt,
+  };
+}
+
+function getSeedSearchText(signal: BuildSignal) {
+  return [
+    signal.sourceTitle,
+    signal.latestSignal,
+    signal.buyer,
+    signal.pain,
+    signal.whyNow,
+    signal.whatYouCanBuild,
+    signal.comparablePrice,
+    signal.patternMatches.join(" "),
+  ].join(" ").toLowerCase();
+}
+
+function buildHighQualitySparkFromMarketSignal(signal: BuildSignal): HighQualityBusinessSpark | null {
+  const opportunity = getMarketSpecificOpportunityForSignal(signal);
+  const market = getSignalMarket(signal);
+
+  if (!opportunity) {
+    return null;
+  }
+
+  const sparkTitle = getMarketSpecificTitle(opportunity);
+  const validationText = opportunity.fortyEightHourValidation.join(" ");
+
+  return {
+    path: market,
+    sparkTitle,
+    whyItWorks: opportunity.whyNow,
+    buyer: opportunity.buyer,
+    pain: opportunity.paidPain,
+    firstOffer: `${opportunity.firstOffer}. ${opportunity.price}.`,
+    distributionChannel: opportunity.distributionChannel,
+    dmTarget: opportunity.dmTarget,
+    fortyEightHourTest: opportunity.fortyEightHourValidation,
+    launchPost: `${opportunity.postHook}\n\nBusiness Spark: ${sparkTitle}\nBuyer: ${opportunity.buyer}\nPain: ${opportunity.paidPain}\nFirst offer: ${opportunity.firstOffer} (${opportunity.price})\nTest: ${validationText}`,
+    dmScript: `Quick idea: I am testing ${opportunity.firstOffer} for ${opportunity.buyer}. The pain is: ${opportunity.paidPain}. I can do one manual sample before building anything. Worth seeing?`,
+    codexPromptPreview: `Build a mobile-first MVP for ${sparkTitle}. Start with ${opportunity.whatToBuildOnlyAfterReplies}.`,
+    codexBuildPrompt: `Build this only after someone replies, clicks, or asks for the offer. Build a mobile-first MVP called ${sparkTitle} for ${opportunity.buyer}. The buyer pain is: ${opportunity.paidPain}. Why now: ${opportunity.whyNow}. First offer: ${opportunity.firstOffer} at ${opportunity.price}. Distribution channel: ${opportunity.distributionChannel}. DM target: ${opportunity.dmTarget}. Build only this first version: ${opportunity.whatToBuildOnlyAfterReplies}. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no payment integration, and no external APIs. Include an offer overview, input form, generated output, saved examples, launch copy, DM script, copy buttons, and validation panel. The validation panel must include this 48-hour plan: ${validationText}. Done criteria: it should be demo-ready, mobile-first, and useful for testing demand before building a real SaaS.`,
+  };
+}
+
+function selectHighQualityBusinessSpark(signal: BuildSignal): HighQualityBusinessSpark {
+  const marketSeed = buildHighQualitySparkFromMarketSignal(signal);
+
+  if (marketSeed) {
+    return marketSeed;
+  }
+
+  const text = getSeedSearchText(signal);
+
+  if (/invoice|freelancer|agency|overdue|follow.?up|payment/.test(text)) {
+    return highQualityBusinessSparks[0]!;
+  }
+
+  if (/contractor|construction|field|jobsite|daily report|site note/.test(text)) {
+    return highQualityBusinessSparks[1]!;
+  }
+
+  if (/review|restaurant|clinic|salon|local shop|google business|reply/.test(text)) {
+    return highQualityBusinessSparks[2]!;
+  }
+
+  if (/worksheet|teacher|parent|preschool|homeschool|education|child|tracing/.test(text)) {
+    return highQualityBusinessSparks[3]!;
+  }
+
+  if (/agency|consultant|workflow|agent|codex|cursor|claude code|automation/.test(text)) {
+    return highQualityBusinessSparks[4]!;
+  }
+
+  const market = getSignalMarket(signal);
+  return (
+    highQualityBusinessSparks.find((spark) => spark.path === market) ||
+    highQualityBusinessSparks[0]!
+  );
+}
+
+function extractSeedPrice(seed: HighQualityBusinessSpark) {
+  return seed.firstOffer.split(".")[0]?.trim() || seed.firstOffer;
+}
+
+function applyBusinessSparkSeed(
+  fallbackPrompt: MasterPrompt,
+  seed: HighQualityBusinessSpark,
+): MasterPrompt {
+  const price = extractSeedPrice(seed);
+  const firstVersion = seed.codexPromptPreview;
+  const distributionChannel =
+    seed.distributionChannel || "X posts, direct DMs, and buyer communities.";
+
+  return {
+    ...fallbackPrompt,
+    aiReveal: undefined,
+    promptTitle: seed.sparkTitle,
+    originalCase: seed.whyItWorks,
+    provenPattern: seed.whyItWorks,
+    whyItSold: seed.whyItWorks,
+    marketProof: {
+      ...fallbackPrompt.marketProof,
+      comparablePattern: seed.path,
+      revenueOrPricingSignal: price,
+      whyBuyersPay: seed.whyItWorks,
+      distributionChannel,
+      evidenceStrength: "Strong",
+      note: "Seeded from a reviewed Bilion Business Spark pattern.",
+    },
+    whoPays: seed.buyer,
+    yourProductAngle: seed.codexPromptPreview,
+    firstPaidOffer: seed.firstOffer,
+    buyer: seed.buyer,
+    pain: seed.pain,
+    revenueSignal: price,
+    distributionChannel,
+    productAngle: seed.codexPromptPreview,
+    whatToBuild: seed.codexPromptPreview,
+    firstVersion,
+    price,
+    leadMagnet: `One before/after sample for ${seed.sparkTitle}.`,
+    launchCopy: {
+      xPost: seed.launchPost,
+      lpHeadline: seed.sparkTitle,
+      dmMessage: seed.dmScript,
+    },
+    firstCustomerPlan: {
+      whoToContactFirst: seed.buyer,
+      whereToFindThem:
+        seed.dmTarget || distributionChannel,
+      whatToSay: seed.dmScript,
+      whatToOffer: seed.firstOffer,
+      validationWithin48h: seed.fortyEightHourTest.join(" "),
+    },
+    coreFeatures: [
+      "Input form",
+      "Generated output",
+      "Saved records",
+      "Copy buttons",
+      "Validation panel",
+    ],
+    validationPlan: seed.fortyEightHourTest,
+    buildSteps: [
+      "Build the input and mock examples.",
+      "Generate the core output from local state.",
+      "Add saved records, copy buttons, and validation panel.",
+    ],
+    fullCodeXMasterPrompt: seed.codexBuildPrompt,
+  };
+}
+
+function applyBusinessSparkSeedToResult(
+  fallbackResult: ApiResult,
+  seed: HighQualityBusinessSpark,
+): ApiResult {
+  return {
+    free: {
+      latest_signal: seed.whyItWorks,
+      what_you_can_build: seed.codexPromptPreview,
+      buyer: seed.buyer,
+      pain: seed.pain,
+      why_now: seed.whyItWorks,
+    },
+    paid: {
+      ...fallbackResult.paid,
+      latest_signal: seed.whyItWorks,
+      source_title: seed.sparkTitle,
+      buyer: seed.buyer,
+      pain: seed.pain,
+      why_now: seed.whyItWorks,
+      what_you_can_build: seed.codexPromptPreview,
+      comparable_price: extractSeedPrice(seed),
+      build_steps: seed.fortyEightHourTest,
+      pattern_matches: [
+        seed.path,
+        seed.distributionChannel || "Reviewed Business Spark seed",
+        seed.dmTarget ? `DM target: ${seed.dmTarget}` : "Sell first, build after replies",
+      ],
+      code_x_prompt: seed.codexBuildPrompt,
+    },
   };
 }
 
@@ -3388,7 +4015,8 @@ export default function BilionAppClient({
 
     const nextSignal = selectedSignal;
     const actionSignal = getActionSignal(nextSignal, selectedBuyer);
-    const nextResult = buildResult(actionSignal);
+    const seed = selectHighQualityBusinessSpark(actionSignal);
+    const nextResult = applyBusinessSparkSeedToResult(buildResult(actionSignal), seed);
     const builtMaster = buildActionMasterPrompt(
       nextSignal,
       selectedBuyer,
@@ -3407,28 +4035,8 @@ export default function BilionAppClient({
     setCopyFeedback(null);
     incrementFreeUsage();
     setActiveWorkflowTab("studio");
-
-    try {
-      const aiReveal = await requestAiOpportunityReveal(
-        nextSignal,
-        selectedBuyer || nextSignal.buyer,
-        selectedAction,
-      );
-      const aiMasterPrompt = applyAiRevealToMasterPrompt(aiReveal, builtMaster);
-      const aiResult = applyAiRevealToResult(aiReveal, nextResult, aiMasterPrompt);
-
-      setResult(aiResult);
-      setMasterPrompt(aiMasterPrompt);
-      saveResult(aiResult);
-    } catch {
-      saveResult(nextResult);
-      setCopyFeedback({
-        message: "AI generation failed. Showing fallback Business Spark.",
-        tone: "error",
-      });
-    } finally {
-      setLoading(false);
-    }
+    saveResult(nextResult);
+    setLoading(false);
   }
 
   function viewSavedSignal(signal: SavedSignal) {
@@ -3479,7 +4087,8 @@ export default function BilionAppClient({
         ?.action || "build";
     const nextSignal = selectedSignal;
     const actionSignal = getActionSignal(nextSignal, selectedBuyer);
-    const nextResult = buildResult(actionSignal);
+    const seed = selectHighQualityBusinessSpark(actionSignal);
+    const nextResult = applyBusinessSparkSeedToResult(buildResult(actionSignal), seed);
     const nextSignalIndex =
       selectedSignalId === "github-sample" ? 0 : marketSignals.indexOf(nextSignal);
 
@@ -4693,19 +5302,31 @@ function MarketSelectionSection({
                 <div className="mt-3 grid gap-2">
                   <MarketOpportunityField
                     label="Why it works"
-                    value={getScoreReason(signal)}
+                    value={getMarketSpecificOpportunityForSignal(signal)?.whyNow || getScoreReason(signal)}
                   />
                   <MarketOpportunityField
                     label="First Offer"
-                    value={getExpectedFirstOffer(signal)}
+                    value={
+                      getMarketSpecificOpportunityForSignal(signal)
+                        ? `${getMarketSpecificOpportunityForSignal(signal)?.firstOffer} / ${getMarketSpecificOpportunityForSignal(signal)?.price}`
+                        : getExpectedFirstOffer(signal)
+                    }
                   />
                   <MarketOpportunityField
                     label="Distribution"
-                    value={signal.patternMatches[2] || signal.sourceNote || "Post the insight, then DM likely buyers."}
+                    value={
+                      getMarketSpecificOpportunityForSignal(signal)?.distributionChannel ||
+                      signal.patternMatches[2] ||
+                      signal.sourceNote ||
+                      "Post the insight, then DM likely buyers."
+                    }
                   />
                   <MarketOpportunityField
                     label="48h Test"
-                    value="Validate in 48h / build in 1-3 days after replies"
+                    value={
+                      getMarketSpecificOpportunityForSignal(signal)?.fortyEightHourValidation.join("\n") ||
+                      "Validate in 48h / build in 1-3 days after replies"
+                    }
                   />
                 </div>
               </details>
@@ -4713,19 +5334,31 @@ function MarketSelectionSection({
               <div className="mt-4 hidden min-w-0 gap-3 md:grid md:grid-cols-2 xl:grid-cols-4">
                 <MarketOpportunityField
                   label="Why it works"
-                  value={getScoreReason(signal)}
+                  value={getMarketSpecificOpportunityForSignal(signal)?.whyNow || getScoreReason(signal)}
                 />
                 <MarketOpportunityField
                   label="First Offer"
-                  value={getExpectedFirstOffer(signal)}
+                  value={
+                    getMarketSpecificOpportunityForSignal(signal)
+                      ? `${getMarketSpecificOpportunityForSignal(signal)?.firstOffer} / ${getMarketSpecificOpportunityForSignal(signal)?.price}`
+                      : getExpectedFirstOffer(signal)
+                  }
                 />
                 <MarketOpportunityField
                   label="Distribution"
-                  value={signal.patternMatches[2] || signal.sourceNote || "Post the insight, then DM likely buyers."}
+                  value={
+                    getMarketSpecificOpportunityForSignal(signal)?.distributionChannel ||
+                    signal.patternMatches[2] ||
+                    signal.sourceNote ||
+                    "Post the insight, then DM likely buyers."
+                  }
                 />
                 <MarketOpportunityField
                   label="48h Test"
-                  value="Validate in 48h / build in 1-3 days after replies"
+                  value={
+                    getMarketSpecificOpportunityForSignal(signal)?.fortyEightHourValidation.join("\n") ||
+                    "Validate in 48h / build in 1-3 days after replies"
+                  }
                 />
               </div>
             </article>
@@ -5548,8 +6181,6 @@ function MasterPromptCard({
           <MasterPromptField label="Buyer" value={masterPrompt.buyer} />
           <MasterPromptField label="Pain" value={masterPrompt.pain} />
           <MasterPromptField label="First Offer" value={`${masterPrompt.firstPaidOffer}\n${masterPrompt.price}`} />
-          <MasterPromptField label="DM script" value={masterPrompt.launchCopy.dmMessage} />
-          <MasterPromptField label="X post" value={masterPrompt.launchCopy.xPost} />
         </div>
         <div className="mt-4 rounded-2xl border border-white/10 bg-black/40 p-4">
           <div className="text-xs font-bold uppercase tracking-wide text-zinc-500">
@@ -5563,6 +6194,10 @@ function MasterPromptCard({
               </li>
             ))}
           </ol>
+        </div>
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <MasterPromptField label="Launch Post" value={masterPrompt.launchCopy.xPost} />
+          <MasterPromptField label="DM Script" value={masterPrompt.launchCopy.dmMessage} />
         </div>
       </section>
 
