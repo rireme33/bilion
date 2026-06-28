@@ -5575,6 +5575,9 @@ function MarketSelectionSection({
   opportunities: BuildSignal[];
   selectedMarket: (typeof marketOptions)[number];
 }) {
+  const displayOpportunities =
+    opportunities.length > 0 ? opportunities : [buildMarketSpecificSignal(selectedMarket)];
+
   return (
     <section className="w-full max-w-full overflow-hidden rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.055] p-4 shadow-2xl md:rounded-3xl md:p-6">
       <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
@@ -5620,12 +5623,7 @@ function MarketSelectionSection({
         <div className="break-words text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
           Business Spark in {selectedMarket}
         </div>
-        {opportunities.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-white/10 bg-black/25 p-4 text-sm leading-6 text-zinc-500">
-            No approved evidence yet for this market. Paste or approve evidence to teach Bilion what money moved here.
-          </div>
-        ) : (
-          opportunities.slice(0, 1).map((signal) => (
+        {displayOpportunities.slice(0, 1).map((signal) => (
             <article
               key={signal.id}
               className="min-w-0 overflow-hidden rounded-2xl border border-emerald-300/35 bg-black/35 p-4 shadow-lg shadow-emerald-950/20 md:rounded-3xl md:p-5"
@@ -5729,8 +5727,7 @@ function MarketSelectionSection({
                 />
               </div>
             </article>
-          ))
-        )}
+          ))}
       </div>
     </section>
   );
