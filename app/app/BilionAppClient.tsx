@@ -2357,30 +2357,72 @@ function getOpportunityDetailFields(signal: BuildSignal) {
   const context = getMarketSpecificContextForSignal(signal);
 
   if (context) {
+    const firstOffer = buildManualFirstOffer({
+      buyer: context.opportunity.buyer,
+      candidate: context.opportunity.firstOffer,
+      pain: context.opportunity.paidPain,
+      price: context.opportunity.price,
+    });
+    const fortyEightHourTest = buildDirect48hValidationPlan({
+      buyer: context.opportunity.buyer,
+      buildAfterReplies: context.opportunity.whatToBuildOnlyAfterReplies,
+      pain: context.opportunity.paidPain,
+      price: firstOffer,
+    }).join("\n");
+
     return {
       proof: `${context.pattern.proofLabel}: ${context.pattern.whatSold}`,
+      whatSold: context.pattern.whatSold,
       pattern: context.pattern.patternTitle,
       whyMoneyChangedHands: context.opportunity.whyNow,
-      firstOffer: `${context.opportunity.firstOffer} / ${context.opportunity.price}`,
+      buyer: context.opportunity.buyer,
+      paidPain: context.opportunity.paidPain,
+      firstOffer,
+      price: getManualOfferPrice(firstOffer),
+      postHook: context.opportunity.postHook,
+      dmScript: context.pattern.dmScript,
       distribution: context.opportunity.distributionChannel,
-      fortyEightHourTest: context.opportunity.fortyEightHourValidation.join("\n"),
-      buildAfterReplies: context.opportunity.whatToBuildOnlyAfterReplies,
+      fortyEightHourTest,
+      buildAfterReplies: buildCodexAfterRepliesLine(
+        context.opportunity.whatToBuildOnlyAfterReplies,
+      ),
     };
   }
 
   const pattern = getProvenMoneyPatternForSignal(signal);
+  const firstOffer = buildManualFirstOffer({
+    buyer: signal.buyer,
+    candidate: getExpectedFirstOffer(signal),
+    pain: signal.pain,
+    price: signal.comparablePrice,
+  });
 
   return {
-    proof: pattern ? `${pattern.proofLabel}: ${pattern.whatSold}` : getSignalEvidenceLevel(signal),
+    proof: signal.latestSignal || (pattern ? `${pattern.proofLabel}: ${pattern.whatSold}` : getSignalEvidenceLevel(signal)),
+    whatSold: pattern?.whatSold || signal.sourceTitle || "A narrow paid offer",
     pattern: pattern?.patternTitle || signal.sourceType || "Evidence-backed signal",
     whyMoneyChangedHands: pattern?.moneyReason || getScoreReason(signal),
-    firstOffer: getExpectedFirstOffer(signal),
+    buyer: signal.buyer,
+    paidPain: signal.pain,
+    firstOffer,
+    price: getManualOfferPrice(firstOffer),
+    postHook:
+      pattern?.postHook ||
+      `Most ${compactBuyer(signal)} do not need a full platform first. They need one messy case cleaned up.`,
+    dmScript:
+      pattern?.dmScript ||
+      `Quick idea: I can clean up one messy case for ${compactBuyer(signal)} before building anything. Want to see a sample?`,
     distribution:
       signal.patternMatches[2] ||
       signal.sourceNote ||
       "Post the insight, then DM likely buyers.",
-    fortyEightHourTest: "Validate in 48h / build in 1-3 days after replies",
-    buildAfterReplies: signal.whatYouCanBuild,
+    fortyEightHourTest: buildDirect48hValidationPlan({
+      buyer: signal.buyer,
+      buildAfterReplies: signal.whatYouCanBuild,
+      pain: signal.pain,
+      price: firstOffer,
+    }).join("\n"),
+    buildAfterReplies: buildCodexAfterRepliesLine(signal.whatYouCanBuild),
   };
 }
 
@@ -2756,6 +2798,18 @@ function buildMasterPrompt(signal: BuildSignal, angleIndex: number): MasterPromp
   const whoPays = buyer;
   const yourProductAngle = productAngle;
   const firstPaidOffer = `${firstVersion} Sell it as ${price} before adding extra features.`;
+  const manualFirstPaidOffer = buildManualFirstOffer({
+    buyer,
+    candidate: firstPaidOffer,
+    pain,
+    price,
+  });
+  const directValidationPlan = buildDirect48hValidationPlan({
+    buyer,
+    buildAfterReplies: firstVersion,
+    pain,
+    price: manualFirstPaidOffer,
+  });
   const leadMagnet = `Free ${workflowOutputTitle(signal)} teardown: show one messy ${workflowName(signal)} input, the cleaned output, and the exact prompt or workflow used to produce it.`;
   const launchCopy = {
     xPost: `I found a proven pattern: ${compactBuyer(signal)} need ${workflowOutcome(signal)} but the work is still manual. I would sell ${promptTitle} at ${price}: one focused offer, one before/after demo, and a 48-hour validation sprint.`,
@@ -2766,9 +2820,8 @@ function buildMasterPrompt(signal: BuildSignal, angleIndex: number): MasterPromp
     whoToContactFirst: compactBuyer(signal),
     whereToFindThem: distributionChannel,
     whatToSay: launchCopy.dmMessage,
-    whatToOffer: `A paid first version at ${price}: ${firstVersion}`,
-    validationWithin48h:
-      "Validation means at least 3 useful replies, 1 paid pre-order, or 2 buyers willing to send real workflow examples.",
+    whatToOffer: manualFirstPaidOffer,
+    validationWithin48h: directValidationPlan.join(" "),
   };
   const uxStructure = [
     `Header with ${promptTitle}, buyer, pain, product angle, and ${price} offer.`,
@@ -2934,7 +2987,7 @@ ${(signal.patternMatches.length ? signal.patternMatches : ["AI workflow", "Local
     marketProof,
     whoPays,
     yourProductAngle,
-    firstPaidOffer,
+    firstPaidOffer: manualFirstPaidOffer,
     buyer,
     pain,
     revenueSignal,
@@ -2947,7 +3000,7 @@ ${(signal.patternMatches.length ? signal.patternMatches : ["AI workflow", "Local
     launchCopy,
     firstCustomerPlan,
     coreFeatures: features,
-    validationPlan,
+    validationPlan: directValidationPlan,
     buildSteps,
     uxStructure,
     dataModel,
@@ -3034,6 +3087,117 @@ function selectHighQualityBusinessSpark(signal: BuildSignal): HighQualityBusines
   );
 }
 
+const softwareFirstOfferPattern =
+  /\b(bot|dashboard|generator|copilot|automation platform|saas|app|ai assistant)\b/i;
+
+function getManualOfferPrice(value: string) {
+  const text = normalizeDisplayText(value);
+
+  if (/jpy|¥|farm|farmer|line/i.test(text)) {
+    return "JPY 9,800 one-time.";
+  }
+
+  const dollarMatch = text.match(/\$[\d,]+/);
+
+  if (dollarMatch) {
+    return `${dollarMatch[0]} one-time.`;
+  }
+
+  return "$99 one-time.";
+}
+
+function getManualOfferName(value: string) {
+  const cleaned = titleCase(
+    normalizeDisplayText(value)
+      .replace(softwareFirstOfferPattern, "")
+      .replace(/\b(mvp|software|tool|platform|with codex)\b/gi, "")
+      .replace(/[^a-z0-9\s-]/gi, " ")
+      .replace(/\s+/g, " ")
+      .trim(),
+  );
+  const compactName = cleaned.split(/\s+/).slice(0, 4).join(" ");
+
+  if (/farm|farmer|line|sensor|crop/i.test(value)) {
+    return "Farm Operations Cleanup Pack";
+  }
+
+  if (/audit/i.test(value)) {
+    return compactName ? `${compactName} Audit` : "Manual Audit Pack";
+  }
+
+  if (/checklist/i.test(value)) {
+    return compactName ? `${compactName} Checklist Pack` : "Manual Checklist Pack";
+  }
+
+  if (/prompt/i.test(value)) {
+    return compactName ? `${compactName} Prompt Pack` : "Manual Prompt Pack";
+  }
+
+  return compactName ? `${compactName} Cleanup Pack` : "Manual Cleanup Pack";
+}
+
+function buildManualFirstOffer({
+  buyer,
+  candidate,
+  pain,
+  price,
+}: {
+  buyer: string;
+  candidate: string;
+  pain: string;
+  price: string;
+}) {
+  const sourceText = `${candidate} ${buyer} ${pain}`;
+  const offerName = getManualOfferName(sourceText);
+  const oneTimePrice = getManualOfferPrice(`${price} ${sourceText}`);
+  const outcome = /farm|farmer|line|sensor|crop/i.test(sourceText)
+    ? "Organize one day of LINE messages, sensor notes, crop checks, and schedules into a clean daily operations report."
+    : `Manually turn one messy buyer case into a clean before/after sample, checklist, and next-step report for ${compactBuyer({ buyer } as BuildSignal)}.`;
+
+  return `${offerName}
+${outcome}
+${oneTimePrice}`;
+}
+
+function buildDirect48hValidationPlan({
+  buyer,
+  buildAfterReplies,
+  pain,
+  price,
+}: {
+  buyer: string;
+  buildAfterReplies: string;
+  pain: string;
+  price: string;
+}) {
+  const sourceText = `${buyer} ${pain} ${buildAfterReplies}`;
+  const buyerTarget = /farm|farmer|line|sensor|crop/i.test(sourceText)
+    ? "small farms or farm consultants"
+    : compactBuyer({ buyer } as BuildSignal);
+  const offerPrice = getManualOfferPrice(`${price} ${sourceText}`).replace(/\.$/, "");
+
+  return [
+    `Pick 20 ${buyerTarget}.`,
+    "Create one before/after sample manually.",
+    "DM the sample.",
+    `Ask if they would pay ${offerPrice}.`,
+    "Build only if 3 people reply.",
+  ];
+}
+
+function buildCodexAfterRepliesLine(value: string) {
+  const normalized = normalizeDisplayText(value)
+    .replace(/^if\s+\d+[^,]+,\s*/i, "")
+    .replace(/^build\s+/i, "")
+    .replace(/\.$/, "");
+
+  if (/farm|farmer|line|sensor|crop/i.test(normalized)) {
+    return "Build a LINE-based daily report bot only after replies.";
+  }
+
+  return `Build ${normalized} only after replies.`;
+}
+
 function extractSeedPrice(seed: HighQualityBusinessSpark) {
   return seed.firstOffer.split(".")[0]?.trim() || seed.firstOffer;
 }
@@ -3046,6 +3210,18 @@ function applyBusinessSparkSeed(
   const firstVersion = seed.codexPromptPreview;
   const distributionChannel =
     seed.distributionChannel || "X posts, direct DMs, and buyer communities.";
+  const manualFirstOffer = buildManualFirstOffer({
+    buyer: seed.buyer,
+    candidate: seed.firstOffer,
+    pain: seed.pain,
+    price,
+  });
+  const directValidationPlan = buildDirect48hValidationPlan({
+    buyer: seed.buyer,
+    buildAfterReplies: firstVersion,
+    pain: seed.pain,
+    price: manualFirstOffer,
+  });
 
   return {
     ...fallbackPrompt,
@@ -3065,7 +3241,7 @@ function applyBusinessSparkSeed(
     },
     whoPays: seed.buyer,
     yourProductAngle: seed.codexPromptPreview,
-    firstPaidOffer: seed.firstOffer,
+    firstPaidOffer: manualFirstOffer,
     buyer: seed.buyer,
     pain: seed.pain,
     revenueSignal: price,
@@ -3085,8 +3261,8 @@ function applyBusinessSparkSeed(
       whereToFindThem:
         seed.dmTarget || distributionChannel,
       whatToSay: seed.dmScript,
-      whatToOffer: seed.firstOffer,
-      validationWithin48h: seed.fortyEightHourTest.join(" "),
+      whatToOffer: manualFirstOffer,
+      validationWithin48h: directValidationPlan.join(" "),
     },
     coreFeatures: [
       "Input form",
@@ -3095,7 +3271,7 @@ function applyBusinessSparkSeed(
       "Copy buttons",
       "Validation panel",
     ],
-    validationPlan: seed.fortyEightHourTest,
+    validationPlan: directValidationPlan,
     buildSteps: [
       "Build the input and mock examples.",
       "Generate the core output from local state.",
@@ -3109,6 +3285,19 @@ function applyBusinessSparkSeedToResult(
   fallbackResult: ApiResult,
   seed: HighQualityBusinessSpark,
 ): ApiResult {
+  const manualFirstOffer = buildManualFirstOffer({
+    buyer: seed.buyer,
+    candidate: seed.firstOffer,
+    pain: seed.pain,
+    price: extractSeedPrice(seed),
+  });
+  const directValidationPlan = buildDirect48hValidationPlan({
+    buyer: seed.buyer,
+    buildAfterReplies: seed.codexPromptPreview,
+    pain: seed.pain,
+    price: manualFirstOffer,
+  });
+
   return {
     free: {
       latest_signal: seed.whyItWorks,
@@ -3125,8 +3314,8 @@ function applyBusinessSparkSeedToResult(
       pain: seed.pain,
       why_now: seed.whyItWorks,
       what_you_can_build: seed.codexPromptPreview,
-      comparable_price: extractSeedPrice(seed),
-      build_steps: seed.fortyEightHourTest,
+      comparable_price: manualFirstOffer,
+      build_steps: directValidationPlan,
       pattern_matches: [
         seed.path,
         seed.distributionChannel || "Reviewed Business Spark seed",
@@ -3526,7 +3715,7 @@ function buildBuildAngle(masterPrompt: MasterPrompt, includeCodexPrompt: boolean
     ? `\n\nCodex prompt is available below, but only after the market angle is clear.`
     : "\n\nFounder/Paid access unlocks the full Codex-ready build prompt.";
 
-  return `Only build after the opportunity gets a reply. Build this narrow first version: ${masterPrompt.firstVersion}${codexNote}`;
+  return `${buildCodexAfterRepliesLine(masterPrompt.firstVersion)}${codexNote}`;
 }
 
 function buildActionBriefFields(
@@ -3535,13 +3724,20 @@ function buildActionBriefFields(
   includeCodexPrompt: boolean,
 ) {
   return [
-    ["Why it works", buildHolyShit(masterPrompt)],
-    ["Buyer", buildWhatEveryoneMisses(masterPrompt)],
-    ["First Offer", buildMoneyAngle(masterPrompt)],
-    ["Spark Score", buildOpportunityScore(masterPrompt)],
-    ["First Wedge", buildFirstWedge(masterPrompt)],
-    ["48h Test", buildAttackPlan(masterPrompt)],
-    ["Codex Build Prompt", buildBuildAngle(masterPrompt, includeCodexPrompt)],
+    ["Money proof", masterPrompt.originalCase],
+    ["Pattern", masterPrompt.marketProof.comparablePattern],
+    ["Why money changed hands", masterPrompt.whyItSold],
+    ["Buyer", masterPrompt.buyer],
+    ["Paid pain", masterPrompt.pain],
+    ["Your first offer", masterPrompt.firstPaidOffer],
+    ["Price", getManualOfferPrice(masterPrompt.firstPaidOffer)],
+    ["Post hook", masterPrompt.launchCopy.xPost],
+    ["DM script", masterPrompt.launchCopy.dmMessage],
+    ["48h validation", buildAttackPlan(masterPrompt)],
+    [
+      "Build with Codex after replies",
+      buildBuildAngle(masterPrompt, includeCodexPrompt),
+    ],
   ] satisfies [string, string][];
 }
 
@@ -3562,8 +3758,6 @@ ${fields.map(([label, value]) => `${label}:\n${value}`).join("\n\n")}`;
 }
 
 function buildCarouselSlides(masterPrompt: MasterPrompt) {
-  const forbiddenCarouselTitle =
-    /\b(are scattered|already used daily|transform|unlock|streamline|optimize|productivity)\b/i;
   const cleanSentence = (value: string, fallback: string) => {
     const cleaned = normalizeDisplayText(value)
       .replace(/^Slide\s*\d+:\s*/i, "")
@@ -3571,21 +3765,6 @@ function buildCarouselSlides(masterPrompt: MasterPrompt) {
       .trim();
 
     return cleaned || fallback;
-  };
-
-  const shortProofTitle = (value: string, fallback: string) => {
-    const sentence = cleanSentence(value, fallback).split(/[.!?]/)[0]?.trim() || fallback;
-
-    if (
-      forbiddenCarouselTitle.test(sentence) ||
-      !/\b(used|paid|sold|grew|reached|made|built|launched|mrr|arr|\$|revenue|customer|buyer)\b/i.test(sentence)
-    ) {
-      return fallback;
-    }
-
-    const words = sentence.split(/\s+/).filter(Boolean);
-
-    return words.slice(0, 8).join(" ");
   };
 
   const moneyProof = cleanSentence(
@@ -3601,7 +3780,9 @@ function buildCarouselSlides(masterPrompt: MasterPrompt) {
     "$99 cleanup pack",
   );
   const validationStep = cleanSentence(
-    masterPrompt.validationPlan[0] ||
+    (masterPrompt.validationPlan.length
+      ? masterPrompt.validationPlan.map((step, index) => `${index + 1}. ${step}`).join(" ")
+      : "") ||
       masterPrompt.firstCustomerPlan.validationWithin48h ||
       masterPrompt.firstCustomerPlan.whatToSay,
     "DM 20 likely buyers and offer to do one manual cleanup before building.",
@@ -3613,7 +3794,7 @@ function buildCarouselSlides(masterPrompt: MasterPrompt) {
 
   return [
     {
-      title: `Slide 1: ${shortProofTitle(moneyProof, "Real money proof")}`,
+      title: "Slide 1: Money proof",
       body: moneyProof,
     },
     {
@@ -3622,7 +3803,7 @@ function buildCarouselSlides(masterPrompt: MasterPrompt) {
     },
     {
       title: "Slide 3: Sell the small version first",
-      body: `Offer ${firstOffer} before building software.`,
+      body: `${firstOffer} Sell this before building software.`,
     },
     {
       title: "Slide 4: Validate in 48 hours",
@@ -3630,7 +3811,7 @@ function buildCarouselSlides(masterPrompt: MasterPrompt) {
     },
     {
       title: "Slide 5: Build after replies",
-      body: `If buyers respond, build ${buildAfterReplies} with Codex.`,
+      body: buildCodexAfterRepliesLine(buildAfterReplies),
     },
   ];
 }
@@ -3644,6 +3825,9 @@ function buildCarouselCopy(masterPrompt: MasterPrompt, _hasFounderAccess: boolea
 
 function buildLaunchPackCopy(masterPrompt: MasterPrompt, hasFounderAccess: boolean) {
   const carouselCopy = buildCarouselCopy(masterPrompt, hasFounderAccess);
+  const buildAfterReplies = buildCodexAfterRepliesLine(
+    masterPrompt.firstVersion || masterPrompt.whatToBuild || masterPrompt.productAngle,
+  );
   const killCriteria = [
     "No replies after 20 targeted DMs.",
     "No saves, comments, or profile clicks from the public post.",
@@ -3656,6 +3840,38 @@ function buildLaunchPackCopy(masterPrompt: MasterPrompt, hasFounderAccess: boole
   return [
     "Bilion Launch Pack",
     "",
+    "Money proof:",
+    masterPrompt.originalCase,
+    "",
+    "Pattern:",
+    masterPrompt.marketProof.comparablePattern,
+    "",
+    "Buyer:",
+    masterPrompt.buyer,
+    "",
+    "Paid pain:",
+    masterPrompt.pain,
+    "",
+    "Small first offer:",
+    masterPrompt.firstPaidOffer,
+    "",
+    "Price:",
+    getManualOfferPrice(masterPrompt.firstPaidOffer),
+    "",
+    "Post hook:",
+    masterPrompt.launchCopy.xPost,
+    "",
+    "DM script:",
+    masterPrompt.launchCopy.dmMessage,
+    "",
+    "48h validation:",
+    masterPrompt.validationPlan
+      .map((step, index) => `${index + 1}. ${step}`)
+      .join("\n"),
+    "",
+    "Build with Codex after replies:",
+    buildAfterReplies,
+    "",
     "X post:",
     masterPrompt.launchCopy.xPost,
     "",
@@ -3667,20 +3883,6 @@ function buildLaunchPackCopy(masterPrompt: MasterPrompt, hasFounderAccess: boole
     "",
     "DM pitch:",
     masterPrompt.launchCopy.dmMessage,
-    "",
-    "Landing page headline:",
-    masterPrompt.launchCopy.lpHeadline,
-    "",
-    "First offer:",
-    masterPrompt.firstPaidOffer,
-    "",
-    "Price:",
-    masterPrompt.price,
-    "",
-    "48h validation checklist:",
-    masterPrompt.validationPlan
-      .map((step, index) => `${index + 1}. ${step}`)
-      .join("\n"),
     "",
     "Kill criteria:",
     killCriteria,
@@ -5623,7 +5825,10 @@ function MarketSelectionSection({
         <div className="break-words text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
           Business Spark in {selectedMarket}
         </div>
-        {displayOpportunities.slice(0, 1).map((signal) => (
+        {displayOpportunities.slice(0, 1).map((signal) => {
+          const detail = getOpportunityDetailFields(signal);
+
+          return (
             <article
               key={signal.id}
               className="min-w-0 overflow-hidden rounded-2xl border border-emerald-300/35 bg-black/35 p-4 shadow-lg shadow-emerald-950/20 md:rounded-3xl md:p-5"
@@ -5667,31 +5872,47 @@ function MarketSelectionSection({
                 <div className="mt-3 grid gap-2">
                   <MarketOpportunityField
                     label="Money proof"
-                    value={getOpportunityDetailFields(signal).proof}
+                    value={detail.proof}
                   />
                   <MarketOpportunityField
-                    label="Proven pattern"
-                    value={getOpportunityDetailFields(signal).pattern}
+                    label="What sold"
+                    value={detail.whatSold}
                   />
                   <MarketOpportunityField
                     label="Why money changed hands"
-                    value={getOpportunityDetailFields(signal).whyMoneyChangedHands}
+                    value={detail.whyMoneyChangedHands}
+                  />
+                  <MarketOpportunityField
+                    label="Buyer"
+                    value={detail.buyer}
+                  />
+                  <MarketOpportunityField
+                    label="Paid pain"
+                    value={detail.paidPain}
                   />
                   <MarketOpportunityField
                     label="Your first offer"
-                    value={getOpportunityDetailFields(signal).firstOffer}
+                    value={detail.firstOffer}
                   />
                   <MarketOpportunityField
-                    label="Sell"
-                    value={getOpportunityDetailFields(signal).distribution}
+                    label="Price"
+                    value={detail.price}
+                  />
+                  <MarketOpportunityField
+                    label="Post hook"
+                    value={detail.postHook}
+                  />
+                  <MarketOpportunityField
+                    label="DM script"
+                    value={detail.dmScript}
                   />
                   <MarketOpportunityField
                     label="48h validation"
-                    value={getOpportunityDetailFields(signal).fortyEightHourTest}
+                    value={detail.fortyEightHourTest}
                   />
                   <MarketOpportunityField
-                    label="Build after replies"
-                    value={getOpportunityDetailFields(signal).buildAfterReplies}
+                    label="Build with Codex after replies"
+                    value={detail.buildAfterReplies}
                   />
                 </div>
               </details>
@@ -5699,35 +5920,52 @@ function MarketSelectionSection({
               <div className="mt-4 hidden min-w-0 gap-3 md:grid md:grid-cols-2 xl:grid-cols-3">
                 <MarketOpportunityField
                   label="Money proof"
-                  value={getOpportunityDetailFields(signal).proof}
+                  value={detail.proof}
                 />
                 <MarketOpportunityField
-                  label="Proven pattern"
-                  value={getOpportunityDetailFields(signal).pattern}
+                  label="What sold"
+                  value={detail.whatSold}
                 />
                 <MarketOpportunityField
                   label="Why money changed hands"
-                  value={getOpportunityDetailFields(signal).whyMoneyChangedHands}
+                  value={detail.whyMoneyChangedHands}
+                />
+                <MarketOpportunityField
+                  label="Buyer"
+                  value={detail.buyer}
+                />
+                <MarketOpportunityField
+                  label="Paid pain"
+                  value={detail.paidPain}
                 />
                 <MarketOpportunityField
                   label="Your first offer"
-                  value={getOpportunityDetailFields(signal).firstOffer}
+                  value={detail.firstOffer}
                 />
                 <MarketOpportunityField
-                  label="Sell"
-                  value={getOpportunityDetailFields(signal).distribution}
+                  label="Price"
+                  value={detail.price}
+                />
+                <MarketOpportunityField
+                  label="Post hook"
+                  value={detail.postHook}
+                />
+                <MarketOpportunityField
+                  label="DM script"
+                  value={detail.dmScript}
                 />
                 <MarketOpportunityField
                   label="48h validation"
-                  value={getOpportunityDetailFields(signal).fortyEightHourTest}
+                  value={detail.fortyEightHourTest}
                 />
                 <MarketOpportunityField
-                  label="Build after replies"
-                  value={getOpportunityDetailFields(signal).buildAfterReplies}
+                  label="Build with Codex after replies"
+                  value={detail.buildAfterReplies}
                 />
               </div>
             </article>
-          ))}
+          );
+        })}
       </div>
     </section>
   );
