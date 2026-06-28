@@ -63,12 +63,7 @@ type BilionAppClientProps = {
 type SourceMode = "indie" | "github";
 type NextAction = "build" | "sell" | "post";
 type WorkflowTab = "library" | "studio" | "queue" | "validation" | "winners";
-type MarketClassification =
-  | "Micro SaaS"
-  | "Freelance Dev"
-  | "Business Automation"
-  | "Digital Product"
-  | "AI Agency";
+type MarketClassification = MarketOption;
 type DistributionStatus = "Draft" | "Posted" | "Sent" | "Tested";
 type DistributionKind = "X post" | "DM script" | "Validation log" | "Short video angle";
 type ValidationVerdict = "Build" | "Kill" | "Pivot";
@@ -215,17 +210,23 @@ const marketOptions = [
 type MarketOption = (typeof marketOptions)[number];
 
 const appMarketOptions = [
+  "Creators",
+  "Ecommerce",
   "Local Business",
   "Healthcare",
   "Construction",
-  "Ecommerce",
-  "Creators",
+  "Finance",
   "Legal",
   "Real Estate",
-  "Finance",
   "Developer Workflow",
   "Agriculture / Field Ops",
 ] as const satisfies readonly MarketOption[];
+
+type AppMarketOption = (typeof appMarketOptions)[number];
+
+function isAppMarketOption(value: string): value is AppMarketOption {
+  return appMarketOptions.some((market) => market === value);
+}
 
 type MarketSpecificOpportunity = {
   buyer: string;
@@ -1353,7 +1354,7 @@ function buildMarketSpecificSignal(market: MarketOption): BuildSignal {
     patternMatches: [
       `Money proof: ${opportunity.proofLabel}`,
       `Proven pattern: ${opportunity.patternTitle}`,
-      `Selected path: ${opportunity.selectedPath}`,
+      `Selected market: ${market}`,
       opportunity.validationSteps.join(" "),
     ],
     codeXPrompt: `Build this only after someone replies, clicks, or asks for the offer. Build a mobile-first MVP for ${opportunity.buyer}. Paid pain: ${opportunity.paidPain}. First offer: ${firstOffer}. Start with: ${opportunity.buildAfterReplies}. Include launch copy, DM script, validation tracker, copy buttons, and mock data. Use local state/localStorage only. No auth, no database, no payment integration, and no external APIs.`,
@@ -2885,34 +2886,7 @@ function isNewsletterSignal(signal: BuildSignal) {
 }
 
 function getMarketClassification(signal: BuildSignal): MarketClassification {
-  const haystack = [
-    signal.sourceTitle,
-    signal.latestSignal,
-    signal.sourceType,
-    signal.sourceNote,
-    signal.buyer,
-    signal.pain,
-    signal.whatYouCanBuild,
-    signal.patternMatches.join(" "),
-  ].join(" ").toLowerCase();
-
-  if (/freelance|bug|client|api integration|fix|coding service|developer service|upwork|fiverr/i.test(haystack)) {
-    return "Freelance Dev";
-  }
-
-  if (/automation|spreadsheet|rpa|email|report|lead|workflow|operations|restaurant|clinic|local|field|contractor|appointment|review/i.test(haystack)) {
-    return "Business Automation";
-  }
-
-  if (/plugin|extension|template|gumroad|etsy|prompt pack|script|shopify|chrome|digital product|bundle/i.test(haystack)) {
-    return "Digital Product";
-  }
-
-  if (/agency|consultant|client delivery|dashboard|chatbot|internal tool|implementation/i.test(haystack)) {
-    return "AI Agency";
-  }
-
-  return "Micro SaaS";
+  return getSignalMarket(signal);
 }
 
 function getSignalEvidenceLevel(signal: BuildSignal) {
@@ -2967,7 +2941,7 @@ function getTopOpportunitySignal(signals: BuildSignal[]) {
 }
 
 function getSignalMarket(signal: BuildSignal) {
-  const explicitMarket = marketOptions.find(
+  const explicitMarket = appMarketOptions.find(
     (market) =>
       signal.id === getMarketSpecificSignalId(market) ||
       signal.sourceType === market ||
@@ -2989,10 +2963,6 @@ function getSignalMarket(signal: BuildSignal) {
     signal.whatYouCanBuild,
     signal.patternMatches.join(" "),
   ].join(" ").toLowerCase();
-
-  if (/freelance|bug|client|api integration|fix|coding service|developer service|upwork|fiverr/.test(haystack)) {
-    return "Freelance Dev";
-  }
 
   if (/healthcare|clinic|dental|therapy|appointment|patient|cancellation|voicemail/.test(haystack)) {
     return "Healthcare";
@@ -3030,23 +3000,27 @@ function getSignalMarket(signal: BuildSignal) {
     return "Developer Workflow";
   }
 
+  if (/freelance|bug|client|api integration|fix|coding service|developer service|upwork|fiverr/.test(haystack)) {
+    return "Developer Workflow";
+  }
+
   if (/restaurant|salon|review|google business|local owner|home-service/.test(haystack)) {
     return "Local Business";
   }
 
   if (/plugin|extension|template|prompt pack|script|chrome|digital product|bundle|downloadable/.test(haystack)) {
-    return "Digital Product";
+    return "Creators";
   }
 
   if (/automation|spreadsheet|rpa|email|report|lead|operations|handoff|admin task|manual task/.test(haystack)) {
-    return "Business Automation";
+    return "Local Business";
   }
 
   if (/agency|consultant|client delivery|dashboard|chatbot|internal tool|implementation/.test(haystack)) {
-    return "AI Agency";
+    return "Local Business";
   }
 
-  return "Micro SaaS";
+  return "Local Business";
 }
 
 function getTopMarketOpportunities(signals: BuildSignal[], market: MarketOption) {
@@ -4036,7 +4010,7 @@ function buildHighQualitySparkFromMarketSignal(signal: BuildSignal): HighQuality
     launchPost: `${opportunity.postHook}\n\nMoney proof: ${opportunity.proofLabel} - ${opportunity.whatSold}\nPattern: ${opportunity.patternTitle}\nBusiness Spark: ${sparkTitle}\nBuyer: ${opportunity.buyer}\nPain: ${opportunity.paidPain}\nFirst offer: ${firstOffer}\nTest: ${validationText}`,
     dmScript: opportunity.dmScript,
     codexPromptPreview: `Build a mobile-first MVP for ${sparkTitle}. Start with ${opportunity.buildAfterReplies}.`,
-    codexBuildPrompt: `Build this only after someone replies, clicks, or asks for the offer. Money proof: ${opportunity.proofLabel} for ${opportunity.whatSold}. Pattern: ${opportunity.patternTitle}. Path: ${market}. Build a mobile-first MVP called ${sparkTitle} for ${opportunity.buyer}. The buyer pain is: ${opportunity.paidPain}. First offer: ${firstOffer}. Build only this first version: ${opportunity.buildAfterReplies}. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no payment integration, and no external APIs. Include an offer overview, input form, generated output, saved examples, launch copy, DM script, copy buttons, and validation panel. The validation panel must include this 48-hour plan: ${validationText}. Done criteria: it should be demo-ready, mobile-first, and useful for testing demand before building a real SaaS.`,
+    codexBuildPrompt: `Build this only after someone replies, clicks, or asks for the offer. Money proof: ${opportunity.proofLabel} for ${opportunity.whatSold}. Pattern: ${opportunity.patternTitle}. Market: ${market}. Build a mobile-first MVP called ${sparkTitle} for ${opportunity.buyer}. The buyer pain is: ${opportunity.paidPain}. First offer: ${firstOffer}. Build only this first version: ${opportunity.buildAfterReplies}. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no payment integration, and no external APIs. Include an offer overview, input form, generated output, saved examples, launch copy, DM script, copy buttons, and validation panel. The validation panel must include this 48-hour plan: ${validationText}. Done criteria: it should be demo-ready, mobile-first, and useful for testing demand before building a real SaaS.`,
   };
 }
 
@@ -5643,7 +5617,7 @@ export default function BilionAppClient({
   const [masterPrompt, setMasterPrompt] = useState<MasterPrompt | null>(null);
   const [masterPromptAngleIndex, setMasterPromptAngleIndex] = useState(0);
   const [freeUsageCount, setFreeUsageCount] = useState(0);
-  const [selectedMarket, setSelectedMarket] = useState<(typeof marketOptions)[number]>("Construction");
+  const [selectedMarket, setSelectedMarket] = useState<AppMarketOption>("Creators");
   const [openSignalGroups, setOpenSignalGroups] = useState<string[]>([
     "Recommended",
     "GitHub Signal",
@@ -6095,7 +6069,9 @@ export default function BilionAppClient({
       writeCandidateMoneySignals(nextCandidates);
       return nextCandidates;
     });
-    setSelectedMarket(candidate.market);
+    if (isAppMarketOption(candidate.market)) {
+      setSelectedMarket(candidate.market);
+    }
     setCopyFeedback({
       message: "Extracted a Candidate Money Signal. Review it before approving.",
       tone: "success",
@@ -6133,7 +6109,9 @@ export default function BilionAppClient({
       writeRawSignals(nextRawSignals);
       return nextRawSignals;
     });
-    setSelectedMarket(candidate.market);
+    if (isAppMarketOption(candidate.market)) {
+      setSelectedMarket(candidate.market);
+    }
     setSelectedSignalId(buildSignal.id);
     setSelectedBuyer(buildSignal.buyer);
     setSelectedAction("sell");
@@ -7144,10 +7122,10 @@ function MarketSelectionSection({
 }: {
   moneySignals: BuildSignal[];
   onGenerateOutputPack: (signal: BuildSignal) => void;
-  onMarketChange: (market: (typeof marketOptions)[number]) => void;
+  onMarketChange: (market: AppMarketOption) => void;
   onSelectOpportunity: (signal: BuildSignal) => void;
   opportunities: BuildSignal[];
-  selectedMarket: (typeof marketOptions)[number];
+  selectedMarket: AppMarketOption;
 }) {
   const topMoneySignals = moneySignals.length
     ? moneySignals
@@ -7184,7 +7162,7 @@ function MarketSelectionSection({
             Choose a market
           </div>
           <p className="mt-1 break-words text-xs font-bold leading-5 text-zinc-500">
-            Micro SaaS, Freelance Dev, and Digital Product are paths. This selector is for markets.
+            Market → Signal → Output Pack → Test → Build.
           </p>
         </div>
         {appMarketOptions.map((market) => {
@@ -7210,7 +7188,7 @@ function MarketSelectionSection({
 
       <div className="mt-3 grid min-w-0 gap-3 md:mt-4">
         <div className="break-words text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
-          Top 3 Money Signals for this market
+          Top Money Signals in {selectedMarket}
         </div>
         <div className="grid min-w-0 gap-3 md:grid-cols-3">
           {topMoneySignals.slice(0, 3).map((signal) => {
