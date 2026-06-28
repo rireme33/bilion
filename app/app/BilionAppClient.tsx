@@ -181,6 +181,19 @@ type ApprovedMoneySignal = {
   approvedAt: string;
 };
 
+type OutputPack = {
+  id: string;
+  signalId: string;
+  market: string;
+  generatedAt: string;
+  xPost: string;
+  shortVideoScript: string;
+  carouselSlides: string[];
+  coldDm: string;
+  validationPlan: string;
+  codexBuildPrompt: string;
+};
+
 const marketOptions = [
   "Micro SaaS",
   "Freelance Dev",
@@ -1692,6 +1705,7 @@ const APPROVED_EVIDENCE_STORAGE_KEY = "bilion.approvedEvidenceSignals";
 const RAW_SIGNAL_INBOX_STORAGE_KEY = "bilion_raw_signals";
 const CANDIDATE_MONEY_SIGNALS_STORAGE_KEY = "bilion_candidate_money_signals";
 const APPROVED_MONEY_SIGNALS_STORAGE_KEY = "bilion_approved_money_signals";
+const OUTPUT_PACKS_STORAGE_KEY = "bilion_output_packs";
 const FREE_GENERATION_LIMIT = 3;
 const FREE_USAGE_STORAGE_KEY_EN = "bilion_free_generation_count_en";
 const MAX_SAVED_SIGNALS = 10;
@@ -3180,6 +3194,170 @@ function getOpportunityDetailFields(signal: BuildSignal) {
       price: firstOffer,
     }).join("\n"),
     buildAfterReplies: buildCodexAfterRepliesLine(signal.whatYouCanBuild),
+  };
+}
+
+function getOutputPackProductName(firstOffer: string) {
+  const firstLine = firstOffer
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .find(Boolean) || "Validation Offer";
+
+  return firstLine
+    .replace(/^\$[\d,]+(?:-\$?[\d,]+)?\s*/i, "")
+    .replace(/^JPY\s?[\d,]+\s*/i, "")
+    .replace(/\s+(one-time|setup|monthly|\/month).*$/i, "")
+    .trim() || "Validation Offer";
+}
+
+function getOutputPackBuildScope(detail: ReturnType<typeof getOpportunityDetailFields>) {
+  return detail.buildAfterReplies
+    .replace(/^Build after replies\.\s*/i, "")
+    .replace(/^If\s+3\s+buyers\s+reply,\s*/i, "")
+    .trim() || "a small tool that creates the same manual output faster";
+}
+
+function buildOutputPackFromSignal(signal: BuildSignal): OutputPack {
+  const detail = getOpportunityDetailFields(signal);
+  const title = getDisplaySignalTitle(signal);
+  const productName = getOutputPackProductName(detail.firstOffer);
+  const buildScope = getOutputPackBuildScope(detail);
+  const market = getSignalMarket(signal);
+  const generatedAt = new Date().toISOString();
+  const signalTitle = title.detail || title.title || signal.sourceTitle || "Money Signal";
+  const validationPlan = [
+    "Day 1:",
+    `- Publish this X post: ${detail.postHook}`,
+    `- Create a carousel from the proof: ${detail.proof}`,
+    `- Send 10 targeted DMs to ${detail.buyer}.`,
+    `- Ask this buyer-specific question: Is this pain happening in your current process? ${detail.paidPain}`,
+    "",
+    "Day 2:",
+    "- Follow up with people who replied, clicked, saved, or asked a question.",
+    "- Collect objections in their exact words.",
+    `- Offer the manual-first version: ${detail.firstOffer}`,
+    "- Decide build / do-not-build from real buyer replies.",
+    "",
+    "Success criteria:",
+    "- 3+ replies.",
+    "- 1+ buyer asks for details.",
+    "- 1+ person says they want the workflow/report/audit.",
+    "",
+    "Do-not-build criteria:",
+    "- No replies.",
+    "- Only vanity likes.",
+    "- No buyer-specific pain.",
+    "- People like the idea but do not want the offer.",
+  ].join("\n");
+  const carouselSlides = [
+    `Slide 1: Hook\n${detail.buyer} are already paying around this problem. Do not start by building software.`,
+    `Slide 2: Money proof\n${detail.proof}`,
+    `Slide 3: Buyer\n${detail.buyer}`,
+    `Slide 4: Paid pain\n${detail.paidPain}`,
+    `Slide 5: First offer\nSell this first: ${detail.firstOffer}`,
+    `Slide 6: 48h validation\nCreate one manual before/after sample, DM 10-20 reachable buyers, and ask if they want the same result.`,
+    `Slide 7: Build after replies\n${detail.buildAfterReplies}`,
+    `Slide 8: CTA\nWant the exact post, DM, and Codex prompt for this signal? Start with the manual offer first.`,
+  ];
+
+  return {
+    id: `output-pack-${signal.id}-${Date.now()}`,
+    signalId: signal.id,
+    market,
+    generatedAt,
+    xPost: [
+      `${detail.buyer} do not need another AI idea.`,
+      "They need one paid pain handled this week.",
+      "",
+      `Money proof: ${detail.proof}`,
+      `What money moved: ${detail.whatSold}`,
+      "",
+      `Buyer: ${detail.buyer}`,
+      `Pain: ${detail.paidPain}`,
+      "",
+      `First offer to test: ${detail.firstOffer}`,
+      `Post the proof, DM the buyer, and sell the manual version first.`,
+      "Build only after replies.",
+    ].join("\n"),
+    shortVideoScript: [
+      `Hook: ${signalTitle} is a money signal, not just an idea.`,
+      `Proof: ${detail.proof}`,
+      `Buyer: ${detail.buyer}`,
+      `Pain: ${detail.paidPain}`,
+      `Offer to test: ${detail.firstOffer}`,
+      "Do not build the full product first.",
+      "Post the proof.",
+      "DM reachable buyers.",
+      "Make one manual sample.",
+      "If 3 people reply, build the small version with Codex.",
+      "CTA: want this output pack for your market?",
+    ].join("\n"),
+    carouselSlides,
+    coldDm: [
+      `Hey, I noticed ${detail.buyer} keep running into this: ${detail.paidPain}`,
+      "",
+      `I found a money signal behind it: ${detail.proof}`,
+      "",
+      `I made a small ${productName} sample instead of building software first.`,
+      "Want me to send the sample and see if it would fit your case?",
+    ].join("\n"),
+    validationPlan,
+    codexBuildPrompt: [
+      "Build this only after someone replies, clicks, or asks for the offer.",
+      "",
+      `Product name: ${productName}`,
+      `Target buyer: ${detail.buyer}`,
+      `Paid pain: ${detail.paidPain}`,
+      `First offer and price: ${detail.firstOffer}`,
+      "",
+      `MVP scope: ${buildScope}`,
+      "",
+      "What not to build:",
+      "- Do not build a full platform.",
+      "- Do not add accounts, teams, billing, integrations, or AI APIs.",
+      "- Do not build extra dashboards before validation.",
+      "- Do not add features that are not needed to recreate the manual first offer.",
+      "",
+      "UI requirements:",
+      "- Mobile-first.",
+      "- Clean dark SaaS UI.",
+      "- One clear input area.",
+      "- One generated output area.",
+      "- Copy buttons for every generated output.",
+      "- Pricing CTA for the first offer.",
+      "- Include a visible Build only after replies validation note.",
+      "",
+      "Core user flow:",
+      "1. User opens the product and sees the buyer, paid pain, proof, and first offer.",
+      "2. User chooses or pastes one realistic messy input.",
+      "3. The app turns it into the small buyer-ready output promised in the first offer.",
+      "4. The user copies the output, DM, post, and validation note.",
+      "5. The user tracks whether 3+ buyers reply before building anything larger.",
+      "",
+      "Local mock data requirements:",
+      `- Include 3 mock examples for ${detail.buyer}.`,
+      `- Each example should reflect this paid pain: ${detail.paidPain}`,
+      "- Mock data can be deterministic and local.",
+      "",
+      "Validation checklist:",
+      "- 3+ replies.",
+      "- 1+ buyer asks for details.",
+      "- 1+ person says they want the workflow/report/audit.",
+      "- Kill the build if there are no buyer-specific replies.",
+      "",
+      "Build constraints:",
+      "- Next.js / React.",
+      "- Mobile-first.",
+      "- No auth.",
+      "- No database.",
+      "- No external API.",
+      "- Local state only.",
+      "- Mock data allowed.",
+      "- Clean dark SaaS UI.",
+      "- Include copyable output.",
+      "- Include pricing CTA.",
+      "- Include Build only after replies validation note.",
+    ].join("\n"),
   };
 }
 
@@ -5338,6 +5516,46 @@ function writeApprovedMoneySignals(signals: ApprovedMoneySignal[]) {
   }
 }
 
+function isOutputPack(value: unknown): value is OutputPack {
+  return (
+    Boolean(value) &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    typeof (value as OutputPack).id === "string" &&
+    typeof (value as OutputPack).signalId === "string" &&
+    typeof (value as OutputPack).market === "string" &&
+    typeof (value as OutputPack).generatedAt === "string" &&
+    typeof (value as OutputPack).xPost === "string" &&
+    typeof (value as OutputPack).shortVideoScript === "string" &&
+    Array.isArray((value as OutputPack).carouselSlides) &&
+    typeof (value as OutputPack).coldDm === "string" &&
+    typeof (value as OutputPack).validationPlan === "string" &&
+    typeof (value as OutputPack).codexBuildPrompt === "string"
+  );
+}
+
+function readOutputPacks() {
+  try {
+    const raw = window.localStorage.getItem(OUTPUT_PACKS_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+
+    return Array.isArray(parsed) ? parsed.filter(isOutputPack) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeOutputPacks(packs: OutputPack[]) {
+  try {
+    window.localStorage.setItem(
+      OUTPUT_PACKS_STORAGE_KEY,
+      JSON.stringify(packs.slice(0, 30)),
+    );
+  } catch {
+    // localStorage can be unavailable in private modes or locked-down browsers.
+  }
+}
+
 function getLocalDateKey() {
   const today = new Date();
   const year = today.getFullYear();
@@ -5392,6 +5610,8 @@ export default function BilionAppClient({
   const [rawSignals, setRawSignals] = useState<RawSignal[]>([]);
   const [candidateMoneySignals, setCandidateMoneySignals] = useState<CandidateMoneySignal[]>([]);
   const [approvedMoneySignals, setApprovedMoneySignals] = useState<ApprovedMoneySignal[]>([]);
+  const [outputPack, setOutputPack] = useState<OutputPack | null>(null);
+  const [outputPacks, setOutputPacks] = useState<OutputPack[]>([]);
   const approvedMoneyBuildSignals = approvedMoneySignals.map(
     convertApprovedMoneySignalToBuildSignal,
   );
@@ -5477,6 +5697,7 @@ export default function BilionAppClient({
       setRawSignals(readRawSignals());
       setCandidateMoneySignals(readCandidateMoneySignals());
       setApprovedMoneySignals(readApprovedMoneySignals());
+      setOutputPacks(readOutputPacks());
       setFreeUsageCount(readFreeUsageCount());
 
       const source = new URLSearchParams(window.location.search).get("source");
@@ -5624,6 +5845,31 @@ export default function BilionAppClient({
     saveResult(nextResult);
     incrementFreeUsage();
     setActiveWorkflowTab("studio");
+  }
+
+  function generateOutputPack(signal: BuildSignal) {
+    setOutputPack(buildOutputPackFromSignal(signal));
+    setCopyFeedback(null);
+  }
+
+  function saveOutputPack(pack: OutputPack) {
+    setOutputPacks((currentPacks) => {
+      const nextPacks = [
+        pack,
+        ...currentPacks.filter((currentPack) => currentPack.id !== pack.id),
+      ].slice(0, 30);
+
+      writeOutputPacks(nextPacks);
+      return nextPacks;
+    });
+    setCopyFeedback({
+      message: "Saved Output Pack",
+      tone: "success",
+    });
+  }
+
+  function clearOutputPack() {
+    setOutputPack(null);
   }
 
   function buildQueueAssetsFromCurrentBrief(seed: number): DistributionAsset[] {
@@ -6048,6 +6294,7 @@ export default function BilionAppClient({
                     opportunities={topMarketOpportunities}
                     moneySignals={topMoneySignalsForMarket}
                     selectedMarket={selectedMarket}
+                    onGenerateOutputPack={generateOutputPack}
                     onMarketChange={(market) => {
                       setSelectedMarket(market);
                       const [bestSignalForMarket] = getTopMoneySignalsForMarket(
@@ -6069,6 +6316,14 @@ export default function BilionAppClient({
                       setActiveWorkflowTab("studio");
                     }}
                   />
+                  {outputPack && (
+                    <OutputPackPanel
+                      outputPack={outputPack}
+                      savedCount={outputPacks.length}
+                      onClear={clearOutputPack}
+                      onSave={saveOutputPack}
+                    />
+                  )}
                   <SignalInboxSection
                     approvedCount={approvedMoneySignals.length}
                     candidate={candidateMoneySignals.find(
@@ -6881,12 +7136,14 @@ function StartHereBlock() {
 
 function MarketSelectionSection({
   moneySignals,
+  onGenerateOutputPack,
   onMarketChange,
   onSelectOpportunity,
   opportunities,
   selectedMarket,
 }: {
   moneySignals: BuildSignal[];
+  onGenerateOutputPack: (signal: BuildSignal) => void;
   onMarketChange: (market: (typeof marketOptions)[number]) => void;
   onSelectOpportunity: (signal: BuildSignal) => void;
   opportunities: BuildSignal[];
@@ -6975,6 +7232,13 @@ function MarketSelectionSection({
                 <MarketOpportunityField label="Buyer" value={detail.buyer} />
                 <MarketOpportunityField label="Paid pain" value={detail.paidPain} />
                 <MarketOpportunityField label="Possible first offer" value={detail.firstOffer} />
+                <button
+                  type="button"
+                  onClick={() => onGenerateOutputPack(signal)}
+                  className="mt-3 w-full rounded-xl border border-emerald-300/30 bg-emerald-300/[0.08] px-3 py-3 text-center text-xs font-black text-emerald-100 transition hover:bg-emerald-300/[0.14]"
+                >
+                  Generate Output Pack
+                </button>
               </article>
             );
           })}
@@ -7014,13 +7278,22 @@ function MarketSelectionSection({
                     Paid pain: {truncateDisplayText(signal.pain, 160)}
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => onSelectOpportunity(signal)}
-                  className="w-full rounded-xl bg-emerald-300 px-4 py-3 text-center text-sm font-black text-black transition hover:bg-emerald-200 lg:w-auto lg:rounded-2xl lg:px-5 lg:py-4"
-                >
-                  Generate Business Spark
-                </button>
+                <div className="flex w-full flex-col gap-2 lg:w-auto">
+                  <button
+                    type="button"
+                    onClick={() => onGenerateOutputPack(signal)}
+                    className="w-full rounded-xl bg-emerald-300 px-4 py-3 text-center text-sm font-black text-black transition hover:bg-emerald-200 lg:rounded-2xl lg:px-5 lg:py-4"
+                  >
+                    Generate Output Pack
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onSelectOpportunity(signal)}
+                    className="w-full rounded-xl border border-white/10 px-4 py-3 text-center text-sm font-black text-white transition hover:bg-white/[0.04] lg:rounded-2xl lg:px-5 lg:py-4"
+                  >
+                    Generate Business Spark
+                  </button>
+                </div>
               </div>
 
               <details className="mt-3 rounded-xl border border-white/10 bg-black/20 p-3 md:hidden">
@@ -7145,6 +7418,129 @@ function MarketOpportunityField({
         {normalizeDisplayText(value)}
       </p>
     </div>
+  );
+}
+
+function OutputPackPanel({
+  onClear,
+  onSave,
+  outputPack,
+  savedCount,
+}: {
+  onClear: () => void;
+  onSave: (pack: OutputPack) => void;
+  outputPack: OutputPack;
+  savedCount: number;
+}) {
+  const [copiedKey, setCopiedKey] = useState("");
+  const [copyError, setCopyError] = useState(false);
+  const outputSections = [
+    { key: "xPost", label: "X Post", value: outputPack.xPost },
+    {
+      key: "shortVideoScript",
+      label: "Short Video Script",
+      value: outputPack.shortVideoScript,
+    },
+    {
+      key: "carouselSlides",
+      label: "Carousel Slides",
+      value: outputPack.carouselSlides.join("\n\n"),
+    },
+    { key: "coldDm", label: "Cold DM", value: outputPack.coldDm },
+    {
+      key: "validationPlan",
+      label: "48h Validation Plan",
+      value: outputPack.validationPlan,
+    },
+    {
+      key: "codexBuildPrompt",
+      label: "Codex Build Prompt",
+      value: outputPack.codexBuildPrompt,
+    },
+  ];
+
+  async function copyOutput(key: string, value: string) {
+    const copied = await writeClipboardText(value);
+
+    setCopiedKey(copied ? key : "");
+    setCopyError(!copied);
+    window.setTimeout(() => {
+      setCopiedKey("");
+      setCopyError(false);
+    }, 1200);
+  }
+
+  return (
+    <section className="mt-4 w-full max-w-full overflow-hidden rounded-2xl border border-emerald-300/25 bg-[#0f1512] p-4 shadow-2xl md:rounded-3xl md:p-5">
+      <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <div className="min-w-0">
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+            Output Pack
+          </div>
+          <h3 className="mt-1 break-words text-lg font-black text-white md:text-2xl">
+            Generated from one Money Signal.
+          </h3>
+          <p className="mt-2 max-w-2xl break-words text-sm leading-relaxed text-zinc-400">
+            Same proof, buyer, paid pain, and first offer. Use these assets to sell first, then build only after replies.
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-wide">
+            <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-zinc-400">
+              {outputPack.market}
+            </span>
+            <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-zinc-400">
+              Saved {savedCount}
+            </span>
+          </div>
+        </div>
+        <div className="flex w-full flex-col gap-2 sm:flex-row lg:w-auto">
+          <button
+            type="button"
+            onClick={() => onSave(outputPack)}
+            className="w-full rounded-2xl bg-white px-5 py-3 text-center text-sm font-black text-black transition hover:bg-zinc-200 sm:w-auto"
+          >
+            Save Output Pack
+          </button>
+          <button
+            type="button"
+            onClick={onClear}
+            className="w-full rounded-2xl border border-white/10 px-5 py-3 text-center text-sm font-black text-zinc-300 transition hover:bg-white/[0.04] sm:w-auto"
+          >
+            Clear Output Pack
+          </button>
+        </div>
+      </div>
+
+      {copyError && (
+        <div className="mt-4 rounded-2xl border border-yellow-400/20 bg-yellow-400/10 px-4 py-3 text-sm font-bold text-yellow-100">
+          Clipboard blocked. Select the text and copy manually.
+        </div>
+      )}
+
+      <div className="mt-4 grid min-w-0 gap-4 lg:grid-cols-2">
+        {outputSections.map((section) => (
+          <article
+            key={section.key}
+            className="min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-black/35 p-4"
+          >
+            <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <h4 className="break-words text-sm font-black text-white">
+                {section.label}
+              </h4>
+              <button
+                type="button"
+                onClick={() => copyOutput(section.key, section.value)}
+                className="w-full rounded-xl border border-emerald-300/25 px-3 py-2 text-xs font-black text-emerald-100 transition hover:bg-emerald-300/10 sm:w-auto"
+              >
+                {copiedKey === section.key ? "Copied" : "Copy"}
+              </button>
+            </div>
+            <pre className="mt-3 max-h-[360px] max-w-full overflow-auto whitespace-pre-wrap break-words rounded-xl border border-white/10 bg-black/50 p-4 font-sans text-sm leading-6 text-zinc-100">
+              {section.value}
+            </pre>
+          </article>
+        ))}
+      </div>
+    </section>
   );
 }
 
