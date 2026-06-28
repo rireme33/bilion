@@ -3,7 +3,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-const businessSparkExamples = [
+const exampleOutputs = [
   {
     name: "Field Notes to Daily Reports",
     signal: "Construction teams are already using AI to turn messy site notes into standard reports.",
@@ -31,12 +31,13 @@ const businessSparkExamples = [
 ];
 
 const deliverables = [
+  "Market-backed money signals",
   "Buyer",
-  "Pain",
-  "First Offer",
-  "Launch copy / DM script",
+  "Paid pain",
+  "First offer",
+  "X post / carousel / DM",
   "48-hour validation plan",
-  "Codex Build Prompt",
+  "Codex-ready MVP prompt",
 ];
 
 function LanguageSwitch() {
@@ -74,11 +75,11 @@ function ButtonLink({
   );
 }
 
-function ExampleSparkCard({ item }: { item: (typeof businessSparkExamples)[number] }) {
+function ExampleOutputCard({ item }: { item: (typeof exampleOutputs)[number] }) {
   return (
     <article className="min-w-0 overflow-hidden rounded-lg border border-white/10 bg-[#111214] p-4 sm:p-5">
       <div className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
-        Business Spark
+        Money Signal
       </div>
       <h3 className="mt-3 break-words text-lg font-semibold leading-6 text-white">
         {item.name}
@@ -116,7 +117,7 @@ export default function HomePage() {
               <div className="truncate text-lg font-black tracking-tight transition group-hover:text-zinc-200">
                 Bilion
               </div>
-              <div className="truncate text-xs text-zinc-500">Codex Business Spark</div>
+              <div className="truncate text-xs text-zinc-500">Money Signal OS</div>
             </div>
           </Link>
           <LanguageSwitch />
@@ -125,22 +126,19 @@ export default function HomePage() {
         <section className="py-14 md:py-20">
           <div className="max-w-3xl">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
-              Codex Business Spark
+              Market → Signal → Output Pack → Test → Build
             </div>
             <h1 className="mt-5 break-words text-4xl font-semibold leading-tight tracking-tight md:text-6xl">
-              Turn free signals into paid offers.
+              Turn proven money signals into posts, DMs, and Codex-ready MVP prompts.
             </h1>
             <p className="mt-5 max-w-2xl break-words text-base leading-7 text-zinc-300 md:text-lg md:leading-8">
-              Bilion helps AI builders find a Codex business spark before they build.
-            </p>
-            <p className="mt-3 max-w-2xl break-words text-sm leading-6 text-zinc-500">
-              Pick a path. Get a buyer, pain, first offer, 48h test, and Codex prompt.
+              Pick a market, copy a revenue-backed signal, test the offer with posts and DMs, then build with Codex only after replies.
             </p>
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href="/app">Start with one sellable offer</ButtonLink>
-              <ButtonLink href="#example-sparks" variant="secondary">
-                See example sparks
+              <ButtonLink href="/app">Start with a money signal</ButtonLink>
+              <ButtonLink href="#example-outputs" variant="secondary">
+                See example outputs
               </ButtonLink>
             </div>
           </div>
@@ -172,26 +170,26 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="example-sparks" className="border-t border-white/10 py-10">
+        <section id="example-outputs" className="border-t border-white/10 py-10">
           <div className="mb-5 flex min-w-0 flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div className="min-w-0">
               <div className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
-                Example Business Sparks
+                Example outputs
               </div>
               <h2 className="mt-3 break-words text-2xl font-semibold tracking-tight">
-                Start from a real signal with a buyer attached.
+                Start from a real money signal with a buyer attached.
               </h2>
               <p className="mt-3 max-w-2xl break-words text-sm leading-6 text-zinc-500">
-                Each spark points to a buyer, pain, first offer, validation move, and eventual Codex Build Prompt.
+                Each output starts with a market signal, then turns it into a buyer, paid pain, first offer, validation move, and eventual Codex-ready MVP prompt.
               </p>
             </div>
             <Link href="/app" className="text-sm font-semibold text-zinc-400 transition hover:text-white">
-              Turn this into a Business Spark
+              Generate an Output Pack
             </Link>
           </div>
           <div className="grid min-w-0 gap-3 lg:grid-cols-3">
-            {businessSparkExamples.map((item) => (
-              <ExampleSparkCard key={item.name} item={item} />
+            {exampleOutputs.map((item) => (
+              <ExampleOutputCard key={item.name} item={item} />
             ))}
           </div>
         </section>
@@ -203,14 +201,14 @@ export default function HomePage() {
                 Free
               </div>
               <h2 className="mt-3 break-words text-2xl font-semibold tracking-tight">
-                3 free Business Sparks per day.
+                3 free Output Packs per day.
               </h2>
               <p className="mt-3 break-words text-sm leading-6 text-zinc-500">
-                Use Bilion to pick a path, test a first offer, and decide what deserves to be built.
+                Use Bilion to pick a market, test a first offer, and decide what deserves to be built.
               </p>
               <div className="mt-5">
                 <ButtonLink href="/app" variant="secondary">
-                  Start with one sellable offer
+                  Start with a money signal
                 </ButtonLink>
               </div>
             </article>
@@ -224,7 +222,7 @@ export default function HomePage() {
               </h2>
               <div className="mt-4 grid gap-2 text-sm leading-6 text-zinc-200">
                 {[
-                  "Unlimited Business Sparks",
+                  "Unlimited Output Packs",
                   "Full Launch Packs",
                   "Saved Winners",
                   "Full Codex Build Prompts",
