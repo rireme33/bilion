@@ -6235,12 +6235,12 @@ export default function BilionAppClient({
               Bilion
             </h1>
             <div className="mt-1 text-base font-bold text-zinc-200 md:mt-2 md:text-xl">
-              Bilion tells you what to sell this week.
+              Turn proven money signals into posts, DMs, and Codex-ready MVP prompts.
             </div>
 
             <p className="mt-3 max-w-2xl break-words text-sm leading-relaxed text-zinc-400 md:mt-4 md:text-base md:leading-7">
-              Pick a proven money pattern, copy a post or DM, and build with
-              Codex only after someone replies.
+              Pick a market, copy a proven money signal, test the offer, then
+              build with Codex only after replies.
             </p>
           </header>
 
@@ -6256,12 +6256,12 @@ export default function BilionAppClient({
             <div className="min-w-0 rounded-2xl border border-white/10 bg-[#101011] p-4 shadow-2xl md:rounded-3xl md:p-8">
               <h2 className="text-xl font-black tracking-tight md:text-2xl">
                 {activeWorkflowTab === "library"
-                  ? "Today's Opportunity"
-                  : "Business Spark Studio"}
+                  ? "Choose a market. Generate an Output Pack."
+                  : "Output Pack Studio"}
               </h2>
               <p className="mt-2 max-w-xl break-words text-sm leading-relaxed text-zinc-400 md:mt-3 md:leading-6">
                 {activeWorkflowTab === "library"
-                  ? "Pick one money pattern. Sell the small offer first. Build only after replies."
+                  ? "Choose a market, review the top revenue-backed signals, then generate an Output Pack with posts, DMs, a 48h validation plan, and a Codex prompt."
                   : `Free Business Sparks today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used.`}
               </p>
 
@@ -7094,10 +7094,10 @@ function StartHereBlock() {
       </div>
       <ol className="mt-3 grid gap-2 text-sm font-bold leading-6 text-zinc-100 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          "Pick one money pattern",
-          "Sell the small offer",
-          "Copy a post or DM",
-          "Build with Codex only after replies",
+          "Pick a market with money signals",
+          "Choose a revenue-backed signal",
+          "Generate an Output Pack",
+          "Test before building with Codex",
         ].map((step, index) => (
           <li
             key={step}
@@ -7145,14 +7145,14 @@ function MarketSelectionSection({
             Start here
           </div>
           <h3 className="mt-1 break-words text-xl font-black text-white md:text-3xl">
-            Choose a market with money signals
+            Pick a market with money signals.
           </h3>
           <p className="mt-2 max-w-2xl break-words text-sm leading-relaxed text-zinc-400 md:leading-6">
-            Pick a market, see proof that money already moves there, then test the best offer today.
+            Choose a market, review the top revenue-backed signals, then generate an Output Pack with posts, DMs, a 48h validation plan, and a Codex prompt.
           </p>
         </div>
         <div className="hidden rounded-full border border-white/10 bg-black/30 px-4 py-2 text-xs font-black uppercase tracking-wide text-zinc-400 md:block">
-          Money Proof &rarr; Pattern &rarr; Offer &rarr; Sell &rarr; Build
+          Market &rarr; Signal &rarr; Output Pack &rarr; Test &rarr; Build
         </div>
       </div>
 
