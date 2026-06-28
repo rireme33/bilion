@@ -1,8 +1,9 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
+import { canonicalMoneySignals, type MoneySignal } from "../../data/money-signals";
 import { showcaseItems } from "../showcase/showcase-data";
 
 type FreeIdea = {
@@ -137,6 +138,49 @@ type EvidenceDraft = {
   launchPackSeed: string;
 };
 
+type RawSignal = {
+  id: string;
+  sourceType: string;
+  sourceName: string;
+  subject: string;
+  body: string;
+  sourceUrl: string;
+  importedAt: string;
+  status: "candidate" | "approved" | "rejected";
+};
+
+type CandidateMoneySignal = {
+  id: string;
+  rawSignalId: string;
+  market: MarketOption;
+  source: string;
+  proof: string;
+  whatMoneyMoved: string;
+  buyer: string;
+  paidPain: string;
+  firstOffer: string;
+  score: number;
+  channels: string[];
+  confidence: "high" | "medium" | "low";
+  missingFields: string[];
+  extractionNotes: string;
+  status: "candidate" | "approved" | "rejected";
+};
+
+type ApprovedMoneySignal = {
+  id: string;
+  market: MarketOption;
+  source: string;
+  proof: string;
+  whatMoneyMoved: string;
+  buyer: string;
+  paidPain: string;
+  firstOffer: string;
+  score: number;
+  channels: string[];
+  approvedAt: string;
+};
+
 const marketOptions = [
   "Micro SaaS",
   "Freelance Dev",
@@ -152,6 +196,7 @@ const marketOptions = [
   "Real Estate",
   "Finance",
   "Developer Workflow",
+  "Agriculture / Field Ops",
 ] as const;
 
 type MarketOption = (typeof marketOptions)[number];
@@ -166,7 +211,7 @@ const appMarketOptions = [
   "Real Estate",
   "Finance",
   "Developer Workflow",
-  "AI Agency",
+  "Agriculture / Field Ops",
 ] as const satisfies readonly MarketOption[];
 
 type MarketSpecificOpportunity = {
@@ -222,6 +267,8 @@ type NormalizedOpportunity = {
   buildAfterReplies: string;
   selectedPath: MarketOption;
 };
+
+type CanonicalMoneySignal = MoneySignal;
 
 const provenMoneyPatterns: ProvenMoneyPattern[] = [
   {
@@ -604,7 +651,498 @@ const marketSpecificOpportunities: Record<MarketOption, MarketSpecificOpportunit
     ],
     whatToBuildOnlyAfterReplies: "PR URL/input -> changed-file summary -> risk checklist -> maintainer reply draft",
   },
+  "Agriculture / Field Ops": {
+    buyer: "small farms, greenhouse operators, and local field teams",
+    paidPain: "daily farm work is scattered across LINE messages, sensor logs, weather notes, crop checks, paper notes, and schedules",
+    whyNow: "Japanese farmers are already testing ChatGPT and Codex for practical farm work, but the first paid wedge is a manual daily operations cleanup",
+    firstOffer: "Farm Operations Cleanup Pack",
+    price: "JPY 9,800 one-time",
+    distributionChannel: "direct DM to small farms, farm consultants, greenhouse operators, and local field teams",
+    postHook: "Small farms do not need a full farm platform first. They need one messy operations day turned into a clean report.",
+    dmTarget: "small farms, greenhouse operators, farm consultants, local field businesses",
+    fortyEightHourValidation: [
+      "Pick 20 small farms or farm consultants.",
+      "Create one before/after sample manually.",
+      "DM the sample.",
+      "Ask if they would pay JPY 9,800.",
+      "Build only if 3 people reply.",
+    ],
+    whatToBuildOnlyAfterReplies: "LINE messages -> sensor notes -> crop checks -> daily report dashboard",
+  },
 };
+
+function getMoneySignalIdPrefix(source: "candidate" | "approved") {
+  return `signal-inbox-${source}`;
+}
+
+function splitSignalSentences(rawText: string) {
+  return rawText
+    .replace(/\s+/g, " ")
+    .split(/(?<=[.!?])\s+|\n+/g)
+    .map((sentence) => sentence.trim())
+    .filter(Boolean);
+}
+
+function getMoneyProofSentence(rawText: string) {
+  const moneyPattern =
+    /\b(mrr|arr|revenue|paid users?|customers?|launch|launched|sold|pricing|subscription|subscribers?|booked|sales|profit|income)\b|\$[\d,.]+|\/month|\/mo/i;
+  const sentences = splitSignalSentences(rawText);
+
+  return (
+    sentences.find((sentence) => moneyPattern.test(sentence)) ||
+    truncateEvidenceText(rawText, 180)
+  );
+}
+
+function getSignalInboxMarket(rawText: string): MarketOption {
+  const text = rawText.toLowerCase();
+
+  if (/farm|farmer|agriculture|greenhouse|crop|sensor|field ops|line/.test(text)) {
+    return "Agriculture / Field Ops";
+  }
+
+  if (/clinic|dental|patient|therapy|appointment|front desk|healthcare|med spa/.test(text)) {
+    return "Healthcare";
+  }
+
+  if (/contractor|construction|jobsite|roofing|remodel|field note|daily report/.test(text)) {
+    return "Construction";
+  }
+
+  if (/shopify|ecommerce|dtc|cart|sku|product page|returns?|checkout/.test(text)) {
+    return "Ecommerce";
+  }
+
+  if (/creator|newsletter|youtube|tiktok|gumroad|course|audience|comment/.test(text)) {
+    return "Creators";
+  }
+
+  if (/law firm|lawyer|attorney|legal|intake|immigration|estate planning/.test(text)) {
+    return "Legal";
+  }
+
+  if (/property|tenant|leasing|real estate|rental|maintenance request/.test(text)) {
+    return "Real Estate";
+  }
+
+  if (/bookkeeper|accountant|cfo|receipt|month-end|transaction|finance/.test(text)) {
+    return "Finance";
+  }
+
+  if (/github|repo|developer|devtool|pull request|issue|maintainer|setup/.test(text)) {
+    return "Developer Workflow";
+  }
+
+  return "Local Business";
+}
+
+function getSignalInboxBuyer(rawText: string, market: MarketOption) {
+  const explicitBuyer = getEvidenceLine(rawText, ["buyer", "customer", "who pays"]);
+
+  if (explicitBuyer) {
+    return explicitBuyer;
+  }
+
+  const buyerByMarket: Record<MarketOption, string> = {
+    "Micro SaaS": "niche operators with a repeated paid workflow",
+    "Freelance Dev": "founders and operators paying for implementation help",
+    "Business Automation": "operators with repeated admin work and messy handoffs",
+    "Digital Product": "buyers looking for a checklist, template, or prompt pack",
+    "AI Agency": "AI agency beginners selling implementation to local operators",
+    "Local Business": "local service owners with visible customer messages, reviews, or missed leads",
+    Healthcare: "clinic managers and front-desk operators with appointment and patient-message bottlenecks",
+    Construction: "small contractors and field operators turning messy updates into client-ready reports",
+    Ecommerce: "Shopify and DTC operators with product-page, support, return, or checkout friction",
+    Creators: "creators with repeated audience questions across comments, replies, and DMs",
+    Legal: "solo lawyers and small firm intake teams handling messy prospect requests",
+    "Real Estate": "property managers and leasing teams handling tenant or prospect messages",
+    Finance: "bookkeepers, accountants, and fractional CFOs handling messy client records",
+    "Developer Workflow": "devtool founders and open-source maintainers with repeated support questions",
+    "Agriculture / Field Ops": "small farms, greenhouse operators, and local field teams",
+  };
+
+  return buyerByMarket[market];
+}
+
+function getSignalInboxPaidPain(rawText: string, market: MarketOption) {
+  const explicitPain = getEvidenceLine(rawText, ["paid pain", "pain", "problem"]);
+
+  if (explicitPain) {
+    return explicitPain;
+  }
+
+  const painByMarket: Record<MarketOption, string> = {
+    "Micro SaaS": "a repeated paid workflow is still tracked across scattered tools",
+    "Freelance Dev": "implementation details are stuck in messy notes, bugs, and manual handoffs",
+    "Business Automation": "manual admin work repeats every week and breaks when one person is busy",
+    "Digital Product": "the buyer wants a packaged shortcut instead of figuring out the process alone",
+    "AI Agency": "leads and client use cases arrive from multiple channels without a fast follow-up system",
+    "Local Business": "customer messages, reviews, and leads are visible but not answered fast or consistently",
+    Healthcare: "patient requests, cancellations, callbacks, and prep questions pile up at the front desk",
+    Construction: "field notes, photos, voice notes, and client updates are scattered before reporting",
+    Ecommerce: "buyers hesitate or ask support because product pages do not answer purchase objections clearly",
+    Creators: "audience questions are scattered across comments and DMs, so paid product angles are missed",
+    Legal: "prospect emails lack facts, deadlines, documents, and matter details before a consult",
+    "Real Estate": "tenant or prospect messages must be rewritten into vendor-ready or leasing follow-up actions",
+    Finance: "client receipts, transactions, and notes arrive incomplete before month-end cleanup",
+    "Developer Workflow": "users repeat the same setup, issue, and PR questions before activation or merge",
+    "Agriculture / Field Ops": "farm work is scattered across LINE, sensor logs, weather notes, crop checks, and schedules",
+  };
+
+  return painByMarket[market];
+}
+
+function getSignalInboxChannels(rawText: string, market: MarketOption) {
+  const explicitChannel = getEvidenceLine(rawText, ["channel", "channels", "distribution"]);
+
+  if (explicitChannel) {
+    return explicitChannel
+      .split(/,|;/g)
+      .map((channel) => channel.trim())
+      .filter(Boolean)
+      .slice(0, 4);
+  }
+
+  const channelsByMarket: Record<MarketOption, string[]> = {
+    "Micro SaaS": ["X posts", "founder communities", "cold DM"],
+    "Freelance Dev": ["LinkedIn", "founder DMs", "Upwork-style outreach"],
+    "Business Automation": ["operator DMs", "LinkedIn", "niche communities"],
+    "Digital Product": ["X posts", "Gumroad pages", "creator DMs"],
+    "AI Agency": ["X posts", "GoHighLevel groups", "AI agency beginner DMs"],
+    "Local Business": ["Google Maps", "Instagram DM", "local owner email"],
+    Healthcare: ["clinic manager email", "LinkedIn clinic operators", "front-desk groups"],
+    Construction: ["LinkedIn contractor operators", "Facebook construction groups", "direct DM"],
+    Ecommerce: ["Shopify founder X", "ecommerce groups", "store owner email"],
+    Creators: ["X creator threads", "newsletter replies", "creator DMs"],
+    Legal: ["LinkedIn legal ops", "small firm email", "local bar groups"],
+    "Real Estate": ["property manager groups", "LinkedIn multifamily ops", "direct email"],
+    Finance: ["bookkeeper groups", "LinkedIn CFO posts", "finance operator DMs"],
+    "Developer Workflow": ["GitHub issues", "devtool X", "maintainer DMs"],
+    "Agriculture / Field Ops": ["direct DM", "farm consultants", "local operators"],
+  };
+
+  return channelsByMarket[market];
+}
+
+function getSignalInboxFirstOffer(rawText: string, market: MarketOption, paidPain: string) {
+  const explicitOffer = getEvidenceLine(rawText, ["first offer", "offer"]);
+
+  if (explicitOffer && !softwareFirstOfferPattern.test(explicitOffer)) {
+    return explicitOffer;
+  }
+
+  const offerByMarket: Record<MarketOption, string> = {
+    "Micro SaaS": "$19 Paid Waitlist Report",
+    "Freelance Dev": "$499 Manual Implementation Audit",
+    "Business Automation": "$299 Setup Assessment",
+    "Digital Product": "$29 Checklist and Prompt Pack",
+    "AI Agency": "$49 Lead Leak Audit",
+    "Local Business": "$99 Missed Lead or Review Cleanup Pack",
+    Healthcare: "$199 Front Desk Recovery Script Pack",
+    Construction: "$99 Daily Report Cleanup Pack",
+    Ecommerce: "$79 Product Page Conversion Cleanup",
+    Creators: "$29 Audience Question Product Map",
+    Legal: "$299 Intake Summary Setup",
+    "Real Estate": "$199 Maintenance Request Cleanup Pack",
+    Finance: "$99 Month-End Cleanup Brief",
+    "Developer Workflow": "$19 Repo Setup FAQ Pack",
+    "Agriculture / Field Ops": "JPY 9,800 Farm Operations Cleanup Pack",
+  };
+
+  const offer = offerByMarket[market];
+
+  return paidPain.length > 80 ? offer : `${offer}`;
+}
+
+function getSignalInboxWhatMoneyMoved(rawText: string, proof: string, firstOffer: string) {
+  const explicitWhatMoved = getEvidenceLine(rawText, [
+    "what money moved",
+    "what sold",
+    "revenue",
+    "pricing",
+  ]);
+
+  if (explicitWhatMoved) {
+    return explicitWhatMoved;
+  }
+
+  if (/\bmrr|arr|subscription|\/month|\/mo\b/i.test(rawText)) {
+    return "Subscription revenue or recurring paid access around this workflow.";
+  }
+
+  if (/sold|launch|customers?|paid users?/i.test(rawText)) {
+    return "Customers paid for a small product, service, or packaged workflow.";
+  }
+
+  return `${firstOffer} is the manual-first wedge suggested by this proof: ${proof}`;
+}
+
+function getCandidateScore(args: {
+  buyer: string;
+  firstOffer: string;
+  paidPain: string;
+  proof: string;
+}) {
+  let score = 50;
+
+  if (/\$[\d,.]+|mrr|arr|revenue|paid users?|customers?|sold|subscription|\/month|\/mo/i.test(args.proof)) {
+    score += 18;
+  }
+
+  if (args.buyer.length > 35) {
+    score += 10;
+  }
+
+  if (args.paidPain.length > 55) {
+    score += 10;
+  }
+
+  if (/\b(pack|audit|cleanup|checklist|setup|assessment|brief|script|template)\b/i.test(args.firstOffer)) {
+    score += 7;
+  }
+
+  return Math.min(95, score);
+}
+
+function extractCandidateMoneySignal(rawText: string, sourceType: string): {
+  candidate: CandidateMoneySignal;
+  rawSignal: RawSignal;
+} {
+  const trimmedText = rawText.trim();
+  const market = getSignalInboxMarket(trimmedText);
+  const proof = getMoneyProofSentence(trimmedText);
+  const buyer = getSignalInboxBuyer(trimmedText, market);
+  const paidPain = getSignalInboxPaidPain(trimmedText, market);
+  const firstOffer = getSignalInboxFirstOffer(trimmedText, market, paidPain);
+  const whatMoneyMoved = getSignalInboxWhatMoneyMoved(trimmedText, proof, firstOffer);
+  const channels = getSignalInboxChannels(trimmedText, market);
+  const missingFields = [
+    /\$[\d,.]+|mrr|arr|revenue|paid users?|customers?|sold|subscription|\/month|\/mo/i.test(proof)
+      ? ""
+      : "strong money proof",
+    buyer ? "" : "buyer",
+    paidPain ? "" : "paid pain",
+    /\b(pack|audit|cleanup|checklist|setup|assessment|brief|script|template)\b/i.test(firstOffer)
+      ? ""
+      : "manual-first first offer",
+  ].filter(Boolean);
+  const score = getCandidateScore({ buyer, firstOffer, paidPain, proof });
+  const confidence =
+    missingFields.length === 0 && score >= 80
+      ? "high"
+      : missingFields.length <= 1 && score >= 68
+        ? "medium"
+        : "low";
+  const importedAt = new Date().toISOString();
+  const rawSignal: RawSignal = {
+    id: `raw-signal-${Date.now()}`,
+    sourceType,
+    sourceName: sourceType,
+    subject: truncateEvidenceText(proof, 90),
+    body: trimmedText,
+    sourceUrl: "",
+    importedAt,
+    status: "candidate",
+  };
+
+  return {
+    rawSignal,
+    candidate: {
+      id: `${getMoneySignalIdPrefix("candidate")}-${Date.now()}`,
+      rawSignalId: rawSignal.id,
+      market,
+      source: sourceType,
+      proof,
+      whatMoneyMoved,
+      buyer,
+      paidPain,
+      firstOffer,
+      score,
+      channels,
+      confidence,
+      missingFields,
+      extractionNotes:
+        "Rule-based extraction. Approve only if the proof, buyer, paid pain, and manual-first offer are specific enough to test today.",
+      status: "candidate",
+    },
+  };
+}
+
+function convertCandidateToApprovedMoneySignal(
+  candidate: CandidateMoneySignal,
+): ApprovedMoneySignal {
+  return {
+    id: `${getMoneySignalIdPrefix("approved")}-${candidate.id}`,
+    market: candidate.market,
+    source: candidate.source,
+    proof: candidate.proof,
+    whatMoneyMoved: candidate.whatMoneyMoved,
+    buyer: candidate.buyer,
+    paidPain: candidate.paidPain,
+    firstOffer: candidate.firstOffer,
+    score: candidate.score,
+    channels: candidate.channels,
+    approvedAt: new Date().toISOString(),
+  };
+}
+
+function getApprovedMoneySignalId(signal: ApprovedMoneySignal) {
+  return `${getMoneySignalIdPrefix("approved")}-${signal.id}`;
+}
+
+function getApprovedBuildAfterReplies(signal: ApprovedMoneySignal) {
+  return getCanonicalBuildAfterReplies({
+    id: signal.id,
+    market: signal.market,
+    source: signal.source,
+    proof: signal.proof,
+    whatMoneyMoved: signal.whatMoneyMoved,
+    buyer: signal.buyer,
+    paidPain: signal.paidPain,
+    firstOffer: signal.firstOffer,
+    score: Math.round(signal.score / 2),
+    channels: signal.channels,
+  });
+}
+
+function convertApprovedMoneySignalToBuildSignal(signal: ApprovedMoneySignal): BuildSignal {
+  const buildAfterReplies = getApprovedBuildAfterReplies(signal);
+  const validationSteps = buildDirect48hValidationPlan({
+    buyer: signal.buyer,
+    buildAfterReplies,
+    pain: signal.paidPain,
+    price: signal.firstOffer,
+  });
+
+  return {
+    id: getApprovedMoneySignalId(signal),
+    latestSignal: `${signal.proof} What money moved: ${signal.whatMoneyMoved}`,
+    sourceTitle: signal.firstOffer,
+    sourceUrl: "",
+    sourceType: signal.market,
+    sourceNote: `Signal Inbox. Source: ${signal.source}. Channels: ${signal.channels.join(", ")}. Money signal score ${signal.score}/95.`,
+    signalSourceLabel: "Signal Inbox",
+    buyer: signal.buyer,
+    pain: signal.paidPain,
+    whyNow: `${signal.proof} ${signal.whatMoneyMoved}`,
+    whatYouCanBuild: buildAfterReplies,
+    coreFeatures: buildAfterReplies
+      .split("->")
+      .map((feature) => feature.trim())
+      .filter(Boolean),
+    comparablePrice: signal.firstOffer,
+    buildSteps: [
+      `Pick 20 reachable buyers from: ${signal.channels.join(", ")}.`,
+      "Create one before/after sample manually.",
+      "DM the sample.",
+      `Ask if they want ${signal.firstOffer}.`,
+      "Build only if 3 people reply.",
+    ],
+    patternMatches: [
+      `Money proof: ${signal.proof}`,
+      `What sold: ${signal.whatMoneyMoved}`,
+      `Market: ${signal.market}`,
+      `Money signal score ${signal.score}/95`,
+    ],
+    codeXPrompt: `Build this only after replies. Source: Signal Inbox. Market: ${signal.market}. Buyer: ${signal.buyer}. Paid pain: ${signal.paidPain}. First offer: ${signal.firstOffer}. Build later: ${buildAfterReplies}.`,
+  };
+}
+
+function getCanonicalMoneySignalId(signal: CanonicalMoneySignal) {
+  return `canonical-${signal.id}`;
+}
+
+function getCanonicalMoneySignalForBuildSignal(signal: BuildSignal) {
+  return canonicalMoneySignals.find(
+    (canonicalSignal) => getCanonicalMoneySignalId(canonicalSignal) === signal.id,
+  );
+}
+
+function getCanonicalBuildAfterReplies(signal: CanonicalMoneySignal) {
+  const buildByMarket: Partial<Record<MarketOption, string>> = {
+    "Local Business": "review reply approval board -> follow-up message drafts -> owner copy buttons",
+    Healthcare: "front-desk recovery script board -> callback checklist -> patient reply drafts",
+    Construction: "field note intake -> photo summary -> daily report PDF",
+    Ecommerce: "product page cleanup form -> FAQ rewrite -> objection checklist",
+    Creators: "audience question intake -> offer map -> launch post drafts",
+    Legal: "intake summary form -> missing-facts checklist -> client email drafts",
+    "Real Estate": "maintenance request intake -> vendor-ready work order -> tenant reply drafts",
+    Finance: "receipt note intake -> missing-info checklist -> client clarification emails",
+    "Developer Workflow": "repo issue intake -> setup FAQ draft -> maintainer reply templates",
+    "Agriculture / Field Ops": "LINE note intake -> crop and sensor summary -> daily report dashboard",
+  };
+
+  return buildByMarket[signal.market] || "manual intake -> cleanup output -> buyer-ready report";
+}
+
+function buildCanonicalMoneySignal(signal: CanonicalMoneySignal): BuildSignal {
+  const buildAfterReplies = getCanonicalBuildAfterReplies(signal);
+  const validationSteps = buildDirect48hValidationPlan({
+    buyer: signal.buyer,
+    buildAfterReplies,
+    pain: signal.paidPain,
+    price: signal.firstOffer,
+  });
+
+  return {
+    id: getCanonicalMoneySignalId(signal),
+    latestSignal: `${signal.proof} What money moved: ${signal.whatMoneyMoved}`,
+    sourceTitle: signal.firstOffer,
+    sourceUrl: "",
+    sourceType: signal.market,
+    sourceNote: `${signal.source}. Channels: ${signal.channels.join(", ")}`,
+    signalSourceLabel: signal.market,
+    buyer: signal.buyer,
+    pain: signal.paidPain,
+    whyNow: `${signal.proof} ${signal.whatMoneyMoved}`,
+    whatYouCanBuild: buildAfterReplies,
+    coreFeatures: buildAfterReplies
+      .split("->")
+      .map((feature) => feature.trim())
+      .filter(Boolean),
+    comparablePrice: signal.firstOffer,
+    buildSteps: [
+      `Post hook: ${signal.buyer} are already paying attention to this pain: ${signal.paidPain}.`,
+      `DM target: ${signal.channels.join(", ")}.`,
+      ...validationSteps,
+    ],
+    patternMatches: [
+      `Money proof: ${signal.proof}`,
+      `What sold: ${signal.whatMoneyMoved}`,
+      `Market: ${signal.market}`,
+      `Canonical score ${signal.score}/50`,
+      `Channels: ${signal.channels.join(", ")}`,
+    ],
+    codeXPrompt: `Build this only after replies. Market: ${signal.market}. Buyer: ${signal.buyer}. Paid pain: ${signal.paidPain}. First offer: ${signal.firstOffer}. Build later: ${buildAfterReplies}.`,
+  };
+}
+
+function getCanonicalOpportunityFields(signal: CanonicalMoneySignal) {
+  const buildAfterReplies = getCanonicalBuildAfterReplies(signal);
+  const validationSteps = buildDirect48hValidationPlan({
+    buyer: signal.buyer,
+    buildAfterReplies,
+    pain: signal.paidPain,
+    price: signal.firstOffer,
+  });
+  const postHook = `${signal.buyer} do not need a full platform first. They need ${signal.firstOffer} for this paid pain: ${signal.paidPain}.`;
+
+  return {
+    proof: signal.proof,
+    whatSold: signal.whatMoneyMoved,
+    pattern: signal.source,
+    whyMoneyChangedHands: signal.paidPain,
+    buyer: signal.buyer,
+    paidPain: signal.paidPain,
+    firstOffer: signal.firstOffer,
+    price: getManualOfferPrice(signal.firstOffer),
+    postHook,
+    dmScript: `Quick idea: I found this signal: ${signal.proof}. I am testing ${signal.firstOffer} manually before building anything. Want me to make one before/after sample for your case?`,
+    distribution: signal.channels.join(", "),
+    fortyEightHourTest: validationSteps.join("\n"),
+    buildAfterReplies: buildCodexAfterRepliesLine(buildAfterReplies),
+  };
+}
 
 function getProvenMoneyPatternForMarket(market: MarketOption) {
   return (
@@ -623,7 +1161,7 @@ function getProvenMoneyPatternForSignal(signal: BuildSignal) {
 }
 
 function getPathFirstOfferPrice(market: MarketOption, sourceText: string) {
-  if (/jpy|¥|farm|farmer|line/i.test(sourceText)) {
+  if (/jpy|ﾂ･|farm|farmer|line/i.test(sourceText)) {
     return "JPY 9,800 one-time.";
   }
 
@@ -755,10 +1293,7 @@ function getMarketSpecificSignalId(market: MarketOption) {
 
 function getMarketSpecificContextForSignal(signal: BuildSignal) {
   const market = marketOptions.find(
-    (option) =>
-      signal.id === getMarketSpecificSignalId(option) ||
-      signal.sourceType === option ||
-      signal.signalSourceLabel === option,
+    (option) => signal.id === getMarketSpecificSignalId(option),
   );
 
   return market
@@ -855,82 +1390,16 @@ function buildMarketFallbackSignal(
 }
 
 function getStaticMoneySignalsForMarket(market: MarketOption): BuildSignal[] {
-  const fallbackByMarket: Partial<Record<MarketOption, Array<[string, string, string]>>> = {
-    Construction: [
-      [
-        "Contractor daily report cleanup",
-        "Small contractors already pay for client-ready daily reports when field notes are messy.",
-        "$99 Daily Report Cleanup Pack",
-      ],
-      [
-        "Jobsite photo summary signal",
-        "Roofing and remodeling teams lose time turning photos and voice notes into client updates.",
-        "$79 Field Notes Cleanup Pack",
-      ],
-      [
-        "Construction handoff signal",
-        "Ops managers need yesterday's WhatsApp updates turned into a clear work summary.",
-        "$149 Jobsite Handoff Audit",
-      ],
-    ],
-    Healthcare: [
-      [
-        "Clinic cancellation recovery signal",
-        "Front desks lose billable slots when cancellations and voicemail callbacks pile up.",
-        "$199 Cancellation Recovery Script Pack",
-      ],
-      [
-        "Dental front desk callback signal",
-        "Dental offices pay when missed callbacks become same-day patient recovery scripts.",
-        "$149 Callback Cleanup Pack",
-      ],
-      [
-        "Therapy office intake signal",
-        "Therapy offices need messy patient notes turned into clean front-desk follow-up tasks.",
-        "$199 Intake Follow-up Audit",
-      ],
-    ],
-    "Developer Workflow": [
-      [
-        "GitHub setup questions signal",
-        "Devtool teams spend support time answering the same setup questions across issues and discussions.",
-        "$19 Repo Setup FAQ Pack",
-      ],
-      [
-        "AI pull request risk signal",
-        "Maintainers need AI-generated PRs turned into reviewable scope, test, and rollback notes.",
-        "$19 PR Risk Summary Pack",
-      ],
-      [
-        "Issue triage signal",
-        "Open-source maintainers pay in time when repeated issues are not turned into clear maintainer replies.",
-        "$29 Issue Reply Cleanup Pack",
-      ],
-    ],
-  };
-  const fallbacks =
-    fallbackByMarket[market] ||
-    [
-      [
-        `${market} paid pain signal`,
-        marketSpecificOpportunities[market].whyNow,
-        marketSpecificOpportunities[market].firstOffer,
-      ],
-      [
-        `${market} buyer reply signal`,
-        marketSpecificOpportunities[market].paidPain,
-        marketSpecificOpportunities[market].firstOffer,
-      ],
-      [
-        `${market} manual cleanup signal`,
-        marketSpecificOpportunities[market].postHook,
-        marketSpecificOpportunities[market].firstOffer,
-      ],
-    ];
+  const canonicalSignals = canonicalMoneySignals
+    .filter((signal) => signal.market === market)
+    .sort((a, b) => b.score - a.score)
+    .map(buildCanonicalMoneySignal);
 
-  return fallbacks.map(([title, proof, offer], index) =>
-    buildMarketFallbackSignal(market, index + 1, title, proof, offer),
-  );
+  if (canonicalSignals.length >= 3) {
+    return canonicalSignals.slice(0, 3);
+  }
+
+  return [...canonicalSignals, buildMarketSpecificSignal(market)].slice(0, 3);
 }
 
 const nextActionOptions: Array<{
@@ -1220,6 +1689,9 @@ const DISTRIBUTION_QUEUE_STORAGE_KEY = "bilion.distributionQueue";
 const VALIDATION_RECORDS_STORAGE_KEY = "bilion.validationRecords";
 const EVIDENCE_DRAFTS_STORAGE_KEY = "bilion.evidenceDrafts";
 const APPROVED_EVIDENCE_STORAGE_KEY = "bilion.approvedEvidenceSignals";
+const RAW_SIGNAL_INBOX_STORAGE_KEY = "bilion_raw_signals";
+const CANDIDATE_MONEY_SIGNALS_STORAGE_KEY = "bilion_candidate_money_signals";
+const APPROVED_MONEY_SIGNALS_STORAGE_KEY = "bilion_approved_money_signals";
 const FREE_GENERATION_LIMIT = 3;
 const FREE_USAGE_STORAGE_KEY_EN = "bilion_free_generation_count_en";
 const MAX_SAVED_SIGNALS = 10;
@@ -2340,11 +2812,11 @@ function cleanSignalText(value: string) {
     .replace(/[\uE000-\uF8FF\uFFFD]/g, "")
     .replace(/[\u200B-\u200D\uFEFF]/g, "")
     .replace(/[\u{1F000}-\u{1FAFF}]/gu, "")
-    .replace(/^[\s\u3000-\u303F\u3040-\u30FF\u3400-\u9FFF々〆〤〳-〵〻・･:|/,.，、。-]+/u, "")
-    .replace(/[\s\u3000-\u303F\u3040-\u30FF\u3400-\u9FFF々〆〤〳-〵〻・･:|/,.，、。-]+$/u, "")
+    .replace(/^[\s:|/,.-]+/g, "")
+    .replace(/[\s:|/,.-]+$/g, "")
     .replace(/\s+/g, " ")
     .replace(/\s*[:|/,-]\s*$/g, "")
-    .replace(/^[\s:|/,.・-]+/g, "")
+    .replace(/^[\s:|/,.-]+/g, "")
     .trim();
 }
 
@@ -2446,6 +2918,18 @@ function getSignalEvidenceLevel(signal: BuildSignal) {
 }
 
 function getSignalOpportunityScore(signal: BuildSignal) {
+  const scoreText = `${signal.sourceNote} ${signal.patternMatches.join(" ")}`;
+  const inboxScore = scoreText.match(/Money signal score\s+(\d+)\/95/i);
+  const canonicalScore = scoreText.match(/Canonical score\s+(\d+)\/50/i);
+
+  if (inboxScore?.[1]) {
+    return Math.min(50, Math.max(1, Math.round((Number(inboxScore[1]) / 95) * 50)));
+  }
+
+  if (canonicalScore?.[1]) {
+    return Math.min(50, Math.max(1, Number(canonicalScore[1])));
+  }
+
   const evidenceLevel = getSignalEvidenceLevel(signal);
   const evidenceScore =
     evidenceLevel === "Strong" ? 14 : evidenceLevel === "Medium" ? 10 : 7;
@@ -2498,6 +2982,10 @@ function getSignalMarket(signal: BuildSignal) {
 
   if (/healthcare|clinic|dental|therapy|appointment|patient|cancellation|voicemail/.test(haystack)) {
     return "Healthcare";
+  }
+
+  if (/agriculture|farm|farmer|greenhouse|crop|sensor log|field ops|field crew|line note|line message/.test(haystack)) {
+    return "Agriculture / Field Ops";
   }
 
   if (/construction|contractor|jobsite|field note|daily report|roofing|remodel/.test(haystack)) {
@@ -2564,7 +3052,7 @@ function getTopMoneySignalsForMarket(signals: BuildSignal[], market: MarketOptio
   const fallbackSignals = getStaticMoneySignalsForMarket(market);
   const seenIds = new Set<string>();
 
-  return [...matchedSignals, ...fallbackSignals]
+  return [...fallbackSignals, ...matchedSignals]
     .filter((signal) => {
       if (seenIds.has(signal.id)) {
         return false;
@@ -2573,6 +3061,7 @@ function getTopMoneySignalsForMarket(signals: BuildSignal[], market: MarketOptio
       seenIds.add(signal.id);
       return true;
     })
+    .sort((a, b) => getSignalOpportunityScore(b) - getSignalOpportunityScore(a))
     .slice(0, 3);
 }
 
@@ -2602,6 +3091,37 @@ function getExpectedFirstOffer(signal: BuildSignal) {
 }
 
 function getOpportunityDetailFields(signal: BuildSignal) {
+  if (signal.id.startsWith(getMoneySignalIdPrefix("approved"))) {
+    const validationSteps = buildDirect48hValidationPlan({
+      buyer: signal.buyer,
+      buildAfterReplies: signal.whatYouCanBuild,
+      pain: signal.pain,
+      price: signal.comparablePrice,
+    });
+
+    return {
+      proof: signal.latestSignal,
+      whatSold: signal.whyNow,
+      pattern: signal.sourceNote,
+      whyMoneyChangedHands: signal.pain,
+      buyer: signal.buyer,
+      paidPain: signal.pain,
+      firstOffer: signal.comparablePrice,
+      price: getManualOfferPrice(signal.comparablePrice),
+      postHook: `${signal.buyer} do not need a full platform first. They need ${signal.comparablePrice} because ${signal.pain}.`,
+      dmScript: `Quick idea: I found this signal: ${signal.latestSignal}. I am testing ${signal.comparablePrice} manually before building anything. Want me to make one before/after sample for your case?`,
+      distribution: signal.sourceNote,
+      fortyEightHourTest: validationSteps.join("\n"),
+      buildAfterReplies: buildCodexAfterRepliesLine(signal.whatYouCanBuild),
+    };
+  }
+
+  const canonicalSignal = getCanonicalMoneySignalForBuildSignal(signal);
+
+  if (canonicalSignal) {
+    return getCanonicalOpportunityFields(canonicalSignal);
+  }
+
   const context = getMarketSpecificContextForSignal(signal);
 
   if (context) {
@@ -3260,6 +3780,59 @@ function getSeedSearchText(signal: BuildSignal) {
   ].join(" ").toLowerCase();
 }
 
+function buildHighQualitySparkFromCanonicalSignal(signal: BuildSignal): HighQualityBusinessSpark | null {
+  const canonicalSignal = getCanonicalMoneySignalForBuildSignal(signal);
+
+  if (!canonicalSignal) {
+    return null;
+  }
+
+  const fields = getCanonicalOpportunityFields(canonicalSignal);
+  const validationSteps = fields.fortyEightHourTest.split("\n").filter(Boolean);
+  const buildLater = getCanonicalBuildAfterReplies(canonicalSignal);
+
+  return {
+    path: canonicalSignal.market,
+    sparkTitle: canonicalSignal.firstOffer,
+    whyItWorks: `${canonicalSignal.proof} ${canonicalSignal.whatMoneyMoved}`,
+    buyer: canonicalSignal.buyer,
+    pain: canonicalSignal.paidPain,
+    firstOffer: canonicalSignal.firstOffer,
+    distributionChannel: canonicalSignal.channels.join(", "),
+    dmTarget: canonicalSignal.buyer,
+    fortyEightHourTest: validationSteps,
+    launchPost: `${fields.postHook}\n\nMoney proof: ${canonicalSignal.proof}\nWhat sold: ${canonicalSignal.whatMoneyMoved}\nBusiness Spark: ${canonicalSignal.firstOffer}\nBuyer: ${canonicalSignal.buyer}\nPain: ${canonicalSignal.paidPain}\nFirst offer: ${canonicalSignal.firstOffer}\nTest: ${validationSteps.join(" ")}`,
+    dmScript: fields.dmScript,
+    codexPromptPreview: `Build after replies. Start with ${buildLater}.`,
+    codexBuildPrompt: `Build this only after someone replies, clicks, or asks for the offer. Money proof: ${canonicalSignal.proof}. What money moved: ${canonicalSignal.whatMoneyMoved}. Market: ${canonicalSignal.market}. Build a mobile-first MVP for ${canonicalSignal.buyer}. Paid pain: ${canonicalSignal.paidPain}. First offer already tested: ${canonicalSignal.firstOffer}. Build only this first version: ${buildLater}. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no payment integration, and no external APIs. Include an offer overview, input form, generated output, saved examples, launch copy, DM script, copy buttons, and validation panel. The validation panel must include this 48-hour plan: ${validationSteps.join(" ")}. Done criteria: it should be demo-ready, mobile-first, and useful for testing demand before building a real SaaS.`,
+  };
+}
+
+function buildHighQualitySparkFromSignalInbox(signal: BuildSignal): HighQualityBusinessSpark | null {
+  if (!signal.id.startsWith(getMoneySignalIdPrefix("approved"))) {
+    return null;
+  }
+
+  const detail = getOpportunityDetailFields(signal);
+  const validationSteps = detail.fortyEightHourTest.split("\n").filter(Boolean);
+
+  return {
+    path: getSignalMarket(signal),
+    sparkTitle: signal.sourceTitle,
+    whyItWorks: `${detail.proof} ${detail.whatSold}`,
+    buyer: detail.buyer,
+    pain: detail.paidPain,
+    firstOffer: detail.firstOffer,
+    distributionChannel: detail.distribution,
+    dmTarget: detail.buyer,
+    fortyEightHourTest: validationSteps,
+    launchPost: `${detail.postHook}\n\nMoney proof: ${detail.proof}\nWhat moved: ${detail.whatSold}\nBusiness Spark: ${detail.firstOffer}\nBuyer: ${detail.buyer}\nPaid pain: ${detail.paidPain}\n48h test: ${validationSteps.join(" ")}`,
+    dmScript: detail.dmScript,
+    codexPromptPreview: `Build after replies. Start with ${detail.buildAfterReplies}.`,
+    codexBuildPrompt: `Build this only after someone replies, clicks, or asks for the offer. Source: Signal Inbox. Money proof: ${detail.proof}. What money moved: ${detail.whatSold}. Market: ${getSignalMarket(signal)}. Buyer: ${detail.buyer}. Paid pain: ${detail.paidPain}. First offer already tested: ${detail.firstOffer}. Build only this first version: ${signal.whatYouCanBuild}. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no payment integration, and no external APIs. Include an offer overview, input form, generated output, saved examples, launch copy, DM script, copy buttons, and validation panel. The validation panel must include this 48-hour plan: ${validationSteps.join(" ")}. Done criteria: demo-ready, mobile-first, and useful for testing demand before building a real SaaS.`,
+  };
+}
+
 function buildHighQualitySparkFromMarketSignal(signal: BuildSignal): HighQualityBusinessSpark | null {
   const context = getMarketSpecificContextForSignal(signal);
 
@@ -3290,6 +3863,18 @@ function buildHighQualitySparkFromMarketSignal(signal: BuildSignal): HighQuality
 }
 
 function selectHighQualityBusinessSpark(signal: BuildSignal): HighQualityBusinessSpark {
+  const signalInboxSeed = buildHighQualitySparkFromSignalInbox(signal);
+
+  if (signalInboxSeed) {
+    return signalInboxSeed;
+  }
+
+  const canonicalSeed = buildHighQualitySparkFromCanonicalSignal(signal);
+
+  if (canonicalSeed) {
+    return canonicalSeed;
+  }
+
   const marketSeed = buildHighQualitySparkFromMarketSignal(signal);
 
   if (marketSeed) {
@@ -3331,7 +3916,7 @@ const softwareFirstOfferPattern =
 function getManualOfferPrice(value: string) {
   const text = normalizeDisplayText(value);
 
-  if (/jpy|¥|farm|farmer|line/i.test(text)) {
+  if (/jpy|ﾂ･|farm|farmer|line/i.test(text)) {
     return "JPY 9,800 one-time.";
   }
 
@@ -3872,7 +4457,7 @@ function getOpportunityScore(masterPrompt: MasterPrompt) {
       : masterPrompt.marketProof.evidenceStrength === "Medium"
         ? 1
         : 0;
-  const hasPrice = /\d|\$|¥|€|£|mrr|arr|paid|price/i.test(
+  const hasPrice = /\d|\$|ﾂ･|竄ｬ|ﾂ｣|mrr|arr|paid|price/i.test(
     `${masterPrompt.price} ${masterPrompt.marketProof.revenueOrPricingSignal}`,
   );
   const hasSharpBuyer = masterPrompt.buyer.length >= 16;
@@ -4639,6 +5224,120 @@ function writeApprovedEvidenceSignals(signals: BuildSignal[]) {
   }
 }
 
+function isRawSignal(value: unknown): value is RawSignal {
+  return (
+    Boolean(value) &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    typeof (value as RawSignal).id === "string" &&
+    typeof (value as RawSignal).sourceType === "string" &&
+    typeof (value as RawSignal).body === "string" &&
+    typeof (value as RawSignal).importedAt === "string"
+  );
+}
+
+function isCandidateMoneySignal(value: unknown): value is CandidateMoneySignal {
+  return (
+    Boolean(value) &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    typeof (value as CandidateMoneySignal).id === "string" &&
+    typeof (value as CandidateMoneySignal).rawSignalId === "string" &&
+    typeof (value as CandidateMoneySignal).market === "string" &&
+    typeof (value as CandidateMoneySignal).proof === "string" &&
+    typeof (value as CandidateMoneySignal).buyer === "string" &&
+    typeof (value as CandidateMoneySignal).paidPain === "string" &&
+    typeof (value as CandidateMoneySignal).firstOffer === "string" &&
+    typeof (value as CandidateMoneySignal).score === "number" &&
+    Array.isArray((value as CandidateMoneySignal).channels) &&
+    Array.isArray((value as CandidateMoneySignal).missingFields)
+  );
+}
+
+function isApprovedMoneySignal(value: unknown): value is ApprovedMoneySignal {
+  return (
+    Boolean(value) &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    typeof (value as ApprovedMoneySignal).id === "string" &&
+    typeof (value as ApprovedMoneySignal).market === "string" &&
+    typeof (value as ApprovedMoneySignal).proof === "string" &&
+    typeof (value as ApprovedMoneySignal).whatMoneyMoved === "string" &&
+    typeof (value as ApprovedMoneySignal).buyer === "string" &&
+    typeof (value as ApprovedMoneySignal).paidPain === "string" &&
+    typeof (value as ApprovedMoneySignal).firstOffer === "string" &&
+    typeof (value as ApprovedMoneySignal).score === "number" &&
+    Array.isArray((value as ApprovedMoneySignal).channels) &&
+    typeof (value as ApprovedMoneySignal).approvedAt === "string"
+  );
+}
+
+function readRawSignals() {
+  try {
+    const raw = window.localStorage.getItem(RAW_SIGNAL_INBOX_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+
+    return Array.isArray(parsed) ? parsed.filter(isRawSignal) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeRawSignals(signals: RawSignal[]) {
+  try {
+    window.localStorage.setItem(
+      RAW_SIGNAL_INBOX_STORAGE_KEY,
+      JSON.stringify(signals.slice(0, 50)),
+    );
+  } catch {
+    // localStorage can be unavailable in private modes or locked-down browsers.
+  }
+}
+
+function readCandidateMoneySignals() {
+  try {
+    const raw = window.localStorage.getItem(CANDIDATE_MONEY_SIGNALS_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+
+    return Array.isArray(parsed) ? parsed.filter(isCandidateMoneySignal) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeCandidateMoneySignals(signals: CandidateMoneySignal[]) {
+  try {
+    window.localStorage.setItem(
+      CANDIDATE_MONEY_SIGNALS_STORAGE_KEY,
+      JSON.stringify(signals.slice(0, 50)),
+    );
+  } catch {
+    // localStorage can be unavailable in private modes or locked-down browsers.
+  }
+}
+
+function readApprovedMoneySignals() {
+  try {
+    const raw = window.localStorage.getItem(APPROVED_MONEY_SIGNALS_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+
+    return Array.isArray(parsed) ? parsed.filter(isApprovedMoneySignal) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeApprovedMoneySignals(signals: ApprovedMoneySignal[]) {
+  try {
+    window.localStorage.setItem(
+      APPROVED_MONEY_SIGNALS_STORAGE_KEY,
+      JSON.stringify(signals.slice(0, 50)),
+    );
+  } catch {
+    // localStorage can be unavailable in private modes or locked-down browsers.
+  }
+}
+
 function getLocalDateKey() {
   const today = new Date();
   const year = today.getFullYear();
@@ -4690,9 +5389,16 @@ export default function BilionAppClient({
   const baseMarketSignals: BuildSignal[] = [...buildSignals, ...gmailMarketSignals];
   const [evidenceDrafts, setEvidenceDrafts] = useState<EvidenceDraft[]>([]);
   const [approvedEvidenceSignals, setApprovedEvidenceSignals] = useState<BuildSignal[]>([]);
+  const [rawSignals, setRawSignals] = useState<RawSignal[]>([]);
+  const [candidateMoneySignals, setCandidateMoneySignals] = useState<CandidateMoneySignal[]>([]);
+  const [approvedMoneySignals, setApprovedMoneySignals] = useState<ApprovedMoneySignal[]>([]);
+  const approvedMoneyBuildSignals = approvedMoneySignals.map(
+    convertApprovedMoneySignalToBuildSignal,
+  );
   const marketSignals: BuildSignal[] = [
     ...baseMarketSignals,
     ...approvedEvidenceSignals,
+    ...approvedMoneyBuildSignals,
   ];
   const [dailySignalSeed] = useState(() => Math.floor(Date.now() / 86400000));
   const todayIndex =
@@ -4737,10 +5443,10 @@ export default function BilionAppClient({
   );
   const signalGroups = getSignalGroups(marketSignals, githubLibrarySignal);
   const [selectedSignalId, setSelectedSignalId] = useState(
-    marketSignals[todayIndex]?.id || marketSignals[0]?.id || "",
+    topMoneySignalsForMarket[0]?.id || marketSignals[todayIndex]?.id || marketSignals[0]?.id || "",
   );
   const [selectedBuyer, setSelectedBuyer] = useState(
-    marketSignals[todayIndex]?.buyer || marketSignals[0]?.buyer || "",
+    topMoneySignalsForMarket[0]?.buyer || marketSignals[todayIndex]?.buyer || marketSignals[0]?.buyer || "",
   );
   const [selectedAction, setSelectedAction] = useState<NextAction>("build");
   const freeRunsRemaining = hasFounderAccess
@@ -4768,6 +5474,9 @@ export default function BilionAppClient({
       setValidationRecords(readValidationRecords());
       setEvidenceDrafts(readEvidenceDrafts());
       setApprovedEvidenceSignals(readApprovedEvidenceSignals());
+      setRawSignals(readRawSignals());
+      setCandidateMoneySignals(readCandidateMoneySignals());
+      setApprovedMoneySignals(readApprovedMoneySignals());
       setFreeUsageCount(readFreeUsageCount());
 
       const source = new URLSearchParams(window.location.search).get("source");
@@ -5117,6 +5826,106 @@ export default function BilionAppClient({
     });
   }
 
+  function extractSignalInboxCandidate(rawInput: string, sourceType: string) {
+    if (rawInput.trim().length < 30) {
+      setCopyFeedback({
+        message: "Paste a longer startup story, newsletter, Gmail text, or revenue signal first.",
+        tone: "error",
+      });
+      return;
+    }
+
+    const { candidate, rawSignal } = extractCandidateMoneySignal(rawInput, sourceType);
+
+    setRawSignals((currentRawSignals) => {
+      const nextRawSignals = [rawSignal, ...currentRawSignals].slice(0, 50);
+
+      writeRawSignals(nextRawSignals);
+      return nextRawSignals;
+    });
+    setCandidateMoneySignals((currentCandidates) => {
+      const nextCandidates = [candidate, ...currentCandidates].slice(0, 50);
+
+      writeCandidateMoneySignals(nextCandidates);
+      return nextCandidates;
+    });
+    setSelectedMarket(candidate.market);
+    setCopyFeedback({
+      message: "Extracted a Candidate Money Signal. Review it before approving.",
+      tone: "success",
+    });
+  }
+
+  function approveCandidateMoneySignal(candidate: CandidateMoneySignal) {
+    const approvedSignal = convertCandidateToApprovedMoneySignal(candidate);
+    const buildSignal = convertApprovedMoneySignalToBuildSignal(approvedSignal);
+
+    setApprovedMoneySignals((currentSignals) => {
+      const nextSignals = [
+        approvedSignal,
+        ...currentSignals.filter((signal) => signal.id !== approvedSignal.id),
+      ].slice(0, 50);
+
+      writeApprovedMoneySignals(nextSignals);
+      return nextSignals;
+    });
+    setCandidateMoneySignals((currentCandidates) => {
+      const nextCandidates = currentCandidates.map((item) =>
+        item.id === candidate.id ? { ...item, status: "approved" as const } : item,
+      );
+
+      writeCandidateMoneySignals(nextCandidates);
+      return nextCandidates;
+    });
+    setRawSignals((currentRawSignals) => {
+      const nextRawSignals = currentRawSignals.map((signal) =>
+        signal.id === candidate.rawSignalId
+          ? { ...signal, status: "approved" as const }
+          : signal,
+      );
+
+      writeRawSignals(nextRawSignals);
+      return nextRawSignals;
+    });
+    setSelectedMarket(candidate.market);
+    setSelectedSignalId(buildSignal.id);
+    setSelectedBuyer(buildSignal.buyer);
+    setSelectedAction("sell");
+    setActiveWorkflowTab("library");
+    setCopyFeedback({
+      message: "Approved to Money Signals. It can now rank in Top 3 and power Best Offer Today.",
+      tone: "success",
+    });
+  }
+
+  function rejectCandidateMoneySignal(candidateId: string) {
+    setCandidateMoneySignals((currentCandidates) => {
+      const nextCandidates = currentCandidates.map((candidate) =>
+        candidate.id === candidateId
+          ? { ...candidate, status: "rejected" as const }
+          : candidate,
+      );
+
+      writeCandidateMoneySignals(nextCandidates);
+      return nextCandidates;
+    });
+    setCopyFeedback({
+      message: "Rejected candidate. It will not appear in Top 3 Money Signals.",
+      tone: "success",
+    });
+  }
+
+  function clearSignalInbox() {
+    setRawSignals([]);
+    setCandidateMoneySignals([]);
+    writeRawSignals([]);
+    writeCandidateMoneySignals([]);
+    setCopyFeedback({
+      message: "Cleared raw and candidate Signal Inbox records. Approved Money Signals were kept.",
+      tone: "success",
+    });
+  }
+
   async function copyMasterPrompt() {
     if (!masterPrompt) return;
 
@@ -5239,7 +6048,19 @@ export default function BilionAppClient({
                     opportunities={topMarketOpportunities}
                     moneySignals={topMoneySignalsForMarket}
                     selectedMarket={selectedMarket}
-                    onMarketChange={setSelectedMarket}
+                    onMarketChange={(market) => {
+                      setSelectedMarket(market);
+                      const [bestSignalForMarket] = getTopMoneySignalsForMarket(
+                        evidenceInboxSignals,
+                        market,
+                      );
+
+                      if (bestSignalForMarket) {
+                        setSelectedSignalId(bestSignalForMarket.id);
+                        setSelectedBuyer(bestSignalForMarket.buyer);
+                        setSelectedAction("sell");
+                      }
+                    }}
                     onSelectOpportunity={(signal) => {
                       setSourceMode(signal.id === "github-sample" ? "github" : "indie");
                       setSelectedSignalId(signal.id);
@@ -5247,6 +6068,20 @@ export default function BilionAppClient({
                       setSelectedAction("sell");
                       setActiveWorkflowTab("studio");
                     }}
+                  />
+                  <SignalInboxSection
+                    approvedCount={approvedMoneySignals.length}
+                    candidate={candidateMoneySignals.find(
+                      (signal) => signal.status === "candidate",
+                    )}
+                    candidateCount={candidateMoneySignals.filter(
+                      (signal) => signal.status === "candidate",
+                    ).length}
+                    onApprove={approveCandidateMoneySignal}
+                    onClear={clearSignalInbox}
+                    onExtract={extractSignalInboxCandidate}
+                    onReject={rejectCandidateMoneySignal}
+                    rawCount={rawSignals.length}
                   />
                   <GuidedWorkflow currentStep={guidedWorkflowStep} />
                   <div className="mt-5 flex min-w-0 flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
@@ -5564,14 +6399,14 @@ export default function BilionAppClient({
                       href={CHECKOUT_URL}
                       className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-white px-5 py-3 text-center text-sm font-bold text-black transition hover:bg-zinc-200 sm:w-auto"
                     >
-                      Unlock Founder Access — $19
+                      Unlock Founder Access 窶・$19
                     </a>
                   ) : (
                     <a
                       href="/founder"
                       className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-white px-5 py-3 text-center text-sm font-bold text-black transition hover:bg-zinc-200 sm:w-auto"
                     >
-                      Unlock Founder Access — $19
+                      Unlock Founder Access 窶・$19
                     </a>
                   )}
                 </div>
@@ -5730,14 +6565,14 @@ export default function BilionAppClient({
                       href={CHECKOUT_URL}
                       className="mt-5 inline-flex w-full items-center justify-center rounded-2xl bg-white px-5 py-3 text-center text-sm font-bold text-black transition hover:bg-zinc-200 sm:w-auto"
                     >
-                      Unlock Founder Access — $19
+                      Unlock Founder Access 窶・$19
                     </a>
                   ) : (
                     <a
                       href="/founder"
                       className="mt-5 inline-flex w-full items-center justify-center rounded-2xl bg-white px-5 py-3 text-center text-sm font-bold text-black transition hover:bg-zinc-200 sm:w-auto"
                     >
-                      Unlock Founder Access — $19
+                      Unlock Founder Access 窶・$19
                     </a>
                   )}
                 </section>
@@ -5860,7 +6695,7 @@ function GuidedWorkflow({ currentStep }: { currentStep: 1 | 2 | 3 }) {
             New here?
           </div>
           <p className="mt-2 text-sm font-bold leading-6 text-zinc-300">
-            1. Pick a signal → 2. Reveal the opportunity → 3. Post the carousel
+            1. Pick a signal 竊・2. Reveal the opportunity 竊・3. Post the carousel
           </p>
         </div>
         <div className="rounded-full border border-emerald-300/30 bg-emerald-300/[0.08] px-4 py-2 text-xs font-black uppercase tracking-wide text-emerald-100">
@@ -6310,6 +7145,195 @@ function MarketOpportunityField({
         {normalizeDisplayText(value)}
       </p>
     </div>
+  );
+}
+
+function SignalInboxSection({
+  approvedCount,
+  candidate,
+  candidateCount,
+  onApprove,
+  onClear,
+  onExtract,
+  onReject,
+  rawCount,
+}: {
+  approvedCount: number;
+  candidate?: CandidateMoneySignal;
+  candidateCount: number;
+  onApprove: (candidate: CandidateMoneySignal) => void;
+  onClear: () => void;
+  onExtract: (rawInput: string, sourceType: string) => void;
+  onReject: (candidateId: string) => void;
+  rawCount: number;
+}) {
+  const [rawInput, setRawInput] = useState("");
+  const [sourceType, setSourceType] = useState("Gmail/newsletter");
+
+  function handleExtract() {
+    onExtract(rawInput, sourceType);
+  }
+
+  function handleClear() {
+    setRawInput("");
+    onClear();
+  }
+
+  return (
+    <section className="mt-4 w-full max-w-full overflow-hidden rounded-2xl border border-white/10 bg-black/25 p-4 md:rounded-3xl md:p-5">
+      <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <div className="min-w-0">
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+            Signal Inbox
+          </div>
+          <h3 className="mt-1 break-words text-lg font-black text-white md:text-xl">
+            Paste a startup story, newsletter, Gmail text, or founder revenue signal.
+          </h3>
+          <p className="mt-2 max-w-2xl break-words text-sm leading-relaxed text-zinc-400">
+            Bilion turns it into today&apos;s offer before you build.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-wide">
+          <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-zinc-400">
+            {rawCount} raw
+          </span>
+          <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-zinc-400">
+            {candidateCount} candidates
+          </span>
+          <span className="rounded-full border border-emerald-300/25 bg-emerald-300/[0.08] px-2 py-1 text-emerald-200">
+            {approvedCount} approved
+          </span>
+        </div>
+      </div>
+
+      <div className="mt-4 grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.8fr)]">
+        <div className="min-w-0 rounded-2xl border border-white/10 bg-[#101011] p-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <label
+              className="text-xs font-black uppercase tracking-[0.14em] text-zinc-500"
+              htmlFor="signal-inbox-raw-input"
+            >
+              Raw text
+            </label>
+            <label className="text-xs font-bold text-zinc-500">
+              Source
+              <select
+                value={sourceType}
+                onChange={(event) => setSourceType(event.target.value)}
+                className="mt-1 block min-h-10 rounded-xl border border-white/10 bg-black px-3 py-2 text-xs font-bold text-zinc-200"
+              >
+                {[
+                  "Gmail/newsletter",
+                  "Indie Hackers",
+                  "Starter Story",
+                  "X post",
+                  "YouTube transcript",
+                  "Founder story",
+                ].map((option) => (
+                  <option key={option}>{option}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <textarea
+            id="signal-inbox-raw-input"
+            value={rawInput}
+            onChange={(event) => setRawInput(event.target.value)}
+            placeholder={[
+              "Paste the raw signal here.",
+              "Example: a founder story with revenue, paid users, customers, pricing, launch result, buyer, or repeated pain.",
+            ].join("\n")}
+            className="mt-3 min-h-48 w-full min-w-0 resize-y rounded-2xl border border-white/10 bg-black/40 p-4 text-sm leading-6 text-white outline-none transition placeholder:text-zinc-700 focus:border-emerald-300/50"
+          />
+          <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <p className="break-words text-xs font-bold leading-5 text-zinc-600">
+              Manual paste only. No Gmail API, OAuth, external API, database, or server extraction.
+            </p>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <button
+                type="button"
+                onClick={handleClear}
+                className="min-h-11 rounded-xl border border-white/10 px-4 py-2.5 text-xs font-black text-zinc-400 transition hover:border-white/20 hover:text-white"
+              >
+                Clear
+              </button>
+              <button
+                type="button"
+                onClick={handleExtract}
+                className="min-h-11 rounded-xl bg-emerald-300 px-4 py-2.5 text-xs font-black text-black transition hover:bg-emerald-200"
+              >
+                Extract Money Signal
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="min-w-0 rounded-2xl border border-white/10 bg-[#101011] p-4">
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+            Candidate Preview
+          </div>
+          {candidate ? (
+            <>
+              <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-wide">
+                <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-zinc-400">
+                  {candidate.market}
+                </span>
+                <span className="rounded-full border border-emerald-300/25 bg-emerald-300/[0.08] px-2 py-1 text-emerald-200">
+                  Score {candidate.score}/95
+                </span>
+                <span className="rounded-full border border-white/10 bg-black/25 px-2 py-1 text-zinc-400">
+                  {candidate.confidence} confidence
+                </span>
+              </div>
+              <div className="mt-4 grid gap-3">
+                <MarketOpportunityField label="Market" value={candidate.market} />
+                <MarketOpportunityField label="Source" value={candidate.source} />
+                <MarketOpportunityField label="Money proof" value={candidate.proof} />
+                <MarketOpportunityField
+                  label="What money moved"
+                  value={candidate.whatMoneyMoved}
+                />
+                <MarketOpportunityField label="Buyer" value={candidate.buyer} />
+                <MarketOpportunityField label="Paid pain" value={candidate.paidPain} />
+                <MarketOpportunityField label="First offer" value={candidate.firstOffer} />
+                <MarketOpportunityField
+                  label="Missing fields"
+                  value={
+                    candidate.missingFields.length
+                      ? candidate.missingFields.join(", ")
+                      : "None"
+                  }
+                />
+                <MarketOpportunityField
+                  label="Extraction notes"
+                  value={candidate.extractionNotes}
+                />
+              </div>
+              <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+                <button
+                  type="button"
+                  onClick={() => onApprove(candidate)}
+                  className="min-h-11 rounded-xl bg-emerald-300 px-4 py-2.5 text-xs font-black text-black transition hover:bg-emerald-200"
+                >
+                  Approve to Money Signals
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onReject(candidate.id)}
+                  className="min-h-11 rounded-xl border border-white/10 px-4 py-2.5 text-xs font-black text-zinc-400 transition hover:border-red-300/30 hover:text-red-200"
+                >
+                  Reject
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="mt-3 rounded-2xl border border-dashed border-white/10 bg-black/20 p-4 text-sm leading-6 text-zinc-500">
+              No candidate yet. Paste raw text and extract a Money Signal before approving it.
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -7228,7 +8252,7 @@ function MasterPromptCard({
               href={CHECKOUT_URL || "/founder"}
               className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-white px-5 py-3 text-center text-sm font-black text-black transition hover:bg-zinc-200 sm:w-auto"
             >
-              Unlock Founder Access — $19
+              Unlock Founder Access 窶・$19
             </a>
           </div>
         )}
@@ -7283,7 +8307,7 @@ function MasterPromptCard({
       {!hasFounderAccess && (
         <div className="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.06] p-5">
           <h3 className="text-xl font-black text-white">
-            Unlock Founder Access — $19
+            Unlock Founder Access 窶・$19
           </h3>
           <p className="mt-2 text-sm leading-6 text-zinc-300">
             Get unlimited Sparks, full launch copy, saved Winners, and Codex prompts.
@@ -7292,7 +8316,7 @@ function MasterPromptCard({
             href={CHECKOUT_URL || "/founder"}
             className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-white px-5 py-3 text-center text-sm font-black text-black transition hover:bg-zinc-200 sm:w-auto"
           >
-            Unlock Founder Access — $19
+            Unlock Founder Access 窶・$19
           </a>
         </div>
       )}
@@ -8048,7 +9072,7 @@ function LockedFounderView() {
             href={CHECKOUT_URL}
             className="mt-5 block rounded-2xl bg-white px-5 py-4 text-center text-sm font-bold text-black transition hover:bg-zinc-200"
           >
-            Unlock Founder Access — $19
+            Unlock Founder Access 窶・$19
           </a>
         ) : (
           <button
@@ -8093,7 +9117,7 @@ function LanguageSwitch() {
   return (
     <div className="flex rounded-full border border-white/10 bg-white/[0.03] p-1 text-xs font-medium text-zinc-500">
       <span className="rounded-full bg-white px-3 py-1.5 text-zinc-950">English</span>
-      <Link href="/jp/app" className="rounded-full px-3 py-1.5 transition hover:text-white">日本語</Link>
+      <Link href="/jp/app" className="rounded-full px-3 py-1.5 transition hover:text-white">Japanese</Link>
     </div>
   );
 }
