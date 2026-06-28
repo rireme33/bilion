@@ -194,6 +194,22 @@ type PathOfferRule = {
   salesMotion: string;
 };
 
+type NormalizedOpportunity = {
+  proofLabel: string;
+  patternTitle: string;
+  whatSold: string;
+  buyer: string;
+  paidPain: string;
+  firstOfferName: string;
+  firstOfferOutcome: string;
+  price: string;
+  postHook: string;
+  dmScript: string;
+  validationSteps: string[];
+  buildAfterReplies: string;
+  selectedPath: MarketOption;
+};
+
 const provenMoneyPatterns: ProvenMoneyPattern[] = [
   {
     id: "discord-community-tool",
@@ -593,52 +609,135 @@ function getProvenMoneyPatternForSignal(signal: BuildSignal) {
   );
 }
 
-function getPathAdjustedOpportunity(
-  market: MarketOption,
-  opportunity: MarketSpecificOpportunity,
-) {
-  const pattern = getProvenMoneyPatternForMarket(market);
-  const rule = pathOfferRules[market];
-
-  if (!rule) {
-    return {
-      opportunity,
-      pattern,
-      rule: null,
-    };
+function getPathFirstOfferPrice(market: MarketOption, sourceText: string) {
+  if (/jpy|¥|farm|farmer|line/i.test(sourceText)) {
+    return "JPY 9,800 one-time.";
   }
 
+  if (market === "Micro SaaS") return "$19 one-time.";
+  if (market === "Freelance Dev") return "$499 one-time.";
+  if (market === "Business Automation") return "$299 one-time.";
+  if (market === "Digital Product") return "$29 one-time.";
+  if (market === "AI Agency") return "$49 one-time.";
+
+  return getManualOfferPrice(sourceText);
+}
+
+function getManualOutcomeForPattern(sourceText: string) {
+  if (/discord|community|faq|onboarding/i.test(sourceText)) {
+    return "Clean up one messy onboarding flow, FAQ list, and member handoff into a community-ready operating pack.";
+  }
+
+  if (/demo|walkthrough|sales/i.test(sourceText)) {
+    return "Turn one feature list into a clean demo script, walkthrough outline, and buyer-facing talk track.";
+  }
+
+  if (/automation|admin|handoff|intake/i.test(sourceText)) {
+    return "Map one repeated admin task into a clear intake, output, and handoff checklist.";
+  }
+
+  if (/mobile|utility|daily annoyance/i.test(sourceText)) {
+    return "Mock one small daily annoyance as a before/after checklist and single-screen utility plan.";
+  }
+
+  if (/seo|content|brief|keyword/i.test(sourceText)) {
+    return "Turn one rough content idea into a search-friendly brief a writer can use.";
+  }
+
+  if (/farm|farmer|line|sensor|crop/i.test(sourceText)) {
+    return "Organize one day of LINE messages, sensor notes, crop checks, and schedules into a clean daily operations report.";
+  }
+
+  return "Manually turn one messy buyer case into a clean before/after sample, checklist, and next-step report.";
+}
+
+function normalizeFromMoneyPattern(
+  market: MarketOption,
+  pattern: ProvenMoneyPattern,
+): NormalizedOpportunity {
+  const rule = pathOfferRules[market];
+  const sourceText = `${pattern.patternTitle} ${pattern.whatSold} ${pattern.buyer} ${pattern.paidPain}`;
+  const price = getPathFirstOfferPrice(market, sourceText);
+  const buildAfterReplies = rule
+    ? rule.buildAfterReplies(pattern)
+    : pattern.buildAfterReplies;
+
   return {
-    opportunity: {
-      ...opportunity,
-      whyNow: `Money proof: ${pattern.proofLabel} for ${pattern.whatSold}. ${pattern.moneyReason}`,
-      firstOffer: rule.firstOffer(pattern),
-      price: rule.price,
-      postHook: pattern.postHook,
-      fortyEightHourValidation: [
-        ...pattern.validationSteps,
-        `Path angle: ${rule.salesMotion}.`,
-      ],
-      whatToBuildOnlyAfterReplies: rule.buildAfterReplies(pattern),
-    },
-    pattern,
-    rule,
+    proofLabel: pattern.proofLabel,
+    patternTitle: pattern.patternTitle,
+    whatSold: pattern.whatSold,
+    buyer: pattern.buyer,
+    paidPain: pattern.paidPain,
+    firstOfferName: pattern.smallVersion,
+    firstOfferOutcome: getManualOutcomeForPattern(sourceText),
+    price,
+    postHook: pattern.postHook,
+    dmScript: pattern.dmScript,
+    validationSteps: buildDirect48hValidationPlan({
+      buyer: pattern.buyer,
+      buildAfterReplies,
+      pain: pattern.paidPain,
+      price,
+    }),
+    buildAfterReplies,
+    selectedPath: market,
   };
+}
+
+function normalizeFromMarketOpportunity(
+  market: MarketOption,
+  opportunity: MarketSpecificOpportunity,
+): NormalizedOpportunity {
+  const sourceText = `${opportunity.firstOffer} ${opportunity.buyer} ${opportunity.paidPain} ${opportunity.whatToBuildOnlyAfterReplies}`;
+  const firstOffer = buildManualFirstOffer({
+    buyer: opportunity.buyer,
+    candidate: opportunity.firstOffer,
+    pain: opportunity.paidPain,
+    price: opportunity.price,
+  });
+  const [firstOfferName = "Manual Cleanup Pack", firstOfferOutcome = getManualOutcomeForPattern(sourceText), price = getManualOfferPrice(sourceText)] =
+    firstOffer.split("\n");
+
+  return {
+    proofLabel: opportunity.whyNow,
+    patternTitle: getMarketSpecificTitle(opportunity),
+    whatSold: opportunity.firstOffer,
+    buyer: opportunity.buyer,
+    paidPain: opportunity.paidPain,
+    firstOfferName,
+    firstOfferOutcome,
+    price,
+    postHook: opportunity.postHook,
+    dmScript: `Quick idea: I am testing ${firstOfferName} for ${opportunity.buyer}. I can make one manual before/after sample before building anything. Worth seeing?`,
+    validationSteps: buildDirect48hValidationPlan({
+      buyer: opportunity.buyer,
+      buildAfterReplies: opportunity.whatToBuildOnlyAfterReplies,
+      pain: opportunity.paidPain,
+      price,
+    }),
+    buildAfterReplies: opportunity.whatToBuildOnlyAfterReplies,
+    selectedPath: market,
+  };
+}
+
+function getNormalizedOpportunityForMarket(market: MarketOption) {
+  const pattern = getProvenMoneyPatternForMarket(market);
+
+  if (pathOfferRules[market]) {
+    return normalizeFromMoneyPattern(market, pattern);
+  }
+
+  return normalizeFromMarketOpportunity(market, marketSpecificOpportunities[market]);
+}
+
+function getFirstOfferText(opportunity: NormalizedOpportunity) {
+  return `${opportunity.firstOfferName}
+${opportunity.firstOfferOutcome}
+${opportunity.price}`;
 }
 
 function getMarketSpecificSignalId(market: MarketOption) {
   return `market-specific-${market.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
-}
-
-function getMarketSpecificOpportunityForSignal(signal: BuildSignal) {
-  const market = marketOptions.find(
-    (option) =>
-      signal.id === getMarketSpecificSignalId(option) ||
-      signal.sourceType === option ||
-      signal.signalSourceLabel === option,
-  );
-
-  return market ? marketSpecificOpportunities[market] : null;
 }
 
 function getMarketSpecificContextForSignal(signal: BuildSignal) {
@@ -652,7 +751,7 @@ function getMarketSpecificContextForSignal(signal: BuildSignal) {
   return market
     ? {
         market,
-        ...getPathAdjustedOpportunity(market, marketSpecificOpportunities[market]),
+        opportunity: getNormalizedOpportunityForMarket(market),
       }
     : null;
 }
@@ -665,42 +764,38 @@ function getMarketSpecificTitle(opportunity: MarketSpecificOpportunity) {
 }
 
 function buildMarketSpecificSignal(market: MarketOption): BuildSignal {
-  const adjusted = getPathAdjustedOpportunity(market, marketSpecificOpportunities[market]);
-  const opportunity = adjusted.opportunity;
-  const pattern = adjusted.pattern;
-  const rule = adjusted.rule;
-  const title = getMarketSpecificTitle(opportunity);
+  const opportunity = getNormalizedOpportunityForMarket(market);
+  const firstOffer = getFirstOfferText(opportunity);
 
   return {
     id: getMarketSpecificSignalId(market),
-    latestSignal: `${pattern.proofLabel}: ${pattern.whatSold}. ${opportunity.postHook}`,
-    sourceTitle: title,
+    latestSignal: `${opportunity.proofLabel}: ${opportunity.whatSold}. ${opportunity.postHook}`,
+    sourceTitle: opportunity.firstOfferName,
     sourceUrl: "",
     sourceType: market,
-    sourceNote: opportunity.distributionChannel,
+    sourceNote: opportunity.postHook,
     signalSourceLabel: market,
     buyer: opportunity.buyer,
     pain: opportunity.paidPain,
-    whyNow: opportunity.whyNow,
-    whatYouCanBuild: opportunity.whatToBuildOnlyAfterReplies,
-    coreFeatures: opportunity.whatToBuildOnlyAfterReplies
+    whyNow: `${opportunity.proofLabel}: ${opportunity.whatSold}.`,
+    whatYouCanBuild: opportunity.buildAfterReplies,
+    coreFeatures: opportunity.buildAfterReplies
       .split("->")
       .map((feature) => feature.trim())
       .filter(Boolean),
-    comparablePrice: `${opportunity.firstOffer} / ${opportunity.price}`,
+    comparablePrice: firstOffer,
     buildSteps: [
       opportunity.postHook,
-      `DM target: ${opportunity.dmTarget}`,
-      ...opportunity.fortyEightHourValidation,
+      opportunity.dmScript,
+      ...opportunity.validationSteps,
     ],
     patternMatches: [
-      `Money proof: ${pattern.proofLabel}`,
-      `Proven pattern: ${pattern.patternTitle}`,
-      rule ? `Path angle: ${rule.angle}` : opportunity.distributionChannel,
-      `DM target: ${opportunity.dmTarget}`,
-      opportunity.fortyEightHourValidation.join(" "),
+      `Money proof: ${opportunity.proofLabel}`,
+      `Proven pattern: ${opportunity.patternTitle}`,
+      `Selected path: ${opportunity.selectedPath}`,
+      opportunity.validationSteps.join(" "),
     ],
-    codeXPrompt: `Build this only after someone replies, clicks, or asks for the offer. Build a mobile-first MVP for ${opportunity.buyer}. Paid pain: ${opportunity.paidPain}. First offer: ${opportunity.firstOffer} at ${opportunity.price}. Start with: ${opportunity.whatToBuildOnlyAfterReplies}. Include launch copy, DM script, validation tracker, copy buttons, and mock data. Use local state/localStorage only. No auth, no database, no payment integration, and no external APIs.`,
+    codeXPrompt: `Build this only after someone replies, clicks, or asks for the offer. Build a mobile-first MVP for ${opportunity.buyer}. Paid pain: ${opportunity.paidPain}. First offer: ${firstOffer}. Start with: ${opportunity.buildAfterReplies}. Include launch copy, DM script, validation tracker, copy buttons, and mock data. Use local state/localStorage only. No auth, no database, no payment integration, and no external APIs.`,
   };
 }
 
@@ -2357,34 +2452,23 @@ function getOpportunityDetailFields(signal: BuildSignal) {
   const context = getMarketSpecificContextForSignal(signal);
 
   if (context) {
-    const firstOffer = buildManualFirstOffer({
-      buyer: context.opportunity.buyer,
-      candidate: context.opportunity.firstOffer,
-      pain: context.opportunity.paidPain,
-      price: context.opportunity.price,
-    });
-    const fortyEightHourTest = buildDirect48hValidationPlan({
-      buyer: context.opportunity.buyer,
-      buildAfterReplies: context.opportunity.whatToBuildOnlyAfterReplies,
-      pain: context.opportunity.paidPain,
-      price: firstOffer,
-    }).join("\n");
+    const opportunity = context.opportunity;
 
     return {
-      proof: `${context.pattern.proofLabel}: ${context.pattern.whatSold}`,
-      whatSold: context.pattern.whatSold,
-      pattern: context.pattern.patternTitle,
-      whyMoneyChangedHands: context.opportunity.whyNow,
-      buyer: context.opportunity.buyer,
-      paidPain: context.opportunity.paidPain,
-      firstOffer,
-      price: getManualOfferPrice(firstOffer),
-      postHook: context.opportunity.postHook,
-      dmScript: context.pattern.dmScript,
-      distribution: context.opportunity.distributionChannel,
-      fortyEightHourTest,
+      proof: `${opportunity.proofLabel}: ${opportunity.whatSold}`,
+      whatSold: opportunity.whatSold,
+      pattern: opportunity.patternTitle,
+      whyMoneyChangedHands: opportunity.proofLabel,
+      buyer: opportunity.buyer,
+      paidPain: opportunity.paidPain,
+      firstOffer: getFirstOfferText(opportunity),
+      price: opportunity.price,
+      postHook: opportunity.postHook,
+      dmScript: opportunity.dmScript,
+      distribution: opportunity.postHook,
+      fortyEightHourTest: opportunity.validationSteps.join("\n"),
       buildAfterReplies: buildCodexAfterRepliesLine(
-        context.opportunity.whatToBuildOnlyAfterReplies,
+        opportunity.buildAfterReplies,
       ),
     };
   }
@@ -3030,24 +3114,25 @@ function buildHighQualitySparkFromMarketSignal(signal: BuildSignal): HighQuality
     return null;
   }
 
-  const { market, opportunity, pattern, rule } = context;
-  const sparkTitle = getMarketSpecificTitle(opportunity);
-  const validationText = opportunity.fortyEightHourValidation.join(" ");
+  const { market, opportunity } = context;
+  const sparkTitle = opportunity.firstOfferName;
+  const firstOffer = getFirstOfferText(opportunity);
+  const validationText = opportunity.validationSteps.join(" ");
 
   return {
     path: market,
     sparkTitle,
-    whyItWorks: opportunity.whyNow,
+    whyItWorks: `${opportunity.proofLabel}: ${opportunity.whatSold}.`,
     buyer: opportunity.buyer,
     pain: opportunity.paidPain,
-    firstOffer: `${opportunity.firstOffer}. ${opportunity.price}.`,
-    distributionChannel: opportunity.distributionChannel,
-    dmTarget: opportunity.dmTarget,
-    fortyEightHourTest: opportunity.fortyEightHourValidation,
-    launchPost: `${opportunity.postHook}\n\nMoney proof: ${pattern.proofLabel} - ${pattern.whatSold}\nPattern: ${pattern.patternTitle}\nBusiness Spark: ${sparkTitle}\nBuyer: ${opportunity.buyer}\nPain: ${opportunity.paidPain}\nFirst offer: ${opportunity.firstOffer} (${opportunity.price})\nTest: ${validationText}`,
-    dmScript: `Quick idea: I am testing ${opportunity.firstOffer} for ${opportunity.buyer}. The pain is: ${opportunity.paidPain}. I can do one manual sample before building anything. Worth seeing?`,
-    codexPromptPreview: `Build a mobile-first MVP for ${sparkTitle}. Start with ${opportunity.whatToBuildOnlyAfterReplies}.`,
-    codexBuildPrompt: `Build this only after someone replies, clicks, or asks for the offer. Money proof: ${pattern.proofLabel} for ${pattern.whatSold}. Pattern: ${pattern.patternTitle}. Path: ${market}${rule ? ` (${rule.angle})` : ""}. Build a mobile-first MVP called ${sparkTitle} for ${opportunity.buyer}. The buyer pain is: ${opportunity.paidPain}. Why money changed hands: ${opportunity.whyNow}. First offer: ${opportunity.firstOffer} at ${opportunity.price}. Distribution channel: ${opportunity.distributionChannel}. DM target: ${opportunity.dmTarget}. Build only this first version: ${opportunity.whatToBuildOnlyAfterReplies}. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no payment integration, and no external APIs. Include an offer overview, input form, generated output, saved examples, launch copy, DM script, copy buttons, and validation panel. The validation panel must include this 48-hour plan: ${validationText}. Done criteria: it should be demo-ready, mobile-first, and useful for testing demand before building a real SaaS.`,
+    firstOffer,
+    distributionChannel: opportunity.postHook,
+    dmTarget: opportunity.buyer,
+    fortyEightHourTest: opportunity.validationSteps,
+    launchPost: `${opportunity.postHook}\n\nMoney proof: ${opportunity.proofLabel} - ${opportunity.whatSold}\nPattern: ${opportunity.patternTitle}\nBusiness Spark: ${sparkTitle}\nBuyer: ${opportunity.buyer}\nPain: ${opportunity.paidPain}\nFirst offer: ${firstOffer}\nTest: ${validationText}`,
+    dmScript: opportunity.dmScript,
+    codexPromptPreview: `Build a mobile-first MVP for ${sparkTitle}. Start with ${opportunity.buildAfterReplies}.`,
+    codexBuildPrompt: `Build this only after someone replies, clicks, or asks for the offer. Money proof: ${opportunity.proofLabel} for ${opportunity.whatSold}. Pattern: ${opportunity.patternTitle}. Path: ${market}. Build a mobile-first MVP called ${sparkTitle} for ${opportunity.buyer}. The buyer pain is: ${opportunity.paidPain}. First offer: ${firstOffer}. Build only this first version: ${opportunity.buildAfterReplies}. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no payment integration, and no external APIs. Include an offer overview, input form, generated output, saved examples, launch copy, DM script, copy buttons, and validation panel. The validation panel must include this 48-hour plan: ${validationText}. Done criteria: it should be demo-ready, mobile-first, and useful for testing demand before building a real SaaS.`,
   };
 }
 
