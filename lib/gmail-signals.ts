@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { gmailSignals, type GmailSignal } from "@/data/gmail-signals";
 
 type GmailSignalSource = {
   name?: string;
@@ -232,6 +233,56 @@ Requirements:
   };
 }
 
+export function normalizeGmailSignal(signal: GmailSignal): GmailMarketSignal {
+  return {
+    id: signal.id,
+    latestSignal: signal.moneySignal,
+    sourceTitle: signal.title,
+    sourceUrl: "",
+    sourceType: signal.market,
+    sourceNote: [
+      "Extracted from newsletter/Product Hunt/Reddit/Gumroad emails",
+      `Source: ${signal.sourceName}`,
+      `Date: ${signal.sourceDate}`,
+      `Pattern: ${signal.oneLinePattern}`,
+      `Distribution: ${signal.distribution}`,
+    ].join(" | "),
+    buyer: signal.buyer,
+    pain: signal.paidPain,
+    whyNow: signal.moneySignal,
+    whatYouCanBuild: signal.starterProduct,
+    coreFeatures: [
+      "Money signal summary",
+      "Buyer and paid pain",
+      "First offer",
+      "48-hour validation plan",
+      "Codex-ready MVP prompt",
+    ],
+    comparablePrice: `${signal.firstOffer} - ${signal.price}`,
+    buildSteps: signal.validationPlan48h,
+    patternMatches: [
+      signal.market,
+      signal.moneySignal,
+      signal.firstOffer,
+      signal.distribution,
+      "Gmail seed signal",
+    ],
+    codeXPrompt: signal.codexBuildPrompt,
+    signalSourceLabel: "Gmail Signal",
+  };
+}
+
 export function getGmailMarketSignals() {
-  return loadGmailSignalRecords().map(mapGmailSignal);
+  const staticSignals = gmailSignals.map(normalizeGmailSignal);
+  const fileSignals = loadGmailSignalRecords().map(mapGmailSignal);
+  const seenIds = new Set<string>();
+
+  return [...staticSignals, ...fileSignals].filter((signal) => {
+    if (seenIds.has(signal.id)) {
+      return false;
+    }
+
+    seenIds.add(signal.id);
+    return true;
+  });
 }

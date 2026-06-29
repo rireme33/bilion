@@ -2885,6 +2885,10 @@ function isNewsletterSignal(signal: BuildSignal) {
   );
 }
 
+function isGmailSignal(signal: BuildSignal) {
+  return signal.signalSourceLabel === "Gmail Signal";
+}
+
 function getMarketClassification(signal: BuildSignal): MarketClassification {
   return getSignalMarket(signal);
 }
@@ -3582,9 +3586,24 @@ Requirements:
 }
 
 function getSignalGroups(signals: BuildSignal[], githubSignal?: BuildSignal) {
-  const newsletterSignals = signals.filter(isNewsletterSignal);
-  const nonNewsletterSignals = signals.filter((signal) => !isNewsletterSignal(signal));
-  const recommendedSignals = nonNewsletterSignals.slice(0, 3);
+  const gmailSignals = signals.filter(isGmailSignal);
+  const newsletterSignals = signals.filter(
+    (signal) => isNewsletterSignal(signal) && !isGmailSignal(signal),
+  );
+  const nonNewsletterSignals = signals.filter(
+    (signal) => !isNewsletterSignal(signal) && !isGmailSignal(signal),
+  );
+  const recommendedGmailSignals = [
+    "AI Agent Cost Watch",
+    "Inbox Agent Router",
+    "Company Context Pack",
+  ]
+    .map((title) => gmailSignals.find((signal) => signal.sourceTitle === title))
+    .filter((signal): signal is BuildSignal => Boolean(signal));
+  const recommendedSignals = [
+    ...recommendedGmailSignals,
+    ...nonNewsletterSignals,
+  ].slice(0, 3);
   const recommendedIds = new Set(recommendedSignals.map((signal) => signal.id));
   const localSignals = nonNewsletterSignals.filter(
     (signal) => !recommendedIds.has(signal.id),
@@ -3598,6 +3617,10 @@ function getSignalGroups(signals: BuildSignal[], githubSignal?: BuildSignal) {
     {
       label: "Local AI Use Cases",
       signals: localSignals,
+    },
+    {
+      label: "Gmail Signals",
+      signals: gmailSignals,
     },
     {
       label: "Newsletter Signals",
@@ -8374,7 +8397,7 @@ function MasterPromptCard({
           <div className="min-w-0 max-w-3xl">
             <div className="flex flex-wrap gap-2">
               <div className="inline-flex rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-300">
-                Today's Opportunity
+                Today&apos;s Opportunity
               </div>
               <div className="inline-flex rounded-full border border-white/10 px-3 py-1 text-xs font-bold text-zinc-400">
                 Signal #{signalNumber} / Angle #{angleNumber}
