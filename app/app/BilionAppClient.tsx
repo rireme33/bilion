@@ -6271,7 +6271,10 @@ export default function BilionAppClient({
                   <MarketSelectionSection
                     opportunities={topMarketOpportunities}
                     moneySignals={topMoneySignalsForMarket}
+                    outputPack={outputPack}
+                    outputPacksCount={outputPacks.length}
                     selectedMarket={selectedMarket}
+                    onClearOutputPack={clearOutputPack}
                     onGenerateOutputPack={generateOutputPack}
                     onMarketChange={(market) => {
                       setSelectedMarket(market);
@@ -6286,22 +6289,24 @@ export default function BilionAppClient({
                         setSelectedAction("sell");
                       }
                     }}
-                    onSelectOpportunity={(signal) => {
-                      setSourceMode(signal.id === "github-sample" ? "github" : "indie");
-                      setSelectedSignalId(signal.id);
-                      setSelectedBuyer(signal.buyer);
-                      setSelectedAction("sell");
-                      setActiveWorkflowTab("studio");
-                    }}
+                    onSaveOutputPack={saveOutputPack}
                   />
-                  {outputPack && (
-                    <OutputPackPanel
-                      outputPack={outputPack}
-                      savedCount={outputPacks.length}
-                      onClear={clearOutputPack}
-                      onSave={saveOutputPack}
-                    />
-                  )}
+                  <details className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <summary className="cursor-pointer list-none">
+                      <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="min-w-0">
+                          <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+                            Build Later / Advanced
+                          </div>
+                          <p className="mt-1 break-words text-sm font-bold leading-6 text-zinc-300">
+                            Signal Inbox, evidence imports, and archived market patterns.
+                          </p>
+                        </div>
+                        <div className="text-xs font-bold text-zinc-600">
+                          Open if needed
+                        </div>
+                      </div>
+                    </summary>
                   <SignalInboxSection
                     approvedCount={approvedMoneySignals.length}
                     candidate={candidateMoneySignals.find(
@@ -6487,6 +6492,7 @@ export default function BilionAppClient({
                     onImport={importEvidenceSnippets}
                     onReject={rejectEvidenceDraft}
                   />
+                  </details>
                 </section>
                 )}
 
@@ -7114,19 +7120,26 @@ function StartHereBlock() {
 
 function MarketSelectionSection({
   moneySignals,
+  onClearOutputPack,
   onGenerateOutputPack,
   onMarketChange,
-  onSelectOpportunity,
+  onSaveOutputPack,
   opportunities,
+  outputPack,
+  outputPacksCount,
   selectedMarket,
 }: {
   moneySignals: BuildSignal[];
+  onClearOutputPack: () => void;
   onGenerateOutputPack: (signal: BuildSignal) => void;
   onMarketChange: (market: AppMarketOption) => void;
-  onSelectOpportunity: (signal: BuildSignal) => void;
+  onSaveOutputPack: (pack: OutputPack) => void;
   opportunities: BuildSignal[];
+  outputPack: OutputPack | null;
+  outputPacksCount: number;
   selectedMarket: AppMarketOption;
 }) {
+  const [deepDiveSignalId, setDeepDiveSignalId] = useState("");
   const topMoneySignals = moneySignals.length
     ? moneySignals
     : getStaticMoneySignalsForMarket(selectedMarket);
@@ -7135,7 +7148,12 @@ function MarketSelectionSection({
     : opportunities.length > 0
       ? opportunities
       : [buildMarketSpecificSignal(selectedMarket)];
-  const bestSignal = displayOpportunities[0] || buildMarketSpecificSignal(selectedMarket);
+  const visibleSignals = displayOpportunities.slice(0, 6);
+  const deepDiveSignal =
+    visibleSignals.find((signal) => signal.id === deepDiveSignalId) ||
+    visibleSignals[0] ||
+    buildMarketSpecificSignal(selectedMarket);
+  const deepDiveDetail = getOpportunityDetailFields(deepDiveSignal);
 
   return (
     <section className="w-full max-w-full overflow-hidden rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.055] p-4 shadow-2xl md:rounded-3xl md:p-6">
@@ -7188,16 +7206,22 @@ function MarketSelectionSection({
 
       <div className="mt-3 grid min-w-0 gap-3 md:mt-4">
         <div className="break-words text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
-          Top Money Signals in {selectedMarket}
+          1. Pick one business signal in {selectedMarket}
         </div>
-        <div className="grid min-w-0 gap-3 md:grid-cols-3">
-          {topMoneySignals.slice(0, 3).map((signal) => {
+        <div className="grid min-w-0 gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {visibleSignals.map((signal) => {
             const detail = getOpportunityDetailFields(signal);
+            const active = deepDiveSignal.id === signal.id;
 
             return (
               <article
                 key={signal.id}
-                className="min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-black/25 p-3"
+                className={[
+                  "min-w-0 overflow-hidden rounded-2xl border p-3 transition",
+                  active
+                    ? "border-emerald-300/55 bg-emerald-300/[0.08]"
+                    : "border-white/10 bg-black/25",
+                ].join(" ")}
               >
                 <div className="text-[11px] font-black uppercase tracking-wide text-emerald-300">
                   {signal.signalSourceLabel || signal.sourceType || "Money signal"}
@@ -7205,178 +7229,105 @@ function MarketSelectionSection({
                 <h4 className="mt-2 break-words text-sm font-black text-white">
                   {truncateDisplayText(getDisplaySignalTitle(signal).title, 70)}
                 </h4>
-                <MarketOpportunityField label="Proof / source" value={detail.proof} />
-                <MarketOpportunityField label="What money moved" value={detail.whatSold} />
-                <MarketOpportunityField label="Buyer" value={detail.buyer} />
-                <MarketOpportunityField label="Paid pain" value={detail.paidPain} />
-                <MarketOpportunityField label="Possible first offer" value={detail.firstOffer} />
+                <div className="mt-3 grid gap-2">
+                  <CompactSignalField label="Money Proof" value={detail.proof} />
+                  <CompactSignalField label="Buyer" value={detail.buyer} />
+                  <CompactSignalField label="Paid Pain" value={detail.paidPain} />
+                  <CompactSignalField label="First Offer" value={detail.firstOffer} />
+                </div>
                 <button
                   type="button"
-                  onClick={() => onGenerateOutputPack(signal)}
-                  className="mt-3 w-full rounded-xl border border-emerald-300/30 bg-emerald-300/[0.08] px-3 py-3 text-center text-xs font-black text-emerald-100 transition hover:bg-emerald-300/[0.14]"
+                  onClick={() => {
+                    setDeepDiveSignalId(signal.id);
+                  }}
+                  className="mt-3 w-full rounded-xl bg-emerald-300 px-3 py-3 text-center text-xs font-black text-black transition hover:bg-emerald-200"
                 >
-                  Generate Output Pack
+                  Deep Dive
                 </button>
               </article>
             );
           })}
         </div>
 
-        <div className="mt-2 break-words text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-          Best offer to test today
-        </div>
-        {[bestSignal].map((signal) => {
-          const detail = getOpportunityDetailFields(signal);
+        {deepDiveSignal && (
+          <article className="mt-2 min-w-0 overflow-hidden rounded-2xl border border-emerald-300/35 bg-black/35 p-4 shadow-lg shadow-emerald-950/20 md:rounded-3xl md:p-5">
+            <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+              Deep Dive
+            </div>
+            <h3 className="mt-2 break-words text-xl font-black text-white">
+              {truncateDisplayText(getDisplaySignalTitle(deepDiveSignal).title, 90)}
+            </h3>
 
-          return (
-            <article
-              key={signal.id}
-              className="min-w-0 overflow-hidden rounded-2xl border border-emerald-300/35 bg-black/35 p-4 shadow-lg shadow-emerald-950/20 md:rounded-3xl md:p-5"
-            >
-              <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+            <div className="mt-4 text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+              1. Business Signal
+            </div>
+            <div className="mt-4 grid min-w-0 gap-3 md:grid-cols-4">
+              <MarketOpportunityField label="Money Proof" value={deepDiveDetail.proof} />
+              <MarketOpportunityField label="Buyer" value={deepDiveDetail.buyer} />
+              <MarketOpportunityField label="Paid Pain" value={deepDiveDetail.paidPain} />
+              <MarketOpportunityField label="First Offer" value={deepDiveDetail.firstOffer} />
+            </div>
+
+            <section className="mt-5 rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.06] p-4">
+              <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
-                  <div className="flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-wide">
-                    <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-zinc-400">
-                      {getSignalMarket(signal)}
-                    </span>
-                    <span className="rounded-full border border-emerald-300/25 bg-emerald-300/[0.08] px-2 py-1 text-emerald-200">
-                      Score {getSignalOpportunityScore(signal)}/50
-                    </span>
-                    <span className="rounded-full border border-white/10 bg-black/25 px-2 py-1 text-zinc-500">
-                      {getSignalEvidenceLevel(signal)} evidence
-                    </span>
+                  <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+                    2. Generate SNS Pack
                   </div>
-                  <h4 className="mt-2 break-words text-base font-black text-white md:mt-3 md:text-lg">
-                    {truncateDisplayText(getDisplaySignalTitle(signal).title, 78)}
-                  </h4>
-                  <p className="mt-2 break-words text-sm leading-relaxed text-zinc-400 md:leading-6">
-                    Buyer: {signal.buyer}
-                  </p>
-                  <p className="mt-2 line-clamp-3 break-words text-sm leading-relaxed text-zinc-300 md:line-clamp-none md:leading-6">
-                    Paid pain: {truncateDisplayText(signal.pain, 160)}
+                  <p className="mt-1 break-words text-sm font-bold leading-6 text-zinc-200">
+                    Generate the post, carousel, DM, and 48h validation plan before building.
                   </p>
                 </div>
-                <div className="flex w-full flex-col gap-2 lg:w-auto">
-                  <button
-                    type="button"
-                    onClick={() => onGenerateOutputPack(signal)}
-                    className="w-full rounded-xl bg-emerald-300 px-4 py-3 text-center text-sm font-black text-black transition hover:bg-emerald-200 lg:rounded-2xl lg:px-5 lg:py-4"
-                  >
-                    Generate Output Pack
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onSelectOpportunity(signal)}
-                    className="w-full rounded-xl border border-white/10 px-4 py-3 text-center text-sm font-black text-white transition hover:bg-white/[0.04] lg:rounded-2xl lg:px-5 lg:py-4"
-                  >
-                    Generate Business Spark
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => onGenerateOutputPack(deepDiveSignal)}
+                  className="w-full rounded-2xl bg-emerald-300 px-5 py-4 text-center text-sm font-black text-black transition hover:bg-emerald-200 sm:w-auto"
+                >
+                  Generate SNS Pack
+                </button>
               </div>
+              {outputPack && outputPack.signalId === deepDiveSignal.id && (
+                <OutputPackPanel
+                  outputPack={outputPack}
+                  savedCount={outputPacksCount}
+                  onClear={onClearOutputPack}
+                  onSave={onSaveOutputPack}
+                />
+              )}
+            </section>
 
-              <details className="mt-3 rounded-xl border border-white/10 bg-black/20 p-3 md:hidden">
-                <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-wide text-zinc-500">
-                  Details
-                </summary>
-                <div className="mt-3 grid gap-2">
-                  <MarketOpportunityField
-                    label="Money proof"
-                    value={detail.proof}
-                  />
-                  <MarketOpportunityField
-                    label="What sold"
-                    value={detail.whatSold}
-                  />
-                  <MarketOpportunityField
-                    label="Why money changed hands"
-                    value={detail.whyMoneyChangedHands}
-                  />
-                  <MarketOpportunityField
-                    label="Buyer"
-                    value={detail.buyer}
-                  />
-                  <MarketOpportunityField
-                    label="Paid pain"
-                    value={detail.paidPain}
-                  />
-                  <MarketOpportunityField
-                    label="Your first offer"
-                    value={detail.firstOffer}
-                  />
-                  <MarketOpportunityField
-                    label="Price"
-                    value={detail.price}
-                  />
-                  <MarketOpportunityField
-                    label="Post hook"
-                    value={detail.postHook}
-                  />
-                  <MarketOpportunityField
-                    label="DM script"
-                    value={detail.dmScript}
-                  />
-                  <MarketOpportunityField
-                    label="48h validation"
-                    value={detail.fortyEightHourTest}
-                  />
-                  <MarketOpportunityField
-                    label="Build with Codex after replies"
-                    value={detail.buildAfterReplies}
-                  />
-                </div>
-              </details>
+            {outputPack && outputPack.signalId === deepDiveSignal.id && (
+              <CodexPromptPanel codexBuildPrompt={outputPack.codexBuildPrompt} />
+            )}
 
-              <div className="mt-4 hidden min-w-0 gap-3 md:grid md:grid-cols-2 xl:grid-cols-3">
-                <MarketOpportunityField
-                  label="Money proof"
-                  value={detail.proof}
-                />
-                <MarketOpportunityField
-                  label="What sold"
-                  value={detail.whatSold}
-                />
-                <MarketOpportunityField
-                  label="Why money changed hands"
-                  value={detail.whyMoneyChangedHands}
-                />
-                <MarketOpportunityField
-                  label="Buyer"
-                  value={detail.buyer}
-                />
-                <MarketOpportunityField
-                  label="Paid pain"
-                  value={detail.paidPain}
-                />
-                <MarketOpportunityField
-                  label="Your first offer"
-                  value={detail.firstOffer}
-                />
-                <MarketOpportunityField
-                  label="Price"
-                  value={detail.price}
-                />
-                <MarketOpportunityField
-                  label="Post hook"
-                  value={detail.postHook}
-                />
-                <MarketOpportunityField
-                  label="DM script"
-                  value={detail.dmScript}
-                />
-                <MarketOpportunityField
-                  label="48h validation"
-                  value={detail.fortyEightHourTest}
-                />
-                <MarketOpportunityField
-                  label="Build with Codex after replies"
-                  value={detail.buildAfterReplies}
-                />
+            <details className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-4">
+              <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+                4. Build Later
+              </summary>
+              <div className="mt-4 grid min-w-0 gap-3 md:grid-cols-2">
+                <MarketOpportunityField label="Validation checklist" value={deepDiveDetail.fortyEightHourTest} />
+                <MarketOpportunityField label="Notes" value="Validate before building. Look for replies, buyer-specific pain, and one person asking for the workflow, report, or audit." />
+                <MarketOpportunityField label="Additional context" value={deepDiveDetail.whyMoneyChangedHands} />
+                <MarketOpportunityField label="Build after replies" value={deepDiveDetail.buildAfterReplies} />
               </div>
-            </article>
-          );
-        })}
+            </details>
+          </article>
+        )}
       </div>
     </section>
+  );
+}
+
+function CompactSignalField({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0">
+      <div className="text-[10px] font-black uppercase tracking-wide text-zinc-600">
+        {label}
+      </div>
+      <p className="mt-1 line-clamp-2 break-words text-xs font-bold leading-5 text-zinc-300">
+        {normalizeDisplayText(value)}
+      </p>
+    </div>
   );
 }
 
@@ -7415,25 +7366,15 @@ function OutputPackPanel({
   const outputSections = [
     { key: "xPost", label: "X Post", value: outputPack.xPost },
     {
-      key: "shortVideoScript",
-      label: "Short Video Script",
-      value: outputPack.shortVideoScript,
-    },
-    {
       key: "carouselSlides",
-      label: "Carousel Slides",
+      label: "Carousel",
       value: outputPack.carouselSlides.join("\n\n"),
     },
-    { key: "coldDm", label: "Cold DM", value: outputPack.coldDm },
+    { key: "coldDm", label: "DM", value: outputPack.coldDm },
     {
       key: "validationPlan",
       label: "48h Validation Plan",
       value: outputPack.validationPlan,
-    },
-    {
-      key: "codexBuildPrompt",
-      label: "Codex Build Prompt",
-      value: outputPack.codexBuildPrompt,
     },
   ];
 
@@ -7453,13 +7394,13 @@ function OutputPackPanel({
       <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0">
           <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-            Output Pack
+            SNS Pack
           </div>
           <h3 className="mt-1 break-words text-lg font-black text-white md:text-2xl">
-            Generated from one Money Signal.
+            Posts, carousel, DM, and validation plan.
           </h3>
           <p className="mt-2 max-w-2xl break-words text-sm leading-relaxed text-zinc-400">
-            Same proof, buyer, paid pain, and first offer. Use these assets to sell first, then build only after replies.
+            Same proof, buyer, paid pain, and first offer. Use these assets to validate before opening the Codex prompt.
           </p>
           <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-wide">
             <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-zinc-400">
@@ -7518,6 +7459,52 @@ function OutputPackPanel({
           </article>
         ))}
       </div>
+    </section>
+  );
+}
+
+function CodexPromptPanel({ codexBuildPrompt }: { codexBuildPrompt: string }) {
+  const [copied, setCopied] = useState(false);
+  const [copyError, setCopyError] = useState(false);
+
+  async function copyCodexPrompt() {
+    const didCopy = await writeClipboardText(codexBuildPrompt);
+
+    setCopied(didCopy);
+    setCopyError(!didCopy);
+    window.setTimeout(() => {
+      setCopied(false);
+      setCopyError(false);
+    }, 1200);
+  }
+
+  return (
+    <section className="mt-5 rounded-2xl border border-white/10 bg-[#101011] p-4">
+      <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+            3. Codex Prompt
+          </div>
+          <p className="mt-1 break-words text-sm font-bold leading-6 text-zinc-200">
+            Copy this after you have a reply, click, or buyer asking for details.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={copyCodexPrompt}
+          className="w-full rounded-2xl bg-white px-5 py-3 text-center text-sm font-black text-black transition hover:bg-zinc-200 sm:w-auto"
+        >
+          {copied ? "Copied Codex Prompt" : "Copy Codex Prompt"}
+        </button>
+      </div>
+      {copyError && (
+        <div className="mt-4 rounded-2xl border border-yellow-400/20 bg-yellow-400/10 px-4 py-3 text-sm font-bold text-yellow-100">
+          Clipboard blocked. Select the prompt and copy manually.
+        </div>
+      )}
+      <pre className="mt-4 max-h-[420px] max-w-full overflow-auto whitespace-pre-wrap break-words rounded-xl border border-white/10 bg-black/50 p-4 font-sans text-sm leading-6 text-zinc-100">
+        {codexBuildPrompt}
+      </pre>
     </section>
   );
 }

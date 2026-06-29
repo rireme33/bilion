@@ -370,6 +370,11 @@ function getOpportunityFieldsJa(output: SourceOutput): [string, string][] {
     ["なぜ売れたか", "どんな痛みを解決するか", "なぜ今買うか"],
     "買い手の既存業務に痛みがあり、短時間で改善できるため。",
   );
+  const pain = getFieldValueJa(
+    output,
+    ["痛み", "どんな痛みを解決するか"],
+    "手作業で繰り返している業務が散らばり、毎回時間と判断コストがかかる。",
+  );
   const whoPays = getFieldValueJa(
     output,
     ["誰が払うか", "誰が買うか"],
@@ -390,21 +395,27 @@ function getOpportunityFieldsJa(output: SourceOutput): [string, string][] {
     ["価格", "いくらで売るか"],
     "$19 one-time または $29/month",
   );
-  const firstCustomerPlan = [
-    `最初に連絡する相手: ${whoPays}`,
-    `見つける場所: ${output.proof}`,
-    `言うこと: Before/Afterサンプルを送ってもいいですか？`,
-    `提案するもの: ${price}の初回有料オファー`,
-    "48時間以内の検証: 3件の有効返信、1件の予約/購入、または2件の実データ提供。",
-  ].join("\n");
+  const launchPost = getFieldValueJa(
+    output,
+    ["Launch Post", "ローンチ投稿"],
+    `${whoPays}向けに、${pain}を解決する${firstOffer}を検証中です。まずBefore/Afterサンプルで反応を見ます。`,
+  );
+  const dmScript = getFieldValueJa(
+    output,
+    ["DM Script", "DM文"],
+    `今、${whoPays}向けに${firstOffer}を検証しています。Before/Afterサンプルを1つ送ってもいいですか？`,
+  );
+  const firstCustomerPlan = output.validationSteps.slice(0, 3).join("\n");
 
   return [
-    ["Business Spark", productAngle || pattern],
+    ["Business Spark", firstOffer || productAngle || pattern],
     ["なぜ販売になるか", whySold],
     ["買う相手", whoPays],
-    ["痛み", whySold],
+    ["痛み", pain],
     ["初回オファー", `${firstOffer}\n${price}`],
     ["48時間検証", firstCustomerPlan],
+    ["Launch Post", launchPost],
+    ["DM Script", dmScript],
     ["Codex Build Prompt", output.masterPrompt.split("\n").slice(0, 8).join("\n")],
   ];
 }
@@ -626,7 +637,7 @@ ${output.validationSteps.map((step, index) => `${index + 1}. ${step}`).join("\n"
 }
 
 const japaneseMobileReplyCopy = `売りたい相手・自分の強み・考えてる案を送ってください。
-Bilionで無料Roastして、最初に何を売るべきか返します。`;
+BilionでBusiness Sparkに変換して、最初に何を売るべきか返します。`;
 
 const japaneseMobileDmCopy = `Bilionを検証中です。売れたビジネスの型から、収益機会・価格・投稿文・48時間検証まで出します。
 あなたの案で1回無料診断しましょうか？`;
@@ -634,6 +645,75 @@ const japaneseMobileDmCopy = `Bilionを検証中です。売れたビジネス�
 const japaneseMobileSalesCtaCopy = `Founder Accessを解除 — $19
 
 Business Spark、売るための文章、Codex Promptを無制限に使えます。`;
+
+const reviewedJapaneseBusinessSparks: SourceOutput[] = [
+  createSourceOutput({
+    label: "Business Spark Seed",
+    proof: "品質確認済みseed / Business Automation",
+    title: "Invoice Follow-up Sprint",
+    signal:
+      "フリーランスや小規模制作会社では、請求書の催促がメール、スプレッドシート、記憶に散らばりやすい。",
+    buyer: "フリーランスと小規模制作会社",
+    pain:
+      "請求書の催促は気まずく、後回しになりやすく、メールと表計算に分散している。",
+    product:
+      "未払い請求の状況を貼ると、丁寧な催促メール、優先度、次の対応、簡単な管理メモを生成するワークフロー。",
+    price: "$500 setup + $150/month",
+    whyNow:
+      "回収漏れはそのままキャッシュフローに響き、AIで文面作成と管理を小さく自動化できるから。",
+    validationSteps: [
+      "未払い請求メモから催促メールになるBefore/Afterサンプルを1つ作る。",
+      "フリーランスまたは小規模制作会社20人に送る。",
+      "返信、クリック、ワークフロー希望が出た場合だけ作る。",
+    ],
+    masterPrompt:
+      "Build this only after someone replies, clicks, or asks for the offer. Build a mobile-first MVP called Invoice Follow-up Sprint for freelancers and solo agencies. The tool helps users paste overdue invoice details, generate polite follow-up emails, track follow-up status, and copy next actions. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no external APIs, no payment integration. Include screens for landing/offer, invoice input form, generated email output, saved follow-up records, and validation panel. Input fields: client name, invoice amount, due date, days overdue, relationship tone, previous follow-up status, context notes. Outputs: subject line, polite follow-up email, priority, next action, internal note. Include 3 mock invoices. Add copy buttons. Make the UI mobile-first with no horizontal scroll.",
+  }),
+  createSourceOutput({
+    label: "Business Spark Seed",
+    proof: "品質確認済みseed / Local Business",
+    title: "Review Reply Copilot",
+    signal:
+      "ローカル店舗は口コミが売上に直結するが、返信文を書く作業は反復的で後回しになりやすい。",
+    buyer: "飲食店、クリニック、美容室、地域店舗",
+    pain:
+      "オーナーは口コミ返信の重要性を分かっているが、毎回トーンや謝罪文を考えるのが重い。",
+    product:
+      "口コミを貼ると、短い返信、丁寧な返信、低評価向け返信、オーナー確認メモを生成する小型ツール。",
+    price: "$500 setup + $150/month",
+    whyNow:
+      "Google口コミや予約サイトの印象が来店判断に直結し、返信の速さと品質が見込み客に見えるから。",
+    validationSteps: [
+      "実際の口コミ5件をBefore/Afterで書き換える。",
+      "近隣店舗オーナーにサンプルを送る。",
+      "翌月分も任せたいと言われた場合だけ作る。",
+    ],
+    masterPrompt:
+      "Build this only after someone replies, clicks, or asks for the offer. Build a mobile-first MVP called Review Reply Copilot for local service businesses. The tool helps owners paste customer reviews and generate polite, brand-safe replies. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no external APIs. Screens: offer overview, review input, generated reply output, saved replies, validation panel. Inputs: business type, review text, star rating, tone, owner note. Outputs: short reply, warm reply, recovery reply, internal note. Include 5 mock reviews. Add copy buttons. Mobile-first UI.",
+  }),
+  createSourceOutput({
+    label: "Business Spark Seed",
+    proof: "品質確認済みseed / Micro SaaS",
+    title: "Name Tracing Worksheets",
+    signal:
+      "保護者や先生は、子どもの名前入りプリントのような個別教材にすでにお金を払っている。",
+    buyer: "保護者、幼児教室の先生、ホームスクール家庭",
+    pain:
+      "個別ワークシートを作りたいが、毎回デザインするのは面倒で時間がかかる。",
+    product:
+      "名前を入力すると、なぞり書き用の印刷ワークシートを生成する小さなSaaS。",
+    price: "$9 one-time または $5/month",
+    whyNow:
+      "AIビルダーなら生成とプレビューだけの小さな教材ツールを短時間で作れ、投稿サンプルで先に反応を見られるから。",
+    validationSteps: [
+      "名前なぞりワークシートのサンプルを3つ投稿する。",
+      "保護者・先生クリエイター20人に無料サンプルを提案する。",
+      "自分の子ども用が欲しいと言われた場合だけ作る。",
+    ],
+    masterPrompt:
+      "Build this only after someone replies, clicks, or asks for the offer. Build a mobile-first MVP called Name Tracing Worksheets. The tool lets parents and teachers enter a child's name and generate a printable tracing worksheet. Use Next.js, React, and TypeScript. Use local state only. No auth, no database, no external APIs, no payment integration. Screens: landing/offer, worksheet form, worksheet preview, saved examples, validation panel. Inputs: child name, letter size, line style, number of rows, theme. Outputs: printable worksheet preview and copy/download placeholder. Include 3 sample names. Mobile-first UI.",
+  }),
+];
 
 async function writeClipboardTextJa(text: string) {
   if (!navigator.clipboard?.writeText) {
@@ -649,7 +729,7 @@ async function writeClipboardTextJa(text: string) {
 }
 
 const sourceOutputPools: Record<SourceType, SourceOutput[]> = {
-  indie: [{
+  indie: [...reviewedJapaneseBusinessSparks, {
     label: "Indie Hackers DB",
     proof: "参照元 IH42kDB / Indie Hackers成功事例",
     title: "入居者修理依頼ルーター",
