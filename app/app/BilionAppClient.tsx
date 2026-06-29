@@ -61,10 +61,16 @@ type BilionAppClientProps = {
 };
 
 type SourceMode = "indie" | "github";
-type NextAction = "build" | "sell" | "post";
+type NextAction = "post" | "sell" | "dm" | "build";
 type WorkflowTab = "library" | "studio" | "queue" | "validation" | "winners";
 type MarketClassification = MarketOption;
-type DistributionStatus = "Draft" | "Posted" | "Sent" | "Tested";
+type DistributionStatus =
+  | "Not tested"
+  | "Posted"
+  | "DM sent"
+  | "Got replies"
+  | "Winner"
+  | "Rejected";
 type DistributionKind = "X post" | "DM script" | "Validation log" | "Short video angle";
 type ValidationVerdict = "Build" | "Kill" | "Pivot";
 
@@ -179,6 +185,7 @@ type ApprovedMoneySignal = {
 type OutputPack = {
   id: string;
   signalId: string;
+  angle?: NextAction;
   market: string;
   generatedAt: string;
   xPost: string;
@@ -1422,19 +1429,24 @@ const nextActionOptions: Array<{
   helper: string;
 }> = [
   {
-    action: "build",
-    label: "Build after replies",
-    helper: "Use the Codex prompt only after someone responds.",
+    action: "post",
+    label: "Post it",
+    helper: "Prioritize the X post, carousel, CTA, and source-backed hook.",
   },
   {
     action: "sell",
-    label: "Sell first",
-    helper: "Turn the spark into an offer and outreach sprint.",
+    label: "Sell it",
+    helper: "Prioritize buyer, paid pain, first offer, price, and checkout/DM angle.",
   },
   {
-    action: "post",
-    label: "Run 48h test",
-    helper: "Post, DM, and track demand before building.",
+    action: "dm",
+    label: "DM buyers",
+    helper: "Prioritize target buyer, qualification line, short DM, and follow-up.",
+  },
+  {
+    action: "build",
+    label: "Build MVP",
+    helper: "Prioritize MVP scope, Codex prompt, and validate-before-building warning.",
   },
 ];
 
@@ -1560,7 +1572,7 @@ const highQualityBusinessSparks: HighQualityBusinessSpark[] = [
       "Build only if they ask for weekly reports or a reusable tool.",
     ],
     launchPost:
-      "Small contractors still turn messy field notes into daily reports by hand. Business Spark: Field Notes to Reports. Buyer: small contractors. Offer: $49/month jobsite report generator. Test it with one before/after report before building.",
+      "Small contractors still turn messy field notes into daily reports by hand. Launch Pack: Field Notes to Reports. Buyer: small contractors. Offer: $49/month jobsite report generator. Test it with one before/after report before building.",
     dmScript:
       "Quick idea: I am testing a workflow that turns messy jobsite notes into clean daily reports. Want me to turn one sample note into a client-ready report?",
     codexPromptPreview:
@@ -1582,7 +1594,7 @@ const highQualityBusinessSparks: HighQualityBusinessSpark[] = [
       "Build only if they want the next month handled.",
     ],
     launchPost:
-      "Local businesses lose trust when reviews sit unanswered. Business Spark: Review Reply Copilot. Buyer: restaurants, clinics, salons. Offer: $500 setup + $150/month. Test by rewriting 5 reviews before building.",
+      "Local businesses lose trust when reviews sit unanswered. Launch Pack: Review Reply Copilot. Buyer: restaurants, clinics, salons. Offer: $500 setup + $150/month. Test by rewriting 5 reviews before building.",
     dmScript:
       "Quick idea: I rewrote a few review replies for local businesses using a simple AI workflow. Want me to send 5 before/after examples for your reviews?",
     codexPromptPreview:
@@ -2811,7 +2823,7 @@ function getActionAngleIndex(action: NextAction) {
     return 4;
   }
 
-  if (action === "post") {
+  if (action === "post" || action === "dm") {
     return 3;
   }
 
@@ -2819,7 +2831,7 @@ function getActionAngleIndex(action: NextAction) {
 }
 
 function getActionLabel(action: NextAction) {
-  return nextActionOptions.find((option) => option.action === action)?.label || "Build after replies";
+  return nextActionOptions.find((option) => option.action === action)?.label || "Post it";
 }
 
 function cleanSignalText(value: string) {
@@ -3195,7 +3207,23 @@ function getOutputPackBuildScope(detail: ReturnType<typeof getOpportunityDetailF
     .trim() || "a small tool that creates the same manual output faster";
 }
 
-function buildOutputPackFromSignal(signal: BuildSignal): OutputPack {
+function getLaunchPackAngleNote(angle: NextAction) {
+  if (angle === "sell") {
+    return "Lead with the buyer, paid pain, first offer, price, and a low-friction DM or checkout angle.";
+  }
+
+  if (angle === "dm") {
+    return "Lead with a short qualification line, one helpful sample, a no-link first DM, and a simple follow-up.";
+  }
+
+  if (angle === "build") {
+    return "Lead with the MVP scope and Codex prompt, but keep the validate-before-building warning visible.";
+  }
+
+  return "Lead with the X post, 3-slide carousel, source-backed hook, and CTA.";
+}
+
+function buildOutputPackFromSignal(signal: BuildSignal, angle: NextAction = "post"): OutputPack {
   const detail = getOpportunityDetailFields(signal);
   const title = getDisplaySignalTitle(signal);
   const productName = getOutputPackProductName(detail.firstOffer);
@@ -3203,7 +3231,11 @@ function buildOutputPackFromSignal(signal: BuildSignal): OutputPack {
   const market = getSignalMarket(signal);
   const generatedAt = new Date().toISOString();
   const signalTitle = title.detail || title.title || signal.sourceTitle || "Money Signal";
+  const angleNote = getLaunchPackAngleNote(angle);
   const validationPlan = [
+    `Launch Pack angle: ${getActionLabel(angle)}`,
+    angleNote,
+    "",
     "Day 1:",
     `- Publish this X post: ${detail.postHook}`,
     `- Create a carousel from the proof: ${detail.proof}`,
@@ -3228,22 +3260,19 @@ function buildOutputPackFromSignal(signal: BuildSignal): OutputPack {
     "- People like the idea but do not want the offer.",
   ].join("\n");
   const carouselSlides = [
-    `Slide 1: Hook\n${detail.buyer} are already paying around this problem. Do not start by building software.`,
-    `Slide 2: Money proof\n${detail.proof}`,
-    `Slide 3: Buyer\n${detail.buyer}`,
-    `Slide 4: Paid pain\n${detail.paidPain}`,
-    `Slide 5: First offer\nSell this first: ${detail.firstOffer}`,
-    `Slide 6: 48h validation\nCreate one manual before/after sample, DM 10-20 reachable buyers, and ask if they want the same result.`,
-    `Slide 7: Build after replies\n${detail.buildAfterReplies}`,
-    `Slide 8: CTA\nWant the exact post, DM, and Codex prompt for this signal? Start with the manual offer first.`,
+    `Slide 1: Money signal\n${detail.proof}\n\n${detail.buyer} are already paying around this problem.`,
+    `Slide 2: Why buyers pay\n${detail.paidPain}\n\nSell this first: ${detail.firstOffer}`,
+    `Slide 3: Validate before building\nCreate one manual before/after sample, DM 10-20 reachable buyers, and ask if they want the same result.\n\n${detail.buildAfterReplies}`,
   ];
 
   return {
     id: `output-pack-${signal.id}-${Date.now()}`,
     signalId: signal.id,
+    angle,
     market,
     generatedAt,
     xPost: [
+      `Angle: ${getActionLabel(angle)}`,
       `${detail.buyer} do not need another AI idea.`,
       "They need one paid pain handled this week.",
       "",
@@ -3254,10 +3283,14 @@ function buildOutputPackFromSignal(signal: BuildSignal): OutputPack {
       `Pain: ${detail.paidPain}`,
       "",
       `First offer to test: ${detail.firstOffer}`,
+      angle === "sell" ? `Make the ask: want this manual version for ${detail.price}?` : "",
+      angle === "dm" ? "DM buyers with one sample before sending any link." : "",
+      angle === "build" ? `MVP scope later: ${buildScope}` : "",
       `Post the proof, DM the buyer, and sell the manual version first.`,
       "Build only after replies.",
-    ].join("\n"),
+    ].filter(Boolean).join("\n"),
     shortVideoScript: [
+      `Angle: ${getActionLabel(angle)}`,
       `Hook: ${signalTitle} is a money signal, not just an idea.`,
       `Proof: ${detail.proof}`,
       `Buyer: ${detail.buyer}`,
@@ -3272,12 +3305,15 @@ function buildOutputPackFromSignal(signal: BuildSignal): OutputPack {
     ].join("\n"),
     carouselSlides,
     coldDm: [
+      `Angle: ${getActionLabel(angle)}`,
       `Hey, I noticed ${detail.buyer} keep running into this: ${detail.paidPain}`,
       "",
       `I found a money signal behind it: ${detail.proof}`,
       "",
       `I made a small ${productName} sample instead of building software first.`,
       "Want me to send the sample and see if it would fit your case?",
+      "",
+      "Follow-up: If this is not a priority, what is the messiest part of this workflow right now?",
     ].join("\n"),
     validationPlan,
     codexBuildPrompt: [
@@ -3976,7 +4012,7 @@ function buildHighQualitySparkFromCanonicalSignal(signal: BuildSignal): HighQual
     distributionChannel: canonicalSignal.channels.join(", "),
     dmTarget: canonicalSignal.buyer,
     fortyEightHourTest: validationSteps,
-    launchPost: `${fields.postHook}\n\nMoney proof: ${canonicalSignal.proof}\nWhat sold: ${canonicalSignal.whatMoneyMoved}\nBusiness Spark: ${canonicalSignal.firstOffer}\nBuyer: ${canonicalSignal.buyer}\nPain: ${canonicalSignal.paidPain}\nFirst offer: ${canonicalSignal.firstOffer}\nTest: ${validationSteps.join(" ")}`,
+    launchPost: `${fields.postHook}\n\nMoney proof: ${canonicalSignal.proof}\nWhat sold: ${canonicalSignal.whatMoneyMoved}\nLaunch Pack: ${canonicalSignal.firstOffer}\nBuyer: ${canonicalSignal.buyer}\nPain: ${canonicalSignal.paidPain}\nFirst offer: ${canonicalSignal.firstOffer}\nTest: ${validationSteps.join(" ")}`,
     dmScript: fields.dmScript,
     codexPromptPreview: `Build after replies. Start with ${buildLater}.`,
     codexBuildPrompt: `Build this only after someone replies, clicks, or asks for the offer. Money proof: ${canonicalSignal.proof}. What money moved: ${canonicalSignal.whatMoneyMoved}. Market: ${canonicalSignal.market}. Build a mobile-first MVP for ${canonicalSignal.buyer}. Paid pain: ${canonicalSignal.paidPain}. First offer already tested: ${canonicalSignal.firstOffer}. Build only this first version: ${buildLater}. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no payment integration, and no external APIs. Include an offer overview, input form, generated output, saved examples, launch copy, DM script, copy buttons, and validation panel. The validation panel must include this 48-hour plan: ${validationSteps.join(" ")}. Done criteria: it should be demo-ready, mobile-first, and useful for testing demand before building a real SaaS.`,
@@ -4001,7 +4037,7 @@ function buildHighQualitySparkFromSignalInbox(signal: BuildSignal): HighQualityB
     distributionChannel: detail.distribution,
     dmTarget: detail.buyer,
     fortyEightHourTest: validationSteps,
-    launchPost: `${detail.postHook}\n\nMoney proof: ${detail.proof}\nWhat moved: ${detail.whatSold}\nBusiness Spark: ${detail.firstOffer}\nBuyer: ${detail.buyer}\nPaid pain: ${detail.paidPain}\n48h test: ${validationSteps.join(" ")}`,
+    launchPost: `${detail.postHook}\n\nMoney proof: ${detail.proof}\nWhat moved: ${detail.whatSold}\nLaunch Pack: ${detail.firstOffer}\nBuyer: ${detail.buyer}\nPaid pain: ${detail.paidPain}\n48h test: ${validationSteps.join(" ")}`,
     dmScript: detail.dmScript,
     codexPromptPreview: `Build after replies. Start with ${detail.buildAfterReplies}.`,
     codexBuildPrompt: `Build this only after someone replies, clicks, or asks for the offer. Source: Signal Inbox. Money proof: ${detail.proof}. What money moved: ${detail.whatSold}. Market: ${getSignalMarket(signal)}. Buyer: ${detail.buyer}. Paid pain: ${detail.paidPain}. First offer already tested: ${detail.firstOffer}. Build only this first version: ${signal.whatYouCanBuild}. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no payment integration, and no external APIs. Include an offer overview, input form, generated output, saved examples, launch copy, DM script, copy buttons, and validation panel. The validation panel must include this 48-hour plan: ${validationSteps.join(" ")}. Done criteria: demo-ready, mobile-first, and useful for testing demand before building a real SaaS.`,
@@ -4030,7 +4066,7 @@ function buildHighQualitySparkFromMarketSignal(signal: BuildSignal): HighQuality
     distributionChannel: opportunity.postHook,
     dmTarget: opportunity.buyer,
     fortyEightHourTest: opportunity.validationSteps,
-    launchPost: `${opportunity.postHook}\n\nMoney proof: ${opportunity.proofLabel} - ${opportunity.whatSold}\nPattern: ${opportunity.patternTitle}\nBusiness Spark: ${sparkTitle}\nBuyer: ${opportunity.buyer}\nPain: ${opportunity.paidPain}\nFirst offer: ${firstOffer}\nTest: ${validationText}`,
+    launchPost: `${opportunity.postHook}\n\nMoney proof: ${opportunity.proofLabel} - ${opportunity.whatSold}\nPattern: ${opportunity.patternTitle}\nLaunch Pack: ${sparkTitle}\nBuyer: ${opportunity.buyer}\nPain: ${opportunity.paidPain}\nFirst offer: ${firstOffer}\nTest: ${validationText}`,
     dmScript: opportunity.dmScript,
     codexPromptPreview: `Build a mobile-first MVP for ${sparkTitle}. Start with ${opportunity.buildAfterReplies}.`,
     codexBuildPrompt: `Build this only after someone replies, clicks, or asks for the offer. Money proof: ${opportunity.proofLabel} for ${opportunity.whatSold}. Pattern: ${opportunity.patternTitle}. Market: ${market}. Build a mobile-first MVP called ${sparkTitle} for ${opportunity.buyer}. The buyer pain is: ${opportunity.paidPain}. First offer: ${firstOffer}. Build only this first version: ${opportunity.buildAfterReplies}. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no payment integration, and no external APIs. Include an offer overview, input form, generated output, saved examples, launch copy, DM script, copy buttons, and validation panel. The validation panel must include this 48-hour plan: ${validationText}. Done criteria: it should be demo-ready, mobile-first, and useful for testing demand before building a real SaaS.`,
@@ -4235,7 +4271,7 @@ function applyBusinessSparkSeed(
       whyBuyersPay: seed.whyItWorks,
       distributionChannel,
       evidenceStrength: "Strong",
-      note: "Seeded from a reviewed Bilion Business Spark pattern.",
+      note: "Seeded from a reviewed Bilion Launch Pack pattern.",
     },
     whoPays: seed.buyer,
     yourProductAngle: seed.codexPromptPreview,
@@ -4316,7 +4352,7 @@ function applyBusinessSparkSeedToResult(
       build_steps: directValidationPlan,
       pattern_matches: [
         seed.path,
-        seed.distributionChannel || "Reviewed Business Spark seed",
+        seed.distributionChannel || "Reviewed Launch Pack seed",
         seed.dmTarget ? `DM target: ${seed.dmTarget}` : "Sell first, build after replies",
       ],
       code_x_prompt: seed.codexBuildPrompt,
@@ -4344,7 +4380,7 @@ ${signal.whyNow}`;
 }
 
 function buildFreeMasterPromptCopy(masterPrompt: MasterPrompt) {
-  return `Bilion Business Spark preview
+  return `Bilion Launch Pack preview
 
 What already sold:
 ${masterPrompt.provenPattern}
@@ -4381,7 +4417,7 @@ ${masterPrompt.launchCopy.dmMessage}
 48-hour validation plan:
 ${masterPrompt.validationPlan.map((step, index) => `${index + 1}. ${step}`).join("\n")}
 
-Get the full Business Spark \u2014 $19
+Get the full Launch Pack \u2014 $19
 Includes: full launch copy, 48h test, saved Winners, and the Codex Build Prompt.`;
 }
 
@@ -4750,7 +4786,7 @@ function buildActionBriefCopy(
     includeCodexPrompt,
   );
 
-  return `${getActionLabel(action)} Business Spark
+  return `${getActionLabel(action)} Launch Pack
 
 ${fields.map(([label, value]) => `${label}:\n${value}`).join("\n\n")}`;
 }
@@ -5665,7 +5701,7 @@ export default function BilionAppClient({
   const [selectedBuyer, setSelectedBuyer] = useState(
     topMoneySignalsForMarket[0]?.buyer || marketSignals[todayIndex]?.buyer || marketSignals[0]?.buyer || "",
   );
-  const [selectedAction, setSelectedAction] = useState<NextAction>("build");
+  const [selectedAction, setSelectedAction] = useState<NextAction>("post");
   const freeRunsRemaining = hasFounderAccess
     ? Infinity
     : Math.max(0, FREE_GENERATION_LIMIT - freeUsageCount);
@@ -5845,7 +5881,7 @@ export default function BilionAppClient({
   }
 
   function generateOutputPack(signal: BuildSignal) {
-    setOutputPack(buildOutputPackFromSignal(signal));
+    setOutputPack(buildOutputPackFromSignal(signal, selectedAction));
     setCopyFeedback(null);
   }
 
@@ -5859,14 +5895,82 @@ export default function BilionAppClient({
       writeOutputPacks(nextPacks);
       return nextPacks;
     });
+    setDistributionQueue((currentQueue) => {
+      const nextQueue = [
+        ...buildQueueAssetsFromOutputPack(pack),
+        ...currentQueue,
+      ].slice(0, 50);
+
+      writeDistributionQueue(nextQueue);
+      return nextQueue;
+    });
     setCopyFeedback({
-      message: "Saved Output Pack",
+      message: "Saved Launch Pack to Distribution Queue",
       tone: "success",
     });
   }
 
   function clearOutputPack() {
     setOutputPack(null);
+  }
+
+  function buildQueueAssetsFromOutputPack(pack: OutputPack): DistributionAsset[] {
+    const now = pack.generatedAt;
+    const seed = pack.id;
+    const angle = pack.angle || selectedAction;
+    const buyer = selectedBuyer || selectedSignal?.buyer || "Selected buyer";
+    const signalTitle =
+      selectedSignalDisplayTitle?.detail ||
+      selectedSignalDisplayTitle?.title ||
+      selectedSignal?.sourceTitle ||
+      "Saved Launch Pack";
+
+    return [
+      {
+        id: `launch-pack-x-${seed}`,
+        action: angle,
+        body: pack.xPost,
+        buyer,
+        createdAt: now,
+        kind: "X post",
+        signalTitle,
+        status: "Not tested",
+        title: "Post this money signal",
+      },
+      {
+        id: `launch-pack-dm-${seed}`,
+        action: angle,
+        body: pack.coldDm,
+        buyer,
+        createdAt: now,
+        kind: "DM script",
+        signalTitle,
+        status: "Not tested",
+        title: "DM buyers with the manual offer",
+      },
+      {
+        id: `launch-pack-validation-${seed}`,
+        action: angle,
+        body: pack.validationPlan,
+        buyer,
+        createdAt: now,
+        kind: "Validation log",
+        signalTitle,
+        status: "Not tested",
+        title: "Track the 48-hour test",
+      },
+      {
+        id: `launch-pack-video-${seed}`,
+        action: angle,
+        body: pack.shortVideoScript,
+        buyer,
+        createdAt: now,
+        kind: "Short video angle",
+        signalTitle,
+        status: "Not tested",
+        title: "Record the short video script",
+      },
+    ];
   }
 
   function buildQueueAssetsFromCurrentBrief(seed: number): DistributionAsset[] {
@@ -5889,7 +5993,7 @@ export default function BilionAppClient({
         createdAt: now,
         kind: "X post",
         signalTitle,
-        status: "Draft",
+        status: "Not tested",
         title: "Draft X post from this signal",
       },
       {
@@ -5902,7 +6006,7 @@ export default function BilionAppClient({
         createdAt: now,
         kind: "DM script",
         signalTitle,
-        status: "Draft",
+        status: "Not tested",
         title: "Draft DM from this offer",
       },
       {
@@ -5915,7 +6019,7 @@ export default function BilionAppClient({
         createdAt: now,
         kind: "Validation log",
         signalTitle,
-        status: "Draft",
+        status: "Not tested",
         title: "Prepare validation log",
       },
       {
@@ -5926,7 +6030,7 @@ export default function BilionAppClient({
         createdAt: now,
         kind: "Short video angle",
         signalTitle,
-        status: "Draft",
+        status: "Not tested",
         title: "Short video angle",
       },
     ];
@@ -6279,13 +6383,13 @@ export default function BilionAppClient({
             <div className="min-w-0 rounded-2xl border border-white/10 bg-[#101011] p-4 shadow-2xl md:rounded-3xl md:p-8">
               <h2 className="text-xl font-black tracking-tight md:text-2xl">
                 {activeWorkflowTab === "library"
-                  ? "Choose a market. Generate an Output Pack."
-                  : "Output Pack Studio"}
+                  ? "Choose a market. Generate a Launch Pack."
+                  : "Launch Pack Studio"}
               </h2>
               <p className="mt-2 max-w-xl break-words text-sm leading-relaxed text-zinc-400 md:mt-3 md:leading-6">
                 {activeWorkflowTab === "library"
-                  ? "Choose a market, review the top revenue-backed signals, then generate an Output Pack with posts, DMs, a 48h validation plan, and a Codex prompt."
-                  : `Free Business Sparks today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used.`}
+                  ? "Pick a money signal. Turn it into a post, DM, offer, validation plan, and Codex prompt. Build only after replies."
+                  : `Free Launch Packs today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used.`}
               </p>
 
               <div className="mt-4 grid gap-4 md:mt-6 md:gap-6">
@@ -6298,6 +6402,7 @@ export default function BilionAppClient({
                     outputPacksCount={outputPacks.length}
                     selectedMarket={selectedMarket}
                     onClearOutputPack={clearOutputPack}
+                    onActionChange={setSelectedAction}
                     onGenerateOutputPack={generateOutputPack}
                     onMarketChange={(market) => {
                       setSelectedMarket(market);
@@ -6309,10 +6414,11 @@ export default function BilionAppClient({
                       if (bestSignalForMarket) {
                         setSelectedSignalId(bestSignalForMarket.id);
                         setSelectedBuyer(bestSignalForMarket.buyer);
-                        setSelectedAction("sell");
+                        setSelectedAction("post");
                       }
                     }}
                     onSaveOutputPack={saveOutputPack}
+                    selectedAction={selectedAction}
                   />
                   <details className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-4">
                     <summary className="cursor-pointer list-none">
@@ -6646,15 +6752,15 @@ export default function BilionAppClient({
                 disabled={loading || !canGenerate}
                 className="mt-6 w-full rounded-2xl bg-white px-5 py-4 text-sm font-black text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
               >
-                {loading ? "Generating..." : "Generate 1 free Business Spark"}
+                {loading ? "Generating..." : "Generate 1 free Launch Pack"}
               </button>
               {!canGenerate && (
                 <div className="mt-5 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-5">
                   <h3 className="text-lg font-black text-yellow-100">
-                    You&apos;ve used your 3 free Business Sparks today.
+                    You&apos;ve used your 3 free Launch Packs today.
                   </h3>
                   <p className="mt-2 text-sm leading-6 text-zinc-400">
-                    Founder Access unlocks unlimited Sparks, full Launch Packs, saved Winners, and full Codex Build Prompts.
+                    Founder Access unlocks unlimited Launch Packs, saved Winners, and full Codex Build Prompts.
                   </p>
                   {CHECKOUT_URL ? (
                     <a
@@ -6687,10 +6793,10 @@ export default function BilionAppClient({
                 <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                   <div className="min-w-0">
                     <div className="inline-flex rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-300">
-                      Business Spark
+                      Launch Pack
                     </div>
                     <h2 className="mt-4 break-words text-2xl font-black tracking-tight sm:text-3xl">
-                      Business Spark generated
+                      Launch Pack generated
                     </h2>
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-xs font-bold uppercase tracking-wide text-zinc-400">
@@ -6757,7 +6863,7 @@ export default function BilionAppClient({
                 <div className="flex min-w-0 flex-col gap-4 md:flex-row md:items-end md:justify-between">
                   <div className="min-w-0">
                     <div className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-wide text-black">
-                      Business Spark
+                      Launch Pack
                     </div>
                     <h2 className="mt-4 break-words text-2xl font-black tracking-tight sm:text-3xl">
                       Generate from your selected signal, buyer, and action.
@@ -6765,7 +6871,7 @@ export default function BilionAppClient({
                     <p className="mt-3 max-w-2xl break-words text-sm leading-relaxed text-zinc-400">
                       {hasFounderAccess
                         ? "Founder Access unlocks unlimited Sparks and the full Codex Build Prompt after demand is validated."
-                        : `Free Business Sparks today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used. Founder Access unlocks unlimited Sparks.`}
+                        : `Free Launch Packs today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used. Founder Access unlocks unlimited Launch Packs.`}
                     </p>
                   </div>
 
@@ -6776,7 +6882,7 @@ export default function BilionAppClient({
                       disabled={!canGenerate}
                       className="w-full rounded-2xl bg-white px-5 py-4 text-center text-sm font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                     >
-                      Generate Business Spark
+                      Generate Launch Pack
                     </button>
                     <button
                       type="button"
@@ -6817,10 +6923,10 @@ export default function BilionAppClient({
                     Founder/Paid Access
                   </div>
                   <h2 className="mt-4 text-3xl font-black tracking-tight">
-                    You&apos;ve used your 3 free Business Sparks today.
+                    You&apos;ve used your 3 free Launch Packs today.
                   </h2>
                   <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
-                    Founder Access unlocks unlimited Sparks, full Launch Packs, saved Winners, and full Codex Build Prompts.
+                    Founder Access unlocks unlimited Launch Packs, saved Winners, and full Codex Build Prompts.
                   </p>
                   {CHECKOUT_URL ? (
                     <a
@@ -6890,7 +6996,7 @@ export default function BilionAppClient({
                 <p className="mt-3 text-sm leading-6 text-zinc-500">
                   Use the Mobile Share Kit at the bottom of the brief to post on
                   X, reply to interest, DM likely buyers, and offer the paid
-                  Business Spark.
+                  Launch Pack.
                 </p>
 
                 <div className="mt-5 space-y-3">
@@ -6919,7 +7025,7 @@ function GuidedWorkflow({ currentStep }: { currentStep: 1 | 2 | 3 }) {
     {
       id: 2,
       eyebrow: "Step 2",
-      title: "Generate Business Spark",
+      title: "Generate Launch Pack",
       body: "Get the buyer, pain, first offer, 48h test, and Codex prompt.",
     },
     {
@@ -6957,7 +7063,7 @@ function GuidedWorkflow({ currentStep }: { currentStep: 1 | 2 | 3 }) {
             New here?
           </div>
           <p className="mt-2 text-sm font-bold leading-6 text-zinc-300">
-            1. Pick a signal 竊・2. Reveal the opportunity 竊・3. Post the carousel
+            1. Pick a signal - 2. Generate a Launch Pack - 3. Track replies
           </p>
         </div>
         <div className="rounded-full border border-emerald-300/30 bg-emerald-300/[0.08] px-4 py-2 text-xs font-black uppercase tracking-wide text-emerald-100">
@@ -7087,7 +7193,7 @@ function EvidenceInboxSummary({
         {topSignal && (
           <div className="min-w-0 rounded-2xl border border-emerald-300/40 bg-emerald-300/[0.09] p-4 shadow-lg shadow-emerald-950/20 lg:min-w-80">
             <div className="text-xs font-black uppercase tracking-[0.14em] text-emerald-300">
-              Business Spark
+              Money Signal
             </div>
             <div className="mt-1 break-words text-sm font-black text-white">
               {truncateDisplayText(getDisplaySignalTitle(topSignal).title, 64)}
@@ -7125,7 +7231,7 @@ function StartHereBlock() {
         {[
           "Pick a market with money signals",
           "Choose a revenue-backed signal",
-          "Generate an Output Pack",
+          "Generate a Launch Pack",
           "Test before building with Codex",
         ].map((step, index) => (
           <li
@@ -7144,22 +7250,26 @@ function StartHereBlock() {
 function MarketSelectionSection({
   moneySignals,
   onClearOutputPack,
+  onActionChange,
   onGenerateOutputPack,
   onMarketChange,
   onSaveOutputPack,
   opportunities,
   outputPack,
   outputPacksCount,
+  selectedAction,
   selectedMarket,
 }: {
   moneySignals: BuildSignal[];
   onClearOutputPack: () => void;
+  onActionChange: (action: NextAction) => void;
   onGenerateOutputPack: (signal: BuildSignal) => void;
   onMarketChange: (market: AppMarketOption) => void;
   onSaveOutputPack: (pack: OutputPack) => void;
   opportunities: BuildSignal[];
   outputPack: OutputPack | null;
   outputPacksCount: number;
+  selectedAction: NextAction;
   selectedMarket: AppMarketOption;
 }) {
   const [deepDiveSignalId, setDeepDiveSignalId] = useState("");
@@ -7189,11 +7299,11 @@ function MarketSelectionSection({
             Pick a market with money signals.
           </h3>
           <p className="mt-2 max-w-2xl break-words text-sm leading-relaxed text-zinc-400 md:leading-6">
-            Choose a market, review the top revenue-backed signals, then generate an Output Pack with posts, DMs, a 48h validation plan, and a Codex prompt.
+            Choose a market, review the top revenue-backed signals, then generate a Launch Pack with an offer, X post, carousel, DM, 48h validation plan, and Codex prompt.
           </p>
         </div>
         <div className="hidden rounded-full border border-white/10 bg-black/30 px-4 py-2 text-xs font-black uppercase tracking-wide text-zinc-400 md:block">
-          Market &rarr; Signal &rarr; Output Pack &rarr; Test &rarr; Build
+          Market &rarr; Signal &rarr; Launch Pack &rarr; Test &rarr; Build
         </div>
       </div>
 
@@ -7203,7 +7313,7 @@ function MarketSelectionSection({
             Choose a market
           </div>
           <p className="mt-1 break-words text-xs font-bold leading-5 text-zinc-500">
-            Market → Signal → Output Pack → Test → Build.
+            Market → Signal → Launch Pack → Test → Build.
           </p>
         </div>
         {appMarketOptions.map((market) => {
@@ -7291,14 +7401,46 @@ function MarketSelectionSection({
               <MarketOpportunityField label="First Offer" value={deepDiveDetail.firstOffer} />
             </div>
 
+            <section className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-4">
+              <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+                Launch Pack angle
+              </div>
+              <div className="mt-3 grid min-w-0 gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                {nextActionOptions.map((option) => {
+                  const active = selectedAction === option.action;
+
+                  return (
+                    <button
+                      key={option.action}
+                      type="button"
+                      onClick={() => onActionChange(option.action)}
+                      className={[
+                        "min-w-0 rounded-2xl border px-3 py-3 text-left transition",
+                        active
+                          ? "border-emerald-300/70 bg-emerald-300/[0.12] text-white"
+                          : "border-white/10 bg-black/30 text-zinc-400 hover:bg-white/[0.04] hover:text-white",
+                      ].join(" ")}
+                    >
+                      <span className="block break-words text-sm font-black">
+                        {option.label}
+                      </span>
+                      <span className="mt-1 block break-words text-xs leading-5 text-zinc-500">
+                        {option.helper}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
             <section className="mt-5 rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.06] p-4">
               <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
                   <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-                    2. Generate SNS Pack
+                    2. Generate Launch Pack
                   </div>
                   <p className="mt-1 break-words text-sm font-bold leading-6 text-zinc-200">
-                    Generate the post, carousel, DM, and 48h validation plan before building.
+                    Turn this signal into a post, DM, offer, validation plan, and Codex prompt. Build only after replies.
                   </p>
                 </div>
                 <button
@@ -7306,7 +7448,7 @@ function MarketSelectionSection({
                   onClick={() => onGenerateOutputPack(deepDiveSignal)}
                   className="w-full rounded-2xl bg-emerald-300 px-5 py-4 text-center text-sm font-black text-black transition hover:bg-emerald-200 sm:w-auto"
                 >
-                  Generate SNS Pack
+                  Turn this into Launch Pack
                 </button>
               </div>
               {outputPack && outputPack.signalId === deepDiveSignal.id && (
@@ -7417,7 +7559,7 @@ function OutputPackPanel({
       <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0">
           <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-            SNS Pack
+            Launch Pack
           </div>
           <h3 className="mt-1 break-words text-lg font-black text-white md:text-2xl">
             Posts, carousel, DM, and validation plan.
@@ -7440,14 +7582,14 @@ function OutputPackPanel({
             onClick={() => onSave(outputPack)}
             className="w-full rounded-2xl bg-white px-5 py-3 text-center text-sm font-black text-black transition hover:bg-zinc-200 sm:w-auto"
           >
-            Save Output Pack
+            Save to Distribution Queue
           </button>
           <button
             type="button"
             onClick={onClear}
             className="w-full rounded-2xl border border-white/10 px-5 py-3 text-center text-sm font-black text-zinc-300 transition hover:bg-white/[0.04] sm:w-auto"
           >
-            Clear Output Pack
+            Clear Launch Pack
           </button>
         </div>
       </div>
@@ -7956,10 +8098,10 @@ function DistributionQueueSection({
             Distribution Queue
           </div>
           <h2 className="mt-2 text-3xl font-black tracking-tight">
-            Turn generated briefs into distribution assets.
+            Move Launch Packs into distribution assets.
           </h2>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-500">
-            Draft the X post, DM script, validation log, and short video angle.
+            Save the X post, DM script, validation log, and short video angle from the Launch Pack.
             No scheduling or external posting.
           </p>
         </div>
@@ -7975,7 +8117,7 @@ function DistributionQueueSection({
 
       {queue.length === 0 ? (
         <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-5 text-sm leading-6 text-zinc-500">
-          Reveal an opportunity, then save distribution assets here.
+          Generate a Launch Pack, then save distribution assets here.
         </div>
       ) : (
         <div className="mt-6 grid gap-3 lg:grid-cols-2">
@@ -8001,7 +8143,14 @@ function DistributionQueueSection({
                   }
                   className="rounded-xl border border-white/10 bg-black px-3 py-2 text-xs font-bold text-zinc-200"
                 >
-                  {["Draft", "Posted", "Sent", "Tested"].map((status) => (
+                  {[
+                    "Not tested",
+                    "Posted",
+                    "DM sent",
+                    "Got replies",
+                    "Winner",
+                    "Rejected",
+                  ].map((status) => (
                     <option key={status}>{status}</option>
                   ))}
                 </select>
@@ -8078,7 +8227,7 @@ function SecondaryToolsSection({
               Workflow note
             </summary>
             <p className="mt-3 text-sm leading-6 text-zinc-500">
-              Find signal - Reveal opportunity - Copy carousel - Sell first - Build after replies.
+              Money Signal - Launch Pack - Distribution Queue - Validation Tracker - Winner - Build with Codex.
             </p>
           </details>
 
@@ -8472,7 +8621,7 @@ function MasterPromptCard({
               Free
             </div>
             <p className="mt-2 text-sm leading-6 text-zinc-300">
-              3 Business Sparks per day. See the buyer, pain, first offer, and
+              Generate 3 Launch Packs free. See the buyer, pain, first offer, and
               48h test. Founder Access unlocks full Launch Packs, saved Winners,
               and full Codex Build Prompts.
             </p>
@@ -8547,7 +8696,7 @@ function MasterPromptCard({
           </button>
         </div>
         <div className="mt-5 grid gap-4 md:grid-cols-2">
-          <MasterPromptField label="Business Spark" value={masterPrompt.promptTitle} />
+          <MasterPromptField label="Launch Pack angle" value={masterPrompt.promptTitle} />
           <MasterPromptField label="Why it works" value={masterPrompt.whyItSold} />
           <MasterPromptField label="Buyer" value={masterPrompt.buyer} />
           <MasterPromptField label="Pain" value={masterPrompt.pain} />
@@ -8738,7 +8887,7 @@ function CarouselGenerator({
             Carousel Generator
           </div>
           <h3 className="mt-2 text-2xl font-black text-white">
-            5-slide Business Spark carousel
+            5-slide Launch Pack carousel
           </h3>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-500">
             Turn this hidden opportunity into TikTok, Instagram, or X carousel copy.
@@ -8827,7 +8976,7 @@ function ActionBriefSection({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-            Business Spark
+            Launch Pack
           </div>
           <h3 className="mt-2 text-2xl font-black text-white">
             {getActionLabel(action)}
@@ -8838,7 +8987,7 @@ function ActionBriefSection({
           onClick={copyActionBrief}
           className="rounded-2xl bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-zinc-200"
         >
-          {copied ? "Copied Business Spark" : "Copy Business Spark"}
+          {copied ? "Copied Launch Pack" : "Copy Launch Pack"}
         </button>
       </div>
 
@@ -8925,7 +9074,7 @@ function ExportAssets({
             Distribution Assets
           </div>
           <p className="mt-2 max-w-2xl break-words text-sm leading-6 text-zinc-300">
-            Copy the current Business Spark into carousel, post, DM, lead magnet,
+            Copy the current Launch Pack into carousel, post, DM, lead magnet,
             and product listing assets.
           </p>
         </div>
