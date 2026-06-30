@@ -7404,17 +7404,30 @@ function MarketSelectionSection({
             const active = deepDiveSignal.id === signal.id;
 
             return (
-              <article
+              <button
+                type="button"
                 key={signal.id}
+                onClick={() => {
+                  setDeepDiveSignalId(signal.id);
+                  onSignalSeen(signal);
+                }}
+                aria-pressed={active}
                 className={[
-                  "min-w-0 overflow-hidden rounded-2xl border p-3 transition",
+                  "min-w-0 cursor-pointer overflow-hidden rounded-2xl border p-3 text-left transition focus:outline-none focus:ring-2 focus:ring-emerald-300/70 focus:ring-offset-2 focus:ring-offset-black",
                   active
-                    ? "border-emerald-300/55 bg-emerald-300/[0.08]"
-                    : "border-white/10 bg-black/25",
+                    ? "border-emerald-300/70 bg-emerald-300/[0.12] shadow-lg shadow-emerald-950/30"
+                    : "border-white/10 bg-black/25 hover:border-emerald-300/35 hover:bg-white/[0.04]",
                 ].join(" ")}
               >
-                <div className="text-[11px] font-black uppercase tracking-wide text-emerald-300">
-                  {signal.signalSourceLabel || signal.sourceType || "Money signal"}
+                <div className="flex min-w-0 items-start justify-between gap-2">
+                  <div className="min-w-0 break-words text-[11px] font-black uppercase tracking-wide text-emerald-300">
+                    {signal.signalSourceLabel || signal.sourceType || "Money signal"}
+                  </div>
+                  {active && (
+                    <span className="shrink-0 rounded-full border border-emerald-300/35 bg-emerald-300/[0.12] px-2 py-1 text-[10px] font-black uppercase tracking-wide text-emerald-100">
+                      Selected
+                    </span>
+                  )}
                 </div>
                 <h4 className="mt-2 break-words text-sm font-black text-white">
                   {truncateDisplayText(getDisplaySignalTitle(signal).title, 70)}
@@ -7425,17 +7438,17 @@ function MarketSelectionSection({
                   <CompactSignalField label="Paid Pain" value={detail.paidPain} />
                   <CompactSignalField label="First Offer" value={detail.firstOffer} />
                 </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDeepDiveSignalId(signal.id);
-                    onSignalSeen(signal);
-                  }}
-                  className="mt-3 w-full rounded-xl bg-emerald-300 px-3 py-3 text-center text-xs font-black text-black transition hover:bg-emerald-200"
+                <span
+                  className={[
+                    "mt-3 block w-full rounded-xl px-3 py-3 text-center text-xs font-black transition",
+                    active
+                      ? "border border-emerald-300/35 bg-emerald-300/[0.08] text-emerald-100"
+                      : "bg-emerald-300 text-black",
+                  ].join(" ")}
                 >
-                  Use this signal
-                </button>
-              </article>
+                  {active ? "Current signal" : "Use this signal"}
+                </span>
+              </button>
             );
           })}
         </div>
