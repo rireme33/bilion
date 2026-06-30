@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { canonicalMoneySignals, type MoneySignal } from "../../data/money-signals";
 import { showcaseItems } from "../showcase/showcase-data";
 
@@ -5845,7 +5845,6 @@ export default function BilionAppClient({
     ? getDisplaySignalTitle(selectedSignal)
     : null;
   const buyerOptions = selectedSignal ? getBuyerOptions(selectedSignal) : [];
-  const guidedWorkflowStep = outputPack ? 4 : selectedSignalId ? 3 : 1;
   const signalMemorySummary = `${seenSignalIds.length} seen / ${savedSignalIds.length} saved / ${winnerSignalIds.length} winners / ${rejectedSignalIds.length} rejected`;
 
   useEffect(() => {
@@ -6592,9 +6591,10 @@ export default function BilionAppClient({
             <p className="mt-3 max-w-2xl break-words text-sm leading-relaxed text-zinc-400 md:mt-4 md:text-base md:leading-7">
               Bilion turns businesses that already made money into buyer, pain, MVP scope, and Codex-ready prompts you can start from in 30 seconds.
             </p>
+            <div className="mt-4 inline-flex max-w-full rounded-full border border-white/10 bg-black/25 px-3 py-2 text-xs font-black uppercase tracking-wide text-zinc-400">
+              Money Signal &rarr; Build Brief &rarr; Content Test &rarr; Codex
+            </div>
           </header>
-
-          <StartHereBlock />
 
           {selectedPatternLabel && (
             <div className="mb-5 min-w-0 break-words rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.06] px-4 py-3 text-sm font-bold text-emerald-100">
@@ -6604,21 +6604,7 @@ export default function BilionAppClient({
 
           {(activeWorkflowTab === "library" || (activeWorkflowTab === "studio" && !result)) && (
             <div className="min-w-0 rounded-2xl border border-white/10 bg-[#101011] p-4 shadow-2xl md:rounded-3xl md:p-8">
-              <h2 className="text-xl font-black tracking-tight md:text-2xl">
-                {activeWorkflowTab === "library"
-                  ? "Choose a market. Generate a Codex Build Brief."
-                  : "Codex Build Brief Studio"}
-              </h2>
-              <p className="mt-2 max-w-xl break-words text-sm leading-relaxed text-zinc-400 md:mt-3 md:leading-6">
-                {activeWorkflowTab === "library"
-                  ? "Pick a money signal, turn it into a Codex-ready MVP brief, then convert the brief into posts or DMs to test demand."
-                  : `Free Codex Build Briefs today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used.`}
-              </p>
-              <p className="mt-2 text-xs font-bold uppercase tracking-wide text-zinc-600">
-                Signal memory: {signalMemorySummary}
-              </p>
-
-              <div className="mt-4 grid gap-4 md:mt-6 md:gap-6">
+              <div className="grid gap-4 md:gap-6">
                 {activeWorkflowTab === "library" && (
                 <section>
                   <MarketSelectionSection
@@ -6651,10 +6637,10 @@ export default function BilionAppClient({
                       <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                         <div className="min-w-0">
                           <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
-                            Build Later / Advanced
+                            Advanced / Archive
                           </div>
                           <p className="mt-1 break-words text-sm font-bold leading-6 text-zinc-300">
-                            Signal Inbox, evidence imports, and archived market patterns.
+                            Signal Inbox, evidence imports, saved prompts, and archived market patterns.
                           </p>
                         </div>
                         <div className="text-xs font-bold text-zinc-600">
@@ -6676,7 +6662,9 @@ export default function BilionAppClient({
                     onReject={rejectCandidateMoneySignal}
                     rawCount={rawSignals.length}
                   />
-                  <GuidedWorkflow currentStep={guidedWorkflowStep} />
+                  <div className="mt-4 rounded-2xl border border-white/10 bg-black/25 p-4 text-xs font-bold uppercase tracking-wide text-zinc-500">
+                    Signal memory: {signalMemorySummary}
+                  </div>
                   <div className="mt-5 flex min-w-0 flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                     <div className="min-w-0">
                       <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
@@ -7243,139 +7231,6 @@ export default function BilionAppClient({
   );
 }
 
-function GuidedWorkflow({ currentStep }: { currentStep: 1 | 2 | 3 | 4 }) {
-  const steps = [
-    {
-      id: 1,
-      eyebrow: "Step 1",
-      title: "Choose market",
-      body: "Start with a market where money signals already exist.",
-    },
-    {
-      id: 2,
-      eyebrow: "Step 2",
-      title: "Pick signal",
-      body: "Use one revenue-backed signal as the source of truth.",
-    },
-    {
-      id: 3,
-      eyebrow: "Step 3",
-      title: "Generate Build Brief",
-      body: "Get the business pattern, MVP scope, and Codex-ready prompt.",
-    },
-    {
-      id: 4,
-      eyebrow: "Step 4",
-      title: "Convert and test",
-      body: "Turn the brief into content. Open Codex after signal.",
-    },
-  ] satisfies Array<{
-    id: 1 | 2 | 3 | 4;
-    eyebrow: string;
-    title: string;
-    body: string;
-  }>;
-
-  return (
-    <details className="mt-4 min-w-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-black/20 p-4">
-      <summary className="cursor-pointer list-none">
-        <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-w-0">
-            <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
-              New here?
-            </div>
-            <p className="mt-1 break-words text-sm font-bold leading-6 text-zinc-300">
-              Pick a Money Signal, generate a Codex Build Brief, then test before building.
-            </p>
-          </div>
-          <div className="text-xs font-bold text-zinc-600">Open workflow</div>
-        </div>
-      </summary>
-
-      <div className="mt-4 flex flex-col gap-3 border-t border-white/10 pt-4 md:flex-row md:items-end md:justify-between">
-        <div>
-          <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-            New here?
-          </div>
-          <p className="mt-2 text-sm font-bold leading-6 text-zinc-300">
-            1. Pick Money Signal - 2. Generate Build Brief - 3. Convert to content - 4. Build only after signal
-          </p>
-        </div>
-        <div className="rounded-full border border-emerald-300/30 bg-emerald-300/[0.08] px-4 py-2 text-xs font-black uppercase tracking-wide text-emerald-100">
-          This takes less than 2 minutes.
-        </div>
-      </div>
-
-      <div className="mt-4 grid gap-3 lg:grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr] lg:items-stretch">
-        {steps.map((step, index) => {
-          const active = currentStep === step.id;
-          const complete = currentStep > step.id;
-
-          return (
-            <Fragment key={step.id}>
-              <article
-                className={[
-                  "relative rounded-2xl border p-4 transition",
-                  active
-                    ? "border-emerald-300/60 bg-emerald-300/[0.1] shadow-[0_0_40px_rgba(16,185,129,0.12)]"
-                    : complete
-                      ? "border-emerald-300/20 bg-emerald-300/[0.04]"
-                      : "border-white/10 bg-black/25",
-                ].join(" ")}
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <div
-                    className={[
-                      "text-xs font-black uppercase tracking-[0.16em]",
-                      active ? "text-emerald-200" : "text-zinc-500",
-                    ].join(" ")}
-                  >
-                    {step.eyebrow}
-                  </div>
-                  <div
-                    className={[
-                      "rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wide",
-                      active
-                        ? "bg-white text-black"
-                        : complete
-                          ? "bg-emerald-300/15 text-emerald-200"
-                          : "bg-white/[0.06] text-zinc-500",
-                    ].join(" ")}
-                  >
-                    {active ? "You are here" : complete ? "Done" : "Next"}
-                  </div>
-                </div>
-                <h2 className="mt-3 text-lg font-black leading-6 text-white">
-                  {step.title}
-                </h2>
-                <p className="mt-2 text-sm leading-6 text-zinc-400">
-                  {step.body}
-                </p>
-                <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
-                  <div
-                    className={[
-                      "h-full rounded-full",
-                      active || complete ? "bg-emerald-300" : "bg-white/10",
-                    ].join(" ")}
-                    style={{ width: active || complete ? "100%" : "35%" }}
-                  />
-                </div>
-              </article>
-
-              {index < steps.length - 1 && (
-                <div className="flex items-center justify-center text-zinc-600">
-                  <span className="hidden text-2xl font-black lg:block">-&gt;</span>
-                  <span className="text-xl font-black lg:hidden">down</span>
-                </div>
-              )}
-            </Fragment>
-          );
-        })}
-      </div>
-    </details>
-  );
-}
-
 function EvidenceInboxSummary({
   onRevealTop,
   signals,
@@ -7456,32 +7311,6 @@ function EvidenceInboxSummary({
   );
 }
 
-function StartHereBlock() {
-  return (
-    <section className="mb-4 min-w-0 overflow-hidden rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.06] p-4 md:mb-6 md:rounded-3xl md:p-5">
-      <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-        START HERE
-      </div>
-      <ol className="mt-3 grid gap-2 text-sm font-bold leading-6 text-zinc-100 sm:grid-cols-2 lg:grid-cols-4">
-        {[
-          "Pick a Money Signal",
-          "Generate a Codex Build Brief",
-          "Convert brief to content",
-          "Build only after signal",
-        ].map((step, index) => (
-          <li
-            key={step}
-            className="min-w-0 rounded-xl border border-white/10 bg-black/25 px-3 py-2"
-          >
-            <span className="mr-2 text-emerald-300">{index + 1}.</span>
-            <span className="break-words">{step}</span>
-          </li>
-        ))}
-      </ol>
-    </section>
-  );
-}
-
 function MarketSelectionSection({
   moneySignals,
   onClearOutputPack,
@@ -7530,28 +7359,19 @@ function MarketSelectionSection({
       <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div className="min-w-0">
           <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-            Start here
+            Choose a market
           </div>
-          <h3 className="mt-1 break-words text-xl font-black text-white md:text-3xl">
-            Pick a Money Signal.
+          <h3 className="mt-1 break-words text-xl font-black text-white md:text-2xl">
+            Pick one market-backed signal.
           </h3>
-          <p className="mt-2 max-w-2xl break-words text-sm leading-relaxed text-zinc-400 md:leading-6">
-            Choose a market, pick one proven business, generate a Codex Build Brief, then convert the brief into content to test demand.
-          </p>
-        </div>
-        <div className="hidden rounded-full border border-white/10 bg-black/30 px-4 py-2 text-xs font-black uppercase tracking-wide text-zinc-400 md:block">
-          Money Signal &rarr; Build Brief &rarr; Content Test &rarr; Codex
         </div>
       </div>
 
       <div className="mt-3 flex min-w-0 flex-wrap gap-2 pb-1 md:mt-4">
         <div className="basis-full">
           <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
-            Choose a market
+            Markets
           </div>
-          <p className="mt-1 break-words text-xs font-bold leading-5 text-zinc-500">
-            Money Signal -&gt; Codex Build Brief -&gt; Content Test -&gt; Build.
-          </p>
         </div>
         {appMarketOptions.map((market) => {
           const active = selectedMarket === market;
@@ -7613,7 +7433,7 @@ function MarketSelectionSection({
                   }}
                   className="mt-3 w-full rounded-xl bg-emerald-300 px-3 py-3 text-center text-xs font-black text-black transition hover:bg-emerald-200"
                 >
-                  Generate Codex Build Brief
+                  Use this signal
                 </button>
               </article>
             );
@@ -7638,40 +7458,6 @@ function MarketSelectionSection({
               <MarketOpportunityField label="Paid Pain" value={deepDiveDetail.paidPain} />
               <MarketOpportunityField label="First Offer" value={deepDiveDetail.firstOffer} />
             </div>
-
-            <section className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-4">
-              <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-                Optional validation assets
-              </div>
-              <div className="mt-3 grid min-w-0 gap-2 sm:grid-cols-2 lg:grid-cols-4">
-                {nextActionOptions
-                  .filter((option) => option.action !== "build")
-                  .map((option) => {
-                    const active = selectedAction === option.action;
-
-                    return (
-                      <button
-                        key={option.action}
-                        type="button"
-                        onClick={() => onActionChange(option.action)}
-                        className={[
-                          "min-w-0 rounded-2xl border px-3 py-3 text-left transition",
-                          active
-                            ? "border-emerald-300/70 bg-emerald-300/[0.12] text-white"
-                            : "border-white/10 bg-black/30 text-zinc-400 hover:bg-white/[0.04] hover:text-white",
-                        ].join(" ")}
-                      >
-                        <span className="block break-words text-sm font-black">
-                          {option.label}
-                        </span>
-                        <span className="mt-1 block break-words text-xs leading-5 text-zinc-500">
-                          {option.helper}
-                        </span>
-                      </button>
-                    );
-                  })}
-              </div>
-            </section>
 
             <section className="mt-5 rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.06] p-4">
               <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -7701,25 +7487,60 @@ function MarketSelectionSection({
             </section>
 
             {outputPack && outputPack.signalId === deepDiveSignal.id && (
-              <OutputPackPanel
-                outputPack={outputPack}
-                savedCount={outputPacksCount}
-                onClear={onClearOutputPack}
-                onSave={onSaveOutputPack}
-              />
+              <>
+                <section className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-4">
+                  <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+                    Optional validation assets
+                  </div>
+                  <p className="mt-1 break-words text-sm font-bold leading-6 text-zinc-400">
+                    Convert the generated Build Brief into content only if you want to test demand before opening Codex.
+                  </p>
+                  <div className="mt-3 grid min-w-0 gap-2 sm:grid-cols-3">
+                    {nextActionOptions
+                      .filter((option) => option.action !== "build")
+                      .map((option) => {
+                        const active = selectedAction === option.action;
+
+                        return (
+                          <button
+                            key={option.action}
+                            type="button"
+                            onClick={() => onActionChange(option.action)}
+                            className={[
+                              "min-w-0 rounded-2xl border px-3 py-3 text-left transition",
+                              active
+                                ? "border-emerald-300/70 bg-emerald-300/[0.12] text-white"
+                                : "border-white/10 bg-black/30 text-zinc-400 hover:bg-white/[0.04] hover:text-white",
+                            ].join(" ")}
+                          >
+                            <span className="block break-words text-sm font-black">
+                              {option.label}
+                            </span>
+                            <span className="mt-1 block break-words text-xs leading-5 text-zinc-500">
+                              {option.helper}
+                            </span>
+                          </button>
+                        );
+                      })}
+                  </div>
+                </section>
+                <OutputPackPanel
+                  outputPack={outputPack}
+                  savedCount={outputPacksCount}
+                  onClear={onClearOutputPack}
+                  onSave={onSaveOutputPack}
+                />
+              </>
             )}
 
-            <details className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-4">
-              <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
-                4. Test before building
-              </summary>
-              <div className="mt-4 grid min-w-0 gap-3 md:grid-cols-2">
-                <MarketOpportunityField label="Validation checklist" value={deepDiveDetail.fortyEightHourTest} />
-                <MarketOpportunityField label="Notes" value="Validate before building. Look for replies, buyer-specific pain, and one person asking for the workflow, report, or audit." />
-                <MarketOpportunityField label="Additional context" value={deepDiveDetail.whyMoneyChangedHands} />
-                <MarketOpportunityField label="Build after replies" value={deepDiveDetail.buildAfterReplies} />
+            <section className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-4">
+              <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+                4. Build only after signal
               </div>
-            </details>
+              <p className="mt-2 break-words text-sm font-bold leading-6 text-zinc-300">
+                Use the Codex prompt only after replies, saves, clicks, or buyer interest.
+              </p>
+            </section>
           </article>
         )}
       </div>
