@@ -32,8 +32,7 @@ const exampleOutputs = [
 
 const deliverables = [
   "Market-backed money signals",
-  "Buyer",
-  "Paid pain",
+  "Buyer and paid pain",
   "First offer",
   "X post / carousel / DM",
   "48-hour validation plan",
@@ -126,17 +125,17 @@ export default function HomePage() {
         <section className="py-14 md:py-20">
           <div className="max-w-3xl">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
-              Market → Signal → Output Pack → Test → Build
+              Market -&gt; Signal -&gt; Output Pack -&gt; Test -&gt; Build
             </div>
             <h1 className="mt-5 break-words text-4xl font-semibold leading-tight tracking-tight md:text-6xl">
-              Turn proven money signals into posts, DMs, and Codex-ready MVP prompts.
+              Turn proven money signals into Codex-ready business prompts.
             </h1>
             <p className="mt-5 max-w-2xl break-words text-base leading-7 text-zinc-300 md:text-lg md:leading-8">
-              Pick a market, copy a revenue-backed signal, test the offer with posts and DMs, then build with Codex only after replies.
+              Bilion helps AI builders find what people already pay for, turn it into posts, DMs, first offers, and Codex-ready MVP prompts, then build only after replies.
             </p>
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href="/app">Start with a money signal</ButtonLink>
+              <ButtonLink href="/app">Get today&apos;s money signal</ButtonLink>
               <ButtonLink href="#example-outputs" variant="secondary">
                 See example outputs
               </ButtonLink>
@@ -170,6 +169,22 @@ export default function HomePage() {
           </div>
         </section>
 
+        <section className="border-t border-white/10 py-10">
+          <div className="grid gap-6 md:grid-cols-[0.85fr_1.15fr] md:items-start">
+            <div className="min-w-0">
+              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
+                Build after replies, not before
+              </div>
+              <h2 className="mt-3 break-words text-2xl font-semibold tracking-tight">
+                Test the signal before opening Codex.
+              </h2>
+            </div>
+            <div className="min-w-0 rounded-lg border border-white/10 bg-[#111214] p-5 text-sm leading-7 text-zinc-300 sm:p-6">
+              Most AI builders waste time building before demand exists. Bilion gives you the signal, offer, post, DM, and validation plan first. Use Codex only after someone replies.
+            </div>
+          </div>
+        </section>
+
         <section id="example-outputs" className="border-t border-white/10 py-10">
           <div className="mb-5 flex min-w-0 flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div className="min-w-0">
@@ -184,7 +199,7 @@ export default function HomePage() {
               </p>
             </div>
             <Link href="/app" className="text-sm font-semibold text-zinc-400 transition hover:text-white">
-              Generate an Output Pack
+              Generate a Launch Pack
             </Link>
           </div>
           <div className="grid min-w-0 gap-3 lg:grid-cols-3">
@@ -201,14 +216,14 @@ export default function HomePage() {
                 Free
               </div>
               <h2 className="mt-3 break-words text-2xl font-semibold tracking-tight">
-                3 free Output Packs per day.
+                3 free Launch Packs per day.
               </h2>
               <p className="mt-3 break-words text-sm leading-6 text-zinc-500">
-                Use Bilion to pick a market, test a first offer, and decide what deserves to be built.
+                Use Bilion to see the signal, pick a market, test a first offer, and decide what deserves to be built.
               </p>
               <div className="mt-5">
                 <ButtonLink href="/app" variant="secondary">
-                  Start with a money signal
+                  Get today&apos;s money signal
                 </ButtonLink>
               </div>
             </article>
@@ -218,14 +233,18 @@ export default function HomePage() {
                 Founder Access
               </div>
               <h2 className="mt-3 break-words text-2xl font-semibold tracking-tight">
-                Founder Access — $19
+                Founder Access - $19
               </h2>
+              <p className="mt-3 break-words text-sm leading-6 text-zinc-300">
+                Unlock the full Launch Pack when you are ready to test the offer seriously.
+              </p>
               <div className="mt-4 grid gap-2 text-sm leading-6 text-zinc-200">
                 {[
-                  "Unlimited Output Packs",
-                  "Full Launch Packs",
-                  "Saved Winners",
-                  "Full Codex Build Prompts",
+                  "Full Codex MVP prompt",
+                  "DM script",
+                  "Offer template",
+                  "48-hour validation plan",
+                  "Build instructions",
                 ].map((item) => (
                   <div key={item} className="rounded-lg border border-white/10 bg-black/20 px-3 py-2">
                     {item}
@@ -233,7 +252,7 @@ export default function HomePage() {
                 ))}
               </div>
               <div className="mt-5">
-                <ButtonLink href="/founder">Unlock Founder Access — $19</ButtonLink>
+                <ButtonLink href="/founder">Unlock Founder Access - $19</ButtonLink>
               </div>
             </article>
           </div>
