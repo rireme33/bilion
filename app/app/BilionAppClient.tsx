@@ -1430,22 +1430,22 @@ const nextActionOptions: Array<{
 }> = [
   {
     action: "post",
-    label: "Post it",
-    helper: "X post, carousel hook, CTA.",
+    label: "Turn into X post",
+    helper: "Convert the brief into one demand-test post.",
   },
   {
     action: "sell",
-    label: "Sell it",
-    helper: "Offer, price, checkout or DM angle.",
+    label: "Turn into 3-slide carousel",
+    helper: "Convert the brief into a short validation carousel.",
   },
   {
     action: "dm",
-    label: "DM buyers",
-    helper: "Target buyer, short DM, follow-up.",
+    label: "Turn into DM",
+    helper: "Convert the brief into one buyer-specific DM.",
   },
   {
     action: "build",
-    label: "Build MVP",
+    label: "Copy to Codex",
     helper: "Codex-ready MVP prompt and scope.",
   },
 ];
@@ -2835,7 +2835,7 @@ function getActionAngleIndex(action: NextAction) {
 }
 
 function getActionLabel(action: NextAction) {
-  return nextActionOptions.find((option) => option.action === action)?.label || "Post it";
+  return nextActionOptions.find((option) => option.action === action)?.label || "Turn into X post";
 }
 
 function cleanSignalText(value: string) {
@@ -3081,24 +3081,6 @@ function getTopMoneySignalsForMarket(signals: BuildSignal[], market: MarketOptio
     .slice(0, 3);
 }
 
-function getVisibleMarketSignalCount(signals: BuildSignal[], market: MarketOption) {
-  const ids = new Set<string>();
-
-  for (const signal of canonicalMoneySignals) {
-    if (signal.market === market) {
-      ids.add(signal.id);
-    }
-  }
-
-  for (const signal of signals) {
-    if (getSignalMarket(signal) === market) {
-      ids.add(signal.id);
-    }
-  }
-
-  return ids.size;
-}
-
 function getScoreReason(signal: BuildSignal) {
   const reasons = [
     getSignalEvidenceLevel(signal) === "Strong"
@@ -3263,7 +3245,7 @@ function buildOutputPackFromSignal(signal: BuildSignal, angle: NextAction = "pos
   const signalTitle = title.detail || title.title || signal.sourceTitle || "Money Signal";
   const angleNote = getLaunchPackAngleNote(angle);
   const validationPlan = [
-    `Launch Pack angle: ${getActionLabel(angle)}`,
+    `Codex Build Brief angle: ${getActionLabel(angle)}`,
     angleNote,
     "",
     "Day 1:",
@@ -4109,7 +4091,7 @@ function buildHighQualitySparkFromCanonicalSignal(signal: BuildSignal): HighQual
     distributionChannel: canonicalSignal.channels.join(", "),
     dmTarget: canonicalSignal.buyer,
     fortyEightHourTest: validationSteps,
-    launchPost: `${fields.postHook}\n\nMoney proof: ${canonicalSignal.proof}\nWhat sold: ${canonicalSignal.whatMoneyMoved}\nLaunch Pack: ${canonicalSignal.firstOffer}\nBuyer: ${canonicalSignal.buyer}\nPain: ${canonicalSignal.paidPain}\nFirst offer: ${canonicalSignal.firstOffer}\nTest: ${validationSteps.join(" ")}`,
+    launchPost: `${fields.postHook}\n\nMoney proof: ${canonicalSignal.proof}\nWhat sold: ${canonicalSignal.whatMoneyMoved}\nBuild Brief: ${canonicalSignal.firstOffer}\nBuyer: ${canonicalSignal.buyer}\nPain: ${canonicalSignal.paidPain}\nFirst offer: ${canonicalSignal.firstOffer}\nTest: ${validationSteps.join(" ")}`,
     dmScript: fields.dmScript,
     codexPromptPreview: `Build after replies. Start with ${buildLater}.`,
     codexBuildPrompt: `Build this only after someone replies, clicks, or asks for the offer. Money proof: ${canonicalSignal.proof}. What money moved: ${canonicalSignal.whatMoneyMoved}. Market: ${canonicalSignal.market}. Build a mobile-first MVP for ${canonicalSignal.buyer}. Paid pain: ${canonicalSignal.paidPain}. First offer already tested: ${canonicalSignal.firstOffer}. Build only this first version: ${buildLater}. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no payment integration, and no external APIs. Include an offer overview, input form, generated output, saved examples, launch copy, DM script, copy buttons, and validation panel. The validation panel must include this 48-hour plan: ${validationSteps.join(" ")}. Done criteria: it should be demo-ready, mobile-first, and useful for testing demand before building a real SaaS.`,
@@ -4134,7 +4116,7 @@ function buildHighQualitySparkFromSignalInbox(signal: BuildSignal): HighQualityB
     distributionChannel: detail.distribution,
     dmTarget: detail.buyer,
     fortyEightHourTest: validationSteps,
-    launchPost: `${detail.postHook}\n\nMoney proof: ${detail.proof}\nWhat moved: ${detail.whatSold}\nLaunch Pack: ${detail.firstOffer}\nBuyer: ${detail.buyer}\nPaid pain: ${detail.paidPain}\n48h test: ${validationSteps.join(" ")}`,
+    launchPost: `${detail.postHook}\n\nMoney proof: ${detail.proof}\nWhat moved: ${detail.whatSold}\nBuild Brief: ${detail.firstOffer}\nBuyer: ${detail.buyer}\nPaid pain: ${detail.paidPain}\n48h test: ${validationSteps.join(" ")}`,
     dmScript: detail.dmScript,
     codexPromptPreview: `Build after replies. Start with ${detail.buildAfterReplies}.`,
     codexBuildPrompt: `Build this only after someone replies, clicks, or asks for the offer. Source: Signal Inbox. Money proof: ${detail.proof}. What money moved: ${detail.whatSold}. Market: ${getSignalMarket(signal)}. Buyer: ${detail.buyer}. Paid pain: ${detail.paidPain}. First offer already tested: ${detail.firstOffer}. Build only this first version: ${signal.whatYouCanBuild}. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no payment integration, and no external APIs. Include an offer overview, input form, generated output, saved examples, launch copy, DM script, copy buttons, and validation panel. The validation panel must include this 48-hour plan: ${validationSteps.join(" ")}. Done criteria: demo-ready, mobile-first, and useful for testing demand before building a real SaaS.`,
@@ -4163,7 +4145,7 @@ function buildHighQualitySparkFromMarketSignal(signal: BuildSignal): HighQuality
     distributionChannel: opportunity.postHook,
     dmTarget: opportunity.buyer,
     fortyEightHourTest: opportunity.validationSteps,
-    launchPost: `${opportunity.postHook}\n\nMoney proof: ${opportunity.proofLabel} - ${opportunity.whatSold}\nPattern: ${opportunity.patternTitle}\nLaunch Pack: ${sparkTitle}\nBuyer: ${opportunity.buyer}\nPain: ${opportunity.paidPain}\nFirst offer: ${firstOffer}\nTest: ${validationText}`,
+    launchPost: `${opportunity.postHook}\n\nMoney proof: ${opportunity.proofLabel} - ${opportunity.whatSold}\nPattern: ${opportunity.patternTitle}\nBuild Brief: ${sparkTitle}\nBuyer: ${opportunity.buyer}\nPain: ${opportunity.paidPain}\nFirst offer: ${firstOffer}\nTest: ${validationText}`,
     dmScript: opportunity.dmScript,
     codexPromptPreview: `Build a mobile-first MVP for ${sparkTitle}. Start with ${opportunity.buildAfterReplies}.`,
     codexBuildPrompt: `Build this only after someone replies, clicks, or asks for the offer. Money proof: ${opportunity.proofLabel} for ${opportunity.whatSold}. Pattern: ${opportunity.patternTitle}. Market: ${market}. Build a mobile-first MVP called ${sparkTitle} for ${opportunity.buyer}. The buyer pain is: ${opportunity.paidPain}. First offer: ${firstOffer}. Build only this first version: ${opportunity.buildAfterReplies}. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no payment integration, and no external APIs. Include an offer overview, input form, generated output, saved examples, launch copy, DM script, copy buttons, and validation panel. The validation panel must include this 48-hour plan: ${validationText}. Done criteria: it should be demo-ready, mobile-first, and useful for testing demand before building a real SaaS.`,
@@ -4368,7 +4350,7 @@ function applyBusinessSparkSeed(
       whyBuyersPay: seed.whyItWorks,
       distributionChannel,
       evidenceStrength: "Strong",
-      note: "Seeded from a reviewed Bilion Launch Pack pattern.",
+      note: "Seeded from a reviewed Bilion Build Brief pattern.",
     },
     whoPays: seed.buyer,
     yourProductAngle: seed.codexPromptPreview,
@@ -4449,7 +4431,7 @@ function applyBusinessSparkSeedToResult(
       build_steps: directValidationPlan,
       pattern_matches: [
         seed.path,
-        seed.distributionChannel || "Reviewed Launch Pack seed",
+        seed.distributionChannel || "Reviewed Build Brief seed",
         seed.dmTarget ? `DM target: ${seed.dmTarget}` : "Sell first, build after replies",
       ],
       code_x_prompt: seed.codexBuildPrompt,
@@ -4477,7 +4459,7 @@ ${signal.whyNow}`;
 }
 
 function buildFreeMasterPromptCopy(masterPrompt: MasterPrompt) {
-  return `Bilion Launch Pack preview
+  return `Bilion Codex Build Brief preview
 
 What already sold:
 ${masterPrompt.provenPattern}
@@ -4514,7 +4496,7 @@ ${masterPrompt.launchCopy.dmMessage}
 48-hour validation plan:
 ${masterPrompt.validationPlan.map((step, index) => `${index + 1}. ${step}`).join("\n")}
 
-Get the full Launch Pack \u2014 $19
+Get the full Codex Build Brief \u2014 $19
 Includes: full launch copy, 48h test, saved Winners, and the Codex Build Prompt.`;
 }
 
@@ -4883,7 +4865,7 @@ function buildActionBriefCopy(
     includeCodexPrompt,
   );
 
-  return `${getActionLabel(action)} Launch Pack
+  return `${getActionLabel(action)} Codex Build Brief
 
 ${fields.map(([label, value]) => `${label}:\n${value}`).join("\n\n")}`;
 }
@@ -4969,7 +4951,7 @@ function buildLaunchPackCopy(masterPrompt: MasterPrompt, hasFounderAccess: boole
     : "Founder/Paid unlock: full Codex-ready build prompt after demand is validated.";
 
   return [
-    "Bilion Launch Pack",
+    "Bilion Codex Build Brief",
     "",
     "Money proof:",
     masterPrompt.originalCase,
@@ -5840,12 +5822,6 @@ export default function BilionAppClient({
     seenSignalIds,
     rejectedSignalIds,
   );
-  const marketSignalCounts = Object.fromEntries(
-    appMarketOptions.map((market) => [
-      market,
-      getVisibleMarketSignalCount(evidenceInboxSignals, market),
-    ]),
-  ) as Record<AppMarketOption, number>;
   const [selectedSignalId, setSelectedSignalId] = useState(
     topMoneySignalsForMarket[0]?.id || marketSignals[todayIndex]?.id || marketSignals[0]?.id || "",
   );
@@ -6147,7 +6123,7 @@ export default function BilionAppClient({
       return nextQueue;
     });
     setCopyFeedback({
-      message: "Saved Launch Pack to Distribution Queue",
+      message: "Saved validation assets to Distribution Queue",
       tone: "success",
     });
   }
@@ -6165,7 +6141,7 @@ export default function BilionAppClient({
       selectedSignalDisplayTitle?.detail ||
       selectedSignalDisplayTitle?.title ||
       selectedSignal?.sourceTitle ||
-      "Saved Launch Pack";
+      "Saved Build Brief";
 
     return [
       {
@@ -6610,12 +6586,11 @@ export default function BilionAppClient({
               Bilion
             </h1>
             <div className="mt-1 text-base font-bold text-zinc-200 md:mt-2 md:text-xl">
-              Turn proven money signals into posts, DMs, and Codex-ready MVP prompts.
+              Pick a money signal. Get a Codex Build Brief.
             </div>
 
             <p className="mt-3 max-w-2xl break-words text-sm leading-relaxed text-zinc-400 md:mt-4 md:text-base md:leading-7">
-              Pick a market, copy a proven money signal, test the offer, then
-              build with Codex only after replies.
+              Bilion turns businesses that already made money into buyer, pain, MVP scope, and Codex-ready prompts you can start from in 30 seconds.
             </p>
           </header>
 
@@ -6631,13 +6606,13 @@ export default function BilionAppClient({
             <div className="min-w-0 rounded-2xl border border-white/10 bg-[#101011] p-4 shadow-2xl md:rounded-3xl md:p-8">
               <h2 className="text-xl font-black tracking-tight md:text-2xl">
                 {activeWorkflowTab === "library"
-                  ? "Choose a market. Generate a Launch Pack."
-                  : "Launch Pack Studio"}
+                  ? "Choose a market. Generate a Codex Build Brief."
+                  : "Codex Build Brief Studio"}
               </h2>
               <p className="mt-2 max-w-xl break-words text-sm leading-relaxed text-zinc-400 md:mt-3 md:leading-6">
                 {activeWorkflowTab === "library"
-                  ? "Pick a money signal. Turn it into a post, DM, offer, validation plan, and Codex prompt. Build only after replies."
-                  : `Free Launch Packs today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used.`}
+                  ? "Pick a money signal, turn it into a Codex-ready MVP brief, then convert the brief into posts or DMs to test demand."
+                  : `Free Codex Build Briefs today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used.`}
               </p>
               <p className="mt-2 text-xs font-bold uppercase tracking-wide text-zinc-600">
                 Signal memory: {signalMemorySummary}
@@ -6652,7 +6627,6 @@ export default function BilionAppClient({
                     outputPack={outputPack}
                     outputPacksCount={outputPacks.length}
                     selectedMarket={selectedMarket}
-                    marketCounts={marketSignalCounts}
                     onClearOutputPack={clearOutputPack}
                     onActionChange={setSelectedAction}
                     onGenerateOutputPack={generateOutputPack}
@@ -7000,15 +6974,15 @@ export default function BilionAppClient({
                 disabled={loading || !canGenerate}
                 className="mt-6 w-full rounded-2xl bg-white px-5 py-4 text-sm font-black text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
               >
-                {loading ? "Generating..." : "Generate 1 free Launch Pack"}
+                {loading ? "Generating..." : "Generate 1 free Codex Build Brief"}
               </button>
               {!canGenerate && (
                 <div className="mt-5 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-5">
                   <h3 className="text-lg font-black text-yellow-100">
-                    You&apos;ve used your 3 free Launch Packs today.
+                    You&apos;ve used your 3 free Codex Build Briefs today.
                   </h3>
                   <p className="mt-2 text-sm leading-6 text-zinc-400">
-                    Founder Access unlocks unlimited Launch Packs, saved Winners, and full Codex Build Prompts.
+                    Founder Access unlocks unlimited Codex Build Briefs, saved Winners, and full Codex Build Prompts.
                   </p>
                   {CHECKOUT_URL ? (
                     <a
@@ -7041,10 +7015,10 @@ export default function BilionAppClient({
                 <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                   <div className="min-w-0">
                     <div className="inline-flex rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-300">
-                      Launch Pack
+                      Codex Build Brief
                     </div>
                     <h2 className="mt-4 break-words text-2xl font-black tracking-tight sm:text-3xl">
-                      Launch Pack generated
+                      Codex Build Brief generated
                     </h2>
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-xs font-bold uppercase tracking-wide text-zinc-400">
@@ -7111,15 +7085,15 @@ export default function BilionAppClient({
                 <div className="flex min-w-0 flex-col gap-4 md:flex-row md:items-end md:justify-between">
                   <div className="min-w-0">
                     <div className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-wide text-black">
-                      Launch Pack
+                      Codex Build Brief
                     </div>
                     <h2 className="mt-4 break-words text-2xl font-black tracking-tight sm:text-3xl">
                       Generate from your selected signal, buyer, and action.
                     </h2>
                     <p className="mt-3 max-w-2xl break-words text-sm leading-relaxed text-zinc-400">
                       {hasFounderAccess
-                        ? "Founder Access unlocks unlimited Launch Packs and the full Codex Build Prompt after demand is validated."
-                        : `Free Launch Packs today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used. Founder Access unlocks unlimited Launch Packs.`}
+                        ? "Founder Access unlocks unlimited Codex Build Briefs and the full Codex Build Prompt after demand is validated."
+                        : `Free Codex Build Briefs today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used. Founder Access unlocks unlimited Codex Build Briefs.`}
                     </p>
                   </div>
 
@@ -7137,7 +7111,7 @@ export default function BilionAppClient({
                       disabled={!canGenerate}
                       className="w-full rounded-2xl bg-white px-5 py-4 text-center text-sm font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                     >
-                      Generate Launch Pack
+                      Generate Codex Build Brief
                     </button>
                     <button
                       type="button"
@@ -7178,10 +7152,10 @@ export default function BilionAppClient({
                     Founder/Paid Access
                   </div>
                   <h2 className="mt-4 text-3xl font-black tracking-tight">
-                    You&apos;ve used your 3 free Launch Packs today.
+                    You&apos;ve used your 3 free Codex Build Briefs today.
                   </h2>
                   <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
-                    Founder Access unlocks unlimited Launch Packs, saved Winners, and full Codex Build Prompts.
+                    Founder Access unlocks unlimited Codex Build Briefs, saved Winners, and full Codex Build Prompts.
                   </p>
                   {CHECKOUT_URL ? (
                     <a
@@ -7251,7 +7225,7 @@ export default function BilionAppClient({
                 <p className="mt-3 text-sm leading-6 text-zinc-500">
                   Use the Mobile Share Kit at the bottom of the brief to post on
                   X, reply to interest, DM likely buyers, and offer the paid
-                  Launch Pack.
+                  first tiny product.
                 </p>
 
                 <div className="mt-5 space-y-3">
@@ -7286,14 +7260,14 @@ function GuidedWorkflow({ currentStep }: { currentStep: 1 | 2 | 3 | 4 }) {
     {
       id: 3,
       eyebrow: "Step 3",
-      title: "Generate Launch Pack",
-      body: "Get the post, DM, first offer, 48-hour test, and MVP prompt.",
+      title: "Generate Build Brief",
+      body: "Get the business pattern, MVP scope, and Codex-ready prompt.",
     },
     {
       id: 4,
       eyebrow: "Step 4",
-      title: "Test before building",
-      body: "Send the assets first. Open Codex after replies.",
+      title: "Convert and test",
+      body: "Turn the brief into content. Open Codex after signal.",
     },
   ] satisfies Array<{
     id: 1 | 2 | 3 | 4;
@@ -7311,7 +7285,7 @@ function GuidedWorkflow({ currentStep }: { currentStep: 1 | 2 | 3 | 4 }) {
               New here?
             </div>
             <p className="mt-1 break-words text-sm font-bold leading-6 text-zinc-300">
-              Choose a market, pick one signal, generate a Launch Pack, then test before building.
+              Pick a Money Signal, generate a Codex Build Brief, then test before building.
             </p>
           </div>
           <div className="text-xs font-bold text-zinc-600">Open workflow</div>
@@ -7324,7 +7298,7 @@ function GuidedWorkflow({ currentStep }: { currentStep: 1 | 2 | 3 | 4 }) {
             New here?
           </div>
           <p className="mt-2 text-sm font-bold leading-6 text-zinc-300">
-            1. Choose market - 2. Pick signal - 3. Generate Launch Pack - 4. Test before building
+            1. Pick Money Signal - 2. Generate Build Brief - 3. Convert to content - 4. Build only after signal
           </p>
         </div>
         <div className="rounded-full border border-emerald-300/30 bg-emerald-300/[0.08] px-4 py-2 text-xs font-black uppercase tracking-wide text-emerald-100">
@@ -7490,10 +7464,10 @@ function StartHereBlock() {
       </div>
       <ol className="mt-3 grid gap-2 text-sm font-bold leading-6 text-zinc-100 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          "Pick a market with money signals",
-          "Choose a revenue-backed signal",
-          "Generate a Launch Pack",
-          "Test before building with Codex",
+          "Pick a Money Signal",
+          "Generate a Codex Build Brief",
+          "Convert brief to content",
+          "Build only after signal",
         ].map((step, index) => (
           <li
             key={step}
@@ -7510,7 +7484,6 @@ function StartHereBlock() {
 
 function MarketSelectionSection({
   moneySignals,
-  marketCounts,
   onClearOutputPack,
   onActionChange,
   onGenerateOutputPack,
@@ -7524,7 +7497,6 @@ function MarketSelectionSection({
   selectedMarket,
 }: {
   moneySignals: BuildSignal[];
-  marketCounts: Record<AppMarketOption, number>;
   onClearOutputPack: () => void;
   onActionChange: (action: NextAction) => void;
   onGenerateOutputPack: (signal: BuildSignal) => void;
@@ -7561,14 +7533,14 @@ function MarketSelectionSection({
             Start here
           </div>
           <h3 className="mt-1 break-words text-xl font-black text-white md:text-3xl">
-            Pick a market with money signals.
+            Pick a Money Signal.
           </h3>
           <p className="mt-2 max-w-2xl break-words text-sm leading-relaxed text-zinc-400 md:leading-6">
-            Choose a market, pick one signal, generate a Launch Pack, then test before building with Codex.
+            Choose a market, pick one proven business, generate a Codex Build Brief, then convert the brief into content to test demand.
           </p>
         </div>
         <div className="hidden rounded-full border border-white/10 bg-black/30 px-4 py-2 text-xs font-black uppercase tracking-wide text-zinc-400 md:block">
-          Market &rarr; Signal &rarr; Launch Pack &rarr; Test &rarr; Build
+          Money Signal &rarr; Build Brief &rarr; Content Test &rarr; Codex
         </div>
       </div>
 
@@ -7578,7 +7550,7 @@ function MarketSelectionSection({
             Choose a market
           </div>
           <p className="mt-1 break-words text-xs font-bold leading-5 text-zinc-500">
-            Market -&gt; Signal -&gt; Launch Pack -&gt; Test -&gt; Build.
+            Money Signal -&gt; Codex Build Brief -&gt; Content Test -&gt; Build.
           </p>
         </div>
         {appMarketOptions.map((market) => {
@@ -7596,7 +7568,7 @@ function MarketSelectionSection({
                   : "border-white/10 bg-black/25 text-zinc-400 hover:border-white/20 hover:text-white",
               ].join(" ")}
             >
-              {market} · {marketCounts[market] || 0}
+              {market}
             </button>
           );
         })}
@@ -7641,7 +7613,7 @@ function MarketSelectionSection({
                   }}
                   className="mt-3 w-full rounded-xl bg-emerald-300 px-3 py-3 text-center text-xs font-black text-black transition hover:bg-emerald-200"
                 >
-                  Generate Launch Pack
+                  Generate Codex Build Brief
                 </button>
               </article>
             );
@@ -7669,33 +7641,35 @@ function MarketSelectionSection({
 
             <section className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-4">
               <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-                Output modes
+                Optional validation assets
               </div>
               <div className="mt-3 grid min-w-0 gap-2 sm:grid-cols-2 lg:grid-cols-4">
-                {nextActionOptions.map((option) => {
-                  const active = selectedAction === option.action;
+                {nextActionOptions
+                  .filter((option) => option.action !== "build")
+                  .map((option) => {
+                    const active = selectedAction === option.action;
 
-                  return (
-                    <button
-                      key={option.action}
-                      type="button"
-                      onClick={() => onActionChange(option.action)}
-                      className={[
-                        "min-w-0 rounded-2xl border px-3 py-3 text-left transition",
-                        active
-                          ? "border-emerald-300/70 bg-emerald-300/[0.12] text-white"
-                          : "border-white/10 bg-black/30 text-zinc-400 hover:bg-white/[0.04] hover:text-white",
-                      ].join(" ")}
-                    >
-                      <span className="block break-words text-sm font-black">
-                        {option.label}
-                      </span>
-                      <span className="mt-1 block break-words text-xs leading-5 text-zinc-500">
-                        {option.helper}
-                      </span>
-                    </button>
-                  );
-                })}
+                    return (
+                      <button
+                        key={option.action}
+                        type="button"
+                        onClick={() => onActionChange(option.action)}
+                        className={[
+                          "min-w-0 rounded-2xl border px-3 py-3 text-left transition",
+                          active
+                            ? "border-emerald-300/70 bg-emerald-300/[0.12] text-white"
+                            : "border-white/10 bg-black/30 text-zinc-400 hover:bg-white/[0.04] hover:text-white",
+                        ].join(" ")}
+                      >
+                        <span className="block break-words text-sm font-black">
+                          {option.label}
+                        </span>
+                        <span className="mt-1 block break-words text-xs leading-5 text-zinc-500">
+                          {option.helper}
+                        </span>
+                      </button>
+                    );
+                  })}
               </div>
             </section>
 
@@ -7703,10 +7677,10 @@ function MarketSelectionSection({
               <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
                   <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-                    3. Generate Launch Pack
+                    3. Generate Codex Build Brief
                   </div>
                   <p className="mt-1 break-words text-sm font-bold leading-6 text-zinc-200">
-                    Get the post, DM, first offer, 48-hour validation plan, and Codex-ready MVP prompt. Build only after replies.
+                    Get the money proof, business pattern, target buyer, AI-native MVP scope, first tiny product, and a Codex-ready MVP prompt.
                   </p>
                 </div>
                 <button
@@ -7714,21 +7688,25 @@ function MarketSelectionSection({
                   onClick={() => onGenerateOutputPack(deepDiveSignal)}
                   className="w-full rounded-2xl bg-emerald-300 px-5 py-4 text-center text-sm font-black text-black transition hover:bg-emerald-200 sm:w-auto"
                 >
-                  Generate Launch Pack
+                  Generate Codex Build Brief
                 </button>
               </div>
               {outputPack && outputPack.signalId === deepDiveSignal.id && (
-                <OutputPackPanel
-                  outputPack={outputPack}
-                  savedCount={outputPacksCount}
-                  onClear={onClearOutputPack}
-                  onSave={onSaveOutputPack}
+                <BuildBriefPanel
+                  codexBuildPrompt={outputPack.codexBuildPrompt}
+                  detail={deepDiveDetail}
+                  signalTitle={getDisplaySignalTitle(deepDiveSignal).title}
                 />
               )}
             </section>
 
             {outputPack && outputPack.signalId === deepDiveSignal.id && (
-              <CodexPromptPanel codexBuildPrompt={outputPack.codexBuildPrompt} />
+              <OutputPackPanel
+                outputPack={outputPack}
+                savedCount={outputPacksCount}
+                onClear={onClearOutputPack}
+                onSave={onSaveOutputPack}
+              />
             )}
 
             <details className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-4">
@@ -7825,13 +7803,13 @@ function OutputPackPanel({
       <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0">
           <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-            Launch Pack
+            Brief-to-content test
           </div>
           <h3 className="mt-1 break-words text-lg font-black text-white md:text-2xl">
-            Copy the assets. Test before building.
+            Convert the brief into validation assets.
           </h3>
           <p className="mt-2 max-w-2xl break-words text-sm leading-relaxed text-zinc-400">
-            Same proof, buyer, paid pain, and first offer. Use the post, carousel, DM, and 48-hour plan to get replies before opening Codex.
+            Secondary outputs for testing demand. Use the X post, carousel, DM, and 48-hour plan before building with Codex.
           </p>
           <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-wide">
             <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-zinc-400">
@@ -7848,14 +7826,14 @@ function OutputPackPanel({
             onClick={() => onSave(outputPack)}
             className="w-full rounded-2xl bg-white px-5 py-3 text-center text-sm font-black text-black transition hover:bg-zinc-200 sm:w-auto"
           >
-            Save to Distribution Queue
+            Save validation assets
           </button>
           <button
             type="button"
             onClick={onClear}
             className="w-full rounded-2xl border border-white/10 px-5 py-3 text-center text-sm font-black text-zinc-300 transition hover:bg-white/[0.04] sm:w-auto"
           >
-            Clear Launch Pack
+            Clear assets
           </button>
         </div>
       </div>
@@ -7894,7 +7872,15 @@ function OutputPackPanel({
   );
 }
 
-function CodexPromptPanel({ codexBuildPrompt }: { codexBuildPrompt: string }) {
+function BuildBriefPanel({
+  codexBuildPrompt,
+  detail,
+  signalTitle,
+}: {
+  codexBuildPrompt: string;
+  detail: ReturnType<typeof getOpportunityDetailFields>;
+  signalTitle: string;
+}) {
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
 
@@ -7910,17 +7896,17 @@ function CodexPromptPanel({ codexBuildPrompt }: { codexBuildPrompt: string }) {
   }
 
   return (
-    <section className="mt-5 rounded-2xl border border-white/10 bg-[#101011] p-4">
+    <section className="mt-4 rounded-2xl border border-emerald-300/30 bg-[#101011] p-4 shadow-2xl md:p-5">
       <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-            Codex-ready MVP prompt
+            Codex Build Brief
           </div>
           <h3 className="mt-1 break-words text-lg font-black text-white">
-            Build only after replies.
+            {truncateDisplayText(signalTitle, 96)}
           </h3>
           <p className="mt-1 break-words text-sm font-bold leading-6 text-zinc-200">
-            Copy this prompt when someone replies, clicks, or asks for the offer. It turns the validated signal into a small MVP scope.
+            Turn the paid business pattern into a small AI-native MVP brief. Copy to Codex only after replies, saves, clicks, or buyer interest.
           </p>
         </div>
         <button
@@ -7931,6 +7917,29 @@ function CodexPromptPanel({ codexBuildPrompt }: { codexBuildPrompt: string }) {
           {copied ? "Copied MVP Prompt" : "Copy Codex MVP Prompt"}
         </button>
       </div>
+
+      <div className="mt-4 grid min-w-0 gap-3 md:grid-cols-2">
+        <MarketOpportunityField label="1. Money Proof" value={detail.proof} />
+        <MarketOpportunityField label="2. Business Pattern" value={detail.pattern} />
+        <MarketOpportunityField label="3. Target Buyer" value={detail.buyer} />
+        <MarketOpportunityField label="4. Paid Pain" value={detail.paidPain} />
+        <MarketOpportunityField label="5. AI-native MVP" value={detail.buildAfterReplies} />
+        <MarketOpportunityField label="6. First Tiny Product" value={detail.firstOffer} />
+      </div>
+
+      <div className="mt-4 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.08] px-4 py-3 text-sm font-bold leading-6 text-yellow-100">
+        Build with Codex only after replies, saves, clicks, or buyer interest.
+      </div>
+
+      <div className="mt-4 rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.06] p-4">
+        <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+          7. Codex-ready MVP Prompt
+        </div>
+        <p className="mt-1 text-sm font-bold leading-6 text-zinc-300">
+          Paste this into Codex after the market gives you a signal.
+        </p>
+      </div>
+
       {copyError && (
         <div className="mt-4 rounded-2xl border border-yellow-400/20 bg-yellow-400/10 px-4 py-3 text-sm font-bold text-yellow-100">
           Clipboard blocked. Select the prompt and copy manually.
@@ -7939,6 +7948,13 @@ function CodexPromptPanel({ codexBuildPrompt }: { codexBuildPrompt: string }) {
       <pre className="mt-4 max-h-[420px] max-w-full overflow-auto whitespace-pre-wrap break-words rounded-xl border border-white/10 bg-black/50 p-4 font-sans text-sm leading-6 text-zinc-100">
         {codexBuildPrompt}
       </pre>
+
+      <div className="mt-4">
+        <MarketOpportunityField
+          label="8. What Not To Build"
+          value="Do not build a full platform, marketplace, account system, analytics suite, payment flow, or external API integration first. Start with the smallest MVP that proves the buyer wants this workflow solved."
+        />
+      </div>
     </section>
   );
 }
@@ -8367,10 +8383,10 @@ function DistributionQueueSection({
             Distribution Queue
           </div>
           <h2 className="mt-2 text-3xl font-black tracking-tight">
-            Move Launch Packs into distribution assets.
+            Move validation assets into the queue.
           </h2>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-500">
-            Save the X post, DM script, validation log, and short video angle from the Launch Pack.
+            Save the X post, DM script, validation log, and short video angle from the Build Brief.
             No scheduling or external posting.
           </p>
         </div>
@@ -8386,7 +8402,7 @@ function DistributionQueueSection({
 
       {queue.length === 0 ? (
         <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-5 text-sm leading-6 text-zinc-500">
-          Generate a Launch Pack, then save distribution assets here.
+          Generate a Codex Build Brief, then save validation assets here.
         </div>
       ) : (
         <div className="mt-6 grid gap-3 lg:grid-cols-2">
@@ -8496,7 +8512,7 @@ function SecondaryToolsSection({
               Workflow note
             </summary>
             <p className="mt-3 text-sm leading-6 text-zinc-500">
-              Money Signal - Launch Pack - Distribution Queue - Validation Tracker - Winner - Build with Codex.
+              Money Signal - Codex Build Brief - Content Test - Signal - Build with Codex.
             </p>
           </details>
 
@@ -8685,7 +8701,7 @@ function WinnersSection({
 
       {winners.length === 0 ? (
         <div className="mt-6 min-w-0 break-words rounded-2xl border border-white/10 bg-black/30 p-4 text-sm leading-6 text-zinc-500 md:p-5">
-          No winners yet. Run the loop first: Evidence &rarr; Opportunity &rarr; Launch Pack &rarr; Market response &rarr; Winner.
+          No winners yet. Run the loop first: Money Signal &rarr; Codex Build Brief &rarr; Content test &rarr; Market response &rarr; Winner.
         </div>
       ) : (
         <div className="mt-6 grid min-w-0 gap-3 md:grid-cols-2">
@@ -8890,8 +8906,8 @@ function MasterPromptCard({
               Free
             </div>
             <p className="mt-2 text-sm leading-6 text-zinc-300">
-              Generate 3 Launch Packs free. See the buyer, pain, first offer, and
-              48h test. Founder Access unlocks full Launch Packs, saved Winners,
+              Generate 3 Codex Build Briefs free. See the buyer, pain, first offer, and
+              48h test. Founder Access unlocks full Build Briefs, saved Winners,
               and full Codex Build Prompts.
             </p>
           </div>
@@ -8947,7 +8963,7 @@ function MasterPromptCard({
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-              Launch Pack
+              Codex Build Brief
             </div>
             <h3 className="mt-2 text-2xl font-black tracking-tight">
               Sell this first. Build after replies.
@@ -8961,11 +8977,11 @@ function MasterPromptCard({
             onClick={copyLaunchPack}
             className="rounded-2xl bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-zinc-200"
           >
-            {copiedLaunchPack ? "Copied Launch Pack" : "Copy Launch Pack"}
+            {copiedLaunchPack ? "Copied Build Brief" : "Copy Build Brief"}
           </button>
         </div>
         <div className="mt-5 grid gap-4 md:grid-cols-2">
-          <MasterPromptField label="Launch Pack angle" value={masterPrompt.promptTitle} />
+          <MasterPromptField label="Business Pattern" value={masterPrompt.promptTitle} />
           <MasterPromptField label="Why it works" value={masterPrompt.whyItSold} />
           <MasterPromptField label="Buyer" value={masterPrompt.buyer} />
           <MasterPromptField label="Pain" value={masterPrompt.pain} />
@@ -9112,7 +9128,7 @@ function MasterPromptCard({
             Unlock Founder Access - $19
           </h3>
           <p className="mt-2 text-sm leading-6 text-zinc-300">
-            Get unlimited Launch Packs, full launch copy, saved Winners, and Codex prompts.
+            Get unlimited Codex Build Briefs, validation assets, saved Winners, and Codex prompts.
           </p>
           <a
             href={CHECKOUT_URL || "/founder"}
@@ -9156,7 +9172,7 @@ function CarouselGenerator({
             Carousel Generator
           </div>
           <h3 className="mt-2 text-2xl font-black text-white">
-            5-slide Launch Pack carousel
+            5-slide brief-to-content carousel
           </h3>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-500">
             Turn this hidden opportunity into TikTok, Instagram, or X carousel copy.
@@ -9245,7 +9261,7 @@ function ActionBriefSection({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-            Launch Pack
+            Brief-to-content test
           </div>
           <h3 className="mt-2 text-2xl font-black text-white">
             {getActionLabel(action)}
@@ -9256,7 +9272,7 @@ function ActionBriefSection({
           onClick={copyActionBrief}
           className="rounded-2xl bg-white px-5 py-3 text-sm font-black text-black transition hover:bg-zinc-200"
         >
-          {copied ? "Copied Launch Pack" : "Copy Launch Pack"}
+          {copied ? "Copied Brief" : "Copy Brief"}
         </button>
       </div>
 
@@ -9343,7 +9359,7 @@ function ExportAssets({
             Distribution Assets
           </div>
           <p className="mt-2 max-w-2xl break-words text-sm leading-6 text-zinc-300">
-            Copy the current Launch Pack into carousel, post, DM, lead magnet,
+            Copy the current Build Brief into carousel, post, DM, lead magnet,
             and product listing assets.
           </p>
         </div>
