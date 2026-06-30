@@ -1719,6 +1719,10 @@ const RAW_SIGNAL_INBOX_STORAGE_KEY = "bilion_raw_signals";
 const CANDIDATE_MONEY_SIGNALS_STORAGE_KEY = "bilion_candidate_money_signals";
 const APPROVED_MONEY_SIGNALS_STORAGE_KEY = "bilion_approved_money_signals";
 const OUTPUT_PACKS_STORAGE_KEY = "bilion_output_packs";
+const SEEN_SIGNAL_IDS_STORAGE_KEY = "bilion_seen_signal_ids";
+const SAVED_SIGNAL_IDS_STORAGE_KEY = "bilion_saved_signal_ids";
+const WINNER_SIGNAL_IDS_STORAGE_KEY = "bilion_winner_signal_ids";
+const REJECTED_SIGNAL_IDS_STORAGE_KEY = "bilion_rejected_signal_ids";
 const FREE_GENERATION_LIMIT = 3;
 const FREE_USAGE_STORAGE_KEY_EN = "bilion_free_generation_count_en";
 const MAX_SAVED_SIGNALS = 10;
@@ -2901,6 +2905,14 @@ function isGmailSignal(signal: BuildSignal) {
   return signal.signalSourceLabel === "Gmail Signal";
 }
 
+function getSignalKey(signal: BuildSignal | string) {
+  return typeof signal === "string" ? signal : signal.id;
+}
+
+function getSignalSourceKey(signal: BuildSignal) {
+  return signal.signalSourceLabel || signal.sourceType || getSignalMarket(signal);
+}
+
 function getMarketClassification(signal: BuildSignal): MarketClassification {
   return getSignalMarket(signal);
 }
@@ -3067,6 +3079,24 @@ function getTopMoneySignalsForMarket(signals: BuildSignal[], market: MarketOptio
     })
     .sort((a, b) => getSignalOpportunityScore(b) - getSignalOpportunityScore(a))
     .slice(0, 3);
+}
+
+function getVisibleMarketSignalCount(signals: BuildSignal[], market: MarketOption) {
+  const ids = new Set<string>();
+
+  for (const signal of canonicalMoneySignals) {
+    if (signal.market === market) {
+      ids.add(signal.id);
+    }
+  }
+
+  for (const signal of signals) {
+    if (getSignalMarket(signal) === market) {
+      ids.add(signal.id);
+    }
+  }
+
+  return ids.size;
 }
 
 function getScoreReason(signal: BuildSignal) {
@@ -3621,7 +3651,51 @@ Requirements:
   };
 }
 
-function getSignalGroups(signals: BuildSignal[], githubSignal?: BuildSignal) {
+function pickNextSignal(
+  options: BuildSignal[],
+  {
+    currentSignal,
+    rejectedSignalIds = [],
+    seenSignalIds = [],
+  }: {
+    currentSignal?: BuildSignal;
+    rejectedSignalIds?: string[];
+    seenSignalIds?: string[];
+  } = {},
+) {
+  const currentId = currentSignal ? getSignalKey(currentSignal) : "";
+  const currentSource = currentSignal ? getSignalSourceKey(currentSignal) : "";
+  const rejectedIds = new Set(rejectedSignalIds);
+  const seenIds = new Set(seenSignalIds);
+  const candidates = options.filter((signal) => getSignalKey(signal) !== currentId);
+  const pool = candidates.length ? candidates : options;
+
+  return pool
+    .slice()
+    .sort((a, b) => {
+      const aRejected = rejectedIds.has(getSignalKey(a)) ? 1 : 0;
+      const bRejected = rejectedIds.has(getSignalKey(b)) ? 1 : 0;
+      const aSeen = seenIds.has(getSignalKey(a)) ? 1 : 0;
+      const bSeen = seenIds.has(getSignalKey(b)) ? 1 : 0;
+      const aSameSource = getSignalSourceKey(a) === currentSource ? 1 : 0;
+      const bSameSource = getSignalSourceKey(b) === currentSource ? 1 : 0;
+
+      return (
+        aRejected - bRejected ||
+        aSeen - bSeen ||
+        aSameSource - bSameSource ||
+        getSignalOpportunityScore(b) - getSignalOpportunityScore(a) ||
+        a.id.localeCompare(b.id)
+      );
+    })[0];
+}
+
+function getSignalGroups(
+  signals: BuildSignal[],
+  githubSignal?: BuildSignal,
+  seenSignalIds: string[] = [],
+  rejectedSignalIds: string[] = [],
+) {
   const gmailSignals = signals.filter(isGmailSignal);
   const newsletterSignals = signals.filter(
     (signal) => isNewsletterSignal(signal) && !isGmailSignal(signal),
@@ -3629,17 +3703,40 @@ function getSignalGroups(signals: BuildSignal[], githubSignal?: BuildSignal) {
   const nonNewsletterSignals = signals.filter(
     (signal) => !isNewsletterSignal(signal) && !isGmailSignal(signal),
   );
-  const recommendedGmailSignals = [
-    "AI Agent Cost Watch",
-    "Inbox Agent Router",
-    "Company Context Pack",
-  ]
-    .map((title) => gmailSignals.find((signal) => signal.sourceTitle === title))
-    .filter((signal): signal is BuildSignal => Boolean(signal));
-  const recommendedSignals = [
-    ...recommendedGmailSignals,
+  const recommendedPool = [
+    ...gmailSignals,
     ...nonNewsletterSignals,
-  ].slice(0, 3);
+    ...newsletterSignals,
+  ]
+    .filter((signal) => !rejectedSignalIds.includes(getSignalKey(signal)))
+    .sort((a, b) => {
+      const aSeen = seenSignalIds.includes(getSignalKey(a)) ? 1 : 0;
+      const bSeen = seenSignalIds.includes(getSignalKey(b)) ? 1 : 0;
+
+      return (
+        aSeen - bSeen ||
+        getSignalOpportunityScore(b) - getSignalOpportunityScore(a) ||
+        a.id.localeCompare(b.id)
+      );
+    });
+  const recommendedBySource = new Map<string, BuildSignal>();
+
+  for (const signal of recommendedPool) {
+    const sourceKey = getSignalSourceKey(signal);
+
+    if (!recommendedBySource.has(sourceKey)) {
+      recommendedBySource.set(sourceKey, signal);
+    }
+  }
+
+  const recommendedSignals = Array.from(
+    new Map(
+      [...recommendedBySource.values(), ...recommendedPool].map((signal) => [
+        signal.id,
+        signal,
+      ]),
+    ).values(),
+  ).slice(0, 8);
   const recommendedIds = new Set(recommendedSignals.map((signal) => signal.id));
   const localSignals = nonNewsletterSignals.filter(
     (signal) => !recommendedIds.has(signal.id),
@@ -5589,6 +5686,45 @@ function writeOutputPacks(packs: OutputPack[]) {
   }
 }
 
+function readSignalIdList(storageKey: string) {
+  try {
+    const raw = window.localStorage.getItem(storageKey);
+    const parsed = raw ? JSON.parse(raw) : [];
+
+    return Array.isArray(parsed)
+      ? parsed.filter((item): item is string => typeof item === "string")
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeSignalIdList(storageKey: string, ids: string[]) {
+  try {
+    window.localStorage.setItem(
+      storageKey,
+      JSON.stringify(Array.from(new Set(ids)).slice(0, 500)),
+    );
+  } catch {
+    // localStorage can be unavailable in private modes or locked-down browsers.
+  }
+}
+
+function getSeenSignalIds() {
+  return readSignalIdList(SEEN_SIGNAL_IDS_STORAGE_KEY);
+}
+
+function markSignalSeen(signalId: string) {
+  const nextIds = Array.from(new Set([signalId, ...getSeenSignalIds()])).slice(0, 500);
+
+  writeSignalIdList(SEEN_SIGNAL_IDS_STORAGE_KEY, nextIds);
+  return nextIds;
+}
+
+function getRejectedSignalIds() {
+  return readSignalIdList(REJECTED_SIGNAL_IDS_STORAGE_KEY);
+}
+
 function getLocalDateKey() {
   const today = new Date();
   const year = today.getFullYear();
@@ -5645,6 +5781,10 @@ export default function BilionAppClient({
   const [approvedMoneySignals, setApprovedMoneySignals] = useState<ApprovedMoneySignal[]>([]);
   const [outputPack, setOutputPack] = useState<OutputPack | null>(null);
   const [outputPacks, setOutputPacks] = useState<OutputPack[]>([]);
+  const [seenSignalIds, setSeenSignalIds] = useState<string[]>([]);
+  const [savedSignalIds, setSavedSignalIds] = useState<string[]>([]);
+  const [winnerSignalIds, setWinnerSignalIds] = useState<string[]>([]);
+  const [rejectedSignalIds, setRejectedSignalIds] = useState<string[]>([]);
   const approvedMoneyBuildSignals = approvedMoneySignals.map(
     convertApprovedMoneySignalToBuildSignal,
   );
@@ -5694,7 +5834,18 @@ export default function BilionAppClient({
     evidenceInboxSignals,
     selectedMarket,
   );
-  const signalGroups = getSignalGroups(marketSignals, githubLibrarySignal);
+  const signalGroups = getSignalGroups(
+    marketSignals,
+    githubLibrarySignal,
+    seenSignalIds,
+    rejectedSignalIds,
+  );
+  const marketSignalCounts = Object.fromEntries(
+    appMarketOptions.map((market) => [
+      market,
+      getVisibleMarketSignalCount(evidenceInboxSignals, market),
+    ]),
+  ) as Record<AppMarketOption, number>;
   const [selectedSignalId, setSelectedSignalId] = useState(
     topMoneySignalsForMarket[0]?.id || marketSignals[todayIndex]?.id || marketSignals[0]?.id || "",
   );
@@ -5719,6 +5870,7 @@ export default function BilionAppClient({
     : null;
   const buyerOptions = selectedSignal ? getBuyerOptions(selectedSignal) : [];
   const guidedWorkflowStep = result ? 3 : selectedSignalId ? 2 : 1;
+  const signalMemorySummary = `${seenSignalIds.length} seen / ${savedSignalIds.length} saved / ${winnerSignalIds.length} winners / ${rejectedSignalIds.length} rejected`;
 
   useEffect(() => {
     const loadSavedSignals = window.setTimeout(() => {
@@ -5731,13 +5883,20 @@ export default function BilionAppClient({
       setCandidateMoneySignals(readCandidateMoneySignals());
       setApprovedMoneySignals(readApprovedMoneySignals());
       setOutputPacks(readOutputPacks());
+      setSeenSignalIds(getSeenSignalIds());
+      setSavedSignalIds(readSignalIdList(SAVED_SIGNAL_IDS_STORAGE_KEY));
+      setWinnerSignalIds(readSignalIdList(WINNER_SIGNAL_IDS_STORAGE_KEY));
+      setRejectedSignalIds(getRejectedSignalIds());
       setFreeUsageCount(readFreeUsageCount());
 
       const source = new URLSearchParams(window.location.search).get("source");
       if (source === "github") {
+        const githubSignal = buildGitHubLibrarySignal("");
+
         setSourceMode("github");
-        setSelectedSignalId("github-sample");
-        setSelectedBuyer(buildGitHubLibrarySignal("").buyer);
+        setSelectedSignalId(githubSignal.id);
+        setSelectedBuyer(githubSignal.buyer);
+        setSeenSignalIds(() => markSignalSeen(githubSignal.id));
       }
     }, 0);
 
@@ -5772,6 +5931,63 @@ export default function BilionAppClient({
     });
   }
 
+  function rememberSignalId(
+    storageKey: string,
+    signalId: string,
+    setter: (updater: (currentIds: string[]) => string[]) => void,
+  ) {
+    if (!signalId) {
+      return;
+    }
+
+    setter((currentIds) => {
+      const nextIds = Array.from(new Set([signalId, ...currentIds])).slice(0, 500);
+
+      writeSignalIdList(storageKey, nextIds);
+      return nextIds;
+    });
+  }
+
+  function rememberSeenSignal(signal: BuildSignal | string) {
+    const signalId = getSignalKey(signal);
+
+    if (!signalId) {
+      return;
+    }
+
+    setSeenSignalIds(() => markSignalSeen(signalId));
+  }
+
+  function rememberSavedSignal(signalId: string) {
+    rememberSignalId(
+      SAVED_SIGNAL_IDS_STORAGE_KEY,
+      signalId,
+      setSavedSignalIds,
+    );
+  }
+
+  function rememberWinnerSignal(signalId: string) {
+    rememberSignalId(
+      WINNER_SIGNAL_IDS_STORAGE_KEY,
+      signalId,
+      setWinnerSignalIds,
+    );
+  }
+
+  function rememberRejectedSignal(signalId: string) {
+    rememberSignalId(
+      REJECTED_SIGNAL_IDS_STORAGE_KEY,
+      signalId,
+      setRejectedSignalIds,
+    );
+  }
+
+  function selectSignal(signal: BuildSignal, buyer = signal.buyer) {
+    setSelectedSignalId(signal.id);
+    setSelectedBuyer(buyer);
+    rememberSeenSignal(signal);
+  }
+
   async function generateIdea() {
     if (!canGenerate) {
       return;
@@ -5786,6 +6002,7 @@ export default function BilionAppClient({
     }
 
     const nextSignal = selectedSignal;
+    rememberSeenSignal(nextSignal);
     const actionSignal = getActionSignal(nextSignal, selectedBuyer);
     const seed = selectHighQualityBusinessSpark(actionSignal);
     const nextResult = applyBusinessSparkSeedToResult(buildResult(actionSignal), seed);
@@ -5880,12 +6097,37 @@ export default function BilionAppClient({
     setActiveWorkflowTab("studio");
   }
 
+  function selectAnotherSignal() {
+    const marketOptionsForSelection = getTopMoneySignalsForMarket(
+      evidenceInboxSignals,
+      selectedMarket,
+    );
+    const nextSignal = pickNextSignal(marketOptionsForSelection, {
+      currentSignal: selectedSignal,
+      rejectedSignalIds,
+      seenSignalIds,
+    });
+
+    if (!nextSignal) {
+      return;
+    }
+
+    selectSignal(nextSignal);
+    setSelectedAction("post");
+    setOutputPack(null);
+    setResult(null);
+    setMasterPrompt(null);
+    setActiveWorkflowTab("library");
+  }
+
   function generateOutputPack(signal: BuildSignal) {
+    rememberSeenSignal(signal);
     setOutputPack(buildOutputPackFromSignal(signal, selectedAction));
     setCopyFeedback(null);
   }
 
   function saveOutputPack(pack: OutputPack) {
+    rememberSavedSignal(pack.signalId);
     setOutputPacks((currentPacks) => {
       const nextPacks = [
         pack,
@@ -6098,6 +6340,12 @@ export default function BilionAppClient({
   }
 
   function markWinner(recordId: string) {
+    const record = validationRecords.find((item) => item.id === recordId);
+
+    if (record) {
+      rememberWinnerSignal(record.signalTitle);
+    }
+
     updateValidationRecord(recordId, {
       verdict: "Build",
       winner: true,
@@ -6151,8 +6399,7 @@ export default function BilionAppClient({
       writeEvidenceDrafts(nextDrafts);
       return nextDrafts;
     });
-    setSelectedSignalId(approvedSignal.id);
-    setSelectedBuyer(approvedSignal.buyer);
+    selectSignal(approvedSignal);
     setActiveWorkflowTab("library");
     setCopyFeedback({
       message: "Approved evidence and added it to Signal Library.",
@@ -6161,6 +6408,7 @@ export default function BilionAppClient({
   }
 
   function rejectEvidenceDraft(draftId: string) {
+    rememberRejectedSignal(draftId);
     setEvidenceDrafts((currentDrafts) => {
       const nextDrafts = currentDrafts.filter((draft) => draft.id !== draftId);
 
@@ -6239,8 +6487,7 @@ export default function BilionAppClient({
     if (isAppMarketOption(candidate.market)) {
       setSelectedMarket(candidate.market);
     }
-    setSelectedSignalId(buildSignal.id);
-    setSelectedBuyer(buildSignal.buyer);
+    selectSignal(buildSignal);
     setSelectedAction("sell");
     setActiveWorkflowTab("library");
     setCopyFeedback({
@@ -6250,6 +6497,7 @@ export default function BilionAppClient({
   }
 
   function rejectCandidateMoneySignal(candidateId: string) {
+    rememberRejectedSignal(candidateId);
     setCandidateMoneySignals((currentCandidates) => {
       const nextCandidates = currentCandidates.map((candidate) =>
         candidate.id === candidateId
@@ -6391,6 +6639,9 @@ export default function BilionAppClient({
                   ? "Pick a money signal. Turn it into a post, DM, offer, validation plan, and Codex prompt. Build only after replies."
                   : `Free Launch Packs today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used.`}
               </p>
+              <p className="mt-2 text-xs font-bold uppercase tracking-wide text-zinc-600">
+                Signal memory: {signalMemorySummary}
+              </p>
 
               <div className="mt-4 grid gap-4 md:mt-6 md:gap-6">
                 {activeWorkflowTab === "library" && (
@@ -6401,9 +6652,11 @@ export default function BilionAppClient({
                     outputPack={outputPack}
                     outputPacksCount={outputPacks.length}
                     selectedMarket={selectedMarket}
+                    marketCounts={marketSignalCounts}
                     onClearOutputPack={clearOutputPack}
                     onActionChange={setSelectedAction}
                     onGenerateOutputPack={generateOutputPack}
+                    onSignalSeen={rememberSeenSignal}
                     onMarketChange={(market) => {
                       setSelectedMarket(market);
                       const [bestSignalForMarket] = getTopMoneySignalsForMarket(
@@ -6412,8 +6665,7 @@ export default function BilionAppClient({
                       );
 
                       if (bestSignalForMarket) {
-                        setSelectedSignalId(bestSignalForMarket.id);
-                        setSelectedBuyer(bestSignalForMarket.buyer);
+                        selectSignal(bestSignalForMarket);
                         setSelectedAction("post");
                       }
                     }}
@@ -6490,7 +6742,7 @@ export default function BilionAppClient({
                       >
                         <summary className="mb-3 flex cursor-pointer list-none flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                           <div className="min-w-0 break-words text-xs font-black uppercase tracking-[0.16em] text-zinc-400">
-                            {group.label}
+                            {group.label} · {group.signals.length}
                           </div>
                           <div className="flex items-center gap-2 text-xs font-bold text-zinc-600">
                             <span>{group.signals.length}</span>
@@ -6521,8 +6773,7 @@ export default function BilionAppClient({
                                   setSourceMode(
                                     signal.id === "github-sample" ? "github" : "indie",
                                   );
-                                  setSelectedSignalId(signal.id);
-                                  setSelectedBuyer(signal.buyer);
+                                  selectSignal(signal);
                                 }}
                                 className={[
                                   "min-h-36 min-w-0 overflow-hidden rounded-2xl border px-4 py-3 text-left transition",
@@ -6563,8 +6814,7 @@ export default function BilionAppClient({
                                     setSourceMode(
                                       signal.id === "github-sample" ? "github" : "indie",
                                     );
-                                    setSelectedSignalId(signal.id);
-                                    setSelectedBuyer(signal.buyer);
+                                    selectSignal(signal);
                                     setSelectedAction("build");
                                     setActiveWorkflowTab("studio");
                                   }}
@@ -6582,8 +6832,7 @@ export default function BilionAppClient({
                                         setSourceMode(
                                           signal.id === "github-sample" ? "github" : "indie",
                                         );
-                                        setSelectedSignalId(signal.id);
-                                        setSelectedBuyer(signal.buyer);
+                                        selectSignal(signal);
                                         setSelectedAction(option.action);
                                         setActiveWorkflowTab("studio");
                                       }}
@@ -6608,8 +6857,7 @@ export default function BilionAppClient({
                     topSignal={topOpportunitySignal}
                     onRevealTop={(signal) => {
                       setSourceMode(signal.id === "github-sample" ? "github" : "indie");
-                      setSelectedSignalId(signal.id);
-                      setSelectedBuyer(signal.buyer);
+                      selectSignal(signal);
                       setSelectedAction("build");
                       setActiveWorkflowTab("studio");
                     }}
@@ -6878,6 +7126,13 @@ export default function BilionAppClient({
                   <div className="flex w-full min-w-0 flex-col gap-2 sm:w-auto sm:flex-row">
                     <button
                       type="button"
+                      onClick={selectAnotherSignal}
+                      className="w-full rounded-2xl border border-emerald-300/30 px-5 py-4 text-center text-sm font-bold text-emerald-100 transition hover:bg-emerald-300/10 sm:w-auto"
+                    >
+                      Another Signal
+                    </button>
+                    <button
+                      type="button"
                       onClick={generateMasterPrompt}
                       disabled={!canGenerate}
                       className="w-full rounded-2xl bg-white px-5 py-4 text-center text-sm font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
@@ -6890,7 +7145,7 @@ export default function BilionAppClient({
                       disabled={!masterPrompt || !canGenerate}
                       className="w-full rounded-2xl border border-white/10 px-5 py-4 text-center text-sm font-bold text-white transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                     >
-                      Try Next Action
+                      Another Angle
                     </button>
                   </div>
                 </div>
@@ -7249,10 +7504,12 @@ function StartHereBlock() {
 
 function MarketSelectionSection({
   moneySignals,
+  marketCounts,
   onClearOutputPack,
   onActionChange,
   onGenerateOutputPack,
   onMarketChange,
+  onSignalSeen,
   onSaveOutputPack,
   opportunities,
   outputPack,
@@ -7261,10 +7518,12 @@ function MarketSelectionSection({
   selectedMarket,
 }: {
   moneySignals: BuildSignal[];
+  marketCounts: Record<AppMarketOption, number>;
   onClearOutputPack: () => void;
   onActionChange: (action: NextAction) => void;
   onGenerateOutputPack: (signal: BuildSignal) => void;
   onMarketChange: (market: AppMarketOption) => void;
+  onSignalSeen: (signal: BuildSignal | string) => void;
   onSaveOutputPack: (pack: OutputPack) => void;
   opportunities: BuildSignal[];
   outputPack: OutputPack | null;
@@ -7331,7 +7590,7 @@ function MarketSelectionSection({
                   : "border-white/10 bg-black/25 text-zinc-400 hover:border-white/20 hover:text-white",
               ].join(" ")}
             >
-              {market}
+              {market} · {marketCounts[market] || 0}
             </button>
           );
         })}
@@ -7372,6 +7631,7 @@ function MarketSelectionSection({
                   type="button"
                   onClick={() => {
                     setDeepDiveSignalId(signal.id);
+                    onSignalSeen(signal);
                   }}
                   className="mt-3 w-full rounded-xl bg-emerald-300 px-3 py-3 text-center text-xs font-black text-black transition hover:bg-emerald-200"
                 >
