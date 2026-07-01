@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { track } from "@vercel/analytics";
 import { canonicalMoneySignals, type MoneySignal } from "../../data/money-signals";
 import { showcaseItems } from "../showcase/showcase-data";
 
@@ -1450,6 +1451,137 @@ const nextActionOptions: Array<{
   },
 ];
 
+type DailyGoal =
+  | "Find what to build"
+  | "Create a post"
+  | "Create a buyer DM"
+  | "Create a Codex prompt"
+  | "Find a $99 offer"
+  | "Build a $9.99/mo product";
+
+type BuyerPreference =
+  | "Developers"
+  | "Creators"
+  | "Local businesses"
+  | "Ecommerce"
+  | "Agencies"
+  | "Indie founders";
+
+type MonetizationPreference =
+  | "Manual service"
+  | "Micro SaaS"
+  | "Prompt pack"
+  | "Setup offer"
+  | "Content product";
+
+type TransformType =
+  | "X Post"
+  | "3-slide Carousel"
+  | "Buyer DM"
+  | "TikTok Script"
+  | "Landing Page Copy"
+  | "Codex Prompt"
+  | "Validation Plan";
+
+type RemixType =
+  | "Make it simpler"
+  | "Make it premium"
+  | "Make it local"
+  | "Make it for developers"
+  | "Make it for creators"
+  | "Turn it into a $99 service"
+  | "Turn it into a $9.99/mo product";
+
+type ValidationQueueStatus =
+  | "Not started"
+  | "Posted"
+  | "DMed buyers"
+  | "Got replies"
+  | "Got buying intent"
+  | "Winner";
+
+type ValidationQueueItem = {
+  id: string;
+  signalTitle: string;
+  outputType: TransformType;
+  buyer: string;
+  offer: string;
+  output: string;
+  status: ValidationQueueStatus;
+};
+
+type BilionIntentEventName =
+  | "copy_today_offer_test"
+  | "add_to_validation_queue"
+  | "click_unlock_bilion_pro"
+  | "copy_x_post"
+  | "copy_buyer_dm"
+  | "copy_codex_prompt"
+  | "mark_queue_item_winner";
+
+type BilionIntentEventPayload = {
+  selectedSignalTitle: string;
+  buyer: string;
+  userGoal: DailyGoal;
+  monetizationStyle: MonetizationPreference;
+  hasProAccess: boolean;
+};
+
+const dailyGoalOptions: DailyGoal[] = [
+  "Find what to build",
+  "Create a post",
+  "Create a buyer DM",
+  "Create a Codex prompt",
+  "Find a $99 offer",
+  "Build a $9.99/mo product",
+];
+
+const buyerPreferenceOptions: BuyerPreference[] = [
+  "Developers",
+  "Creators",
+  "Local businesses",
+  "Ecommerce",
+  "Agencies",
+  "Indie founders",
+];
+
+const monetizationPreferenceOptions: MonetizationPreference[] = [
+  "Manual service",
+  "Micro SaaS",
+  "Prompt pack",
+  "Setup offer",
+  "Content product",
+];
+
+const transformOptions: TransformType[] = [
+  "X Post",
+  "Buyer DM",
+  "Codex Prompt",
+  "3-slide Carousel",
+  "TikTok Script",
+  "Landing Page Copy",
+  "Validation Plan",
+];
+
+const remixOptions: RemixType[] = [
+  "Make it simpler",
+  "Make it premium",
+  "Make it local",
+  "Make it for developers",
+  "Make it for creators",
+  "Turn it into a $99 service",
+  "Turn it into a $9.99/mo product",
+];
+
+const validationQueueStatuses: ValidationQueueStatus[] = [
+  "Not started",
+  "Posted",
+  "DMed buyers",
+  "Got replies",
+  "Got buying intent",
+  "Winner",
+];
+
 type SavedSignal = {
   id: string;
   createdAt: string;
@@ -1718,7 +1850,6 @@ const APPROVED_EVIDENCE_STORAGE_KEY = "bilion.approvedEvidenceSignals";
 const RAW_SIGNAL_INBOX_STORAGE_KEY = "bilion_raw_signals";
 const CANDIDATE_MONEY_SIGNALS_STORAGE_KEY = "bilion_candidate_money_signals";
 const APPROVED_MONEY_SIGNALS_STORAGE_KEY = "bilion_approved_money_signals";
-const OUTPUT_PACKS_STORAGE_KEY = "bilion_output_packs";
 const SEEN_SIGNAL_IDS_STORAGE_KEY = "bilion_seen_signal_ids";
 const SAVED_SIGNAL_IDS_STORAGE_KEY = "bilion_saved_signal_ids";
 const WINNER_SIGNAL_IDS_STORAGE_KEY = "bilion_winner_signal_ids";
@@ -3385,6 +3516,330 @@ function buildOutputPackFromSignal(signal: BuildSignal, angle: NextAction = "pos
       "- Include Build only after replies validation note.",
     ].join("\n"),
   };
+}
+
+function getPreferenceMarket(buyerPreference: BuyerPreference): AppMarketOption | null {
+  if (buyerPreference === "Developers" || buyerPreference === "Indie founders") {
+    return "Developer Workflow";
+  }
+
+  if (buyerPreference === "Creators") {
+    return "Creators";
+  }
+
+  if (buyerPreference === "Local businesses" || buyerPreference === "Agencies") {
+    return "Local Business";
+  }
+
+  if (buyerPreference === "Ecommerce") {
+    return "Ecommerce";
+  }
+
+  return null;
+}
+
+function getPreferenceFitScore(
+  signal: BuildSignal,
+  goal: DailyGoal,
+  buyerPreference: BuyerPreference,
+  monetization: MonetizationPreference,
+) {
+  const detail = getOpportunityDetailFields(signal);
+  const haystack = `${getSignalMarket(signal)} ${detail.buyer} ${detail.paidPain} ${detail.firstOffer} ${detail.buildAfterReplies}`.toLowerCase();
+  let score = Math.min(95, 58 + getSignalOpportunityScore(signal));
+  const preferredMarket = getPreferenceMarket(buyerPreference);
+
+  if (preferredMarket && getSignalMarket(signal) === preferredMarket) {
+    score += 14;
+  }
+
+  if (buyerPreference === "Developers" && /developer|github|code|repo|api|workflow/.test(haystack)) {
+    score += 10;
+  }
+
+  if (buyerPreference === "Creators" && /creator|content|newsletter|post|video|community/.test(haystack)) {
+    score += 10;
+  }
+
+  if (buyerPreference === "Local businesses" && /local|clinic|salon|restaurant|contractor|service/.test(haystack)) {
+    score += 10;
+  }
+
+  if (buyerPreference === "Agencies" && /agency|client|lead|setup|audit/.test(haystack)) {
+    score += 8;
+  }
+
+  if (goal === "Create a post" && /post|content|creator|newsletter|x /.test(haystack)) {
+    score += 6;
+  }
+
+  if (goal === "Create a buyer DM" && /dm|lead|buyer|client|local/.test(haystack)) {
+    score += 6;
+  }
+
+  if (goal === "Create a Codex prompt" && /mvp|build|codex|tool|software|app/.test(haystack)) {
+    score += 6;
+  }
+
+  if (goal === "Find a $99 offer" && /\$99|audit|cleanup|report|pack/.test(haystack)) {
+    score += 8;
+  }
+
+  if (goal === "Build a $9.99/mo product" && /month|monthly|micro|subscription|saas/.test(haystack)) {
+    score += 8;
+  }
+
+  if (monetization === "Manual service" && /manual|audit|cleanup|setup|service/.test(haystack)) {
+    score += 8;
+  }
+
+  if (monetization === "Micro SaaS" && /mvp|tool|dashboard|app|month|saas/.test(haystack)) {
+    score += 8;
+  }
+
+  if (monetization === "Prompt pack" && /prompt|template|pack|checklist/.test(haystack)) {
+    score += 8;
+  }
+
+  if (monetization === "Setup offer" && /setup|implementation|workflow|automation/.test(haystack)) {
+    score += 8;
+  }
+
+  if (monetization === "Content product" && /content|newsletter|post|video|template/.test(haystack)) {
+    score += 8;
+  }
+
+  return Math.max(60, Math.min(99, score));
+}
+
+function getWhySignalMatches(
+  signal: BuildSignal,
+  goal: DailyGoal,
+  buyerPreference: BuyerPreference,
+  monetization: MonetizationPreference,
+) {
+  const detail = getOpportunityDetailFields(signal);
+  const preferredMarket = getPreferenceMarket(buyerPreference);
+  const marketMatch = preferredMarket && getSignalMarket(signal) === preferredMarket;
+
+  return [
+    marketMatch ? `matches your ${buyerPreference.toLowerCase()} buyer preference` : `has a clear buyer: ${detail.buyer}`,
+    `fits "${goal.toLowerCase()}" because it already has proof and a first offer`,
+    `works as a ${monetization.toLowerCase()} starting point`,
+  ].join(". ");
+}
+
+function getRecommendedSignals(
+  signals: BuildSignal[],
+  goal: DailyGoal,
+  buyerPreference: BuyerPreference,
+  monetization: MonetizationPreference,
+) {
+  const seenIds = new Set<string>();
+
+  return signals
+    .filter((signal) => {
+      if (seenIds.has(signal.id)) {
+        return false;
+      }
+
+      seenIds.add(signal.id);
+      return true;
+    })
+    .map((signal) => ({
+      fitScore: getPreferenceFitScore(signal, goal, buyerPreference, monetization),
+      signal,
+      why: getWhySignalMatches(signal, goal, buyerPreference, monetization),
+    }))
+    .sort((a, b) => b.fitScore - a.fitScore || getSignalOpportunityScore(b.signal) - getSignalOpportunityScore(a.signal))
+    .slice(0, 3);
+}
+
+function buildLandingPageCopy(signal: BuildSignal) {
+  const detail = getOpportunityDetailFields(signal);
+  const productName = getOutputPackProductName(detail.firstOffer);
+
+  return [
+    `Headline: ${productName} for ${detail.buyer}`,
+    "",
+    `Subheadline: Turn ${detail.paidPain} into a clean buyer-ready output before building a full product.`,
+    "",
+    "Proof block:",
+    detail.proof,
+    "",
+    "Offer:",
+    detail.firstOffer,
+    "",
+    "CTA:",
+    "Want the manual version? Reply and I will send one before/after sample.",
+    "",
+    "Build note:",
+    "Build only after replies, saves, clicks, or buyer interest.",
+  ].join("\n");
+}
+
+function buildTransformOutput(
+  signal: BuildSignal,
+  transform: TransformType,
+  hasFounderAccess: boolean,
+) {
+  const pack = buildOutputPackFromSignal(signal);
+
+  if (transform === "X Post") {
+    return pack.xPost;
+  }
+
+  if (transform === "3-slide Carousel") {
+    return pack.carouselSlides.join("\n\n");
+  }
+
+  if (transform === "Buyer DM") {
+    return pack.coldDm;
+  }
+
+  if (transform === "TikTok Script") {
+    return pack.shortVideoScript;
+  }
+
+  if (transform === "Landing Page Copy") {
+    return buildLandingPageCopy(signal);
+  }
+
+  if (transform === "Validation Plan") {
+    return pack.validationPlan;
+  }
+
+  if (hasFounderAccess) {
+    return pack.codexBuildPrompt;
+  }
+
+  return `${pack.codexBuildPrompt.split("\n").slice(0, 12).join("\n")}\n\nFounder Access unlocks the full Codex prompt.`;
+}
+
+function buildRemixOutput(signal: BuildSignal, remix: RemixType) {
+  const detail = getOpportunityDetailFields(signal);
+  const cleanOfferName = getOutputPackProductName(detail.firstOffer);
+  const remixRules: Record<RemixType, { buyer: string; offer: string; price: string; note: string }> = {
+    "Make it simpler": {
+      buyer: detail.buyer,
+      offer: `${cleanOfferName} Lite`,
+      price: "$29-$49 one-time",
+      note: "remove software and sell one manual before/after output",
+    },
+    "Make it premium": {
+      buyer: detail.buyer,
+      offer: `${cleanOfferName} Premium Setup`,
+      price: "$499-$1,500 setup",
+      note: "package the cleanup, implementation, and handoff as a premium service",
+    },
+    "Make it local": {
+      buyer: "local operators with the same repeated workflow",
+      offer: `Local ${cleanOfferName}`,
+      price: "$99-$299 one-time",
+      note: "sell a concrete local before/after sample by DM",
+    },
+    "Make it for developers": {
+      buyer: "developers and technical founders",
+      offer: `Developer ${cleanOfferName}`,
+      price: "$49-$99 one-time",
+      note: "turn the pain into a repo, setup, or workflow brief developers can inspect fast",
+    },
+    "Make it for creators": {
+      buyer: "creators and newsletter operators",
+      offer: `Creator ${cleanOfferName}`,
+      price: "$19-$49 one-time",
+      note: "turn the proof into a content operating asset creators can reuse",
+    },
+    "Turn it into a $99 service": {
+      buyer: detail.buyer,
+      offer: `$99 ${cleanOfferName}`,
+      price: "$99 one-time",
+      note: "make one fixed-scope manual result and sell it before software",
+    },
+    "Turn it into a $9.99/mo product": {
+      buyer: detail.buyer,
+      offer: `${cleanOfferName} Micro Subscription`,
+      price: "$9.99/month",
+      note: "turn the manual output into a tiny recurring checklist or generator only after replies",
+    },
+  };
+  const rule = remixRules[remix];
+
+  return [
+    `Buyer: ${rule.buyer}`,
+    `Paid pain: ${detail.paidPain}`,
+    `First offer: ${rule.offer}`,
+    `Price: ${rule.price}`,
+    `Why it could work: ${rule.note}. Money proof: ${detail.proof}`,
+    `First validation action: DM 10 reachable buyers with one before/after sample and ask if they want ${rule.offer}.`,
+  ].join("\n");
+}
+
+function buildTodaysOfferTest(signal: BuildSignal) {
+  const detail = getOpportunityDetailFields(signal);
+
+  return [
+    `Today's offer test: ${detail.firstOffer}`,
+    "",
+    `Buyer: ${detail.buyer}`,
+    `Paid pain: ${detail.paidPain}`,
+    `Price: ${detail.price}`,
+    "",
+    `Money proof: ${detail.proof}`,
+    "",
+    "Test copy:",
+    `I noticed ${detail.buyer} still deal with ${detail.paidPain}.`,
+    `I'm testing ${detail.firstOffer} as a manual-first offer before building software.`,
+    `If I made one before/after sample for your case, would you want to see it?`,
+    "",
+    "Build only after replies.",
+  ].join("\n");
+}
+
+function getValidationQueueNextAction(status: ValidationQueueStatus) {
+  if (status === "Posted") {
+    return "DM 10 buyers";
+  }
+
+  if (status === "DMed buyers") {
+    return "Ask for payment";
+  }
+
+  if (status === "Got replies" || status === "Got buying intent") {
+    return "Save as winner";
+  }
+
+  if (status === "Winner") {
+    return "Reuse, remix, or build with Codex";
+  }
+
+  return "Post today";
+}
+
+function trackBilionIntentEvent(
+  name: BilionIntentEventName,
+  payload: BilionIntentEventPayload,
+) {
+  const properties = {
+    eventName: name,
+    selectedSignalTitle: truncateDisplayText(payload.selectedSignalTitle, 120),
+    buyer: truncateDisplayText(payload.buyer, 120),
+    userGoal: payload.userGoal,
+    monetizationStyle: payload.monetizationStyle,
+    hasProAccess: payload.hasProAccess,
+  };
+
+  try {
+    track(name, properties);
+
+    if (process.env.NODE_ENV === "development") {
+      console.info("[Bilion analytics]", name, properties);
+    }
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      console.info("[Bilion analytics skipped]", name, error);
+    }
+  }
 }
 
 function truncateEvidenceText(value: string, maxLength = 220) {
@@ -5628,46 +6083,6 @@ function writeApprovedMoneySignals(signals: ApprovedMoneySignal[]) {
   }
 }
 
-function isOutputPack(value: unknown): value is OutputPack {
-  return (
-    Boolean(value) &&
-    typeof value === "object" &&
-    !Array.isArray(value) &&
-    typeof (value as OutputPack).id === "string" &&
-    typeof (value as OutputPack).signalId === "string" &&
-    typeof (value as OutputPack).market === "string" &&
-    typeof (value as OutputPack).generatedAt === "string" &&
-    typeof (value as OutputPack).xPost === "string" &&
-    typeof (value as OutputPack).shortVideoScript === "string" &&
-    Array.isArray((value as OutputPack).carouselSlides) &&
-    typeof (value as OutputPack).coldDm === "string" &&
-    typeof (value as OutputPack).validationPlan === "string" &&
-    typeof (value as OutputPack).codexBuildPrompt === "string"
-  );
-}
-
-function readOutputPacks() {
-  try {
-    const raw = window.localStorage.getItem(OUTPUT_PACKS_STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-
-    return Array.isArray(parsed) ? parsed.filter(isOutputPack) : [];
-  } catch {
-    return [];
-  }
-}
-
-function writeOutputPacks(packs: OutputPack[]) {
-  try {
-    window.localStorage.setItem(
-      OUTPUT_PACKS_STORAGE_KEY,
-      JSON.stringify(packs.slice(0, 30)),
-    );
-  } catch {
-    // localStorage can be unavailable in private modes or locked-down browsers.
-  }
-}
-
 function readSignalIdList(storageKey: string) {
   try {
     const raw = window.localStorage.getItem(storageKey);
@@ -5762,7 +6177,6 @@ export default function BilionAppClient({
   const [candidateMoneySignals, setCandidateMoneySignals] = useState<CandidateMoneySignal[]>([]);
   const [approvedMoneySignals, setApprovedMoneySignals] = useState<ApprovedMoneySignal[]>([]);
   const [outputPack, setOutputPack] = useState<OutputPack | null>(null);
-  const [outputPacks, setOutputPacks] = useState<OutputPack[]>([]);
   const [seenSignalIds, setSeenSignalIds] = useState<string[]>([]);
   const [savedSignalIds, setSavedSignalIds] = useState<string[]>([]);
   const [winnerSignalIds, setWinnerSignalIds] = useState<string[]>([]);
@@ -5857,7 +6271,6 @@ export default function BilionAppClient({
       setRawSignals(readRawSignals());
       setCandidateMoneySignals(readCandidateMoneySignals());
       setApprovedMoneySignals(readApprovedMoneySignals());
-      setOutputPacks(readOutputPacks());
       setSeenSignalIds(getSeenSignalIds());
       setSavedSignalIds(readSignalIdList(SAVED_SIGNAL_IDS_STORAGE_KEY));
       setWinnerSignalIds(readSignalIdList(WINNER_SIGNAL_IDS_STORAGE_KEY));
@@ -5931,14 +6344,6 @@ export default function BilionAppClient({
     }
 
     setSeenSignalIds(() => markSignalSeen(signalId));
-  }
-
-  function rememberSavedSignal(signalId: string) {
-    rememberSignalId(
-      SAVED_SIGNAL_IDS_STORAGE_KEY,
-      signalId,
-      setSavedSignalIds,
-    );
   }
 
   function rememberWinnerSignal(signalId: string) {
@@ -6099,95 +6504,6 @@ export default function BilionAppClient({
     rememberSeenSignal(signal);
     setOutputPack(buildOutputPackFromSignal(signal, selectedAction));
     setCopyFeedback(null);
-  }
-
-  function saveOutputPack(pack: OutputPack) {
-    rememberSavedSignal(pack.signalId);
-    setOutputPacks((currentPacks) => {
-      const nextPacks = [
-        pack,
-        ...currentPacks.filter((currentPack) => currentPack.id !== pack.id),
-      ].slice(0, 30);
-
-      writeOutputPacks(nextPacks);
-      return nextPacks;
-    });
-    setDistributionQueue((currentQueue) => {
-      const nextQueue = [
-        ...buildQueueAssetsFromOutputPack(pack),
-        ...currentQueue,
-      ].slice(0, 50);
-
-      writeDistributionQueue(nextQueue);
-      return nextQueue;
-    });
-    setCopyFeedback({
-      message: "Saved validation assets to Distribution Queue",
-      tone: "success",
-    });
-  }
-
-  function clearOutputPack() {
-    setOutputPack(null);
-  }
-
-  function buildQueueAssetsFromOutputPack(pack: OutputPack): DistributionAsset[] {
-    const now = pack.generatedAt;
-    const seed = pack.id;
-    const angle = pack.angle || selectedAction;
-    const buyer = selectedBuyer || selectedSignal?.buyer || "Selected buyer";
-    const signalTitle =
-      selectedSignalDisplayTitle?.detail ||
-      selectedSignalDisplayTitle?.title ||
-      selectedSignal?.sourceTitle ||
-      "Saved Build Brief";
-
-    return [
-      {
-        id: `launch-pack-x-${seed}`,
-        action: angle,
-        body: pack.xPost,
-        buyer,
-        createdAt: now,
-        kind: "X post",
-        signalTitle,
-        status: "Not tested",
-        title: "Post this money signal",
-      },
-      {
-        id: `launch-pack-dm-${seed}`,
-        action: angle,
-        body: pack.coldDm,
-        buyer,
-        createdAt: now,
-        kind: "DM script",
-        signalTitle,
-        status: "Not tested",
-        title: "DM buyers with the manual offer",
-      },
-      {
-        id: `launch-pack-validation-${seed}`,
-        action: angle,
-        body: pack.validationPlan,
-        buyer,
-        createdAt: now,
-        kind: "Validation log",
-        signalTitle,
-        status: "Not tested",
-        title: "Track the 48-hour test",
-      },
-      {
-        id: `launch-pack-video-${seed}`,
-        action: angle,
-        body: pack.shortVideoScript,
-        buyer,
-        createdAt: now,
-        kind: "Short video angle",
-        signalTitle,
-        status: "Not tested",
-        title: "Record the short video script",
-      },
-    ];
   }
 
   function buildQueueAssetsFromCurrentBrief(seed: number): DistributionAsset[] {
@@ -6608,13 +6924,12 @@ export default function BilionAppClient({
                 {activeWorkflowTab === "library" && (
                 <section>
                   <MarketSelectionSection
+                    allSignals={evidenceInboxSignals}
+                    hasFounderAccess={hasFounderAccess}
                     opportunities={topMarketOpportunities}
                     moneySignals={topMoneySignalsForMarket}
                     outputPack={outputPack}
-                    outputPacksCount={outputPacks.length}
                     selectedMarket={selectedMarket}
-                    onClearOutputPack={clearOutputPack}
-                    onActionChange={setSelectedAction}
                     onGenerateOutputPack={generateOutputPack}
                     onSignalSeen={rememberSeenSignal}
                     onMarketChange={(market) => {
@@ -6629,8 +6944,6 @@ export default function BilionAppClient({
                         setSelectedAction("post");
                       }
                     }}
-                    onSaveOutputPack={saveOutputPack}
-                    selectedAction={selectedAction}
                   />
                   <details className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-4">
                     <summary className="cursor-pointer list-none">
@@ -7312,58 +7625,234 @@ function EvidenceInboxSummary({
 }
 
 function MarketSelectionSection({
+  allSignals,
+  hasFounderAccess,
   moneySignals,
-  onClearOutputPack,
-  onActionChange,
   onGenerateOutputPack,
   onMarketChange,
   onSignalSeen,
-  onSaveOutputPack,
   opportunities,
   outputPack,
-  outputPacksCount,
-  selectedAction,
   selectedMarket,
 }: {
+  allSignals: BuildSignal[];
+  hasFounderAccess: boolean;
   moneySignals: BuildSignal[];
-  onClearOutputPack: () => void;
-  onActionChange: (action: NextAction) => void;
   onGenerateOutputPack: (signal: BuildSignal) => void;
   onMarketChange: (market: AppMarketOption) => void;
   onSignalSeen: (signal: BuildSignal | string) => void;
-  onSaveOutputPack: (pack: OutputPack) => void;
   opportunities: BuildSignal[];
   outputPack: OutputPack | null;
-  outputPacksCount: number;
-  selectedAction: NextAction;
   selectedMarket: AppMarketOption;
 }) {
+  const [dailyGoal, setDailyGoal] = useState<DailyGoal>("Find what to build");
+  const [buyerPreference, setBuyerPreference] = useState<BuyerPreference>("Creators");
+  const [monetizationPreference, setMonetizationPreference] = useState<MonetizationPreference>("Manual service");
   const [deepDiveSignalId, setDeepDiveSignalId] = useState("");
+  const [selectedTransform, setSelectedTransform] = useState<TransformType>("X Post");
+  const [selectedRemix, setSelectedRemix] = useState<RemixType>("Make it simpler");
+  const [validationQueue, setValidationQueue] = useState<ValidationQueueItem[]>([]);
+  const [savedTransformKeys, setSavedTransformKeys] = useState<string[]>([]);
+  const [todaysMoveCopied, setTodaysMoveCopied] = useState(false);
   const topMoneySignals = moneySignals.length
     ? moneySignals
     : getStaticMoneySignalsForMarket(selectedMarket);
-  const displayOpportunities = topMoneySignals.length
-    ? topMoneySignals
-    : opportunities.length > 0
-      ? opportunities
-      : [buildMarketSpecificSignal(selectedMarket)];
-  const visibleSignals = displayOpportunities.slice(0, 6);
+  const recommendationSource = allSignals.length
+    ? allSignals
+    : topMoneySignals.length
+      ? topMoneySignals
+      : opportunities.length > 0
+        ? opportunities
+        : [buildMarketSpecificSignal(selectedMarket)];
+  const recommendations = getRecommendedSignals(
+    recommendationSource,
+    dailyGoal,
+    buyerPreference,
+    monetizationPreference,
+  );
+  const primaryRecommendation = recommendations[0];
   const deepDiveSignal =
-    visibleSignals.find((signal) => signal.id === deepDiveSignalId) ||
-    visibleSignals[0] ||
+    recommendations.find((recommendation) => recommendation.signal.id === deepDiveSignalId)?.signal ||
+    primaryRecommendation?.signal ||
+    topMoneySignals[0] ||
     buildMarketSpecificSignal(selectedMarket);
+  const otherRecommendations = recommendations.filter(
+    (recommendation) => recommendation.signal.id !== deepDiveSignal.id,
+  );
+  const visibleRecommendations = hasFounderAccess ? otherRecommendations : [];
+  const lockedRecommendations = hasFounderAccess ? [] : otherRecommendations.slice(0, 2);
   const deepDiveDetail = getOpportunityDetailFields(deepDiveSignal);
+  const todaysRecommendation =
+    recommendations.find((recommendation) => recommendation.signal.id === deepDiveSignal.id) ||
+    recommendations[0] ||
+    {
+      fitScore: getPreferenceFitScore(
+        deepDiveSignal,
+        dailyGoal,
+        buyerPreference,
+        monetizationPreference,
+      ),
+      signal: deepDiveSignal,
+      why: getWhySignalMatches(
+        deepDiveSignal,
+        dailyGoal,
+        buyerPreference,
+        monetizationPreference,
+      ),
+    };
+  const todaysOfferTest = buildTodaysOfferTest(deepDiveSignal);
+  const selectedTransformOutput = buildTransformOutput(
+    deepDiveSignal,
+    selectedTransform,
+    hasFounderAccess,
+  );
+  const selectedRemixOutput = buildRemixOutput(deepDiveSignal, selectedRemix);
+  const queueLimitReached = !hasFounderAccess && validationQueue.length >= 2;
+  const transformAllowed =
+    hasFounderAccess ||
+    selectedTransform === "X Post" ||
+    selectedTransform === "Buyer DM" ||
+    selectedTransform === "Codex Prompt";
+  const winnerItems = validationQueue.filter((item) => item.status === "Winner");
+  const analyticsPayload = {
+    buyer: deepDiveDetail.buyer,
+    hasProAccess: hasFounderAccess,
+    monetizationStyle: monetizationPreference,
+    selectedSignalTitle: getDisplaySignalTitle(deepDiveSignal).title,
+    userGoal: dailyGoal,
+  };
+
+  function trackUnlockProClick() {
+    trackBilionIntentEvent("click_unlock_bilion_pro", analyticsPayload);
+  }
+
+  function addTransformToQueue() {
+    if (queueLimitReached || !transformAllowed) {
+      return;
+    }
+
+    trackBilionIntentEvent("add_to_validation_queue", analyticsPayload);
+
+    setValidationQueue((currentItems) => [
+      {
+        id: `queue-${deepDiveSignal.id}-${selectedTransform}-${Date.now()}`,
+        buyer: deepDiveDetail.buyer,
+        offer: deepDiveDetail.firstOffer,
+        output: selectedTransformOutput,
+        outputType: selectedTransform,
+        signalTitle: getDisplaySignalTitle(deepDiveSignal).title,
+        status: "Not started",
+      },
+      ...currentItems,
+    ]);
+  }
+
+  async function copyTodaysOfferTest() {
+    const didCopy = await writeClipboardText(todaysOfferTest);
+
+    if (didCopy) {
+      trackBilionIntentEvent("copy_today_offer_test", analyticsPayload);
+    }
+
+    setTodaysMoveCopied(didCopy);
+    window.setTimeout(() => setTodaysMoveCopied(false), 1200);
+  }
+
+  function addTodaysMoveToQueue() {
+    if (queueLimitReached) {
+      return;
+    }
+
+    trackBilionIntentEvent("add_to_validation_queue", analyticsPayload);
+
+    setValidationQueue((currentItems) => [
+      {
+        id: `today-${deepDiveSignal.id}-${Date.now()}`,
+        buyer: deepDiveDetail.buyer,
+        offer: deepDiveDetail.firstOffer,
+        output: todaysOfferTest,
+        outputType: "X Post",
+        signalTitle: getDisplaySignalTitle(deepDiveSignal).title,
+        status: "Not started",
+      },
+      ...currentItems,
+    ]);
+  }
+
+  function updateQueueStatus(itemId: string, status: ValidationQueueStatus) {
+    setValidationQueue((currentItems) =>
+      currentItems.map((item) =>
+        item.id === itemId ? { ...item, status } : item,
+      ),
+    );
+
+    if (status === "Winner") {
+      const winnerItem = validationQueue.find((item) => item.id === itemId);
+
+      trackBilionIntentEvent("mark_queue_item_winner", {
+        buyer: winnerItem?.buyer || analyticsPayload.buyer,
+        hasProAccess: hasFounderAccess,
+        monetizationStyle: monetizationPreference,
+        selectedSignalTitle: winnerItem?.signalTitle || analyticsPayload.selectedSignalTitle,
+        userGoal: dailyGoal,
+      });
+    }
+  }
+
+  function saveTransformOutput() {
+    setSavedTransformKeys((currentKeys) =>
+      Array.from(new Set([`${deepDiveSignal.id}-${selectedTransform}`, ...currentKeys])),
+    );
+  }
 
   return (
     <section className="w-full max-w-full overflow-hidden rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.055] p-4 shadow-2xl md:rounded-3xl md:p-6">
+      <PreferencePanel
+        buyerPreference={buyerPreference}
+        dailyGoal={dailyGoal}
+        monetizationPreference={monetizationPreference}
+        onBuyerPreferenceChange={(nextBuyer) => {
+          setBuyerPreference(nextBuyer);
+          const nextMarket = getPreferenceMarket(nextBuyer);
+
+          if (nextMarket) {
+            onMarketChange(nextMarket);
+          }
+        }}
+        onDailyGoalChange={setDailyGoal}
+        onMonetizationPreferenceChange={setMonetizationPreference}
+      />
+
+      <TodayMoneyMoveCard
+        buyer={deepDiveDetail.buyer}
+        fitScore={todaysRecommendation.fitScore}
+        firstOffer={deepDiveDetail.firstOffer}
+        hasFounderAccess={hasFounderAccess}
+        moneyProof={deepDiveDetail.proof}
+        onAddToQueue={addTodaysMoveToQueue}
+        onCopyOfferTest={copyTodaysOfferTest}
+        paidPain={deepDiveDetail.paidPain}
+        price={deepDiveDetail.price}
+        queueLimitReached={queueLimitReached}
+        signalTitle={getDisplaySignalTitle(deepDiveSignal).title}
+        todaysAction={deepDiveDetail.fortyEightHourTest}
+        wasCopied={todaysMoveCopied}
+        whyMatches={todaysRecommendation.why}
+      />
+
+      {!hasFounderAccess && <ProUpgradeCard onUnlockClick={trackUnlockProClick} />}
+
       <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div className="min-w-0">
           <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-            Choose a market
+            Other Signals to Consider
           </div>
           <h3 className="mt-1 break-words text-xl font-black text-white md:text-2xl">
-            Pick one market-backed signal.
+            Explore adjacent signals if today&apos;s move is not the right fit.
           </h3>
+          <p className="mt-2 max-w-2xl break-words text-sm leading-6 text-zinc-400">
+            Free users get today&apos;s best Money Move. Pro users can test more signals and find winners faster.
+          </p>
         </div>
       </div>
 
@@ -7396,10 +7885,11 @@ function MarketSelectionSection({
 
       <div className="mt-3 grid min-w-0 gap-3 md:mt-4">
         <div className="break-words text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
-          2. Pick signal in {selectedMarket}
+          Other Signals to Consider
         </div>
         <div className="grid min-w-0 gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {visibleSignals.map((signal) => {
+          {visibleRecommendations.map((recommendation, index) => {
+            const signal = recommendation.signal;
             const detail = getOpportunityDetailFields(signal);
             const active = deepDiveSignal.id === signal.id;
 
@@ -7421,7 +7911,7 @@ function MarketSelectionSection({
               >
                 <div className="flex min-w-0 items-start justify-between gap-2">
                   <div className="min-w-0 break-words text-[11px] font-black uppercase tracking-wide text-emerald-300">
-                    {signal.signalSourceLabel || signal.sourceType || "Money signal"}
+                    {index === 0 ? "Today's Best Money Signal" : signal.signalSourceLabel || signal.sourceType || "Money signal"}
                   </div>
                   {active && (
                     <span className="shrink-0 rounded-full border border-emerald-300/35 bg-emerald-300/[0.12] px-2 py-1 text-[10px] font-black uppercase tracking-wide text-emerald-100">
@@ -7432,11 +7922,16 @@ function MarketSelectionSection({
                 <h4 className="mt-2 break-words text-sm font-black text-white">
                   {truncateDisplayText(getDisplaySignalTitle(signal).title, 70)}
                 </h4>
+                <div className="mt-2 inline-flex rounded-full border border-white/10 bg-black/25 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-zinc-300">
+                  Fit score {recommendation.fitScore}
+                </div>
                 <div className="mt-3 grid gap-2">
                   <CompactSignalField label="Money Proof" value={detail.proof} />
                   <CompactSignalField label="Buyer" value={detail.buyer} />
                   <CompactSignalField label="Paid Pain" value={detail.paidPain} />
                   <CompactSignalField label="First Offer" value={detail.firstOffer} />
+                  <CompactSignalField label="Price" value={detail.price} />
+                  <CompactSignalField label="Why this matches you" value={recommendation.why} />
                 </div>
                 <span
                   className={[
@@ -7451,25 +7946,65 @@ function MarketSelectionSection({
               </button>
             );
           })}
+          {lockedRecommendations.map((recommendation) => {
+            const detail = getOpportunityDetailFields(recommendation.signal);
+
+            return (
+              <article
+                key={recommendation.signal.id}
+                className="min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-black/20 p-3 opacity-70"
+              >
+                <div className="text-[11px] font-black uppercase tracking-wide text-zinc-500">
+                  Pro recommendation
+                </div>
+                <h4 className="mt-2 break-words text-sm font-black text-white">
+                  {truncateDisplayText(getDisplaySignalTitle(recommendation.signal).title, 70)}
+                </h4>
+                <div className="mt-2 inline-flex rounded-full border border-white/10 bg-black/25 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-zinc-400">
+                  Fit score {recommendation.fitScore}
+                </div>
+                <p className="mt-3 line-clamp-3 break-words text-xs font-bold leading-5 text-zinc-500">
+                  {detail.proof}
+                </p>
+                <p className="mt-3 break-words text-xs font-bold leading-5 text-zinc-400">
+                  Free users get today&apos;s best Money Move. Pro users can test more signals and find winners faster.
+                </p>
+                <a
+                  href={CHECKOUT_URL || "/founder"}
+                  onClick={trackUnlockProClick}
+                  className="mt-3 inline-flex w-full items-center justify-center rounded-xl border border-white/10 px-3 py-3 text-center text-xs font-black text-zinc-300 transition hover:bg-white/[0.04]"
+                >
+                  Unlock Bilion Pro
+                </a>
+              </article>
+            );
+          })}
         </div>
 
         {deepDiveSignal && (
           <article className="mt-2 min-w-0 overflow-hidden rounded-2xl border border-emerald-300/35 bg-black/35 p-4 shadow-lg shadow-emerald-950/20 md:rounded-3xl md:p-5">
             <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-              Selected money signal
+              Signal detail
             </div>
             <h3 className="mt-2 break-words text-xl font-black text-white">
               {truncateDisplayText(getDisplaySignalTitle(deepDiveSignal).title, 90)}
             </h3>
+            <div className="mt-3 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.08] px-4 py-3 text-sm font-black text-yellow-100">
+              Build only after replies.
+            </div>
 
             <div className="mt-4 text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-              Compact summary
+              30-second business brief
             </div>
-            <div className="mt-4 grid min-w-0 gap-3 md:grid-cols-4">
-              <MarketOpportunityField label="Money Proof" value={deepDiveDetail.proof} />
-              <MarketOpportunityField label="Buyer" value={deepDiveDetail.buyer} />
+            <div className="mt-4 grid min-w-0 gap-3 md:grid-cols-2">
+              <MarketOpportunityField label="Money Signal" value={deepDiveDetail.proof} />
+              <MarketOpportunityField label="Who pays" value={deepDiveDetail.buyer} />
+              <MarketOpportunityField label="Why they pay" value={deepDiveDetail.whyMoneyChangedHands} />
               <MarketOpportunityField label="Paid Pain" value={deepDiveDetail.paidPain} />
               <MarketOpportunityField label="First Offer" value={deepDiveDetail.firstOffer} />
+              <MarketOpportunityField label="Price" value={deepDiveDetail.price} />
+              <MarketOpportunityField label="Manual validation step" value={deepDiveDetail.fortyEightHourTest} />
+              <MarketOpportunityField label="Build-after-replies rule" value={deepDiveDetail.buildAfterReplies} />
             </div>
 
             <section className="mt-5 rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.06] p-4">
@@ -7501,48 +8036,26 @@ function MarketSelectionSection({
 
             {outputPack && outputPack.signalId === deepDiveSignal.id && (
               <>
-                <section className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-4">
-                  <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-                    Optional validation assets
-                  </div>
-                  <p className="mt-1 break-words text-sm font-bold leading-6 text-zinc-400">
-                    Convert the generated Build Brief into content only if you want to test demand before opening Codex.
-                  </p>
-                  <div className="mt-3 grid min-w-0 gap-2 sm:grid-cols-3">
-                    {nextActionOptions
-                      .filter((option) => option.action !== "build")
-                      .map((option) => {
-                        const active = selectedAction === option.action;
-
-                        return (
-                          <button
-                            key={option.action}
-                            type="button"
-                            onClick={() => onActionChange(option.action)}
-                            className={[
-                              "min-w-0 rounded-2xl border px-3 py-3 text-left transition",
-                              active
-                                ? "border-emerald-300/70 bg-emerald-300/[0.12] text-white"
-                                : "border-white/10 bg-black/30 text-zinc-400 hover:bg-white/[0.04] hover:text-white",
-                            ].join(" ")}
-                          >
-                            <span className="block break-words text-sm font-black">
-                              {option.label}
-                            </span>
-                            <span className="mt-1 block break-words text-xs leading-5 text-zinc-500">
-                              {option.helper}
-                            </span>
-                          </button>
-                        );
-                      })}
-                  </div>
-                </section>
-                <OutputPackPanel
-                  outputPack={outputPack}
-                  savedCount={outputPacksCount}
-                  onClear={onClearOutputPack}
-                  onSave={onSaveOutputPack}
+                <TransformStudio
+                  canAddToQueue={!queueLimitReached}
+                  hasFounderAccess={hasFounderAccess}
+                  onAddToQueue={addTransformToQueue}
+                  onSave={saveTransformOutput}
+                  onTransformChange={setSelectedTransform}
+                  onUnlockProClick={trackUnlockProClick}
+                  output={selectedTransformOutput}
+                  trackingPayload={analyticsPayload}
+                  selectedTransform={selectedTransform}
+                  transformAllowed={transformAllowed}
+                  wasSaved={savedTransformKeys.includes(`${deepDiveSignal.id}-${selectedTransform}`)}
                 />
+                {hasFounderAccess && (
+                  <RemixEngine
+                    onRemixChange={setSelectedRemix}
+                    remixOutput={selectedRemixOutput}
+                    selectedRemix={selectedRemix}
+                  />
+                )}
               </>
             )}
 
@@ -7554,8 +8067,156 @@ function MarketSelectionSection({
                 Use the Codex prompt only after replies, saves, clicks, or buyer interest.
               </p>
             </section>
+            <ValidationQueuePanel
+              hasFounderAccess={hasFounderAccess}
+              onStatusChange={updateQueueStatus}
+              queue={validationQueue}
+            />
+            <WinnerPanel winners={winnerItems} />
           </article>
         )}
+      </div>
+    </section>
+  );
+}
+
+function TodayMoneyMoveCard({
+  buyer,
+  fitScore,
+  firstOffer,
+  hasFounderAccess,
+  moneyProof,
+  onAddToQueue,
+  onCopyOfferTest,
+  paidPain,
+  price,
+  queueLimitReached,
+  signalTitle,
+  todaysAction,
+  wasCopied,
+  whyMatches,
+}: {
+  buyer: string;
+  fitScore: number;
+  firstOffer: string;
+  hasFounderAccess: boolean;
+  moneyProof: string;
+  onAddToQueue: () => void;
+  onCopyOfferTest: () => void;
+  paidPain: string;
+  price: string;
+  queueLimitReached: boolean;
+  signalTitle: string;
+  todaysAction: string;
+  wasCopied: boolean;
+  whyMatches: string;
+}) {
+  return (
+    <section className="mb-5 overflow-hidden rounded-2xl border border-emerald-300/40 bg-[#101a14] p-4 shadow-2xl shadow-emerald-950/30 md:rounded-3xl md:p-5">
+      <div className="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div className="min-w-0">
+          <div className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">
+            Today&apos;s Money Move
+          </div>
+          <h3 className="mt-2 break-words text-2xl font-black text-white md:text-3xl">
+            {truncateDisplayText(signalTitle, 90)}
+          </h3>
+          <p className="mt-2 max-w-2xl break-words text-sm font-bold leading-6 text-zinc-300">
+            Based on your goal and buyer, this is the move to test today.
+          </p>
+          <p className="mt-2 max-w-2xl break-words text-xs font-black uppercase tracking-wide text-zinc-500">
+            {hasFounderAccess
+              ? "Pro: more signals, full launch assets, remixing, and winner tracking."
+              : "Free: one Money Move per day. Pro: more signals, full launch assets, remixing, and winner tracking."}
+          </p>
+        </div>
+        <div className="w-full rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.08] px-4 py-3 text-left lg:w-44 lg:text-center">
+          <div className="text-[11px] font-black uppercase tracking-wide text-emerald-200">
+            Fit score
+          </div>
+          <div className="mt-1 text-3xl font-black text-white">{fitScore}</div>
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <MarketOpportunityField label="Buyer" value={buyer} />
+        <MarketOpportunityField label="Paid pain" value={paidPain} />
+        <MarketOpportunityField label="Money proof" value={moneyProof} />
+        <MarketOpportunityField label="First offer" value={firstOffer} />
+        <MarketOpportunityField label="Price" value={price} />
+        <MarketOpportunityField label="Why this matches you" value={whyMatches} />
+      </div>
+
+      <div className="mt-4 rounded-2xl border border-white/10 bg-black/30 p-4">
+        <div className="text-[11px] font-black uppercase tracking-wide text-zinc-500">
+          Today&apos;s action
+        </div>
+        <p className="mt-2 break-words text-sm font-bold leading-6 text-zinc-200">
+          {todaysAction}
+        </p>
+      </div>
+
+      <div className="mt-4 flex min-w-0 flex-col gap-2 sm:flex-row">
+        <button
+          type="button"
+          onClick={onCopyOfferTest}
+          className="w-full rounded-2xl bg-emerald-300 px-5 py-4 text-center text-sm font-black text-black transition hover:bg-emerald-200 sm:w-auto"
+        >
+          {wasCopied ? "Copied" : "Copy Today's Offer Test"}
+        </button>
+        <button
+          type="button"
+          onClick={onAddToQueue}
+          disabled={queueLimitReached}
+          className="w-full rounded-2xl border border-emerald-300/35 px-5 py-4 text-center text-sm font-black text-emerald-100 transition hover:bg-emerald-300/10 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+        >
+          Add to Validation Queue
+        </button>
+      </div>
+      {queueLimitReached && (
+        <p className="mt-3 text-sm font-bold leading-6 text-yellow-100">
+          Free users get today&apos;s best Money Move. Pro users can test more signals and find winners faster.
+        </p>
+      )}
+    </section>
+  );
+}
+
+function ProUpgradeCard({ onUnlockClick }: { onUnlockClick: () => void }) {
+  return (
+    <section className="mb-5 rounded-2xl border border-white/10 bg-black/30 p-4 md:rounded-3xl md:p-5">
+      <div className="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div className="min-w-0">
+          <div className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">
+            Bilion Pro
+          </div>
+          <h3 className="mt-2 break-words text-2xl font-black text-white">
+            You only need one winner.
+          </h3>
+          <p className="mt-2 max-w-2xl break-words text-sm font-bold leading-6 text-zinc-400">
+            Bilion Pro helps you test more evidence-backed money signals until one gets replies.
+          </p>
+          <div className="mt-4 grid gap-2 text-sm font-bold leading-6 text-zinc-300 md:grid-cols-2">
+            <span>Unlock more recommended money signals</span>
+            <span>Turn every signal into posts, DMs, landing page copy, and Codex prompts</span>
+            <span>Remix by buyer, offer, price, and channel</span>
+            <span>Track validation progress</span>
+            <span>Save winning signals into your Money Signal Swipe File</span>
+          </div>
+        </div>
+        <div className="w-full shrink-0 rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.08] p-4 lg:w-72">
+          <div className="text-sm font-black text-white">Early access: $9.99/month</div>
+          <a
+            href={CHECKOUT_URL || "/founder"}
+            onClick={onUnlockClick}
+            className="mt-3 inline-flex w-full items-center justify-center rounded-2xl bg-emerald-300 px-5 py-3 text-center text-sm font-black text-black transition hover:bg-emerald-200"
+          >
+            Unlock Bilion Pro
+          </a>
+          <p className="mt-3 text-xs font-bold leading-5 text-zinc-400">
+            Find a winner faster by testing more proven signals, not by generating random ideas.
+          </p>
+        </div>
       </div>
     </section>
   );
@@ -7593,115 +8254,413 @@ function MarketOpportunityField({
   );
 }
 
-function OutputPackPanel({
-  onClear,
-  onSave,
-  outputPack,
-  savedCount,
+function PreferencePanel({
+  buyerPreference,
+  dailyGoal,
+  monetizationPreference,
+  onBuyerPreferenceChange,
+  onDailyGoalChange,
+  onMonetizationPreferenceChange,
 }: {
-  onClear: () => void;
-  onSave: (pack: OutputPack) => void;
-  outputPack: OutputPack;
-  savedCount: number;
+  buyerPreference: BuyerPreference;
+  dailyGoal: DailyGoal;
+  monetizationPreference: MonetizationPreference;
+  onBuyerPreferenceChange: (value: BuyerPreference) => void;
+  onDailyGoalChange: (value: DailyGoal) => void;
+  onMonetizationPreferenceChange: (value: MonetizationPreference) => void;
 }) {
-  const [copiedKey, setCopiedKey] = useState("");
+  return (
+    <section className="mb-5 rounded-2xl border border-white/10 bg-black/25 p-4">
+      <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+        Personalize today
+      </div>
+      <div className="mt-4 grid gap-4 lg:grid-cols-3">
+        <PreferenceChoiceGroup
+          label="What do you want to achieve today?"
+          options={dailyGoalOptions}
+          selected={dailyGoal}
+          onSelect={onDailyGoalChange}
+        />
+        <PreferenceChoiceGroup
+          label="Who do you want to sell to?"
+          options={buyerPreferenceOptions}
+          selected={buyerPreference}
+          onSelect={onBuyerPreferenceChange}
+        />
+        <PreferenceChoiceGroup
+          label="How do you want to monetize?"
+          options={monetizationPreferenceOptions}
+          selected={monetizationPreference}
+          onSelect={onMonetizationPreferenceChange}
+        />
+      </div>
+    </section>
+  );
+}
+
+function PreferenceChoiceGroup<T extends string>({
+  label,
+  onSelect,
+  options,
+  selected,
+}: {
+  label: string;
+  onSelect: (value: T) => void;
+  options: T[];
+  selected: T;
+}) {
+  return (
+    <div className="min-w-0">
+      <div className="text-[11px] font-black uppercase tracking-wide text-zinc-500">
+        {label}
+      </div>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {options.map((option) => {
+          const active = selected === option;
+
+          return (
+            <button
+              key={option}
+              type="button"
+              onClick={() => onSelect(option)}
+              className={[
+                "rounded-full border px-3 py-2 text-xs font-black transition",
+                active
+                  ? "border-emerald-300 bg-emerald-300 text-black"
+                  : "border-white/10 bg-black/25 text-zinc-400 hover:border-white/20 hover:text-white",
+              ].join(" ")}
+            >
+              {option}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function TransformStudio({
+  canAddToQueue,
+  hasFounderAccess,
+  onAddToQueue,
+  onSave,
+  onTransformChange,
+  onUnlockProClick,
+  output,
+  selectedTransform,
+  trackingPayload,
+  transformAllowed,
+  wasSaved,
+}: {
+  canAddToQueue: boolean;
+  hasFounderAccess: boolean;
+  onAddToQueue: () => void;
+  onSave: () => void;
+  onTransformChange: (value: TransformType) => void;
+  onUnlockProClick: () => void;
+  output: string;
+  selectedTransform: TransformType;
+  trackingPayload: BilionIntentEventPayload;
+  transformAllowed: boolean;
+  wasSaved: boolean;
+}) {
+  const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
-  const outputSections = [
-    { key: "xPost", label: "X Post", value: outputPack.xPost },
-    {
-      key: "carouselSlides",
-      label: "Carousel",
-      value: outputPack.carouselSlides.join("\n\n"),
-    },
-    { key: "coldDm", label: "DM", value: outputPack.coldDm },
-    {
-      key: "validationPlan",
-      label: "48h Validation Plan",
-      value: outputPack.validationPlan,
-    },
-  ];
 
-  async function copyOutput(key: string, value: string) {
-    const copied = await writeClipboardText(value);
+  async function copyOutput() {
+    if (!transformAllowed) {
+      return;
+    }
 
-    setCopiedKey(copied ? key : "");
-    setCopyError(!copied);
+    const didCopy = await writeClipboardText(output);
+
+    if (didCopy) {
+      if (selectedTransform === "X Post") {
+        trackBilionIntentEvent("copy_x_post", trackingPayload);
+      }
+
+      if (selectedTransform === "Buyer DM") {
+        trackBilionIntentEvent("copy_buyer_dm", trackingPayload);
+      }
+
+      if (selectedTransform === "Codex Prompt") {
+        trackBilionIntentEvent("copy_codex_prompt", trackingPayload);
+      }
+    }
+
+    setCopied(didCopy);
+    setCopyError(!didCopy);
     window.setTimeout(() => {
-      setCopiedKey("");
+      setCopied(false);
       setCopyError(false);
     }, 1200);
   }
 
   return (
-    <section className="mt-4 w-full max-w-full overflow-hidden rounded-2xl border border-emerald-300/25 bg-[#0f1512] p-4 shadow-2xl md:rounded-3xl md:p-5">
-      <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+    <section className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-4">
+      <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
           <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-            Brief-to-content test
+            Turn this signal into launch assets
           </div>
-          <h3 className="mt-1 break-words text-lg font-black text-white md:text-2xl">
-            Convert the brief into validation assets.
+          <h3 className="mt-1 break-words text-lg font-black text-white">
+            Convert today&apos;s move into a post, DM, prompt, or validation asset.
           </h3>
-          <p className="mt-2 max-w-2xl break-words text-sm leading-relaxed text-zinc-400">
-            Secondary outputs for testing demand. Use the X post, carousel, DM, and 48-hour plan before building with Codex.
+          <p className="mt-1 break-words text-sm font-bold leading-6 text-zinc-400">
+            Build only after replies.
           </p>
-          <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-wide">
-            <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-zinc-400">
-              {outputPack.market}
-            </span>
-            <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-zinc-400">
-              Saved {savedCount}
-            </span>
-          </div>
         </div>
-        <div className="flex w-full flex-col gap-2 sm:flex-row lg:w-auto">
-          <button
-            type="button"
-            onClick={() => onSave(outputPack)}
-            className="w-full rounded-2xl bg-white px-5 py-3 text-center text-sm font-black text-black transition hover:bg-zinc-200 sm:w-auto"
+        {!hasFounderAccess && (
+          <a
+            href={CHECKOUT_URL || "/founder"}
+            onClick={onUnlockProClick}
+            className="w-full rounded-2xl border border-emerald-300/30 px-4 py-3 text-center text-xs font-black text-emerald-100 transition hover:bg-emerald-300/10 sm:w-auto"
           >
-            Save validation assets
-          </button>
-          <button
-            type="button"
-            onClick={onClear}
-            className="w-full rounded-2xl border border-white/10 px-5 py-3 text-center text-sm font-black text-zinc-300 transition hover:bg-white/[0.04] sm:w-auto"
-          >
-            Clear assets
-          </button>
-        </div>
+            Unlock Bilion Pro
+          </a>
+        )}
       </div>
 
-      {copyError && (
-        <div className="mt-4 rounded-2xl border border-yellow-400/20 bg-yellow-400/10 px-4 py-3 text-sm font-bold text-yellow-100">
-          Clipboard blocked. Select the text and copy manually.
-        </div>
-      )}
+      <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        {transformOptions.map((transform) => {
+          const active = selectedTransform === transform;
+          const locked =
+            !hasFounderAccess &&
+            transform !== "X Post" &&
+            transform !== "Buyer DM" &&
+            transform !== "Codex Prompt";
 
-      <div className="mt-4 grid min-w-0 gap-4 lg:grid-cols-2">
-        {outputSections.map((section) => (
-          <article
-            key={section.key}
-            className="min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-black/35 p-4"
+          return (
+            <button
+              key={transform}
+              type="button"
+              onClick={() => onTransformChange(transform)}
+              className={[
+                "min-w-0 rounded-2xl border px-3 py-3 text-left text-xs font-black transition",
+                active
+                  ? "border-emerald-300/70 bg-emerald-300/[0.12] text-white"
+                  : "border-white/10 bg-black/30 text-zinc-400 hover:bg-white/[0.04] hover:text-white",
+                locked ? "opacity-60" : "",
+              ].join(" ")}
+            >
+              {transform}
+              {locked && <span className="ml-2 text-zinc-600">Pro</span>}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-4 rounded-2xl border border-white/10 bg-black/40 p-4">
+        <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="text-sm font-black text-white">{selectedTransform}</div>
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+            <button
+              type="button"
+              onClick={copyOutput}
+              disabled={!transformAllowed}
+              className="w-full rounded-xl bg-white px-4 py-2.5 text-xs font-black text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+            >
+              {copied ? "Copied" : "Copy"}
+            </button>
+            <button
+              type="button"
+              onClick={onSave}
+              disabled={!transformAllowed}
+              className="w-full rounded-xl border border-white/10 px-4 py-2.5 text-xs font-black text-zinc-200 transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+            >
+              {wasSaved ? "Saved" : "Save"}
+            </button>
+            <button
+              type="button"
+              onClick={onAddToQueue}
+              disabled={!transformAllowed || !canAddToQueue}
+              className="w-full rounded-xl border border-emerald-300/30 px-4 py-2.5 text-xs font-black text-emerald-100 transition hover:bg-emerald-300/10 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+            >
+              Add to Validation Queue
+            </button>
+          </div>
+        </div>
+        {!transformAllowed && (
+          <p className="mt-3 text-sm font-bold leading-6 text-yellow-100">
+            Free users get today&apos;s best Money Move. Pro users can test more signals and find winners faster.
+          </p>
+        )}
+        {!canAddToQueue && transformAllowed && (
+          <p className="mt-3 text-sm font-bold leading-6 text-yellow-100">
+            Free users get today&apos;s best Money Move. Pro users can test more signals and find winners faster.
+          </p>
+        )}
+        {copyError && (
+          <p className="mt-3 text-sm font-bold leading-6 text-yellow-100">
+            Clipboard blocked. Select the output and copy manually.
+          </p>
+        )}
+        <pre className="mt-3 max-h-[420px] max-w-full overflow-auto whitespace-pre-wrap break-words rounded-xl border border-white/10 bg-black/60 p-4 font-sans text-sm leading-6 text-zinc-100">
+          {transformAllowed
+            ? output
+            : "Free users get today's best Money Move. Pro users can test more signals, generate every launch asset, remix offers, and save winners faster."}
+        </pre>
+      </div>
+    </section>
+  );
+}
+
+function RemixEngine({
+  onRemixChange,
+  remixOutput,
+  selectedRemix,
+}: {
+  onRemixChange: (value: RemixType) => void;
+  remixOutput: string;
+  selectedRemix: RemixType;
+}) {
+  return (
+    <section className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-4">
+      <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+        Remix this signal
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {remixOptions.map((remix) => (
+          <button
+            key={remix}
+            type="button"
+            onClick={() => onRemixChange(remix)}
+            className={[
+              "rounded-full border px-3 py-2 text-xs font-black transition",
+              selectedRemix === remix
+                ? "border-emerald-300 bg-emerald-300 text-black"
+                : "border-white/10 bg-black/25 text-zinc-400 hover:border-white/20 hover:text-white",
+            ].join(" ")}
           >
-            <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <h4 className="break-words text-sm font-black text-white">
-                {section.label}
-              </h4>
-              <button
-                type="button"
-                onClick={() => copyOutput(section.key, section.value)}
-                className="w-full rounded-xl border border-emerald-300/25 px-3 py-2 text-xs font-black text-emerald-100 transition hover:bg-emerald-300/10 sm:w-auto"
-              >
-                {copiedKey === section.key ? "Copied" : "Copy"}
-              </button>
-            </div>
-            <pre className="mt-3 max-h-[360px] max-w-full overflow-auto whitespace-pre-wrap break-words rounded-xl border border-white/10 bg-black/50 p-4 font-sans text-sm leading-6 text-zinc-100">
-              {section.value}
-            </pre>
-          </article>
+            {remix}
+          </button>
         ))}
       </div>
+      <pre className="mt-4 max-h-[320px] max-w-full overflow-auto whitespace-pre-wrap break-words rounded-xl border border-white/10 bg-black/60 p-4 font-sans text-sm leading-6 text-zinc-100">
+        {remixOutput}
+      </pre>
+    </section>
+  );
+}
+
+function ValidationQueuePanel({
+  hasFounderAccess,
+  onStatusChange,
+  queue,
+}: {
+  hasFounderAccess: boolean;
+  onStatusChange: (itemId: string, status: ValidationQueueStatus) => void;
+  queue: ValidationQueueItem[];
+}) {
+  return (
+    <section className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-4">
+      <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+            Validation Queue
+          </div>
+          <p className="mt-1 break-words text-sm font-bold leading-6 text-zinc-400">
+            Move each test from not started to posted, DMed, buying intent, and winner.
+          </p>
+        </div>
+        {!hasFounderAccess && (
+          <div className="rounded-full border border-white/10 bg-black/25 px-3 py-2 text-xs font-black text-zinc-400">
+            Free queue: 2 items
+          </div>
+        )}
+      </div>
+
+      {queue.length === 0 ? (
+        <div className="mt-4 rounded-2xl border border-white/10 bg-black/35 p-4 text-sm font-bold leading-6 text-zinc-500">
+          Add a transform output to the queue to track replies.
+        </div>
+      ) : (
+        <div className="mt-4 grid gap-3">
+          {queue.map((item) => (
+            <article key={item.id} className="rounded-2xl border border-white/10 bg-black/35 p-4">
+              <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0">
+                  <div className="text-xs font-black uppercase tracking-wide text-emerald-300">
+                    {item.outputType}
+                  </div>
+                  <h4 className="mt-1 break-words text-sm font-black text-white">
+                    {item.signalTitle}
+                  </h4>
+                  <p className="mt-1 break-words text-xs font-bold leading-5 text-zinc-500">
+                    {item.buyer} / {item.offer}
+                  </p>
+                </div>
+                <select
+                  value={item.status}
+                  onChange={(event) =>
+                    onStatusChange(item.id, event.target.value as ValidationQueueStatus)
+                  }
+                  className="min-h-10 rounded-xl border border-white/10 bg-black px-3 py-2 text-xs font-black text-zinc-200"
+                >
+                  {validationQueueStatuses.map((status) => (
+                    <option key={status}>{status}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="mt-3 grid gap-2 text-xs font-bold leading-5 text-zinc-400 sm:grid-cols-2">
+                <span className="font-black text-emerald-200">
+                  Next action: {getValidationQueueNextAction(item.status)}
+                </span>
+                <span>Checklist: 3+ replies</span>
+                <span>1+ buyer asks for details</span>
+                <span>1+ person says they want it</span>
+                <span>Kill if no buyer-specific replies</span>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function WinnerPanel({ winners }: { winners: ValidationQueueItem[] }) {
+  return (
+    <section className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-4">
+      <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+        Your Money Signal Swipe File
+      </div>
+      <p className="mt-2 break-words text-sm font-bold leading-6 text-zinc-400">
+        Signals that got real response belong here. Reuse them, remix them, or build with Codex after demand shows up.
+      </p>
+      {winners.length === 0 ? (
+        <p className="mt-3 text-sm font-bold leading-6 text-zinc-500">
+          No winners yet. Mark a queued output as Winner after replies, saves, clicks, or buyer interest.
+        </p>
+      ) : (
+        <div className="mt-4 grid gap-3 md:grid-cols-2">
+          {winners.map((winner) => (
+            <article key={winner.id} className="rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.06] p-4">
+              <div className="text-xs font-black uppercase tracking-wide text-emerald-300">
+                Winner
+              </div>
+              <h4 className="mt-2 break-words text-sm font-black text-white">
+                {winner.signalTitle}
+              </h4>
+              <p className="mt-2 break-words text-xs font-bold leading-5 text-zinc-300">
+                Buyer: {winner.buyer}
+              </p>
+              <p className="mt-1 break-words text-xs font-bold leading-5 text-zinc-300">
+                Offer: {winner.offer}
+              </p>
+              <p className="mt-3 break-words text-xs font-bold leading-5 text-zinc-400">
+                Winning output: {winner.outputType}
+              </p>
+              <div className="mt-3 grid gap-2 text-xs font-black text-zinc-200 sm:grid-cols-2">
+                <span className="rounded-xl border border-white/10 bg-black/25 px-3 py-2">Sell manually</span>
+                <span className="rounded-xl border border-white/10 bg-black/25 px-3 py-2">Build with Codex</span>
+                <span className="rounded-xl border border-white/10 bg-black/25 px-3 py-2">Create paid pack</span>
+                <span className="rounded-xl border border-white/10 bg-black/25 px-3 py-2">Remix this winner</span>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
