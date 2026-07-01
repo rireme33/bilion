@@ -1153,7 +1153,7 @@ function getCanonicalOpportunityFields(signal: CanonicalMoneySignal) {
     proof: signal.proof,
     whatSold: signal.whatMoneyMoved,
     pattern: signal.source,
-    whyMoneyChangedHands: signal.paidPain,
+    whyMoneyChangedHands: getDemandReason(signal.paidPain),
     buyer: signal.buyer,
     paidPain: signal.paidPain,
     firstOffer: signal.firstOffer,
@@ -1164,6 +1164,12 @@ function getCanonicalOpportunityFields(signal: CanonicalMoneySignal) {
     fortyEightHourTest: validationSteps.join("\n"),
     buildAfterReplies: buildCodexAfterRepliesLine(buildAfterReplies),
   };
+}
+
+function getDemandReason(paidPain: string) {
+  const pain = normalizeDisplayText(paidPain).replace(/\.$/, "");
+
+  return `They pay because ${pain.charAt(0).toLowerCase()}${pain.slice(1)}.`;
 }
 
 function getProvenMoneyPatternForMarket(market: MarketOption) {
@@ -1452,12 +1458,12 @@ const nextActionOptions: Array<{
 ];
 
 type DailyGoal =
-  | "Find what to build"
-  | "Create a post"
-  | "Create a buyer DM"
-  | "Create a Codex prompt"
-  | "Find a $99 offer"
-  | "Build a $9.99/mo product";
+  | "Get replies today"
+  | "Find a buyer"
+  | "Test a $99 offer"
+  | "Validate a micro SaaS"
+  | "Create launch assets"
+  | "Get a Codex build prompt";
 
 type BuyerPreference =
   | "Developers"
@@ -1528,12 +1534,12 @@ type BilionIntentEventPayload = {
 };
 
 const dailyGoalOptions: DailyGoal[] = [
-  "Find what to build",
-  "Create a post",
-  "Create a buyer DM",
-  "Create a Codex prompt",
-  "Find a $99 offer",
-  "Build a $9.99/mo product",
+  "Get replies today",
+  "Find a buyer",
+  "Test a $99 offer",
+  "Validate a micro SaaS",
+  "Create launch assets",
+  "Get a Codex build prompt",
 ];
 
 const buyerPreferenceOptions: BuyerPreference[] = [
@@ -3212,23 +3218,6 @@ function getTopMoneySignalsForMarket(signals: BuildSignal[], market: MarketOptio
     .slice(0, 3);
 }
 
-function getScoreReason(signal: BuildSignal) {
-  const reasons = [
-    getSignalEvidenceLevel(signal) === "Strong"
-      ? "strong money or source evidence"
-      : "directional evidence to validate",
-    signal.buyer.length > 18 ? "clear buyer" : "buyer needs sharpening",
-    /x|twitter|youtube|tiktok|reddit|seo|newsletter|github|community|ads/i.test(
-      `${signal.sourceNote} ${signal.whyNow} ${signal.patternMatches.join(" ")}`,
-    )
-      ? "clear distribution path"
-      : "distribution needs testing",
-    signal.whatYouCanBuild.length > 24 ? "small buildable wedge" : "simple wedge",
-  ];
-
-  return reasons.join(" / ");
-}
-
 function getExpectedFirstOffer(signal: BuildSignal) {
   if (/\$|month|mrr|arr|paid/i.test(signal.comparablePrice)) {
     return `${signal.comparablePrice} first offer`;
@@ -3250,7 +3239,7 @@ function getOpportunityDetailFields(signal: BuildSignal) {
       proof: signal.latestSignal,
       whatSold: signal.whyNow,
       pattern: signal.sourceNote,
-      whyMoneyChangedHands: signal.pain,
+      whyMoneyChangedHands: getDemandReason(signal.pain),
       buyer: signal.buyer,
       paidPain: signal.pain,
       firstOffer: signal.comparablePrice,
@@ -3278,7 +3267,7 @@ function getOpportunityDetailFields(signal: BuildSignal) {
       proof: `${opportunity.proofLabel}: ${opportunity.whatSold}`,
       whatSold: opportunity.whatSold,
       pattern: opportunity.patternTitle,
-      whyMoneyChangedHands: opportunity.proofLabel,
+      whyMoneyChangedHands: getDemandReason(opportunity.paidPain),
       buyer: opportunity.buyer,
       paidPain: opportunity.paidPain,
       firstOffer: getFirstOfferText(opportunity),
@@ -3305,7 +3294,7 @@ function getOpportunityDetailFields(signal: BuildSignal) {
     proof: signal.latestSignal || (pattern ? `${pattern.proofLabel}: ${pattern.whatSold}` : getSignalEvidenceLevel(signal)),
     whatSold: pattern?.whatSold || signal.sourceTitle || "A narrow paid offer",
     pattern: pattern?.patternTitle || signal.sourceType || "Evidence-backed signal",
-    whyMoneyChangedHands: pattern?.moneyReason || getScoreReason(signal),
+    whyMoneyChangedHands: pattern?.moneyReason || getDemandReason(signal.pain),
     buyer: signal.buyer,
     paidPain: signal.pain,
     firstOffer,
@@ -3546,7 +3535,7 @@ function getPreferenceFitScore(
 ) {
   const detail = getOpportunityDetailFields(signal);
   const haystack = `${getSignalMarket(signal)} ${detail.buyer} ${detail.paidPain} ${detail.firstOffer} ${detail.buildAfterReplies}`.toLowerCase();
-  let score = Math.min(95, 58 + getSignalOpportunityScore(signal));
+  let score = Math.min(84, 54 + getSignalOpportunityScore(signal));
   const preferredMarket = getPreferenceMarket(buyerPreference);
 
   if (preferredMarket && getSignalMarket(signal) === preferredMarket) {
@@ -3569,24 +3558,28 @@ function getPreferenceFitScore(
     score += 8;
   }
 
-  if (goal === "Create a post" && /post|content|creator|newsletter|x /.test(haystack)) {
+  if (goal === "Get replies today" && /dm|reply|lead|buyer|client|local|post/.test(haystack)) {
     score += 6;
   }
 
-  if (goal === "Create a buyer DM" && /dm|lead|buyer|client|local/.test(haystack)) {
+  if (goal === "Find a buyer" && /buyer|client|operator|owner|founder|developer|creator/.test(haystack)) {
     score += 6;
   }
 
-  if (goal === "Create a Codex prompt" && /mvp|build|codex|tool|software|app/.test(haystack)) {
-    score += 6;
-  }
-
-  if (goal === "Find a $99 offer" && /\$99|audit|cleanup|report|pack/.test(haystack)) {
+  if (goal === "Test a $99 offer" && /\$99|audit|cleanup|report|pack/.test(haystack)) {
     score += 8;
   }
 
-  if (goal === "Build a $9.99/mo product" && /month|monthly|micro|subscription|saas/.test(haystack)) {
+  if (goal === "Validate a micro SaaS" && /month|monthly|micro|subscription|saas|mvp|tool|app/.test(haystack)) {
     score += 8;
+  }
+
+  if (goal === "Create launch assets" && /post|dm|content|creator|newsletter|x |carousel|tiktok/.test(haystack)) {
+    score += 6;
+  }
+
+  if (goal === "Get a Codex build prompt" && /mvp|build|codex|tool|software|app/.test(haystack)) {
+    score += 6;
   }
 
   if (monetization === "Manual service" && /manual|audit|cleanup|setup|service/.test(haystack)) {
@@ -3609,7 +3602,19 @@ function getPreferenceFitScore(
     score += 8;
   }
 
-  return Math.max(60, Math.min(99, score));
+  return Math.max(72, Math.min(94, score));
+}
+
+function getFitLabel(score: number) {
+  if (score >= 90) {
+    return "Strong fit";
+  }
+
+  if (score >= 84) {
+    return "High fit";
+  }
+
+  return "Good fit";
 }
 
 function getWhySignalMatches(
@@ -3623,9 +3628,9 @@ function getWhySignalMatches(
   const marketMatch = preferredMarket && getSignalMarket(signal) === preferredMarket;
 
   return [
-    marketMatch ? `matches your ${buyerPreference.toLowerCase()} buyer preference` : `has a clear buyer: ${detail.buyer}`,
-    `fits "${goal.toLowerCase()}" because it already has proof and a first offer`,
-    `works as a ${monetization.toLowerCase()} starting point`,
+    marketMatch ? `built around ${buyerPreference.toLowerCase()}` : `the buyer is specific: ${detail.buyer}`,
+    `it fits "${goal.toLowerCase()}" because there is proof, pain, and a small offer to test`,
+    `it can start as a ${monetization.toLowerCase()} without building a full product first`,
   ].join(". ");
 }
 
@@ -6901,14 +6906,14 @@ export default function BilionAppClient({
               Bilion
             </h1>
             <div className="mt-1 text-base font-bold text-zinc-200 md:mt-2 md:text-xl">
-              Pick a money signal. Get a Codex Build Brief.
+              Get today&apos;s Money Move. Test demand before you build.
             </div>
 
             <p className="mt-3 max-w-2xl break-words text-sm leading-relaxed text-zinc-400 md:mt-4 md:text-base md:leading-7">
-              Bilion turns businesses that already made money into buyer, pain, MVP scope, and Codex-ready prompts you can start from in 30 seconds.
+              Bilion gives AI builders one evidence-backed business move, turns it into an offer, post, buyer DM, validation plan, and Codex-ready prompt, then tells you to build only after replies.
             </p>
             <div className="mt-4 inline-flex max-w-full rounded-full border border-white/10 bg-black/25 px-3 py-2 text-xs font-black uppercase tracking-wide text-zinc-400">
-              Money Signal &rarr; Build Brief &rarr; Content Test &rarr; Codex
+              Money Signal &rarr; Offer Test &rarr; Buyer Replies &rarr; Build
             </div>
           </header>
 
@@ -7645,7 +7650,7 @@ function MarketSelectionSection({
   outputPack: OutputPack | null;
   selectedMarket: AppMarketOption;
 }) {
-  const [dailyGoal, setDailyGoal] = useState<DailyGoal>("Find what to build");
+  const [dailyGoal, setDailyGoal] = useState<DailyGoal>("Get replies today");
   const [buyerPreference, setBuyerPreference] = useState<BuyerPreference>("Creators");
   const [monetizationPreference, setMonetizationPreference] = useState<MonetizationPreference>("Manual service");
   const [deepDiveSignalId, setDeepDiveSignalId] = useState("");
@@ -7884,9 +7889,6 @@ function MarketSelectionSection({
       </div>
 
       <div className="mt-3 grid min-w-0 gap-3 md:mt-4">
-        <div className="break-words text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
-          Other Signals to Consider
-        </div>
         <div className="grid min-w-0 gap-3 md:grid-cols-2 xl:grid-cols-3">
           {visibleRecommendations.map((recommendation, index) => {
             const signal = recommendation.signal;
@@ -7923,7 +7925,7 @@ function MarketSelectionSection({
                   {truncateDisplayText(getDisplaySignalTitle(signal).title, 70)}
                 </h4>
                 <div className="mt-2 inline-flex rounded-full border border-white/10 bg-black/25 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-zinc-300">
-                  Fit score {recommendation.fitScore}
+                  {getFitLabel(recommendation.fitScore)} · {recommendation.fitScore}
                 </div>
                 <div className="mt-3 grid gap-2">
                   <CompactSignalField label="Money Proof" value={detail.proof} />
@@ -7961,7 +7963,7 @@ function MarketSelectionSection({
                   {truncateDisplayText(getDisplaySignalTitle(recommendation.signal).title, 70)}
                 </h4>
                 <div className="mt-2 inline-flex rounded-full border border-white/10 bg-black/25 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-zinc-400">
-                  Fit score {recommendation.fitScore}
+                  {getFitLabel(recommendation.fitScore)}
                 </div>
                 <p className="mt-3 line-clamp-3 break-words text-xs font-bold leading-5 text-zinc-500">
                   {detail.proof}
@@ -7999,7 +8001,7 @@ function MarketSelectionSection({
             <div className="mt-4 grid min-w-0 gap-3 md:grid-cols-2">
               <MarketOpportunityField label="Money Signal" value={deepDiveDetail.proof} />
               <MarketOpportunityField label="Who pays" value={deepDiveDetail.buyer} />
-              <MarketOpportunityField label="Why they pay" value={deepDiveDetail.whyMoneyChangedHands} />
+              <MarketOpportunityField label="Why demand exists" value={deepDiveDetail.whyMoneyChangedHands} />
               <MarketOpportunityField label="Paid Pain" value={deepDiveDetail.paidPain} />
               <MarketOpportunityField label="First Offer" value={deepDiveDetail.firstOffer} />
               <MarketOpportunityField label="Price" value={deepDiveDetail.price} />
@@ -8011,10 +8013,10 @@ function MarketSelectionSection({
               <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
                   <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-                    3. Generate Codex Build Brief
+                    Turn this signal into launch assets
                   </div>
                   <p className="mt-1 break-words text-sm font-bold leading-6 text-zinc-200">
-                    Get the money proof, business pattern, target buyer, AI-native MVP scope, first tiny product, and a Codex-ready MVP prompt.
+                    Get the offer, X post, buyer DM, validation plan, and a Codex-ready prompt for later.
                   </p>
                 </div>
                 <button
@@ -8022,7 +8024,7 @@ function MarketSelectionSection({
                   onClick={() => onGenerateOutputPack(deepDiveSignal)}
                   className="w-full rounded-2xl bg-emerald-300 px-5 py-4 text-center text-sm font-black text-black transition hover:bg-emerald-200 sm:w-auto"
                 >
-                  Generate Codex Build Brief
+                  Generate launch assets
                 </button>
               </div>
               {outputPack && outputPack.signalId === deepDiveSignal.id && (
@@ -8061,7 +8063,7 @@ function MarketSelectionSection({
 
             <section className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-4">
               <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
-                4. Build only after signal
+                Build only after replies
               </div>
               <p className="mt-2 break-words text-sm font-bold leading-6 text-zinc-300">
                 Use the Codex prompt only after replies, saves, clicks, or buyer interest.
@@ -8132,9 +8134,10 @@ function TodayMoneyMoveCard({
         </div>
         <div className="w-full rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.08] px-4 py-3 text-left lg:w-44 lg:text-center">
           <div className="text-[11px] font-black uppercase tracking-wide text-emerald-200">
-            Fit score
+            Match
           </div>
-          <div className="mt-1 text-3xl font-black text-white">{fitScore}</div>
+          <div className="mt-1 text-2xl font-black text-white">{getFitLabel(fitScore)}</div>
+          <div className="mt-1 text-xs font-black text-zinc-400">{fitScore}/100</div>
         </div>
       </div>
 
@@ -8366,6 +8369,8 @@ function TransformStudio({
 }) {
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
+  const primaryTransforms = transformOptions.slice(0, 3);
+  const secondaryTransforms = transformOptions.slice(3);
 
   async function copyOutput() {
     if (!transformAllowed) {
@@ -8421,8 +8426,8 @@ function TransformStudio({
         )}
       </div>
 
-      <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-        {transformOptions.map((transform) => {
+      <div className="mt-4 grid gap-2 sm:grid-cols-3">
+        {primaryTransforms.map((transform) => {
           const active = selectedTransform === transform;
           const locked =
             !hasFounderAccess &&
@@ -8449,6 +8454,35 @@ function TransformStudio({
           );
         })}
       </div>
+      <details className="mt-3 rounded-2xl border border-white/10 bg-black/20 p-3">
+        <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-wide text-zinc-500">
+          More launch asset formats
+        </summary>
+        <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          {secondaryTransforms.map((transform) => {
+            const active = selectedTransform === transform;
+            const locked = !hasFounderAccess;
+
+            return (
+              <button
+                key={transform}
+                type="button"
+                onClick={() => onTransformChange(transform)}
+                className={[
+                  "min-w-0 rounded-2xl border px-3 py-3 text-left text-xs font-black transition",
+                  active
+                    ? "border-emerald-300/70 bg-emerald-300/[0.12] text-white"
+                    : "border-white/10 bg-black/30 text-zinc-400 hover:bg-white/[0.04] hover:text-white",
+                  locked ? "opacity-60" : "",
+                ].join(" ")}
+              >
+                {transform}
+                {locked && <span className="ml-2 text-zinc-600">Pro</span>}
+              </button>
+            );
+          })}
+        </div>
+      </details>
 
       <div className="mt-4 rounded-2xl border border-white/10 bg-black/40 p-4">
         <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -8693,58 +8727,66 @@ function BuildBriefPanel({
       <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-            Codex Build Brief
+            Launch assets generated
           </div>
           <h3 className="mt-1 break-words text-lg font-black text-white">
             {truncateDisplayText(signalTitle, 96)}
           </h3>
           <p className="mt-1 break-words text-sm font-bold leading-6 text-zinc-200">
-            Turn the paid business pattern into a small AI-native MVP brief. Copy to Codex only after replies, saves, clicks, or buyer interest.
+            Start with the offer, buyer message, and validation plan. Use the Codex prompt only after replies, saves, clicks, or buyer interest.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={copyCodexPrompt}
-          className="w-full rounded-2xl bg-white px-5 py-3 text-center text-sm font-black text-black transition hover:bg-zinc-200 sm:w-auto"
-        >
-          {copied ? "Copied MVP Prompt" : "Copy Codex MVP Prompt"}
-        </button>
       </div>
 
       <div className="mt-4 grid min-w-0 gap-3 md:grid-cols-2">
         <MarketOpportunityField label="1. Money Proof" value={detail.proof} />
-        <MarketOpportunityField label="2. Business Pattern" value={detail.pattern} />
-        <MarketOpportunityField label="3. Target Buyer" value={detail.buyer} />
-        <MarketOpportunityField label="4. Paid Pain" value={detail.paidPain} />
-        <MarketOpportunityField label="5. AI-native MVP" value={detail.buildAfterReplies} />
-        <MarketOpportunityField label="6. First Tiny Product" value={detail.firstOffer} />
+        <MarketOpportunityField label="2. Target Buyer" value={detail.buyer} />
+        <MarketOpportunityField label="3. Paid Pain" value={detail.paidPain} />
+        <MarketOpportunityField label="4. First Tiny Product" value={detail.firstOffer} />
+        <MarketOpportunityField label="5. Validation Plan" value={detail.fortyEightHourTest} />
+        <MarketOpportunityField label="6. Build Later Scope" value={detail.buildAfterReplies} />
       </div>
 
       <div className="mt-4 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.08] px-4 py-3 text-sm font-bold leading-6 text-yellow-100">
         Build with Codex only after replies, saves, clicks, or buyer interest.
       </div>
 
-      <div className="mt-4 rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.06] p-4">
-        <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-          7. Codex-ready MVP Prompt
-        </div>
-        <p className="mt-1 text-sm font-bold leading-6 text-zinc-300">
-          Paste this into Codex after the market gives you a signal.
-        </p>
-      </div>
-
-      {copyError && (
-        <div className="mt-4 rounded-2xl border border-yellow-400/20 bg-yellow-400/10 px-4 py-3 text-sm font-bold text-yellow-100">
-          Clipboard blocked. Select the prompt and copy manually.
-        </div>
-      )}
-      <pre className="mt-4 max-h-[420px] max-w-full overflow-auto whitespace-pre-wrap break-words rounded-xl border border-white/10 bg-black/50 p-4 font-sans text-sm leading-6 text-zinc-100">
-        {codexBuildPrompt}
-      </pre>
+      <details className="mt-4 rounded-2xl border border-white/10 bg-black/25 p-4">
+        <summary className="cursor-pointer list-none">
+          <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+                Codex-ready prompt
+              </div>
+              <p className="mt-1 text-sm font-bold leading-6 text-zinc-300">
+                Open this after the offer gets replies.
+              </p>
+            </div>
+            <span className="rounded-full border border-white/10 px-3 py-2 text-xs font-black text-zinc-300">
+              Build later
+            </span>
+          </div>
+        </summary>
+        <button
+          type="button"
+          onClick={copyCodexPrompt}
+          className="mt-4 w-full rounded-2xl bg-white px-5 py-3 text-center text-sm font-black text-black transition hover:bg-zinc-200 sm:w-auto"
+        >
+          {copied ? "Copied MVP Prompt" : "Copy Codex MVP Prompt"}
+        </button>
+        {copyError && (
+          <div className="mt-4 rounded-2xl border border-yellow-400/20 bg-yellow-400/10 px-4 py-3 text-sm font-bold text-yellow-100">
+            Clipboard blocked. Select the prompt and copy manually.
+          </div>
+        )}
+        <pre className="mt-4 max-h-[420px] max-w-full overflow-auto whitespace-pre-wrap break-words rounded-xl border border-white/10 bg-black/50 p-4 font-sans text-sm leading-6 text-zinc-100">
+          {codexBuildPrompt}
+        </pre>
+      </details>
 
       <div className="mt-4">
         <MarketOpportunityField
-          label="8. What Not To Build"
+          label="What Not To Build"
           value="Do not build a full platform, marketplace, account system, analytics suite, payment flow, or external API integration first. Start with the smallest MVP that proves the buyer wants this workflow solved."
         />
       </div>
