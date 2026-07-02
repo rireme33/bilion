@@ -1514,6 +1514,13 @@ type MoneyMoveMetadata = {
   fingerprint: string;
 };
 
+type MoneyMoveOfferFields = {
+  firstOfferName: string;
+  offerDescription: string;
+  deliverables: string[];
+  price: string;
+};
+
 type RemixType =
   | "Make it simpler"
   | "Make it premium"
@@ -3376,10 +3383,27 @@ function getMoneyMoveMetadata(
   signal: BuildSignal,
   detail: ReturnType<typeof getOpportunityDetailFields>,
 ): MoneyMoveMetadata {
+  const haystack = [
+    signal.sourceTitle,
+    signal.latestSignal,
+    signal.whyNow,
+    signal.pain,
+    signal.whatYouCanBuild,
+    signal.patternMatches.join(" "),
+    detail.proof,
+    detail.whatSold,
+    detail.buyer,
+    detail.paidPain,
+    detail.firstOffer,
+    detail.distribution,
+  ].join(" ").toLowerCase();
   const offer = detail.firstOffer.toLowerCase();
   const pain = detail.paidPain.toLowerCase();
   const productName = getOutputPackProductName(detail.firstOffer);
-  const offerType = /audit/.test(offer)
+  const isInvoiceFollowUp = /invoice|overdue|payment|cashflow|cash flow|collections?|follow-?up|follow up/.test(haystack);
+  const offerType = isInvoiceFollowUp
+    ? "cleanup pack"
+    : /audit/.test(offer)
     ? "audit"
     : /cleanup/.test(offer)
       ? "cleanup"
@@ -3390,7 +3414,9 @@ function getMoneyMoveMetadata(
           : /pack|template|checklist/.test(offer)
             ? "pack"
             : "manual offer";
-  const painType = /lead|call|quote|estimate/.test(pain)
+  const painType = isInvoiceFollowUp
+    ? "awkward follow-up / cash collection"
+    : /lead|call|quote|estimate/.test(pain)
     ? "lost revenue follow-up"
     : /review|trust|rating/.test(pain)
       ? "trust and reputation"
@@ -3399,17 +3425,26 @@ function getMoneyMoveMetadata(
         : /onboarding|faq|support|question/.test(pain)
           ? "repeated support friction"
           : "repeated workflow pain";
-  const proofAssetType = /review|rating/.test(pain)
+  const proofAssetType = isInvoiceFollowUp
+    ? "Invoice Follow-up Before/After Builder"
+    : /agent|cost|spend|usage|token|bill/.test(haystack)
+      ? "AI Agent Cost Leak Audit Report Generator"
+      : /blog|pin|pinterest/.test(haystack)
+        ? "Blog-to-Pin Repurposing Generator"
+        : /candidate|recruit|applicant|hiring/.test(haystack)
+          ? "Candidate Follow-up Tracker"
+          : /review|rating/.test(pain)
     ? "Review Reply Proof Pack"
     : /lead|call|quote|estimate/.test(pain)
       ? "Lead Recovery Proof Sheet"
       : /report|note|documentation/.test(pain)
-        ? "Before/After Report Builder"
+        ? "Client Report Cleanup Dashboard"
         : /onboarding|faq|support|question/.test(pain)
           ? "FAQ Cleanup Proof Pack"
           : `${productName} Proof Asset`;
-  const distributionChannel =
-    detail.distribution ||
+  const distributionChannel = isInvoiceFollowUp
+    ? "freelancer DMs / X posts / agency communities"
+    : detail.distribution ||
     signal.patternMatches.find((item) =>
       /x|twitter|linkedin|dm|seo|community|reddit|newsletter/i.test(item),
     ) ||
@@ -3436,23 +3471,112 @@ function getMoneyMoveMetadata(
   };
 }
 
+function getOfferPriceFromText(firstOffer: string, fallbackPrice: string) {
+  const priceMatch =
+    firstOffer.match(/(?:JPY\s?)?[$¥]?\d[\d,]*(?:\.\d+)?(?:\s?-\s?[$¥]?\d[\d,]*)?\s?(?:one-time|\/month|per month|monthly|setup)?/i);
+
+  return normalizeDisplayText(priceMatch?.[0] || fallbackPrice || "Price to test in DM");
+}
+
+function removePriceFromOfferText(value: string, price: string) {
+  return normalizeDisplayText(value)
+    .replace(price, "")
+    .replace(/(?:JPY\s?)?[$¥]?\d[\d,]*(?:\.\d+)?(?:\s?-\s?[$¥]?\d[\d,]*)?\s?(?:one-time|\/month|per month|monthly|setup)?/gi, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+function getMoneyMoveOfferFields(
+  signal: BuildSignal,
+  detail: ReturnType<typeof getOpportunityDetailFields>,
+  metadata: MoneyMoveMetadata,
+): MoneyMoveOfferFields {
+  const haystack = [
+    signal.sourceTitle,
+    signal.latestSignal,
+    signal.pain,
+    detail.buyer,
+    detail.paidPain,
+    detail.firstOffer,
+  ].join(" ").toLowerCase();
+  const price = getOfferPriceFromText(detail.firstOffer, detail.price);
+
+  if (/invoice|overdue|payment|cashflow|cash flow|collections?|follow-?up|follow up/.test(haystack)) {
+    const agencyBuyer = /agency|agencies|client/.test(detail.buyer.toLowerCase());
+
+    return {
+      deliverables: [
+        "polite follow-up message",
+        "next-step payment checklist",
+        "before/after follow-up sample",
+      ],
+      firstOfferName: agencyBuyer
+        ? "Client Payment Follow-up Cleanup Pack"
+        : "Freelancer Invoice Follow-up Cleanup Pack",
+      offerDescription:
+        "Turn one overdue invoice situation into a clean follow-up sequence the buyer can send today.",
+      price: price || "$49 one-time",
+    };
+  }
+
+  const cleanedOffer = removePriceFromOfferText(detail.firstOffer, price);
+  const firstLine = cleanedOffer
+    .split(/\r?\n|\. /)
+    .map((line) => line.trim())
+    .find(Boolean);
+  const firstOfferName = firstLine && firstLine.length <= 80
+    ? firstLine
+    : getOutputPackProductName(detail.firstOffer);
+  const offerDescription =
+    cleanedOffer
+      .replace(firstOfferName, "")
+      .replace(/^\W+/, "")
+      .trim() ||
+    `Turn one messy ${metadata.painType} case into a buyer-ready before/after result.`;
+  const deliverables = /audit/.test(metadata.offerType)
+    ? ["one-page audit", "before/after sample", "priority fix list"]
+    : /setup/.test(metadata.offerType)
+      ? ["setup map", "implementation checklist", "buyer handoff note"]
+      : /pack|template|checklist/.test(metadata.offerType)
+        ? ["checklist", "template", "example output"]
+        : ["buyer-ready sample", "next-step checklist", "short handoff note"];
+
+  return {
+    deliverables,
+    firstOfferName,
+    offerDescription,
+    price,
+  };
+}
+
 function buildCodexProofAssetPrompt(
   detail: ReturnType<typeof getOpportunityDetailFields>,
   metadata: MoneyMoveMetadata,
+  offerFields?: MoneyMoveOfferFields,
 ) {
+  const fields = offerFields || {
+    deliverables: ["buyer-ready proof output"],
+    firstOfferName: getOutputPackProductName(detail.firstOffer),
+    offerDescription: `Recreate the manual result promised by ${detail.firstOffer}.`,
+    price: detail.price,
+  };
+
   return [
     "Build the smallest sellable proof asset for this manual offer.",
     "",
     `Proof asset name: ${metadata.proofAssetType}`,
     `Target buyer: ${detail.buyer}`,
     `Paid pain: ${detail.paidPain}`,
-    `Manual offer: ${detail.firstOffer}`,
+    `Manual offer: ${fields.firstOfferName}`,
+    `Offer description: ${fields.offerDescription}`,
+    `Price: ${fields.price}`,
     `Build gate: ${metadata.buildGate}`,
     "",
     "What it should do:",
-    `- Recreate the manual result promised by the offer: ${detail.firstOffer}`,
+    `- Recreate the manual result promised by the offer: ${fields.firstOfferName}`,
     "- Let the user paste or enter one messy real-world case.",
     "- Produce one buyer-ready output that can be copied, sent, or shown as proof.",
+    ...fields.deliverables.map((deliverable) => `- Include: ${deliverable}.`),
     "- Include the money proof, buyer, pain, price, and validation note on screen.",
     "",
     "What not to build:",
@@ -3478,28 +3602,42 @@ function buildMoneyMoveAngles(signal: BuildSignal): {
   angles: MoneyMoveAngle[];
   detail: ReturnType<typeof getOpportunityDetailFields>;
   metadata: MoneyMoveMetadata;
+  offerFields: MoneyMoveOfferFields;
 } {
   const detail = getOpportunityDetailFields(signal);
   const metadata = getMoneyMoveMetadata(signal, detail);
-  const productName = getOutputPackProductName(detail.firstOffer);
-  const premiumPrice = detail.price.includes("$")
-    ? "$499-$1,500"
-    : "3x-10x the first-offer price";
+  const offerFields = getMoneyMoveOfferFields(signal, detail, metadata);
+  const smallBuyer = /freelancer|solo|indie|creator|operator/.test(detail.buyer.toLowerCase());
+  const premiumBuyer = smallBuyer
+    ? "Small agencies with 5-20 active clients"
+    : detail.buyer;
+  const premiumPrice = smallBuyer ? "$199-$499" : "$499-$1,500";
+  const premiumOffer = smallBuyer
+    ? `${offerFields.firstOfferName.replace(/cleanup pack/i, "Cashflow Cleanup Sprint")}`
+    : `${offerFields.firstOfferName} Implementation Sprint`;
 
   return {
     detail,
     metadata,
+    offerFields,
     angles: [
       {
         id: "manual-offer",
         title: "Manual Offer Angle",
-        hook: `Sell the manual version of ${productName} before building software.`,
+        hook: `Sell ${offerFields.firstOfferName} manually before building software.`,
         output: [
           `Buyer: ${detail.buyer}`,
           `Paid pain: ${detail.paidPain}`,
-          `First offer: ${detail.firstOffer}`,
-          `Price: ${detail.price}`,
-          "Best next action: DM 10 reachable buyers with one before/after sample and ask if they want this result.",
+          "",
+          "First offer:",
+          offerFields.firstOfferName,
+          "",
+          "What you deliver:",
+          ...offerFields.deliverables.map((deliverable) => `- ${deliverable}`),
+          "",
+          `Price: ${offerFields.price}`,
+          "",
+          "Best next action: DM 10 reachable buyers with one sample and ask if they want the same cleanup.",
         ].join("\n"),
         nextAction: "DM 10 buyers with a manual sample today.",
         defaultMode: "Buyer DM",
@@ -3509,10 +3647,10 @@ function buildMoneyMoveAngles(signal: BuildSignal): {
         title: "Free Content Angle",
         hook: "Teach the pain publicly, then offer a free pack that reveals buyer intent.",
         output: [
-          `X hook: ${detail.postHook}`,
-          `Carousel title: The paid pain behind ${productName}`,
-          `Short caption: ${detail.buyer} are already paying to avoid this: ${detail.paidPain}`,
-          `Free pack idea: ${productName} teardown checklist with one before/after example.`,
+          `X hook: ${detail.buyer} do not need more software. They need one painful workflow cleaned up today.`,
+          `Carousel title: The hidden paid pain behind ${offerFields.firstOfferName}`,
+          `Short caption: ${detail.paidPain}`,
+          `Free pack idea: ${offerFields.firstOfferName} checklist with one before/after example.`,
         ].join("\n"),
         nextAction: "Publish the hook and offer the free pack to anyone who replies.",
         defaultMode: "X post",
@@ -3522,10 +3660,10 @@ function buildMoneyMoveAngles(signal: BuildSignal): {
         title: "High-ticket B2B Angle",
         hook: "Turn the same pain into a higher-touch implementation offer.",
         output: [
-          `Higher-priced version: ${premiumPrice} ${productName} implementation sprint`,
-          `Target buyer: ${detail.buyer}`,
-          `Why they would pay more: the pain is tied to ${metadata.painType}, and fixing it manually saves repeated operator time.`,
-          "Validation move: ask 5 operators if they would pay for a done-with-you setup after seeing one sample.",
+          `Higher-priced version: ${premiumPrice} ${premiumOffer}`,
+          `Target buyer: ${premiumBuyer}`,
+          `Why they would pay more: they have more repeated cases, more client pressure, and more money stuck in the workflow.`,
+          "Validation move: send one sample to 5 higher-intent operators and ask if they want a done-with-you setup.",
         ].join("\n"),
         nextAction: "Send the premium angle only to buyers who show urgency or buying intent.",
         defaultMode: "Buyer DM",
@@ -3536,7 +3674,9 @@ function buildMoneyMoveAngles(signal: BuildSignal): {
         hook: "Do not build a SaaS. Build a proof asset that proves the manual offer works.",
         output: [
           `Smallest sellable proof asset: ${metadata.proofAssetType}`,
-          `What it should do: turn one messy buyer case into the promised output for ${detail.firstOffer}`,
+          `What it should do: turn one messy buyer case into the promised output for ${offerFields.firstOfferName}`,
+          `Manual offer: ${offerFields.firstOfferName}`,
+          `Price: ${offerFields.price}`,
           "What not to build: accounts, billing, dashboards, integrations, or a full platform.",
           `Build gate condition: ${metadata.buildGate}`,
         ].join("\n"),
@@ -3565,67 +3705,72 @@ function buildAngleOutput(
   mode: AngleOutputMode,
   detail: ReturnType<typeof getOpportunityDetailFields>,
   metadata: MoneyMoveMetadata,
+  offerFields: MoneyMoveOfferFields,
 ) {
   if (mode === "X post") {
     return [
       angle.hook,
       "",
-      `Money proof: ${detail.proof}`,
+      `People already pay around this: ${detail.proof}`,
+      "",
       `Buyer: ${detail.buyer}`,
-      `Paid pain: ${detail.paidPain}`,
+      `Pain: ${metadata.painType}`,
+      `Test: ${offerFields.firstOfferName}`,
+      `Price: ${offerFields.price}`,
       "",
-      `Offer to test: ${detail.firstOffer}`,
-      `Next action: ${angle.nextAction}`,
-      "",
+      "Reply if you want the before/after sample.",
       "Build only after replies.",
     ].join("\n");
   }
 
   if (mode === "Buyer DM") {
     return [
-      `Hey, I noticed ${detail.buyer} run into this: ${detail.paidPain}`,
+      `Hey, quick question - are you still dealing with this?`,
+      "",
+      detail.paidPain,
       "",
       `I found a money signal around it: ${detail.proof}`,
       "",
-      `I'm testing ${detail.firstOffer} manually before building anything.`,
-      "Want me to send one before/after sample for your case?",
+      `I'm testing a small ${offerFields.firstOfferName} manually before building anything.`,
+      "Want me to send one sample and get your take?",
     ].join("\n");
   }
 
   if (mode === "5-slide carousel outline") {
     return [
-      `Slide 1: ${angle.title}`,
-      angle.hook,
-      "",
-      "Slide 2: Money proof",
+      "Slide 1: The money signal",
       detail.proof,
       "",
-      "Slide 3: Buyer pain",
-      `${detail.buyer} deal with ${detail.paidPain}`,
+      "Slide 2: The buyer",
+      detail.buyer,
       "",
-      "Slide 4: Offer test",
-      detail.firstOffer,
+      "Slide 3: The paid pain",
+      detail.paidPain,
       "",
-      "Slide 5: Build later",
+      "Slide 4: The offer test",
+      `${offerFields.firstOfferName} - ${offerFields.price}`,
+      "",
+      "Slide 5: Build later, not first",
       metadata.buildGate,
     ].join("\n");
   }
 
   if (mode === "Free pack outline") {
     return [
-      `${getOutputPackProductName(detail.firstOffer)} Free Pack`,
+      `${offerFields.firstOfferName} Free Pack`,
       "",
       "Inside:",
       `- One-page checklist for ${detail.buyer}`,
+      ...offerFields.deliverables.map((deliverable) => `- Example: ${deliverable}`),
       `- Before/after sample for this pain: ${detail.paidPain}`,
-      `- Manual offer CTA: ${detail.firstOffer}`,
+      `- Manual offer CTA: ${offerFields.firstOfferName}`,
       "- Reply prompt: Want me to make this for your case?",
       "",
       `Distribution: ${metadata.distributionChannel}`,
     ].join("\n");
   }
 
-  return buildCodexProofAssetPrompt(detail, metadata);
+  return buildCodexProofAssetPrompt(detail, metadata, offerFields);
 }
 
 function getLaunchPackAngleNote(angle: NextAction) {
@@ -8528,7 +8673,7 @@ function ProUpgradeCard({ onUnlockClick }: { onUnlockClick: () => void }) {
 }
 
 function MoneyMoveAngleExpander({ signal }: { signal: BuildSignal }) {
-  const { angles, detail, metadata } = buildMoneyMoveAngles(signal);
+  const { angles, detail, metadata, offerFields } = buildMoneyMoveAngles(signal);
   const [selectedModes, setSelectedModes] = useState<Record<string, AngleOutputMode>>({});
   const [copiedAngleId, setCopiedAngleId] = useState("");
 
@@ -8538,7 +8683,7 @@ function MoneyMoveAngleExpander({ signal }: { signal: BuildSignal }) {
       "",
       `Hook: ${angle.hook}`,
       "",
-      buildAngleOutput(angle, mode, detail, metadata),
+      buildAngleOutput(angle, mode, detail, metadata, offerFields),
       "",
       `Next action: ${angle.nextAction}`,
     ].join("\n");
@@ -8578,10 +8723,47 @@ function MoneyMoveAngleExpander({ signal }: { signal: BuildSignal }) {
         </div>
       </div>
 
+      <div className="mt-4 rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.06] p-4">
+        <div className="text-[11px] font-black uppercase tracking-wide text-emerald-300">
+          Clean first offer
+        </div>
+        <div className="mt-2 grid gap-3 md:grid-cols-[1fr_1fr_auto]">
+          <div className="min-w-0">
+            <div className="text-[11px] font-black uppercase tracking-wide text-zinc-600">
+              First offer
+            </div>
+            <p className="mt-1 break-words text-sm font-black text-white">
+              {offerFields.firstOfferName}
+            </p>
+            <p className="mt-1 break-words text-xs font-bold leading-5 text-zinc-400">
+              {offerFields.offerDescription}
+            </p>
+          </div>
+          <div className="min-w-0">
+            <div className="text-[11px] font-black uppercase tracking-wide text-zinc-600">
+              What you deliver
+            </div>
+            <ul className="mt-1 space-y-1 text-xs font-bold leading-5 text-zinc-300">
+              {offerFields.deliverables.map((deliverable) => (
+                <li key={deliverable}>- {deliverable}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="min-w-0">
+            <div className="text-[11px] font-black uppercase tracking-wide text-zinc-600">
+              Price
+            </div>
+            <p className="mt-1 whitespace-nowrap text-sm font-black text-white">
+              {offerFields.price}
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="mt-4 grid gap-3 xl:grid-cols-2">
         {angles.map((angle) => {
           const selectedMode = selectedModes[angle.id] || angle.defaultMode;
-          const output = buildAngleOutput(angle, selectedMode, detail, metadata);
+          const output = buildAngleOutput(angle, selectedMode, detail, metadata, offerFields);
           const copied = copiedAngleId === `${angle.id}-${selectedMode}`;
 
           return (
