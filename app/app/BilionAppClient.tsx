@@ -1521,6 +1521,17 @@ type MoneyMoveOfferFields = {
   price: string;
 };
 
+type MoneyMoveQualityLabel =
+  | "Strong Money Move"
+  | "Needs polish"
+  | "Weak / too generic";
+
+type MoneyMoveQuality = {
+  label: MoneyMoveQualityLabel;
+  reasons: string[];
+  score: number;
+};
+
 type RemixType =
   | "Make it simpler"
   | "Make it premium"
@@ -3401,8 +3412,14 @@ function getMoneyMoveMetadata(
   const pain = detail.paidPain.toLowerCase();
   const productName = getOutputPackProductName(detail.firstOffer);
   const isInvoiceFollowUp = /invoice|overdue|payment|cashflow|cash flow|collections?|follow-?up|follow up/.test(haystack);
+  const isLaunchReply =
+    /product hunt|launch|comments?|dms?|objections?|feature requests?|growth templates?|launch services?/.test(
+      haystack,
+    );
   const offerType = isInvoiceFollowUp
     ? "cleanup pack"
+    : isLaunchReply
+      ? "cleanup pack"
     : /audit/.test(offer)
     ? "audit"
     : /cleanup/.test(offer)
@@ -3416,6 +3433,8 @@ function getMoneyMoveMetadata(
             : "manual offer";
   const painType = isInvoiceFollowUp
     ? "awkward follow-up / cash collection"
+    : isLaunchReply
+      ? "launch reply triage"
     : /lead|call|quote|estimate/.test(pain)
     ? "lost revenue follow-up"
     : /review|trust|rating/.test(pain)
@@ -3427,6 +3446,8 @@ function getMoneyMoveMetadata(
           : "repeated workflow pain";
   const proofAssetType = isInvoiceFollowUp
     ? "Invoice Follow-up Before/After Builder"
+    : isLaunchReply
+      ? "Launch Reply Kit Builder"
     : /agent|cost|spend|usage|token|bill/.test(haystack)
       ? "AI Agent Cost Leak Audit Report Generator"
       : /blog|pin|pinterest/.test(haystack)
@@ -3444,6 +3465,8 @@ function getMoneyMoveMetadata(
           : `${productName} Proof Asset`;
   const distributionChannel = isInvoiceFollowUp
     ? "freelancer DMs / X posts / agency communities"
+    : isLaunchReply
+      ? "Product Hunt founders / X posts / indie founder communities"
     : detail.distribution ||
     signal.patternMatches.find((item) =>
       /x|twitter|linkedin|dm|seo|community|reddit|newsletter/i.test(item),
@@ -3519,6 +3542,20 @@ function getMoneyMoveOfferFields(
     };
   }
 
+  if (/product hunt|launch|comments?|dms?|objections?|feature requests?|growth templates?|launch services?/.test(haystack)) {
+    return {
+      deliverables: [
+        "before/after launch reply sample",
+        "objection response checklist",
+        "next-step follow-up messages",
+      ],
+      firstOfferName: "Launch Reply Kit - Cleanup Pack",
+      offerDescription:
+        "Turn one messy launch thread into sorted replies, objection responses, and next actions.",
+      price: price || "$79 one-time",
+    };
+  }
+
   const cleanedOffer = removePriceFromOfferText(detail.firstOffer, price);
   const firstLine = cleanedOffer
     .split(/\r?\n|\. /)
@@ -3549,6 +3586,77 @@ function getMoneyMoveOfferFields(
   };
 }
 
+function getBuyerFacingPainClause(paidPain: string) {
+  const normalized = normalizeDisplayText(paidPain).replace(/\.$/, "");
+  const becauseSplit = normalized.split(/\bbecause\b/i);
+  const clause = becauseSplit.length > 1 ? becauseSplit.slice(1).join(" because ") : normalized;
+
+  return clause
+    .replace(/^that\s+/i, "")
+    .replace(/^their\s+/i, "")
+    .replace(/^./, (character) => character.toLowerCase())
+    .trim();
+}
+
+function getShortBuyerLabel(buyer: string) {
+  const normalized = normalizeDisplayText(buyer);
+  const firstSegment = normalized.split(/,| and /)[0]?.trim();
+
+  return firstSegment || normalized || "the buyer";
+}
+
+function buildMoneyMoveQuality(
+  detail: ReturnType<typeof getOpportunityDetailFields>,
+  metadata: MoneyMoveMetadata,
+  offerFields: MoneyMoveOfferFields,
+): MoneyMoveQuality {
+  const buyer = normalizeDisplayText(detail.buyer).toLowerCase();
+  const pain = normalizeDisplayText(detail.paidPain).toLowerCase();
+  const proof = normalizeDisplayText(detail.proof).toLowerCase();
+  const offer = normalizeDisplayText(offerFields.firstOfferName).toLowerCase();
+  const genericBuyer = /^(users|people|businesses|companies|teams|customers)$/i.test(buyer);
+  const genericPain = /\b(save time|productivity|workflow|automation|efficiency)\b/i.test(pain) &&
+    !/\b(invoice|review|launch|lead|quote|report|onboarding|reply|dm|faq|tax|rent|inspection|field|checkout|cart)\b/i.test(pain);
+  let score = 0;
+
+  if (buyer.length >= 18 && !genericBuyer) score += 15;
+  if (pain.length >= 45 && !genericPain) score += 15;
+  if (/\$|mrr|arr|revenue|paid|customers?|users?|pricing|sold|sales|month|year/i.test(proof)) score += 15;
+  if (offerFields.firstOfferName.length >= 8 && offerFields.price) score += 15;
+  if (offerFields.deliverables.length >= 3) score += 10;
+  if (!/saas|platform|app|dashboard|copilot/i.test(offer)) score += 10;
+  if (!/proof asset$/i.test(metadata.proofAssetType)) score += 10;
+  if (!/repeated workflow pain|manual offer/i.test(`${metadata.painType} ${metadata.offerType}`)) score += 10;
+
+  const label: MoneyMoveQualityLabel =
+    score >= 75 ? "Strong Money Move" : score >= 55 ? "Needs polish" : "Weak / too generic";
+  const reasons: string[] = [];
+
+  if (label === "Strong Money Move") {
+    reasons.push("Specific buyer, paid pain, and price are ready to test.");
+    reasons.push(`${metadata.proofAssetType} can prove demand before a full product.`);
+  } else {
+    if (genericBuyer || buyer.length < 18) {
+      reasons.push("Buyer needs to be more specific.");
+    }
+    if (genericPain || pain.length < 45) {
+      reasons.push("Paid pain needs a more concrete workflow or moment.");
+    }
+    if (!/\$|mrr|arr|revenue|paid|customers?|users?|pricing|sold|sales|month|year/i.test(proof)) {
+      reasons.push("Money proof is light; use a stronger revenue signal if possible.");
+    }
+    if (reasons.length === 0) {
+      reasons.push("Offer is usable, but the proof asset could be sharper.");
+    }
+  }
+
+  return {
+    label,
+    reasons: reasons.slice(0, 2),
+    score,
+  };
+}
+
 function buildCodexProofAssetPrompt(
   detail: ReturnType<typeof getOpportunityDetailFields>,
   metadata: MoneyMoveMetadata,
@@ -3574,8 +3682,8 @@ function buildCodexProofAssetPrompt(
     "",
     "What it should do:",
     `- Recreate the manual result promised by the offer: ${fields.firstOfferName}`,
-    "- Let the user paste or enter one messy real-world case.",
-    "- Produce one buyer-ready output that can be copied, sent, or shown as proof.",
+    "- Give the user one clear input field for a messy real-world case.",
+    "- Produce one useful buyer-ready output that can be copied, exported, sent, or shown as proof.",
     ...fields.deliverables.map((deliverable) => `- Include: ${deliverable}.`),
     "- Include the money proof, buyer, pain, price, and validation note on screen.",
     "",
@@ -3593,6 +3701,8 @@ function buildCodexProofAssetPrompt(
     "- Local state only.",
     "- Mock data allowed.",
     "- Copyable output.",
+    "- Include copy/export actions for the generated result.",
+    "- Use a mobile-first polished demo UI.",
     "- Clean proof-asset UI.",
     "- Build only after replies.",
   ].join("\n");
@@ -3707,66 +3817,72 @@ function buildAngleOutput(
   metadata: MoneyMoveMetadata,
   offerFields: MoneyMoveOfferFields,
 ) {
+  const buyerLabel = getShortBuyerLabel(detail.buyer);
+  const painClause = getBuyerFacingPainClause(detail.paidPain);
+
   if (mode === "X post") {
     return [
-      angle.hook,
+      `${buyerLabel} are already paying around this pain.`,
       "",
-      `People already pay around this: ${detail.proof}`,
+      `Money signal: ${detail.proof}`,
       "",
       `Buyer: ${detail.buyer}`,
-      `Pain: ${metadata.painType}`,
-      `Test: ${offerFields.firstOfferName}`,
+      `Paid pain: ${detail.paidPain}`,
+      "",
+      `Offer to test today: ${offerFields.firstOfferName}`,
       `Price: ${offerFields.price}`,
       "",
-      "Reply if you want the before/after sample.",
+      `Today: make one sample with ${offerFields.deliverables[0] || "a before/after result"} and DM 10 buyers.`,
+      "Ask if they want the same cleanup for their own case.",
       "Build only after replies.",
     ].join("\n");
   }
 
   if (mode === "Buyer DM") {
     return [
-      `Hey, quick question - are you still dealing with this?`,
+      "Hey - quick question.",
       "",
-      detail.paidPain,
+      `Are you dealing with ${painClause}?`,
       "",
-      `I found a money signal around it: ${detail.proof}`,
+      `I made a small ${offerFields.firstOfferName} for ${buyerLabel}.`,
+      `It includes ${offerFields.deliverables[0] || "one before/after sample"}.`,
       "",
-      `I'm testing a small ${offerFields.firstOfferName} manually before building anything.`,
-      "Want me to send one sample and get your take?",
+      "Want me to send one example for your case?",
     ].join("\n");
   }
 
   if (mode === "5-slide carousel outline") {
     return [
-      "Slide 1: The money signal",
+      `Slide 1: ${buyerLabel} are paying to fix this`,
+      "Do not start with a full product.",
+      "",
+      "Slide 2: Money Signal",
       detail.proof,
       "",
-      "Slide 2: The buyer",
-      detail.buyer,
+      "Slide 3: Buyer + Paid Pain",
+      `${detail.buyer} struggle with ${painClause}.`,
       "",
-      "Slide 3: The paid pain",
-      detail.paidPain,
-      "",
-      "Slide 4: The offer test",
+      "Slide 4: First Offer",
       `${offerFields.firstOfferName} - ${offerFields.price}`,
       "",
-      "Slide 5: Build later, not first",
-      metadata.buildGate,
+      "Slide 5: Build only after replies",
+      "Post it, DM buyers, and build only after replies, saves, clicks, or buying intent.",
     ].join("\n");
   }
 
   if (mode === "Free pack outline") {
     return [
-      `${offerFields.firstOfferName} Free Pack`,
+      `${offerFields.firstOfferName} Starter Pack`,
+      "",
+      `Who it is for: ${detail.buyer}`,
+      `Result: one clean sample that helps them handle ${metadata.painType}.`,
       "",
       "Inside:",
-      `- One-page checklist for ${detail.buyer}`,
-      ...offerFields.deliverables.map((deliverable) => `- Example: ${deliverable}`),
-      `- Before/after sample for this pain: ${detail.paidPain}`,
-      `- Manual offer CTA: ${offerFields.firstOfferName}`,
-      "- Reply prompt: Want me to make this for your case?",
+      ...offerFields.deliverables.slice(0, 5).map((deliverable) => `- ${deliverable}`),
+      "- One before/after example",
+      "- Short checklist they can use today",
       "",
-      `Distribution: ${metadata.distributionChannel}`,
+      "CTA: Reply with one messy case and I will make a sample.",
     ].join("\n");
   }
 
@@ -4224,20 +4340,30 @@ function buildRemixOutput(signal: BuildSignal, remix: RemixType) {
 
 function buildTodaysOfferTest(signal: BuildSignal) {
   const detail = getOpportunityDetailFields(signal);
+  const metadata = getMoneyMoveMetadata(signal, detail);
+  const offerFields = getMoneyMoveOfferFields(signal, detail, metadata);
+  const painClause = normalizeDisplayText(detail.paidPain)
+    .replace(/\.$/, "")
+    .replace(/^./, (character) => character.toLowerCase());
 
   return [
-    `Today's offer test: ${detail.firstOffer}`,
+    `Today's offer test: ${offerFields.firstOfferName}`,
+    "",
+    `What you deliver:`,
+    ...offerFields.deliverables.map((deliverable) => `- ${deliverable}`),
+    "",
+    `Price: ${offerFields.price}`,
     "",
     `Buyer: ${detail.buyer}`,
     `Paid pain: ${detail.paidPain}`,
-    `Price: ${detail.price}`,
     "",
     `Money proof: ${detail.proof}`,
     "",
     "Test copy:",
-    `I noticed ${detail.buyer} still deal with ${detail.paidPain}.`,
-    `I'm testing ${detail.firstOffer} as a manual-first offer before building software.`,
-    `If I made one before/after sample for your case, would you want to see it?`,
+    `I noticed ${detail.buyer} often lose momentum when ${painClause}.`,
+    `I'm making a small ${offerFields.firstOfferName} for teams with this problem.`,
+    `It includes ${offerFields.deliverables.slice(0, 2).join(" and ")}.`,
+    `Would you want to see one before/after sample for your own case?`,
     "",
     "Build only after replies.",
   ].join("\n");
@@ -8137,6 +8263,14 @@ function MarketSelectionSection({
   const visibleRecommendations = hasFounderAccess ? otherRecommendations : [];
   const lockedRecommendations = hasFounderAccess ? [] : otherRecommendations.slice(0, 2);
   const deepDiveDetail = getOpportunityDetailFields(deepDiveSignal);
+  const deepDiveMetadata = getMoneyMoveMetadata(deepDiveSignal, deepDiveDetail);
+  const deepDiveOfferFields = getMoneyMoveOfferFields(deepDiveSignal, deepDiveDetail, deepDiveMetadata);
+  const deepDiveQuality = buildMoneyMoveQuality(
+    deepDiveDetail,
+    deepDiveMetadata,
+    deepDiveOfferFields,
+  );
+  const hasEnoughMarketSignals = marketScopedSignals.length >= 3;
   const todaysRecommendation =
     recommendations.find((recommendation) => recommendation.signal.id === deepDiveSignal.id) ||
     recommendations[0] ||
@@ -8289,6 +8423,7 @@ function MarketSelectionSection({
         onCopyOfferTest={copyTodaysOfferTest}
         paidPain={deepDiveDetail.paidPain}
         price={deepDiveDetail.price}
+        quality={deepDiveQuality}
         queueLimitReached={queueLimitReached}
         selectedGoal={dailyGoal}
         selectedMarket={selectedMarket}
@@ -8340,6 +8475,12 @@ function MarketSelectionSection({
           );
         })}
       </div>
+
+      {!hasEnoughMarketSignals && (
+        <div className="mt-3 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.08] px-4 py-3 text-sm font-bold leading-6 text-yellow-100">
+          Not enough strong signals in this market yet. Showing the best available signal plus adjacent fallback patterns.
+        </div>
+      )}
 
       <div className="mt-3 grid min-w-0 gap-3 md:mt-4">
         <div className="grid min-w-0 gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -8548,6 +8689,7 @@ function TodayMoneyMoveCard({
   onCopyOfferTest,
   paidPain,
   price,
+  quality,
   queueLimitReached,
   selectedGoal,
   selectedMarket,
@@ -8566,6 +8708,7 @@ function TodayMoneyMoveCard({
   onCopyOfferTest: () => void;
   paidPain: string;
   price: string;
+  quality: MoneyMoveQuality;
   queueLimitReached: boolean;
   selectedGoal: DailyGoal;
   selectedMarket: AppMarketOption;
@@ -8600,7 +8743,22 @@ function TodayMoneyMoveCard({
             <span className="rounded-full border border-white/10 bg-black/25 px-3 py-2">
               Market match
             </span>
+            <span
+              className={[
+                "rounded-full border px-3 py-2",
+                quality.label === "Strong Money Move"
+                  ? "border-emerald-300/30 bg-emerald-300/[0.08] text-emerald-100"
+                  : quality.label === "Needs polish"
+                    ? "border-yellow-400/25 bg-yellow-400/[0.08] text-yellow-100"
+                    : "border-red-300/25 bg-red-300/[0.08] text-red-100",
+              ].join(" ")}
+            >
+              {quality.label}
+            </span>
           </div>
+          <p className="mt-2 max-w-2xl break-words text-xs font-bold leading-5 text-zinc-400">
+            {quality.reasons.join(" ")}
+          </p>
           <p className="mt-2 max-w-2xl break-words text-xs font-black uppercase tracking-wide text-zinc-500">
             {hasFounderAccess
               ? "Pro: more signals, full launch assets, remixing, and winner tracking."
