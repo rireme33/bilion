@@ -1489,6 +1489,31 @@ type TransformType =
   | "Codex Prompt"
   | "Validation Plan";
 
+type AngleOutputMode =
+  | "X post"
+  | "Buyer DM"
+  | "5-slide carousel outline"
+  | "Free pack outline"
+  | "Codex proof asset prompt";
+
+type MoneyMoveAngle = {
+  id: string;
+  title: string;
+  hook: string;
+  output: string;
+  nextAction: string;
+  defaultMode: AngleOutputMode;
+};
+
+type MoneyMoveMetadata = {
+  offerType: string;
+  painType: string;
+  proofAssetType: string;
+  distributionChannel: string;
+  buildGate: string;
+  fingerprint: string;
+};
+
 type RemixType =
   | "Make it simpler"
   | "Make it premium"
@@ -1586,6 +1611,14 @@ const validationQueueStatuses: ValidationQueueStatus[] = [
   "Got replies",
   "Got buying intent",
   "Winner",
+];
+
+const angleOutputModes: AngleOutputMode[] = [
+  "X post",
+  "Buyer DM",
+  "5-slide carousel outline",
+  "Free pack outline",
+  "Codex proof asset prompt",
 ];
 
 type SavedSignal = {
@@ -3339,6 +3372,262 @@ function getOutputPackBuildScope(detail: ReturnType<typeof getOpportunityDetailF
     .trim() || "a small tool that creates the same manual output faster";
 }
 
+function getMoneyMoveMetadata(
+  signal: BuildSignal,
+  detail: ReturnType<typeof getOpportunityDetailFields>,
+): MoneyMoveMetadata {
+  const offer = detail.firstOffer.toLowerCase();
+  const pain = detail.paidPain.toLowerCase();
+  const productName = getOutputPackProductName(detail.firstOffer);
+  const offerType = /audit/.test(offer)
+    ? "audit"
+    : /cleanup/.test(offer)
+      ? "cleanup"
+      : /setup/.test(offer)
+        ? "setup"
+        : /report/.test(offer)
+          ? "report"
+          : /pack|template|checklist/.test(offer)
+            ? "pack"
+            : "manual offer";
+  const painType = /lead|call|quote|estimate/.test(pain)
+    ? "lost revenue follow-up"
+    : /review|trust|rating/.test(pain)
+      ? "trust and reputation"
+      : /report|note|documentation/.test(pain)
+        ? "messy reporting"
+        : /onboarding|faq|support|question/.test(pain)
+          ? "repeated support friction"
+          : "repeated workflow pain";
+  const proofAssetType = /review|rating/.test(pain)
+    ? "Review Reply Proof Pack"
+    : /lead|call|quote|estimate/.test(pain)
+      ? "Lead Recovery Proof Sheet"
+      : /report|note|documentation/.test(pain)
+        ? "Before/After Report Builder"
+        : /onboarding|faq|support|question/.test(pain)
+          ? "FAQ Cleanup Proof Pack"
+          : `${productName} Proof Asset`;
+  const distributionChannel =
+    detail.distribution ||
+    signal.patternMatches.find((item) =>
+      /x|twitter|linkedin|dm|seo|community|reddit|newsletter/i.test(item),
+    ) ||
+    "X post + buyer DM";
+  const buildGate =
+    "Build only after 3 buyer replies, 1 buying-intent reply, or a buyer asks for the paid version.";
+  const fingerprint = [
+    getSignalMarket(signal),
+    compactBuyer(signal).toLowerCase(),
+    offerType,
+    painType,
+  ]
+    .join(" / ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return {
+    buildGate,
+    distributionChannel,
+    fingerprint,
+    offerType,
+    painType,
+    proofAssetType,
+  };
+}
+
+function buildCodexProofAssetPrompt(
+  detail: ReturnType<typeof getOpportunityDetailFields>,
+  metadata: MoneyMoveMetadata,
+) {
+  return [
+    "Build the smallest sellable proof asset for this manual offer.",
+    "",
+    `Proof asset name: ${metadata.proofAssetType}`,
+    `Target buyer: ${detail.buyer}`,
+    `Paid pain: ${detail.paidPain}`,
+    `Manual offer: ${detail.firstOffer}`,
+    `Build gate: ${metadata.buildGate}`,
+    "",
+    "What it should do:",
+    `- Recreate the manual result promised by the offer: ${detail.firstOffer}`,
+    "- Let the user paste or enter one messy real-world case.",
+    "- Produce one buyer-ready output that can be copied, sent, or shown as proof.",
+    "- Include the money proof, buyer, pain, price, and validation note on screen.",
+    "",
+    "What not to build:",
+    "- No full SaaS.",
+    "- No auth.",
+    "- No database.",
+    "- No payments.",
+    "- No external APIs.",
+    "- No complex dashboard.",
+    "",
+    "Build constraints:",
+    "- Next.js / React.",
+    "- Mobile-first.",
+    "- Local state only.",
+    "- Mock data allowed.",
+    "- Copyable output.",
+    "- Clean proof-asset UI.",
+    "- Build only after replies.",
+  ].join("\n");
+}
+
+function buildMoneyMoveAngles(signal: BuildSignal): {
+  angles: MoneyMoveAngle[];
+  detail: ReturnType<typeof getOpportunityDetailFields>;
+  metadata: MoneyMoveMetadata;
+} {
+  const detail = getOpportunityDetailFields(signal);
+  const metadata = getMoneyMoveMetadata(signal, detail);
+  const productName = getOutputPackProductName(detail.firstOffer);
+  const premiumPrice = detail.price.includes("$")
+    ? "$499-$1,500"
+    : "3x-10x the first-offer price";
+
+  return {
+    detail,
+    metadata,
+    angles: [
+      {
+        id: "manual-offer",
+        title: "Manual Offer Angle",
+        hook: `Sell the manual version of ${productName} before building software.`,
+        output: [
+          `Buyer: ${detail.buyer}`,
+          `Paid pain: ${detail.paidPain}`,
+          `First offer: ${detail.firstOffer}`,
+          `Price: ${detail.price}`,
+          "Best next action: DM 10 reachable buyers with one before/after sample and ask if they want this result.",
+        ].join("\n"),
+        nextAction: "DM 10 buyers with a manual sample today.",
+        defaultMode: "Buyer DM",
+      },
+      {
+        id: "free-content",
+        title: "Free Content Angle",
+        hook: "Teach the pain publicly, then offer a free pack that reveals buyer intent.",
+        output: [
+          `X hook: ${detail.postHook}`,
+          `Carousel title: The paid pain behind ${productName}`,
+          `Short caption: ${detail.buyer} are already paying to avoid this: ${detail.paidPain}`,
+          `Free pack idea: ${productName} teardown checklist with one before/after example.`,
+        ].join("\n"),
+        nextAction: "Publish the hook and offer the free pack to anyone who replies.",
+        defaultMode: "X post",
+      },
+      {
+        id: "high-ticket-b2b",
+        title: "High-ticket B2B Angle",
+        hook: "Turn the same pain into a higher-touch implementation offer.",
+        output: [
+          `Higher-priced version: ${premiumPrice} ${productName} implementation sprint`,
+          `Target buyer: ${detail.buyer}`,
+          `Why they would pay more: the pain is tied to ${metadata.painType}, and fixing it manually saves repeated operator time.`,
+          "Validation move: ask 5 operators if they would pay for a done-with-you setup after seeing one sample.",
+        ].join("\n"),
+        nextAction: "Send the premium angle only to buyers who show urgency or buying intent.",
+        defaultMode: "Buyer DM",
+      },
+      {
+        id: "codex-proof-asset",
+        title: "Codex Proof Asset Angle",
+        hook: "Do not build a SaaS. Build a proof asset that proves the manual offer works.",
+        output: [
+          `Smallest sellable proof asset: ${metadata.proofAssetType}`,
+          `What it should do: turn one messy buyer case into the promised output for ${detail.firstOffer}`,
+          "What not to build: accounts, billing, dashboards, integrations, or a full platform.",
+          `Build gate condition: ${metadata.buildGate}`,
+        ].join("\n"),
+        nextAction: "Build only after replies, saves, clicks, or buyer interest.",
+        defaultMode: "Codex proof asset prompt",
+      },
+      {
+        id: "founder-story",
+        title: "Founder Story Angle",
+        hook: "Show how a real money signal becomes a testable business move.",
+        output: [
+          `Build-in-public post: I found this money signal: ${detail.proof}`,
+          `Why this signal matters: ${detail.paidPain}`,
+          "How Bilion turns it into a testable move: buyer -> offer -> post/DM -> validation -> proof asset.",
+          `Fingerprint: ${metadata.fingerprint}`,
+        ].join("\n"),
+        nextAction: "Post the story, then reply with the manual offer when buyers engage.",
+        defaultMode: "5-slide carousel outline",
+      },
+    ],
+  };
+}
+
+function buildAngleOutput(
+  angle: MoneyMoveAngle,
+  mode: AngleOutputMode,
+  detail: ReturnType<typeof getOpportunityDetailFields>,
+  metadata: MoneyMoveMetadata,
+) {
+  if (mode === "X post") {
+    return [
+      angle.hook,
+      "",
+      `Money proof: ${detail.proof}`,
+      `Buyer: ${detail.buyer}`,
+      `Paid pain: ${detail.paidPain}`,
+      "",
+      `Offer to test: ${detail.firstOffer}`,
+      `Next action: ${angle.nextAction}`,
+      "",
+      "Build only after replies.",
+    ].join("\n");
+  }
+
+  if (mode === "Buyer DM") {
+    return [
+      `Hey, I noticed ${detail.buyer} run into this: ${detail.paidPain}`,
+      "",
+      `I found a money signal around it: ${detail.proof}`,
+      "",
+      `I'm testing ${detail.firstOffer} manually before building anything.`,
+      "Want me to send one before/after sample for your case?",
+    ].join("\n");
+  }
+
+  if (mode === "5-slide carousel outline") {
+    return [
+      `Slide 1: ${angle.title}`,
+      angle.hook,
+      "",
+      "Slide 2: Money proof",
+      detail.proof,
+      "",
+      "Slide 3: Buyer pain",
+      `${detail.buyer} deal with ${detail.paidPain}`,
+      "",
+      "Slide 4: Offer test",
+      detail.firstOffer,
+      "",
+      "Slide 5: Build later",
+      metadata.buildGate,
+    ].join("\n");
+  }
+
+  if (mode === "Free pack outline") {
+    return [
+      `${getOutputPackProductName(detail.firstOffer)} Free Pack`,
+      "",
+      "Inside:",
+      `- One-page checklist for ${detail.buyer}`,
+      `- Before/after sample for this pain: ${detail.paidPain}`,
+      `- Manual offer CTA: ${detail.firstOffer}`,
+      "- Reply prompt: Want me to make this for your case?",
+      "",
+      `Distribution: ${metadata.distributionChannel}`,
+    ].join("\n");
+  }
+
+  return buildCodexProofAssetPrompt(detail, metadata);
+}
+
 function getLaunchPackAngleNote(angle: NextAction) {
   if (angle === "sell") {
     return "Lead with the buyer, paid pain, first offer, price, and a low-friction DM or checkout angle.";
@@ -3364,6 +3653,7 @@ function buildOutputPackFromSignal(signal: BuildSignal, angle: NextAction = "pos
   const generatedAt = new Date().toISOString();
   const signalTitle = title.detail || title.title || signal.sourceTitle || "Money Signal";
   const angleNote = getLaunchPackAngleNote(angle);
+  const metadata = getMoneyMoveMetadata(signal, detail);
   const validationPlan = [
     `Codex Build Brief angle: ${getActionLabel(angle)}`,
     angleNote,
@@ -3449,24 +3739,31 @@ function buildOutputPackFromSignal(signal: BuildSignal, angle: NextAction = "pos
     ].join("\n"),
     validationPlan,
     codexBuildPrompt: [
+      "Build the smallest sellable proof asset for this manual offer.",
       "Build this only after someone replies, clicks, or asks for the offer.",
       "",
-      `Product name: ${productName}`,
+      `Proof asset name: ${metadata.proofAssetType}`,
       `Target buyer: ${detail.buyer}`,
       `Paid pain: ${detail.paidPain}`,
       `First offer and price: ${detail.firstOffer}`,
+      `Offer type: ${metadata.offerType}`,
+      `Pain type: ${metadata.painType}`,
+      `Distribution channel: ${metadata.distributionChannel}`,
+      `Build gate: ${metadata.buildGate}`,
+      `Fingerprint: ${metadata.fingerprint}`,
       "",
-      `MVP scope: ${buildScope}`,
+      `Proof asset scope: ${buildScope}`,
       "",
       "What not to build:",
       "- Do not build a full platform.",
+      "- Do not build a SaaS by default.",
       "- Do not add accounts, teams, billing, integrations, or AI APIs.",
       "- Do not build extra dashboards before validation.",
       "- Do not add features that are not needed to recreate the manual first offer.",
       "",
       "UI requirements:",
       "- Mobile-first.",
-      "- Clean dark SaaS UI.",
+      "- Clean dark proof-asset UI.",
       "- One clear input area.",
       "- One generated output area.",
       "- Copy buttons for every generated output.",
@@ -3499,7 +3796,7 @@ function buildOutputPackFromSignal(signal: BuildSignal, angle: NextAction = "pos
       "- No external API.",
       "- Local state only.",
       "- Mock data allowed.",
-      "- Clean dark SaaS UI.",
+      "- Clean dark proof-asset UI.",
       "- Include copyable output.",
       "- Include pricing CTA.",
       "- Include Build only after replies validation note.",
@@ -4540,6 +4837,7 @@ function buildHighQualitySparkFromCanonicalSignal(signal: BuildSignal): HighQual
   const fields = getCanonicalOpportunityFields(canonicalSignal);
   const validationSteps = fields.fortyEightHourTest.split("\n").filter(Boolean);
   const buildLater = getCanonicalBuildAfterReplies(canonicalSignal);
+  const metadata = getMoneyMoveMetadata(signal, fields);
 
   return {
     path: canonicalSignal.market,
@@ -4554,7 +4852,7 @@ function buildHighQualitySparkFromCanonicalSignal(signal: BuildSignal): HighQual
     launchPost: `${fields.postHook}\n\nMoney proof: ${canonicalSignal.proof}\nWhat sold: ${canonicalSignal.whatMoneyMoved}\nBuild Brief: ${canonicalSignal.firstOffer}\nBuyer: ${canonicalSignal.buyer}\nPain: ${canonicalSignal.paidPain}\nFirst offer: ${canonicalSignal.firstOffer}\nTest: ${validationSteps.join(" ")}`,
     dmScript: fields.dmScript,
     codexPromptPreview: `Build after replies. Start with ${buildLater}.`,
-    codexBuildPrompt: `Build this only after someone replies, clicks, or asks for the offer. Money proof: ${canonicalSignal.proof}. What money moved: ${canonicalSignal.whatMoneyMoved}. Market: ${canonicalSignal.market}. Build a mobile-first MVP for ${canonicalSignal.buyer}. Paid pain: ${canonicalSignal.paidPain}. First offer already tested: ${canonicalSignal.firstOffer}. Build only this first version: ${buildLater}. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no payment integration, and no external APIs. Include an offer overview, input form, generated output, saved examples, launch copy, DM script, copy buttons, and validation panel. The validation panel must include this 48-hour plan: ${validationSteps.join(" ")}. Done criteria: it should be demo-ready, mobile-first, and useful for testing demand before building a real SaaS.`,
+    codexBuildPrompt: `Build the smallest sellable proof asset for this manual offer. Build only after someone replies, clicks, or asks for the offer. Proof asset: ${metadata.proofAssetType}. Money proof: ${canonicalSignal.proof}. What money moved: ${canonicalSignal.whatMoneyMoved}. Market: ${canonicalSignal.market}. Target buyer: ${canonicalSignal.buyer}. Paid pain: ${canonicalSignal.paidPain}. Manual offer already tested: ${canonicalSignal.firstOffer}. Build only this proof asset: ${buildLater}. Build gate: ${metadata.buildGate}. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no payment integration, and no external APIs. Include an offer overview, input form, generated proof output, launch copy, DM script, copy buttons, and validation panel. The validation panel must include this 48-hour plan: ${validationSteps.join(" ")}. Done criteria: demo-ready, mobile-first, and useful for testing demand before building anything larger.`,
   };
 }
 
@@ -4565,6 +4863,7 @@ function buildHighQualitySparkFromSignalInbox(signal: BuildSignal): HighQualityB
 
   const detail = getOpportunityDetailFields(signal);
   const validationSteps = detail.fortyEightHourTest.split("\n").filter(Boolean);
+  const metadata = getMoneyMoveMetadata(signal, detail);
 
   return {
     path: getSignalMarket(signal),
@@ -4579,7 +4878,7 @@ function buildHighQualitySparkFromSignalInbox(signal: BuildSignal): HighQualityB
     launchPost: `${detail.postHook}\n\nMoney proof: ${detail.proof}\nWhat moved: ${detail.whatSold}\nBuild Brief: ${detail.firstOffer}\nBuyer: ${detail.buyer}\nPaid pain: ${detail.paidPain}\n48h test: ${validationSteps.join(" ")}`,
     dmScript: detail.dmScript,
     codexPromptPreview: `Build after replies. Start with ${detail.buildAfterReplies}.`,
-    codexBuildPrompt: `Build this only after someone replies, clicks, or asks for the offer. Source: Signal Inbox. Money proof: ${detail.proof}. What money moved: ${detail.whatSold}. Market: ${getSignalMarket(signal)}. Buyer: ${detail.buyer}. Paid pain: ${detail.paidPain}. First offer already tested: ${detail.firstOffer}. Build only this first version: ${signal.whatYouCanBuild}. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no payment integration, and no external APIs. Include an offer overview, input form, generated output, saved examples, launch copy, DM script, copy buttons, and validation panel. The validation panel must include this 48-hour plan: ${validationSteps.join(" ")}. Done criteria: demo-ready, mobile-first, and useful for testing demand before building a real SaaS.`,
+    codexBuildPrompt: `Build the smallest sellable proof asset for this manual offer. Build only after someone replies, clicks, or asks for the offer. Source: Signal Inbox. Proof asset: ${metadata.proofAssetType}. Money proof: ${detail.proof}. What money moved: ${detail.whatSold}. Market: ${getSignalMarket(signal)}. Buyer: ${detail.buyer}. Paid pain: ${detail.paidPain}. Manual offer already tested: ${detail.firstOffer}. Build only this proof asset: ${signal.whatYouCanBuild}. Build gate: ${metadata.buildGate}. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no payment integration, and no external APIs. Include an offer overview, input form, generated proof output, launch copy, DM script, copy buttons, and validation panel. The validation panel must include this 48-hour plan: ${validationSteps.join(" ")}. Done criteria: demo-ready, mobile-first, and useful for testing demand before building anything larger.`,
   };
 }
 
@@ -4594,6 +4893,7 @@ function buildHighQualitySparkFromMarketSignal(signal: BuildSignal): HighQuality
   const sparkTitle = opportunity.firstOfferName;
   const firstOffer = getFirstOfferText(opportunity);
   const validationText = opportunity.validationSteps.join(" ");
+  const proofAssetName = `${sparkTitle} Proof Asset`;
 
   return {
     path: market,
@@ -4608,7 +4908,7 @@ function buildHighQualitySparkFromMarketSignal(signal: BuildSignal): HighQuality
     launchPost: `${opportunity.postHook}\n\nMoney proof: ${opportunity.proofLabel} - ${opportunity.whatSold}\nPattern: ${opportunity.patternTitle}\nBuild Brief: ${sparkTitle}\nBuyer: ${opportunity.buyer}\nPain: ${opportunity.paidPain}\nFirst offer: ${firstOffer}\nTest: ${validationText}`,
     dmScript: opportunity.dmScript,
     codexPromptPreview: `Build a mobile-first MVP for ${sparkTitle}. Start with ${opportunity.buildAfterReplies}.`,
-    codexBuildPrompt: `Build this only after someone replies, clicks, or asks for the offer. Money proof: ${opportunity.proofLabel} for ${opportunity.whatSold}. Pattern: ${opportunity.patternTitle}. Market: ${market}. Build a mobile-first MVP called ${sparkTitle} for ${opportunity.buyer}. The buyer pain is: ${opportunity.paidPain}. First offer: ${firstOffer}. Build only this first version: ${opportunity.buildAfterReplies}. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no payment integration, and no external APIs. Include an offer overview, input form, generated output, saved examples, launch copy, DM script, copy buttons, and validation panel. The validation panel must include this 48-hour plan: ${validationText}. Done criteria: it should be demo-ready, mobile-first, and useful for testing demand before building a real SaaS.`,
+    codexBuildPrompt: `Build the smallest sellable proof asset for this manual offer. Build only after someone replies, clicks, or asks for the offer. Proof asset: ${proofAssetName}. Money proof: ${opportunity.proofLabel} for ${opportunity.whatSold}. Pattern: ${opportunity.patternTitle}. Market: ${market}. Target buyer: ${opportunity.buyer}. Paid pain: ${opportunity.paidPain}. Manual offer: ${firstOffer}. Build only this proof asset: ${opportunity.buildAfterReplies}. Build gate: build only after 3 buyer replies or 1 buying-intent reply. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no payment integration, and no external APIs. Include an offer overview, input form, generated proof output, launch copy, DM script, copy buttons, and validation panel. The validation panel must include this 48-hour plan: ${validationText}. Done criteria: demo-ready, mobile-first, and useful for testing demand before building anything larger.`,
   };
 }
 
@@ -8009,6 +8309,8 @@ function MarketSelectionSection({
               <MarketOpportunityField label="Build-after-replies rule" value={deepDiveDetail.buildAfterReplies} />
             </div>
 
+            <MoneyMoveAngleExpander signal={deepDiveSignal} />
+
             <section className="mt-5 rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.06] p-4">
               <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
@@ -8220,6 +8522,136 @@ function ProUpgradeCard({ onUnlockClick }: { onUnlockClick: () => void }) {
             Find a winner faster by testing more proven signals, not by generating random ideas.
           </p>
         </div>
+      </div>
+    </section>
+  );
+}
+
+function MoneyMoveAngleExpander({ signal }: { signal: BuildSignal }) {
+  const { angles, detail, metadata } = buildMoneyMoveAngles(signal);
+  const [selectedModes, setSelectedModes] = useState<Record<string, AngleOutputMode>>({});
+  const [copiedAngleId, setCopiedAngleId] = useState("");
+
+  async function copyAngle(angle: MoneyMoveAngle, mode: AngleOutputMode) {
+    const output = [
+      `${angle.title}`,
+      "",
+      `Hook: ${angle.hook}`,
+      "",
+      buildAngleOutput(angle, mode, detail, metadata),
+      "",
+      `Next action: ${angle.nextAction}`,
+    ].join("\n");
+    const didCopy = await writeClipboardText(output);
+
+    setCopiedAngleId(didCopy ? `${angle.id}-${mode}` : "");
+    window.setTimeout(() => setCopiedAngleId(""), 1200);
+  }
+
+  return (
+    <section className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-4 md:rounded-3xl md:p-5">
+      <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <div className="min-w-0">
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+            Money Move Angle Expander
+          </div>
+          <h3 className="mt-1 break-words text-lg font-black text-white">
+            Turn one money signal into multiple testable directions.
+          </h3>
+          <p className="mt-2 max-w-2xl break-words text-sm font-bold leading-6 text-zinc-400">
+            Money signal first. Product second. Build only after replies.
+          </p>
+        </div>
+        <div className="grid min-w-0 gap-2 text-[11px] font-black uppercase tracking-wide text-zinc-500 sm:grid-cols-2 lg:w-[360px]">
+          <span className="rounded-full border border-white/10 bg-black/25 px-3 py-2">
+            Offer: {metadata.offerType}
+          </span>
+          <span className="rounded-full border border-white/10 bg-black/25 px-3 py-2">
+            Pain: {metadata.painType}
+          </span>
+          <span className="rounded-full border border-white/10 bg-black/25 px-3 py-2">
+            Channel: {metadata.distributionChannel}
+          </span>
+          <span className="rounded-full border border-white/10 bg-black/25 px-3 py-2">
+            Asset: {metadata.proofAssetType}
+          </span>
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-3 xl:grid-cols-2">
+        {angles.map((angle) => {
+          const selectedMode = selectedModes[angle.id] || angle.defaultMode;
+          const output = buildAngleOutput(angle, selectedMode, detail, metadata);
+          const copied = copiedAngleId === `${angle.id}-${selectedMode}`;
+
+          return (
+            <article
+              key={angle.id}
+              className="min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-black/35 p-4"
+            >
+              <div className="text-[11px] font-black uppercase tracking-wide text-emerald-300">
+                {angle.title}
+              </div>
+              <h4 className="mt-2 break-words text-base font-black text-white">
+                {angle.hook}
+              </h4>
+              <div className="mt-3 rounded-2xl border border-white/10 bg-black/30 p-3">
+                <div className="text-[11px] font-black uppercase tracking-wide text-zinc-600">
+                  Angle output
+                </div>
+                <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-zinc-200">
+                  {angle.output}
+                </p>
+              </div>
+              <div className="mt-3 rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.06] p-3">
+                <div className="text-[11px] font-black uppercase tracking-wide text-emerald-300">
+                  Turn into
+                </div>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {angleOutputModes.map((mode) => {
+                    const active = selectedMode === mode;
+
+                    return (
+                      <button
+                        key={mode}
+                        type="button"
+                        onClick={() =>
+                          setSelectedModes((currentModes) => ({
+                            ...currentModes,
+                            [angle.id]: mode,
+                          }))
+                        }
+                        className={[
+                          "rounded-full border px-3 py-2 text-xs font-black transition",
+                          active
+                            ? "border-emerald-300 bg-emerald-300 text-black"
+                            : "border-white/10 bg-black/25 text-zinc-400 hover:border-white/20 hover:text-white",
+                        ].join(" ")}
+                      >
+                        {mode}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              <pre className="mt-3 max-h-[300px] max-w-full overflow-auto whitespace-pre-wrap break-words rounded-xl border border-white/10 bg-black/60 p-4 font-sans text-sm leading-6 text-zinc-100">
+                {output}
+              </pre>
+              <div className="mt-3 flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <p className="break-words text-xs font-bold leading-5 text-zinc-400">
+                  Next action: {angle.nextAction}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => copyAngle(angle, selectedMode)}
+                  className="w-full rounded-xl bg-white px-4 py-2.5 text-center text-xs font-black text-black transition hover:bg-zinc-200 sm:w-auto"
+                >
+                  {copied ? "Copied" : "Copy angle"}
+                </button>
+              </div>
+            </article>
+          );
+        })}
       </div>
     </section>
   );
