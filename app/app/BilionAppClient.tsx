@@ -3181,7 +3181,7 @@ function getSignalMarket(signal: BuildSignal) {
     return "Construction";
   }
 
-  if (/shopify|ecommerce|cart|sku|product page|dtc|etsy/.test(haystack)) {
+  if (/shopify|ecommerce|cart|abandoned cart|sku|product page|product description|returns?|faq|dtc|etsy/.test(haystack)) {
     return "Ecommerce";
   }
 
@@ -3193,15 +3193,15 @@ function getSignalMarket(signal: BuildSignal) {
     return "Legal";
   }
 
-  if (/real estate|property manager|tenant|maintenance|rental|leasing/.test(haystack)) {
+  if (/real estate|property manager|tenant|maintenance|rental|leasing|listing|showing|open house|broker|realtor/.test(haystack)) {
     return "Real Estate";
   }
 
-  if (/finance|bookkeeper|cfo|receipt|transaction|month-end|accountant/.test(haystack)) {
+  if (/finance|bookkeeper|cfo|receipt|transaction|month-end|accountant|invoice|overdue|payment follow|cashflow|cash flow|reconciliation|expense/.test(haystack)) {
     return "Finance";
   }
 
-  if (/developer|github|pull request|pr risk|repo|devtool|maintainer/.test(haystack)) {
+  if (/developer|github|pull request|pr risk|repo|devtool|maintainer|ai agent cost|token spend|model usage|rag eval|tool-call|prompt regression/.test(haystack)) {
     return "Developer Workflow";
   }
 
@@ -3209,7 +3209,7 @@ function getSignalMarket(signal: BuildSignal) {
     return "Developer Workflow";
   }
 
-  if (/restaurant|salon|review|google business|local owner|home-service/.test(haystack)) {
+  if (/restaurant|salon|review|google business|local owner|home-service|missed call|appointment|quote request|repeat customer/.test(haystack)) {
     return "Local Business";
   }
 
@@ -8107,8 +8107,13 @@ function MarketSelectionSection({
   const topMoneySignals = moneySignals.length
     ? moneySignals
     : getStaticMoneySignalsForMarket(selectedMarket);
-  const recommendationSource = allSignals.length
-    ? allSignals
+  const marketScopedSignals = allSignals
+    .filter((signal) => getSignalMarket(signal) === selectedMarket)
+    .filter((signal, index, signals) =>
+      signals.findIndex((candidate) => candidate.id === signal.id) === index,
+    );
+  const recommendationSource = marketScopedSignals.length
+    ? marketScopedSignals
     : topMoneySignals.length
       ? topMoneySignals
       : opportunities.length > 0
@@ -8279,11 +8284,14 @@ function MarketSelectionSection({
         firstOffer={deepDiveDetail.firstOffer}
         hasFounderAccess={hasFounderAccess}
         moneyProof={deepDiveDetail.proof}
+        monetizationStyle={monetizationPreference}
         onAddToQueue={addTodaysMoveToQueue}
         onCopyOfferTest={copyTodaysOfferTest}
         paidPain={deepDiveDetail.paidPain}
         price={deepDiveDetail.price}
         queueLimitReached={queueLimitReached}
+        selectedGoal={dailyGoal}
+        selectedMarket={selectedMarket}
         signalTitle={getDisplaySignalTitle(deepDiveSignal).title}
         todaysAction={deepDiveDetail.fortyEightHourTest}
         wasCopied={todaysMoveCopied}
@@ -8298,10 +8306,10 @@ function MarketSelectionSection({
             Other Signals to Consider
           </div>
           <h3 className="mt-1 break-words text-xl font-black text-white md:text-2xl">
-            Explore adjacent signals if today&apos;s move is not the right fit.
+            Explore adjacent {selectedMarket} signals if today&apos;s move is not the right fit.
           </h3>
           <p className="mt-2 max-w-2xl break-words text-sm leading-6 text-zinc-400">
-            Free users get today&apos;s best Money Move. Pro users can test more signals and find winners faster.
+            Based on your selected market. Free users get today&apos;s best Money Move. Pro users can test more signals and find winners faster.
           </p>
         </div>
       </div>
@@ -8535,11 +8543,14 @@ function TodayMoneyMoveCard({
   firstOffer,
   hasFounderAccess,
   moneyProof,
+  monetizationStyle,
   onAddToQueue,
   onCopyOfferTest,
   paidPain,
   price,
   queueLimitReached,
+  selectedGoal,
+  selectedMarket,
   signalTitle,
   todaysAction,
   wasCopied,
@@ -8550,11 +8561,14 @@ function TodayMoneyMoveCard({
   firstOffer: string;
   hasFounderAccess: boolean;
   moneyProof: string;
+  monetizationStyle: MonetizationPreference;
   onAddToQueue: () => void;
   onCopyOfferTest: () => void;
   paidPain: string;
   price: string;
   queueLimitReached: boolean;
+  selectedGoal: DailyGoal;
+  selectedMarket: AppMarketOption;
   signalTitle: string;
   todaysAction: string;
   wasCopied: boolean;
@@ -8573,6 +8587,20 @@ function TodayMoneyMoveCard({
           <p className="mt-2 max-w-2xl break-words text-sm font-bold leading-6 text-zinc-300">
             Based on your goal and buyer, this is the move to test today.
           </p>
+          <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-wide text-zinc-400">
+            <span className="rounded-full border border-emerald-300/25 bg-emerald-300/[0.08] px-3 py-2 text-emerald-100">
+              Selected market: {selectedMarket}
+            </span>
+            <span className="rounded-full border border-white/10 bg-black/25 px-3 py-2">
+              Goal: {selectedGoal}
+            </span>
+            <span className="rounded-full border border-white/10 bg-black/25 px-3 py-2">
+              Monetization: {monetizationStyle}
+            </span>
+            <span className="rounded-full border border-white/10 bg-black/25 px-3 py-2">
+              Market match
+            </span>
+          </div>
           <p className="mt-2 max-w-2xl break-words text-xs font-black uppercase tracking-wide text-zinc-500">
             {hasFounderAccess
               ? "Pro: more signals, full launch assets, remixing, and winner tracking."
