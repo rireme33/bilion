@@ -1542,21 +1542,68 @@ type RemixType =
   | "Turn it into a $9.99/mo product";
 
 type ValidationQueueStatus =
-  | "Not started"
+  | "Draft"
+  | "Ready"
   | "Posted"
-  | "DMed buyers"
-  | "Got replies"
-  | "Got buying intent"
-  | "Winner";
+  | "Got Replies"
+  | "Paid Interest"
+  | "Winner"
+  | "Build"
+  | "Drop";
 
 type ValidationQueueItem = {
   id: string;
   signalTitle: string;
-  outputType: TransformType;
+  outputType: TransformType | "Business Start Pack";
   buyer: string;
   offer: string;
   output: string;
   status: ValidationQueueStatus;
+  views: number;
+  likes: number;
+  saves: number;
+  replies: number;
+  dms: number;
+  paidInterest: number;
+  notes: string;
+  winner: boolean;
+};
+
+type BusinessStartPack = {
+  angleName: BusinessAngleName;
+  businessName: string;
+  buyer: string;
+  paidPain: string;
+  firstOffer: string;
+  price: string;
+  xPost: string;
+  carousel: string;
+  dmScript: string;
+  freeLeadMagnet: string;
+  validationPlan: string;
+  buildDropRule: string;
+  codexMvpPrompt: string;
+};
+
+type BusinessOfferType =
+  | "audit"
+  | "setup service"
+  | "micro SaaS"
+  | "template pack"
+  | "agency offer";
+
+type BusinessChannel = "X" | "TikTok" | "Instagram" | "LinkedIn" | "DM";
+type BusinessTone = "direct" | "premium" | "beginner-friendly" | "contrarian";
+type BusinessDifficulty = "simple" | "medium" | "advanced";
+type BusinessAngleName = "Safe angle" | "Aggressive angle" | "Premium angle" | "Beginner angle" | "Agency angle";
+
+type BusinessStartControls = {
+  targetBuyer: string;
+  offerType: BusinessOfferType;
+  pricePoint: string;
+  channel: BusinessChannel;
+  tone: BusinessTone;
+  difficulty: BusinessDifficulty;
 };
 
 type BilionIntentEventName =
@@ -1623,12 +1670,33 @@ const remixOptions: RemixType[] = [
 ];
 
 const validationQueueStatuses: ValidationQueueStatus[] = [
-  "Not started",
+  "Draft",
+  "Ready",
   "Posted",
-  "DMed buyers",
-  "Got replies",
-  "Got buying intent",
+  "Got Replies",
+  "Paid Interest",
   "Winner",
+  "Build",
+  "Drop",
+];
+
+const businessOfferTypes: BusinessOfferType[] = [
+  "audit",
+  "setup service",
+  "micro SaaS",
+  "template pack",
+  "agency offer",
+];
+
+const businessChannels: BusinessChannel[] = ["X", "TikTok", "Instagram", "LinkedIn", "DM"];
+const businessTones: BusinessTone[] = ["direct", "premium", "beginner-friendly", "contrarian"];
+const businessDifficulties: BusinessDifficulty[] = ["simple", "medium", "advanced"];
+const businessAngleNames: BusinessAngleName[] = [
+  "Safe angle",
+  "Aggressive angle",
+  "Premium angle",
+  "Beginner angle",
+  "Agency angle",
 ];
 
 const angleOutputModes: AngleOutputMode[] = [
@@ -1911,6 +1979,7 @@ const SEEN_SIGNAL_IDS_STORAGE_KEY = "bilion_seen_signal_ids";
 const SAVED_SIGNAL_IDS_STORAGE_KEY = "bilion_saved_signal_ids";
 const WINNER_SIGNAL_IDS_STORAGE_KEY = "bilion_winner_signal_ids";
 const REJECTED_SIGNAL_IDS_STORAGE_KEY = "bilion_rejected_signal_ids";
+const LAUNCH_QUEUE_STORAGE_KEY = "bilion_launch_queue";
 const FREE_GENERATION_LIMIT = 3;
 const FREE_USAGE_STORAGE_KEY_EN = "bilion_free_generation_count_en";
 const MAX_SAVED_SIGNALS = 10;
@@ -3889,6 +3958,145 @@ function buildAngleOutput(
   return buildCodexProofAssetPrompt(detail, metadata, offerFields);
 }
 
+function getDefaultBusinessStartControls(signal: BuildSignal): BusinessStartControls {
+  const detail = getOpportunityDetailFields(signal);
+
+  return {
+    channel: "X",
+    difficulty: "simple",
+    offerType: "audit",
+    pricePoint: getOfferPriceFromText(detail.firstOffer, detail.price) || "$99 one-time",
+    targetBuyer: detail.buyer,
+    tone: "direct",
+  };
+}
+
+function getAngleDefaults(angleName: BusinessAngleName): Pick<BusinessStartControls, "offerType" | "pricePoint" | "tone" | "difficulty"> {
+  if (angleName === "Aggressive angle") {
+    return { difficulty: "medium", offerType: "setup service", pricePoint: "$299 one-time", tone: "contrarian" };
+  }
+
+  if (angleName === "Premium angle") {
+    return { difficulty: "advanced", offerType: "agency offer", pricePoint: "$1,500 setup", tone: "premium" };
+  }
+
+  if (angleName === "Beginner angle") {
+    return { difficulty: "simple", offerType: "template pack", pricePoint: "$29 one-time", tone: "beginner-friendly" };
+  }
+
+  if (angleName === "Agency angle") {
+    return { difficulty: "medium", offerType: "agency offer", pricePoint: "$499 setup", tone: "direct" };
+  }
+
+  return { difficulty: "simple", offerType: "audit", pricePoint: "$99 one-time", tone: "direct" };
+}
+
+function getOfferNameForControls(
+  offerFields: MoneyMoveOfferFields,
+  controls: BusinessStartControls,
+  angleName: BusinessAngleName,
+) {
+  const baseName = offerFields.firstOfferName
+    .replace(/\s+-\s+Cleanup Pack$/i, "")
+    .replace(/\s+Pack$/i, "")
+    .trim();
+  const suffixByType: Record<BusinessOfferType, string> = {
+    "agency offer": "Done-for-You Sprint",
+    "audit": "Audit",
+    "micro SaaS": "Micro MVP",
+    "setup service": "Setup Sprint",
+    "template pack": "Template Pack",
+  };
+
+  return `${baseName} ${suffixByType[controls.offerType]} (${angleName.replace(" angle", "")})`;
+}
+
+function buildBusinessStartPack(
+  signal: BuildSignal,
+  controls: BusinessStartControls,
+  angleName: BusinessAngleName,
+): BusinessStartPack {
+  const detail = getOpportunityDetailFields(signal);
+  const metadata = getMoneyMoveMetadata(signal, detail);
+  const offerFields = getMoneyMoveOfferFields(signal, detail, metadata);
+  const title = getDisplaySignalTitle(signal).title || getOutputPackProductName(detail.firstOffer);
+  const buyer = normalizeDisplayText(controls.targetBuyer || detail.buyer);
+  const offerName = getOfferNameForControls(offerFields, controls, angleName);
+  const price = controls.pricePoint || offerFields.price || detail.price;
+  const painClause = getBuyerFacingPainClause(detail.paidPain);
+  const toneHook: Record<BusinessTone, string> = {
+    "beginner-friendly": `Simple business to test: help ${getShortBuyerLabel(buyer)} fix one painful workflow.`,
+    "contrarian": `${getShortBuyerLabel(buyer)} do not need another product. They need this pain handled now.`,
+    "direct": `${getShortBuyerLabel(buyer)} are already paying around this pain.`,
+    "premium": `Premium buyers pay when ${painClause}.`,
+  };
+  const baseAngle: MoneyMoveAngle = {
+    defaultMode: "X post",
+    hook: toneHook[controls.tone],
+    id: "business-start-pack",
+    nextAction: "Post the offer, DM 10 buyers, then build only after replies.",
+    output: "",
+    title: "Business Start Pack",
+  };
+  const controlledDetail = { ...detail, buyer, firstOffer: `${offerName} ${price}` };
+  const controlledOfferFields = {
+    ...offerFields,
+    firstOfferName: offerName,
+    price,
+  };
+  const validationPlan = [
+    "48-hour validation plan:",
+    "Day 1:",
+    `- Publish the ${controls.channel} version today.`,
+    `- Send the DM to 10 reachable buyers: ${buyer}.`,
+    "- Offer one before/after sample, not a product demo.",
+    "",
+    "Day 2:",
+    "- Follow up with anyone who replied, saved, clicked, or asked a question.",
+    "- Ask one payment question: would you pay for this sample for your own case?",
+    "- Log replies, DMs, paid interest, and notes in the Launch Queue.",
+  ].join("\n");
+  const buildDropRule = [
+    "Build / Drop rule:",
+    "- Build next if replies >= 3 or paid interest >= 1.",
+    "- Re-angle or drop if replies = 0 and paid interest = 0.",
+    "- Codex comes after demand, not before it.",
+  ].join("\n");
+
+  return {
+    angleName,
+    businessName: title,
+    buyer,
+    paidPain: detail.paidPain,
+    firstOffer: offerName,
+    price,
+    xPost: [
+      toneHook[controls.tone],
+      "",
+      `Money Signal: ${detail.proof}`,
+      `Buyer: ${buyer}`,
+      `Pain: ${detail.paidPain}`,
+      `Offer: ${offerName}`,
+      `Price: ${price}`,
+      "",
+      `Today: post on ${controls.channel}, DM 10 buyers, and offer one sample.`,
+      "Build only after replies.",
+    ].join("\n"),
+    carousel: buildAngleOutput(baseAngle, "5-slide carousel outline", controlledDetail, metadata, controlledOfferFields),
+    dmScript: buildAngleOutput(baseAngle, "Buyer DM", controlledDetail, metadata, controlledOfferFields),
+    freeLeadMagnet: buildAngleOutput(baseAngle, "Free pack outline", controlledDetail, metadata, controlledOfferFields),
+    validationPlan,
+    buildDropRule,
+    codexMvpPrompt: [
+      buildCodexProofAssetPrompt(controlledDetail, metadata, controlledOfferFields),
+      "",
+      `Difficulty: ${controls.difficulty}.`,
+      `Angle: ${angleName}.`,
+      "Build After Replies only.",
+    ].join("\n"),
+  };
+}
+
 function getLaunchPackAngleNote(angle: NextAction) {
   if (angle === "sell") {
     return "Lead with the buyer, paid pain, first offer, price, and a low-friction DM or checkout angle.";
@@ -4370,23 +4578,92 @@ function buildTodaysOfferTest(signal: BuildSignal) {
 }
 
 function getValidationQueueNextAction(status: ValidationQueueStatus) {
+  if (status === "Ready") {
+    return "Post today";
+  }
+
   if (status === "Posted") {
     return "DM 10 buyers";
   }
 
-  if (status === "DMed buyers") {
+  if (status === "Got Replies") {
     return "Ask for payment";
   }
 
-  if (status === "Got replies" || status === "Got buying intent") {
-    return "Save as winner";
+  if (status === "Paid Interest") {
+    return "Mark as Winner or Build";
   }
 
   if (status === "Winner") {
-    return "Reuse, remix, or build with Codex";
+    return "Open full Launch Pack and build after replies";
+  }
+
+  if (status === "Build") {
+    return "Build with Codex";
+  }
+
+  if (status === "Drop") {
+    return "Re-angle or drop";
   }
 
   return "Post today";
+}
+
+function getValidationRecommendation(item: ValidationQueueItem) {
+  if (item.replies >= 3 || item.paidInterest >= 1 || item.status === "Build" || item.status === "Winner") {
+    return "Recommendation: Build next.";
+  }
+
+  if (item.replies === 0 && item.paidInterest === 0 && (item.status === "Posted" || item.dms > 0)) {
+    return "Recommendation: Re-angle or drop.";
+  }
+
+  return "Recommendation: keep testing until replies or paid interest appear.";
+}
+
+function readLaunchQueueItems() {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  try {
+    const raw = window.localStorage.getItem(LAUNCH_QUEUE_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+
+    return Array.isArray(parsed)
+      ? parsed.map((item) => ({
+        buyer: item.buyer || "",
+        dms: Number(item.dms) || 0,
+        id: item.id || `launch-${Date.now()}`,
+        likes: Number(item.likes) || 0,
+        notes: item.notes || "",
+        offer: item.offer || "",
+        output: item.output || "",
+        outputType: item.outputType || "Business Start Pack",
+        paidInterest: Number(item.paidInterest) || 0,
+        replies: Number(item.replies) || 0,
+        saves: Number(item.saves) || 0,
+        signalTitle: item.signalTitle || "Money Signal",
+        status: validationQueueStatuses.includes(item.status) ? item.status : "Draft",
+        views: Number(item.views) || 0,
+        winner: Boolean(item.winner),
+      })) as ValidationQueueItem[]
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeLaunchQueueItems(items: ValidationQueueItem[]) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(LAUNCH_QUEUE_STORAGE_KEY, JSON.stringify(items));
+  } catch {
+    // localStorage can be unavailable in private modes or locked-down browsers.
+  }
 }
 
 function trackBilionIntentEvent(
@@ -8227,9 +8504,18 @@ function MarketSelectionSection({
   const [deepDiveSignalId, setDeepDiveSignalId] = useState("");
   const [selectedTransform, setSelectedTransform] = useState<TransformType>("X Post");
   const [selectedRemix, setSelectedRemix] = useState<RemixType>("Make it simpler");
-  const [validationQueue, setValidationQueue] = useState<ValidationQueueItem[]>([]);
+  const [validationQueue, setValidationQueue] = useState<ValidationQueueItem[]>(() => readLaunchQueueItems());
   const [savedTransformKeys, setSavedTransformKeys] = useState<string[]>([]);
-  const [todaysMoveCopied, setTodaysMoveCopied] = useState(false);
+  const [activePackCopied, setActivePackCopied] = useState("");
+  const [activeBusinessAngle, setActiveBusinessAngle] = useState<BusinessAngleName>("Safe angle");
+  const [businessControls, setBusinessControls] = useState<BusinessStartControls>({
+    channel: "X",
+    difficulty: "simple",
+    offerType: "audit",
+    pricePoint: "$99 one-time",
+    targetBuyer: "",
+    tone: "direct",
+  });
   const topMoneySignals = moneySignals.length
     ? moneySignals
     : getStaticMoneySignalsForMarket(selectedMarket);
@@ -8257,39 +8543,28 @@ function MarketSelectionSection({
     primaryRecommendation?.signal ||
     topMoneySignals[0] ||
     buildMarketSpecificSignal(selectedMarket);
-  const otherRecommendations = recommendations.filter(
-    (recommendation) => recommendation.signal.id !== deepDiveSignal.id,
-  );
-  const visibleRecommendations = hasFounderAccess ? otherRecommendations : [];
-  const lockedRecommendations = hasFounderAccess ? [] : otherRecommendations.slice(0, 2);
+  const feedRecommendations = recommendations.slice(0, hasFounderAccess ? 9 : 6);
   const deepDiveDetail = getOpportunityDetailFields(deepDiveSignal);
-  const deepDiveMetadata = getMoneyMoveMetadata(deepDiveSignal, deepDiveDetail);
-  const deepDiveOfferFields = getMoneyMoveOfferFields(deepDiveSignal, deepDiveDetail, deepDiveMetadata);
-  const deepDiveQuality = buildMoneyMoveQuality(
-    deepDiveDetail,
-    deepDiveMetadata,
-    deepDiveOfferFields,
+  const effectiveBusinessControls = {
+    ...businessControls,
+    targetBuyer: businessControls.targetBuyer || deepDiveDetail.buyer,
+  };
+  const businessStartPack = buildBusinessStartPack(
+    deepDiveSignal,
+    effectiveBusinessControls,
+    activeBusinessAngle,
+  );
+  const businessAnglePacks = businessAngleNames.map((angleName) =>
+    buildBusinessStartPack(
+      deepDiveSignal,
+      {
+        ...effectiveBusinessControls,
+        ...getAngleDefaults(angleName),
+      },
+      angleName,
+    ),
   );
   const hasEnoughMarketSignals = marketScopedSignals.length >= 3;
-  const todaysRecommendation =
-    recommendations.find((recommendation) => recommendation.signal.id === deepDiveSignal.id) ||
-    recommendations[0] ||
-    {
-      fitScore: getPreferenceFitScore(
-        deepDiveSignal,
-        dailyGoal,
-        buyerPreference,
-        monetizationPreference,
-      ),
-      signal: deepDiveSignal,
-      why: getWhySignalMatches(
-        deepDiveSignal,
-        dailyGoal,
-        buyerPreference,
-        monetizationPreference,
-      ),
-    };
-  const todaysOfferTest = buildTodaysOfferTest(deepDiveSignal);
   const selectedTransformOutput = buildTransformOutput(
     deepDiveSignal,
     selectedTransform,
@@ -8302,7 +8577,7 @@ function MarketSelectionSection({
     selectedTransform === "X Post" ||
     selectedTransform === "Buyer DM" ||
     selectedTransform === "Codex Prompt";
-  const winnerItems = validationQueue.filter((item) => item.status === "Winner");
+  const winnerItems = validationQueue.filter((item) => item.winner);
   const analyticsPayload = {
     buyer: deepDiveDetail.buyer,
     hasProAccess: hasFounderAccess,
@@ -8313,6 +8588,41 @@ function MarketSelectionSection({
 
   function trackUnlockProClick() {
     trackBilionIntentEvent("click_unlock_bilion_pro", analyticsPayload);
+  }
+
+  useEffect(() => {
+    writeLaunchQueueItems(validationQueue);
+  }, [validationQueue]);
+
+  function createQueueItem(
+    outputType: TransformType | "Business Start Pack",
+    output: string,
+  ): ValidationQueueItem {
+    return {
+      id: `launch-${deepDiveSignal.id}-${outputType}-${validationQueue.length + 1}`,
+      buyer: deepDiveDetail.buyer,
+      dms: 0,
+      likes: 0,
+      notes: "",
+      offer: `${businessStartPack.firstOffer} (${businessStartPack.price})`,
+      output,
+      outputType,
+      paidInterest: 0,
+      replies: 0,
+      saves: 0,
+      signalTitle: businessStartPack.businessName,
+      status: "Draft",
+      views: 0,
+      winner: false,
+    };
+  }
+
+  function startBusiness(signal: BuildSignal) {
+    setDeepDiveSignalId(signal.id);
+    setBusinessControls(getDefaultBusinessStartControls(signal));
+    setActiveBusinessAngle("Safe angle");
+    onSignalSeen(signal);
+    onGenerateOutputPack(signal);
   }
 
   function addTransformToQueue() {
@@ -8330,21 +8640,18 @@ function MarketSelectionSection({
         output: selectedTransformOutput,
         outputType: selectedTransform,
         signalTitle: getDisplaySignalTitle(deepDiveSignal).title,
-        status: "Not started",
+        status: "Draft",
+        views: 0,
+        likes: 0,
+        saves: 0,
+        replies: 0,
+        dms: 0,
+        paidInterest: 0,
+        notes: "",
+        winner: false,
       },
       ...currentItems,
     ]);
-  }
-
-  async function copyTodaysOfferTest() {
-    const didCopy = await writeClipboardText(todaysOfferTest);
-
-    if (didCopy) {
-      trackBilionIntentEvent("copy_today_offer_test", analyticsPayload);
-    }
-
-    setTodaysMoveCopied(didCopy);
-    window.setTimeout(() => setTodaysMoveCopied(false), 1200);
   }
 
   function addTodaysMoveToQueue() {
@@ -8355,15 +8662,29 @@ function MarketSelectionSection({
     trackBilionIntentEvent("add_to_validation_queue", analyticsPayload);
 
     setValidationQueue((currentItems) => [
-      {
-        id: `today-${deepDiveSignal.id}-${Date.now()}`,
-        buyer: deepDiveDetail.buyer,
-        offer: deepDiveDetail.firstOffer,
-        output: todaysOfferTest,
-        outputType: "X Post",
-        signalTitle: getDisplaySignalTitle(deepDiveSignal).title,
-        status: "Not started",
-      },
+      createQueueItem(
+        "Business Start Pack",
+        [
+          `Business: ${businessStartPack.businessName}`,
+          `Angle: ${businessStartPack.angleName}`,
+          `Buyer: ${businessStartPack.buyer}`,
+          `Offer: ${businessStartPack.firstOffer}`,
+          `Price: ${businessStartPack.price}`,
+          "",
+          "X Post:",
+          businessStartPack.xPost,
+          "",
+          "Carousel:",
+          businessStartPack.carousel,
+          "",
+          "DM:",
+          businessStartPack.dmScript,
+          "",
+          businessStartPack.validationPlan,
+          "",
+          businessStartPack.buildDropRule,
+        ].join("\n"),
+      ),
       ...currentItems,
     ]);
   }
@@ -8375,7 +8696,7 @@ function MarketSelectionSection({
       ),
     );
 
-    if (status === "Winner") {
+    if (status === "Build") {
       const winnerItem = validationQueue.find((item) => item.id === itemId);
 
       trackBilionIntentEvent("mark_queue_item_winner", {
@@ -8388,6 +8709,42 @@ function MarketSelectionSection({
     }
   }
 
+  function updateQueueItem(
+    itemId: string,
+    updates: Partial<ValidationQueueItem>,
+  ) {
+    setValidationQueue((currentItems) =>
+      currentItems.map((item) =>
+        item.id === itemId ? { ...item, ...updates } : item,
+      ),
+    );
+  }
+
+  function markQueueWinner(itemId: string) {
+    const winnerItem = validationQueue.find((item) => item.id === itemId);
+
+    setValidationQueue((currentItems) =>
+      currentItems.map((item) =>
+        item.id === itemId ? { ...item, status: "Winner", winner: true } : item,
+      ),
+    );
+
+    trackBilionIntentEvent("mark_queue_item_winner", {
+      buyer: winnerItem?.buyer || analyticsPayload.buyer,
+      hasProAccess: hasFounderAccess,
+      monetizationStyle: monetizationPreference,
+      selectedSignalTitle: winnerItem?.signalTitle || analyticsPayload.selectedSignalTitle,
+      userGoal: dailyGoal,
+    });
+  }
+
+  async function copyBusinessStartPackPart(label: string, value: string) {
+    const didCopy = await writeClipboardText(value);
+
+    setActivePackCopied(didCopy ? label : "");
+    window.setTimeout(() => setActivePackCopied(""), 1200);
+  }
+
   function saveTransformOutput() {
     setSavedTransformKeys((currentKeys) =>
       Array.from(new Set([`${deepDiveSignal.id}-${selectedTransform}`, ...currentKeys])),
@@ -8396,85 +8753,54 @@ function MarketSelectionSection({
 
   return (
     <section className="w-full max-w-full overflow-hidden rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.055] p-4 shadow-2xl md:rounded-3xl md:p-6">
-      <PreferencePanel
-        buyerPreference={buyerPreference}
-        dailyGoal={dailyGoal}
-        monetizationPreference={monetizationPreference}
-        onBuyerPreferenceChange={(nextBuyer) => {
-          setBuyerPreference(nextBuyer);
-          const nextMarket = getPreferenceMarket(nextBuyer);
-
-          if (nextMarket) {
-            onMarketChange(nextMarket);
-          }
-        }}
-        onDailyGoalChange={setDailyGoal}
-        onMonetizationPreferenceChange={setMonetizationPreference}
-      />
-
-      <TodayMoneyMoveCard
-        buyer={deepDiveDetail.buyer}
-        fitScore={todaysRecommendation.fitScore}
-        firstOffer={deepDiveDetail.firstOffer}
+      <MoneyMoveFeedIntro
         hasFounderAccess={hasFounderAccess}
-        moneyProof={deepDiveDetail.proof}
-        monetizationStyle={monetizationPreference}
-        onAddToQueue={addTodaysMoveToQueue}
-        onCopyOfferTest={copyTodaysOfferTest}
-        paidPain={deepDiveDetail.paidPain}
-        price={deepDiveDetail.price}
-        quality={deepDiveQuality}
-        queueLimitReached={queueLimitReached}
-        selectedGoal={dailyGoal}
         selectedMarket={selectedMarket}
-        signalTitle={getDisplaySignalTitle(deepDiveSignal).title}
-        todaysAction={deepDiveDetail.fortyEightHourTest}
-        wasCopied={todaysMoveCopied}
-        whyMatches={todaysRecommendation.why}
       />
 
-      {!hasFounderAccess && <ProUpgradeCard onUnlockClick={trackUnlockProClick} />}
+      <details className="mb-4 rounded-2xl border border-white/10 bg-black/20 p-4">
+        <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+          Tune feed
+        </summary>
+        <div className="mt-4">
+          <PreferencePanel
+            buyerPreference={buyerPreference}
+            dailyGoal={dailyGoal}
+            monetizationPreference={monetizationPreference}
+            onBuyerPreferenceChange={(nextBuyer) => {
+              setBuyerPreference(nextBuyer);
+              const nextMarket = getPreferenceMarket(nextBuyer);
 
-      <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-        <div className="min-w-0">
-          <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-            Other Signals to Consider
+              if (nextMarket) {
+                onMarketChange(nextMarket);
+              }
+            }}
+            onDailyGoalChange={setDailyGoal}
+            onMonetizationPreferenceChange={setMonetizationPreference}
+          />
+          <div className="mt-3 flex min-w-0 flex-wrap gap-2 pb-1">
+            {appMarketOptions.map((market) => {
+              const active = selectedMarket === market;
+
+              return (
+                <button
+                  key={market}
+                  type="button"
+                  onClick={() => onMarketChange(market)}
+                  className={[
+                    "min-h-11 rounded-full border px-3 py-2 text-sm font-black transition",
+                    active
+                      ? "border-emerald-300 bg-emerald-300 text-black"
+                      : "border-white/10 bg-black/25 text-zinc-400 hover:border-white/20 hover:text-white",
+                  ].join(" ")}
+                >
+                  {market}
+                </button>
+              );
+            })}
           </div>
-          <h3 className="mt-1 break-words text-xl font-black text-white md:text-2xl">
-            Explore adjacent {selectedMarket} signals if today&apos;s move is not the right fit.
-          </h3>
-          <p className="mt-2 max-w-2xl break-words text-sm leading-6 text-zinc-400">
-            Based on your selected market. Free users get today&apos;s best Money Move. Pro users can test more signals and find winners faster.
-          </p>
         </div>
-      </div>
-
-      <div className="mt-3 flex min-w-0 flex-wrap gap-2 pb-1 md:mt-4">
-        <div className="basis-full">
-          <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
-            Markets
-          </div>
-        </div>
-        {appMarketOptions.map((market) => {
-          const active = selectedMarket === market;
-
-          return (
-            <button
-              key={market}
-              type="button"
-              onClick={() => onMarketChange(market)}
-              className={[
-                "min-h-11 rounded-full border px-3 py-2 text-sm font-black transition",
-                active
-                  ? "border-emerald-300 bg-emerald-300 text-black"
-                  : "border-white/10 bg-black/25 text-zinc-400 hover:border-white/20 hover:text-white",
-              ].join(" ")}
-            >
-              {market}
-            </button>
-          );
-        })}
-      </div>
+      </details>
 
       {!hasEnoughMarketSignals && (
         <div className="mt-3 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.08] px-4 py-3 text-sm font-bold leading-6 text-yellow-100">
@@ -8484,98 +8810,27 @@ function MarketSelectionSection({
 
       <div className="mt-3 grid min-w-0 gap-3 md:mt-4">
         <div className="grid min-w-0 gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {visibleRecommendations.map((recommendation, index) => {
+          {feedRecommendations.map((recommendation, index) => {
             const signal = recommendation.signal;
             const detail = getOpportunityDetailFields(signal);
             const active = deepDiveSignal.id === signal.id;
 
             return (
-              <button
-                type="button"
+              <MoneyMoveFeedCard
+                active={active}
+                detail={detail}
+                fitScore={recommendation.fitScore}
+                index={index}
                 key={signal.id}
-                onClick={() => {
-                  setDeepDiveSignalId(signal.id);
-                  onSignalSeen(signal);
-                }}
-                aria-pressed={active}
-                className={[
-                  "min-w-0 cursor-pointer overflow-hidden rounded-2xl border p-3 text-left transition focus:outline-none focus:ring-2 focus:ring-emerald-300/70 focus:ring-offset-2 focus:ring-offset-black",
-                  active
-                    ? "border-emerald-300/70 bg-emerald-300/[0.12] shadow-lg shadow-emerald-950/30"
-                    : "border-white/10 bg-black/25 hover:border-emerald-300/35 hover:bg-white/[0.04]",
-                ].join(" ")}
-              >
-                <div className="flex min-w-0 items-start justify-between gap-2">
-                  <div className="min-w-0 break-words text-[11px] font-black uppercase tracking-wide text-emerald-300">
-                    {index === 0 ? "Today's Best Money Signal" : signal.signalSourceLabel || signal.sourceType || "Money signal"}
-                  </div>
-                  {active && (
-                    <span className="shrink-0 rounded-full border border-emerald-300/35 bg-emerald-300/[0.12] px-2 py-1 text-[10px] font-black uppercase tracking-wide text-emerald-100">
-                      Selected
-                    </span>
-                  )}
-                </div>
-                <h4 className="mt-2 break-words text-sm font-black text-white">
-                  {truncateDisplayText(getDisplaySignalTitle(signal).title, 70)}
-                </h4>
-                <div className="mt-2 inline-flex rounded-full border border-white/10 bg-black/25 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-zinc-300">
-                  {getFitLabel(recommendation.fitScore)} · {recommendation.fitScore}
-                </div>
-                <div className="mt-3 grid gap-2">
-                  <CompactSignalField label="Money Proof" value={detail.proof} />
-                  <CompactSignalField label="Buyer" value={detail.buyer} />
-                  <CompactSignalField label="Paid Pain" value={detail.paidPain} />
-                  <CompactSignalField label="First Offer" value={detail.firstOffer} />
-                  <CompactSignalField label="Price" value={detail.price} />
-                  <CompactSignalField label="Why this matches you" value={recommendation.why} />
-                </div>
-                <span
-                  className={[
-                    "mt-3 block w-full rounded-xl px-3 py-3 text-center text-xs font-black transition",
-                    active
-                      ? "border border-emerald-300/35 bg-emerald-300/[0.08] text-emerald-100"
-                      : "bg-emerald-300 text-black",
-                  ].join(" ")}
-                >
-                  {active ? "Current signal" : "Use this signal"}
-                </span>
-              </button>
-            );
-          })}
-          {lockedRecommendations.map((recommendation) => {
-            const detail = getOpportunityDetailFields(recommendation.signal);
-
-            return (
-              <article
-                key={recommendation.signal.id}
-                className="min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-black/20 p-3 opacity-70"
-              >
-                <div className="text-[11px] font-black uppercase tracking-wide text-zinc-500">
-                  Pro recommendation
-                </div>
-                <h4 className="mt-2 break-words text-sm font-black text-white">
-                  {truncateDisplayText(getDisplaySignalTitle(recommendation.signal).title, 70)}
-                </h4>
-                <div className="mt-2 inline-flex rounded-full border border-white/10 bg-black/25 px-2.5 py-1 text-[11px] font-black uppercase tracking-wide text-zinc-400">
-                  {getFitLabel(recommendation.fitScore)}
-                </div>
-                <p className="mt-3 line-clamp-3 break-words text-xs font-bold leading-5 text-zinc-500">
-                  {detail.proof}
-                </p>
-                <p className="mt-3 break-words text-xs font-bold leading-5 text-zinc-400">
-                  Free users get today&apos;s best Money Move. Pro users can test more signals and find winners faster.
-                </p>
-                <a
-                  href={CHECKOUT_URL || "/founder"}
-                  onClick={trackUnlockProClick}
-                  className="mt-3 inline-flex w-full items-center justify-center rounded-xl border border-white/10 px-3 py-3 text-center text-xs font-black text-zinc-300 transition hover:bg-white/[0.04]"
-                >
-                  Unlock Bilion Pro
-                </a>
-              </article>
+                onTry={() => startBusiness(signal)}
+                signal={signal}
+                whyMatches={recommendation.why}
+              />
             );
           })}
         </div>
+
+        {!hasFounderAccess && <ProUpgradeCard onUnlockClick={trackUnlockProClick} />}
 
         {deepDiveSignal && (
           <article className="mt-2 min-w-0 overflow-hidden rounded-2xl border border-emerald-300/35 bg-black/35 p-4 shadow-lg shadow-emerald-950/20 md:rounded-3xl md:p-5">
@@ -8602,6 +8857,29 @@ function MarketSelectionSection({
               <MarketOpportunityField label="Manual validation step" value={deepDiveDetail.fortyEightHourTest} />
               <MarketOpportunityField label="Build-after-replies rule" value={deepDiveDetail.buildAfterReplies} />
             </div>
+
+            <BusinessStartPackPanel
+              anglePacks={businessAnglePacks}
+              controls={effectiveBusinessControls}
+              copiedLabel={activePackCopied}
+              onAngleChange={(angleName) => {
+                setActiveBusinessAngle(angleName);
+                setBusinessControls((currentControls) => ({
+                  ...currentControls,
+                  ...getAngleDefaults(angleName),
+                }));
+              }}
+              onControlsChange={(nextControls) =>
+                setBusinessControls((currentControls) => ({
+                  ...currentControls,
+                  ...nextControls,
+                }))
+              }
+              onCopy={copyBusinessStartPackPart}
+              onSaveToQueue={addTodaysMoveToQueue}
+              pack={businessStartPack}
+              queueLimitReached={queueLimitReached}
+            />
 
             <MoneyMoveAngleExpander signal={deepDiveSignal} />
 
@@ -8667,6 +8945,8 @@ function MarketSelectionSection({
             </section>
             <ValidationQueuePanel
               hasFounderAccess={hasFounderAccess}
+              onItemChange={updateQueueItem}
+              onMarkWinner={markQueueWinner}
               onStatusChange={updateQueueStatus}
               queue={validationQueue}
             />
@@ -8678,143 +8958,312 @@ function MarketSelectionSection({
   );
 }
 
-function TodayMoneyMoveCard({
-  buyer,
-  fitScore,
-  firstOffer,
+function MoneyMoveFeedIntro({
   hasFounderAccess,
-  moneyProof,
-  monetizationStyle,
-  onAddToQueue,
-  onCopyOfferTest,
-  paidPain,
-  price,
-  quality,
-  queueLimitReached,
-  selectedGoal,
   selectedMarket,
-  signalTitle,
-  todaysAction,
-  wasCopied,
+}: {
+  hasFounderAccess: boolean;
+  selectedMarket: AppMarketOption;
+}) {
+  return (
+    <section className="mb-4 rounded-2xl border border-white/10 bg-black/30 p-4 md:rounded-3xl md:p-5">
+      <div className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">
+        Money Move Feed
+      </div>
+      <h2 className="mt-2 max-w-3xl break-words text-3xl font-black text-white md:text-5xl">
+        Stop guessing what to build.
+      </h2>
+      <p className="mt-3 max-w-3xl break-words text-sm font-bold leading-6 text-zinc-300 md:text-base">
+        Discover where money already moved. Turn it into your version. Test before you build.
+      </p>
+      <div className="mt-4 flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-wide text-zinc-400">
+        <span className="rounded-full border border-emerald-300/25 bg-emerald-300/[0.08] px-3 py-2 text-emerald-100">
+          Feed: {selectedMarket}
+        </span>
+        <span className="rounded-full border border-white/10 bg-black/25 px-3 py-2">
+          Money Move &rarr; Try This &rarr; Validate &rarr; Build After Replies
+        </span>
+        <span className="rounded-full border border-white/10 bg-black/25 px-3 py-2">
+          {hasFounderAccess ? "Pro feed unlocked" : "Free feed: enough to test one move today"}
+        </span>
+      </div>
+    </section>
+  );
+}
+
+function MoneyMoveFeedCard({
+  active,
+  detail,
+  fitScore,
+  index,
+  onTry,
+  signal,
   whyMatches,
 }: {
-  buyer: string;
+  active: boolean;
+  detail: ReturnType<typeof getOpportunityDetailFields>;
   fitScore: number;
-  firstOffer: string;
-  hasFounderAccess: boolean;
-  moneyProof: string;
-  monetizationStyle: MonetizationPreference;
-  onAddToQueue: () => void;
-  onCopyOfferTest: () => void;
-  paidPain: string;
-  price: string;
-  quality: MoneyMoveQuality;
-  queueLimitReached: boolean;
-  selectedGoal: DailyGoal;
-  selectedMarket: AppMarketOption;
-  signalTitle: string;
-  todaysAction: string;
-  wasCopied: boolean;
+  index: number;
+  onTry: () => void;
+  signal: BuildSignal;
   whyMatches: string;
 }) {
   return (
-    <section className="mb-5 overflow-hidden rounded-2xl border border-emerald-300/40 bg-[#101a14] p-4 shadow-2xl shadow-emerald-950/30 md:rounded-3xl md:p-5">
-      <div className="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+    <article
+      className={[
+        "min-w-0 overflow-hidden rounded-2xl border p-4 transition",
+        active
+          ? "border-emerald-300/70 bg-emerald-300/[0.12] shadow-lg shadow-emerald-950/30"
+          : "border-white/10 bg-black/25 hover:border-emerald-300/35 hover:bg-white/[0.04]",
+      ].join(" ")}
+    >
+      <div className="flex min-w-0 items-start justify-between gap-2">
+        <div className="min-w-0 break-words text-[11px] font-black uppercase tracking-wide text-emerald-300">
+          {index === 0 ? "Top money move" : signal.signalSourceLabel || signal.sourceType || "Money move"}
+        </div>
+        <span className="shrink-0 rounded-full border border-white/10 bg-black/25 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-zinc-300">
+          {getFitLabel(fitScore)}
+        </span>
+      </div>
+      <h3 className="mt-2 break-words text-base font-black text-white">
+        {truncateDisplayText(getDisplaySignalTitle(signal).title, 86)}
+      </h3>
+      <div className="mt-3 space-y-3">
+        <CompactSignalField label="Revenue proof" value={detail.proof} />
+        <CompactSignalField label="Who paid" value={detail.buyer} />
+        <CompactSignalField label="Paid pain" value={detail.paidPain} />
+        <CompactSignalField label="Why money moved" value={detail.whyMoneyChangedHands || whyMatches} />
+      </div>
+      <button
+        type="button"
+        onClick={onTry}
+        className={[
+          "mt-4 w-full rounded-xl px-3 py-3 text-center text-sm font-black transition",
+          active
+            ? "border border-emerald-300/35 bg-emerald-300/[0.08] text-emerald-100"
+            : "bg-emerald-300 text-black hover:bg-emerald-200",
+        ].join(" ")}
+      >
+        Try This
+      </button>
+    </article>
+  );
+}
+
+function BusinessStartPackPanel({
+  anglePacks,
+  controls,
+  copiedLabel,
+  onAngleChange,
+  onControlsChange,
+  onCopy,
+  onSaveToQueue,
+  pack,
+  queueLimitReached,
+}: {
+  anglePacks: BusinessStartPack[];
+  controls: BusinessStartControls;
+  copiedLabel: string;
+  onAngleChange: (angleName: BusinessAngleName) => void;
+  onControlsChange: (nextControls: Partial<BusinessStartControls>) => void;
+  onCopy: (label: string, value: string) => void;
+  onSaveToQueue: () => void;
+  pack: BusinessStartPack;
+  queueLimitReached: boolean;
+}) {
+  const copyItems = [
+    { label: "Copy X Post", value: pack.xPost },
+    { label: "Copy DM", value: pack.dmScript },
+    { label: "Copy Carousel", value: pack.carousel },
+  ];
+
+  return (
+    <section className="mt-5 rounded-2xl border border-emerald-300/30 bg-emerald-300/[0.07] p-4 md:rounded-3xl md:p-5">
+      <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0">
-          <div className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">
-            Today&apos;s Money Move
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+            Business Start Pack
           </div>
-          <h3 className="mt-2 break-words text-2xl font-black text-white md:text-3xl">
-            {truncateDisplayText(signalTitle, 90)}
+          <h3 className="mt-2 break-words text-xl font-black text-white md:text-2xl">
+            {pack.businessName}
           </h3>
           <p className="mt-2 max-w-2xl break-words text-sm font-bold leading-6 text-zinc-300">
-            Based on your goal and buyer, this is the move to test today.
-          </p>
-          <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-wide text-zinc-400">
-            <span className="rounded-full border border-emerald-300/25 bg-emerald-300/[0.08] px-3 py-2 text-emerald-100">
-              Selected market: {selectedMarket}
-            </span>
-            <span className="rounded-full border border-white/10 bg-black/25 px-3 py-2">
-              Goal: {selectedGoal}
-            </span>
-            <span className="rounded-full border border-white/10 bg-black/25 px-3 py-2">
-              Monetization: {monetizationStyle}
-            </span>
-            <span className="rounded-full border border-white/10 bg-black/25 px-3 py-2">
-              Market match
-            </span>
-            <span
-              className={[
-                "rounded-full border px-3 py-2",
-                quality.label === "Strong Money Move"
-                  ? "border-emerald-300/30 bg-emerald-300/[0.08] text-emerald-100"
-                  : quality.label === "Needs polish"
-                    ? "border-yellow-400/25 bg-yellow-400/[0.08] text-yellow-100"
-                    : "border-red-300/25 bg-red-300/[0.08] text-red-100",
-              ].join(" ")}
-            >
-              {quality.label}
-            </span>
-          </div>
-          <p className="mt-2 max-w-2xl break-words text-xs font-bold leading-5 text-zinc-400">
-            {quality.reasons.join(" ")}
-          </p>
-          <p className="mt-2 max-w-2xl break-words text-xs font-black uppercase tracking-wide text-zinc-500">
-            {hasFounderAccess
-              ? "Pro: more signals, full launch assets, remixing, and winner tracking."
-              : "Free: one Money Move per day. Pro: more signals, full launch assets, remixing, and winner tracking."}
+            Start this business today: copy the post, DM buyers, log results, and build only after replies.
           </p>
         </div>
-        <div className="w-full rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.08] px-4 py-3 text-left lg:w-44 lg:text-center">
-          <div className="text-[11px] font-black uppercase tracking-wide text-emerald-200">
-            Match
-          </div>
-          <div className="mt-1 text-2xl font-black text-white">{getFitLabel(fitScore)}</div>
-          <div className="mt-1 text-xs font-black text-zinc-400">{fitScore}/100</div>
-        </div>
-      </div>
-
-      <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-        <MarketOpportunityField label="Buyer" value={buyer} />
-        <MarketOpportunityField label="Paid pain" value={paidPain} />
-        <MarketOpportunityField label="Money proof" value={moneyProof} />
-        <MarketOpportunityField label="First offer" value={firstOffer} />
-        <MarketOpportunityField label="Price" value={price} />
-        <MarketOpportunityField label="Why this matches you" value={whyMatches} />
-      </div>
-
-      <div className="mt-4 rounded-2xl border border-white/10 bg-black/30 p-4">
-        <div className="text-[11px] font-black uppercase tracking-wide text-zinc-500">
-          Today&apos;s action
-        </div>
-        <p className="mt-2 break-words text-sm font-bold leading-6 text-zinc-200">
-          {todaysAction}
-        </p>
-      </div>
-
-      <div className="mt-4 flex min-w-0 flex-col gap-2 sm:flex-row">
         <button
           type="button"
-          onClick={onCopyOfferTest}
-          className="w-full rounded-2xl bg-emerald-300 px-5 py-4 text-center text-sm font-black text-black transition hover:bg-emerald-200 sm:w-auto"
-        >
-          {wasCopied ? "Copied" : "Copy Today's Offer Test"}
-        </button>
-        <button
-          type="button"
-          onClick={onAddToQueue}
+          onClick={onSaveToQueue}
           disabled={queueLimitReached}
-          className="w-full rounded-2xl border border-emerald-300/35 px-5 py-4 text-center text-sm font-black text-emerald-100 transition hover:bg-emerald-300/10 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+          className="w-full rounded-2xl bg-emerald-300 px-5 py-3 text-center text-sm font-black text-black transition hover:bg-emerald-200 disabled:cursor-not-allowed disabled:opacity-50 lg:w-auto"
         >
-          Add to Validation Queue
+          Save to Launch Queue
         </button>
       </div>
-      {queueLimitReached && (
-        <p className="mt-3 text-sm font-bold leading-6 text-yellow-100">
-          Free users get today&apos;s best Money Move. Pro users can test more signals and find winners faster.
+
+      <div className="mt-4 grid min-w-0 gap-3 md:grid-cols-2 xl:grid-cols-4">
+        <MarketOpportunityField label="Buyer" value={pack.buyer} />
+        <MarketOpportunityField label="Paid pain" value={pack.paidPain} />
+        <MarketOpportunityField label="First offer" value={pack.firstOffer} />
+        <MarketOpportunityField label="Price" value={pack.price} />
+      </div>
+
+      <div className="mt-4 rounded-2xl border border-white/10 bg-black/25 p-4">
+        <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+          Choose angle controls
+        </div>
+        <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          <label className="min-w-0 text-[11px] font-black uppercase tracking-wide text-zinc-500">
+            Target buyer
+            <input
+              value={controls.targetBuyer}
+              onChange={(event) => onControlsChange({ targetBuyer: event.target.value })}
+              className="mt-1 min-h-11 w-full rounded-xl border border-white/10 bg-black px-3 py-2 text-sm font-bold text-white"
+            />
+          </label>
+          <BusinessControlSelect label="Offer type" value={controls.offerType} options={businessOfferTypes} onChange={(value) => onControlsChange({ offerType: value as BusinessOfferType })} />
+          <label className="min-w-0 text-[11px] font-black uppercase tracking-wide text-zinc-500">
+            Price point
+            <input
+              value={controls.pricePoint}
+              onChange={(event) => onControlsChange({ pricePoint: event.target.value })}
+              className="mt-1 min-h-11 w-full rounded-xl border border-white/10 bg-black px-3 py-2 text-sm font-bold text-white"
+            />
+          </label>
+          <BusinessControlSelect label="Channel" value={controls.channel} options={businessChannels} onChange={(value) => onControlsChange({ channel: value as BusinessChannel })} />
+          <BusinessControlSelect label="Tone" value={controls.tone} options={businessTones} onChange={(value) => onControlsChange({ tone: value as BusinessTone })} />
+          <BusinessControlSelect label="Difficulty" value={controls.difficulty} options={businessDifficulties} onChange={(value) => onControlsChange({ difficulty: value as BusinessDifficulty })} />
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {[
+            ["Re-angle", "Safe angle"],
+            ["Make it more premium", "Premium angle"],
+            ["Make it simpler", "Beginner angle"],
+            ["Make it more viral", "Aggressive angle"],
+            ["Make it more B2B", "Agency angle"],
+            ["Make it more beginner-friendly", "Beginner angle"],
+          ].map(([label, angleName]) => (
+            <button
+              key={label}
+              type="button"
+              onClick={() => onAngleChange(angleName as BusinessAngleName)}
+              className="rounded-full border border-white/10 bg-black/30 px-3 py-2 text-xs font-black text-zinc-300 transition hover:border-emerald-300/35 hover:text-white"
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-4 rounded-2xl border border-white/10 bg-black/25 p-4">
+        <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+          Generate 5 business angles
+        </div>
+        <div className="mt-3 grid gap-3 lg:grid-cols-5">
+          {anglePacks.map((anglePack) => {
+            const active = anglePack.angleName === pack.angleName;
+
+            return (
+              <button
+                key={anglePack.angleName}
+                type="button"
+                onClick={() => onAngleChange(anglePack.angleName)}
+                className={[
+                  "min-w-0 rounded-2xl border p-3 text-left transition",
+                  active
+                    ? "border-emerald-300/70 bg-emerald-300/[0.12]"
+                    : "border-white/10 bg-black/30 hover:border-emerald-300/35",
+                ].join(" ")}
+              >
+                <div className="text-[11px] font-black uppercase tracking-wide text-emerald-300">
+                  {anglePack.angleName}
+                </div>
+                <div className="mt-2 break-words text-sm font-black text-white">
+                  {anglePack.firstOffer}
+                </div>
+                <p className="mt-2 line-clamp-3 break-words text-xs font-bold leading-5 text-zinc-400">
+                  {anglePack.buyer} / {anglePack.price}
+                </p>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-3 lg:grid-cols-3">
+        {copyItems.map((item) => (
+          <button
+            key={item.label}
+            type="button"
+            onClick={() => onCopy(item.label, item.value)}
+            className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-left text-sm font-black text-white transition hover:border-emerald-300/40 hover:bg-emerald-300/[0.08]"
+          >
+            {copiedLabel === item.label ? "Copied" : item.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-4 grid gap-3 xl:grid-cols-2">
+        <BusinessStartPackOutput title="X post" value={pack.xPost} />
+        <BusinessStartPackOutput title="3-slide carousel" value={pack.carousel} />
+        <BusinessStartPackOutput title="DM script" value={pack.dmScript} />
+        <BusinessStartPackOutput title="Free lead magnet" value={pack.freeLeadMagnet} />
+        <BusinessStartPackOutput title="48-hour validation plan" value={pack.validationPlan} />
+        <BusinessStartPackOutput title="Build / Drop rule" value={pack.buildDropRule} />
+      </div>
+
+      <details className="mt-4 rounded-2xl border border-white/10 bg-black/30 p-4">
+        <summary className="cursor-pointer list-none text-sm font-black text-zinc-200">
+          Build After Replies: Codex MVP prompt
+        </summary>
+        <p className="mt-2 break-words text-xs font-bold leading-5 text-zinc-500">
+          Secondary step. Use this only after replies, saves, clicks, or paid interest.
         </p>
-      )}
+        <pre className="mt-3 max-h-[360px] max-w-full overflow-auto whitespace-pre-wrap break-words rounded-xl border border-white/10 bg-black/60 p-4 font-sans text-sm leading-6 text-zinc-100">
+          {pack.codexMvpPrompt}
+        </pre>
+      </details>
     </section>
+  );
+}
+
+function BusinessControlSelect({
+  label,
+  onChange,
+  options,
+  value,
+}: {
+  label: string;
+  onChange: (value: string) => void;
+  options: string[];
+  value: string;
+}) {
+  return (
+    <label className="min-w-0 text-[11px] font-black uppercase tracking-wide text-zinc-500">
+      {label}
+      <select
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="mt-1 min-h-11 w-full rounded-xl border border-white/10 bg-black px-3 py-2 text-sm font-bold text-white"
+      >
+        {options.map((option) => (
+          <option key={option}>{option}</option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+function BusinessStartPackOutput({ title, value }: { title: string; value: string }) {
+  return (
+    <div className="min-w-0 rounded-2xl border border-white/10 bg-black/30 p-4">
+      <div className="text-[11px] font-black uppercase tracking-wide text-emerald-300">
+        {title}
+      </div>
+      <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-zinc-200">
+        {value}
+      </p>
+    </div>
   );
 }
 
@@ -9310,7 +9759,7 @@ function TransformStudio({
               disabled={!transformAllowed || !canAddToQueue}
               className="w-full rounded-xl border border-emerald-300/30 px-4 py-2.5 text-xs font-black text-emerald-100 transition hover:bg-emerald-300/10 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
             >
-              Add to Validation Queue
+              Save to Launch Queue
             </button>
           </div>
         </div>
@@ -9379,22 +9828,32 @@ function RemixEngine({
 
 function ValidationQueuePanel({
   hasFounderAccess,
+  onItemChange,
+  onMarkWinner,
   onStatusChange,
   queue,
 }: {
   hasFounderAccess: boolean;
+  onItemChange: (itemId: string, updates: Partial<ValidationQueueItem>) => void;
+  onMarkWinner: (itemId: string) => void;
   onStatusChange: (itemId: string, status: ValidationQueueStatus) => void;
   queue: ValidationQueueItem[];
 }) {
+  function updateNumber(itemId: string, field: keyof Pick<ValidationQueueItem, "views" | "likes" | "saves" | "replies" | "dms" | "paidInterest">, value: string) {
+    onItemChange(itemId, {
+      [field]: Math.max(0, Number(value) || 0),
+    } as Partial<ValidationQueueItem>);
+  }
+
   return (
     <section className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-4">
       <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
           <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-            Validation Queue
+            Launch Queue
           </div>
           <p className="mt-1 break-words text-sm font-bold leading-6 text-zinc-400">
-            Move each test from not started to posted, DMed, buying intent, and winner.
+            Save a Business Start Pack, post it, DM buyers, log results, then decide Build or Drop.
           </p>
         </div>
         {!hasFounderAccess && (
@@ -9406,7 +9865,7 @@ function ValidationQueuePanel({
 
       {queue.length === 0 ? (
         <div className="mt-4 rounded-2xl border border-white/10 bg-black/35 p-4 text-sm font-bold leading-6 text-zinc-500">
-          Add a transform output to the queue to track replies.
+          Save a Business Start Pack to track validation results.
         </div>
       ) : (
         <div className="mt-4 grid gap-3">
@@ -9424,18 +9883,92 @@ function ValidationQueuePanel({
                     {item.buyer} / {item.offer}
                   </p>
                 </div>
-                <select
-                  value={item.status}
-                  onChange={(event) =>
-                    onStatusChange(item.id, event.target.value as ValidationQueueStatus)
-                  }
-                  className="min-h-10 rounded-xl border border-white/10 bg-black px-3 py-2 text-xs font-black text-zinc-200"
-                >
-                  {validationQueueStatuses.map((status) => (
-                    <option key={status}>{status}</option>
-                  ))}
-                </select>
+                <div className="flex w-full flex-col gap-2 sm:w-auto">
+                  <select
+                    value={item.status}
+                    onChange={(event) =>
+                      onStatusChange(item.id, event.target.value as ValidationQueueStatus)
+                    }
+                    className="min-h-10 rounded-xl border border-white/10 bg-black px-3 py-2 text-xs font-black text-zinc-200"
+                  >
+                    {validationQueueStatuses.map((status) => (
+                      <option key={status}>{status}</option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => onStatusChange(item.id, "Posted")}
+                    className="rounded-xl border border-white/10 px-3 py-2 text-xs font-black text-zinc-200 transition hover:bg-white/[0.04]"
+                  >
+                    Mark as Posted
+                  </button>
+                </div>
               </div>
+
+              <div className="mt-4 rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.06] p-3">
+                <div className="text-[11px] font-black uppercase tracking-wide text-emerald-300">
+                  Validation Tracker
+                </div>
+                <div className="mt-3 grid gap-2 sm:grid-cols-3 lg:grid-cols-6">
+                  {([
+                    ["views", "Views"],
+                    ["likes", "Likes"],
+                    ["saves", "Saves"],
+                    ["replies", "Replies"],
+                    ["dms", "DMs"],
+                    ["paidInterest", "Paid interest"],
+                  ] as const).map(([field, label]) => (
+                    <label key={field} className="min-w-0 text-[11px] font-black uppercase tracking-wide text-zinc-500">
+                      {label}
+                      <input
+                        type="number"
+                        min={0}
+                        value={item[field]}
+                        onChange={(event) => updateNumber(item.id, field, event.target.value)}
+                        className="mt-1 min-h-10 w-full rounded-xl border border-white/10 bg-black px-3 py-2 text-sm font-black text-white"
+                      />
+                    </label>
+                  ))}
+                </div>
+                <label className="mt-3 block text-[11px] font-black uppercase tracking-wide text-zinc-500">
+                  Notes
+                  <textarea
+                    value={item.notes}
+                    onChange={(event) => onItemChange(item.id, { notes: event.target.value })}
+                    rows={3}
+                    className="mt-1 w-full rounded-xl border border-white/10 bg-black px-3 py-2 text-sm font-bold leading-6 text-white"
+                    placeholder="Objections, buyer words, pricing signals..."
+                  />
+                </label>
+                <div className="mt-3 rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm font-black text-zinc-100">
+                  {getValidationRecommendation(item)}
+                </div>
+              </div>
+
+              <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => onStatusChange(item.id, "Got Replies")}
+                  className="rounded-xl border border-white/10 px-3 py-2 text-xs font-black text-zinc-200 transition hover:bg-white/[0.04]"
+                >
+                  Log Results
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onMarkWinner(item.id)}
+                  className="rounded-xl border border-emerald-300/35 px-3 py-2 text-xs font-black text-emerald-100 transition hover:bg-emerald-300/10"
+                >
+                  Mark as Winner
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onStatusChange(item.id, "Build")}
+                  className="rounded-xl bg-emerald-300 px-3 py-2 text-xs font-black text-black transition hover:bg-emerald-200"
+                >
+                  Build with Codex
+                </button>
+              </div>
+
               <div className="mt-3 grid gap-2 text-xs font-bold leading-5 text-zinc-400 sm:grid-cols-2">
                 <span className="font-black text-emerald-200">
                   Next action: {getValidationQueueNextAction(item.status)}
@@ -9460,7 +9993,7 @@ function WinnerPanel({ winners }: { winners: ValidationQueueItem[] }) {
         Your Money Signal Swipe File
       </div>
       <p className="mt-2 break-words text-sm font-bold leading-6 text-zinc-400">
-        Signals that got real response belong here. Reuse them, remix them, or build with Codex after demand shows up.
+        Signals that got real response belong here. Winners unlock the full Launch Pack: Codex MVP Prompt, landing page copy, pricing page copy, next 3 posts, and follow-up DM.
       </p>
       {winners.length === 0 ? (
         <p className="mt-3 text-sm font-bold leading-6 text-zinc-500">
@@ -9486,10 +10019,10 @@ function WinnerPanel({ winners }: { winners: ValidationQueueItem[] }) {
                 Winning output: {winner.outputType}
               </p>
               <div className="mt-3 grid gap-2 text-xs font-black text-zinc-200 sm:grid-cols-2">
-                <span className="rounded-xl border border-white/10 bg-black/25 px-3 py-2">Sell manually</span>
-                <span className="rounded-xl border border-white/10 bg-black/25 px-3 py-2">Build with Codex</span>
-                <span className="rounded-xl border border-white/10 bg-black/25 px-3 py-2">Create paid pack</span>
-                <span className="rounded-xl border border-white/10 bg-black/25 px-3 py-2">Remix this winner</span>
+                <span className="rounded-xl border border-white/10 bg-black/25 px-3 py-2">Full Launch Pack</span>
+                <span className="rounded-xl border border-white/10 bg-black/25 px-3 py-2">Codex MVP Prompt</span>
+                <span className="rounded-xl border border-white/10 bg-black/25 px-3 py-2">Landing + pricing copy</span>
+                <span className="rounded-xl border border-white/10 bg-black/25 px-3 py-2">Next 3 posts + follow-up DM</span>
               </div>
             </article>
           ))}
