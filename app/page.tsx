@@ -3,40 +3,47 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-const exampleOutputs = [
+const todaysMoneyMoves = [
   {
-    name: "Field Notes to Daily Reports",
-    signal: "Construction teams are already using AI to turn messy site notes into standard reports.",
-    buyer: "Small contractors and field service teams",
-    pain: "Daily reports are still copied from texts, photos, and scattered notes.",
-    firstOffer: "$49/month jobsite report generator",
-    test: "DM 10 contractors with a before/after sample and ask if they would pay for weekly reports.",
+    revenue: "$15k MRR",
+    sold: "Blog posts -> Pinterest pins",
+    buyer: "Bloggers and niche site owners",
+    why: "They wanted more traffic without manually designing and scheduling social assets.",
+    tryThis: "Turn newsletters into LinkedIn carousel packs.",
   },
   {
-    name: "Local Review Reply Copilot",
-    signal: "Restaurants, clinics, and salons need faster replies to public reviews.",
-    buyer: "Local service businesses with recurring customer reviews",
-    pain: "Owners know reviews matter, but writing good replies is repetitive and easy to delay.",
-    firstOffer: "$500 setup + $150/month managed reply system",
-    test: "Send 5 review rewrites to local owners and ask if they want the next month handled.",
+    revenue: "$30k MRR",
+    sold: "Discord community automation",
+    buyer: "Paid community owners and Discord operators",
+    why: "Member onboarding, repeated questions, and handoffs became too messy to handle manually.",
+    tryThis: "Sell a Discord cleanup audit for paid communities.",
   },
   {
-    name: "Shift Briefs Prompt System",
-    signal: "Independent restaurants keep handoff notes in chats, notebooks, and memory.",
-    buyer: "Restaurant operators and consultants serving local teams",
-    pain: "Shift handoffs are inconsistent, and generic AI prompts do not match restaurant workflows.",
-    firstOffer: "$19 prompt system or $49/month brief generator",
-    test: "Post one shift-note example and DM operators who save or reply.",
+    revenue: "$1.3M ARR",
+    sold: "Hosted social scheduler",
+    buyer: "Developers, self-hosters, and small content teams",
+    why: "Teams wanted scheduling without being locked into expensive closed platforms.",
+    tryThis: "Offer a self-hosted setup service for one niche team.",
   },
 ];
 
-const deliverables = [
-  "Market-backed money signals",
-  "Buyer and paid pain",
-  "First offer",
-  "X post / carousel / DM",
-  "48-hour validation plan",
-  "Codex-ready MVP prompt",
+const bilionGives = [
+  {
+    title: "Daily Money Move Feed",
+    body: "Discover proven examples of where people already paid.",
+  },
+  {
+    title: "Make it yours",
+    body: "Turn a Money Move into your buyer, offer, price, and channel.",
+  },
+  {
+    title: "Launch assets",
+    body: "Get an X post, carousel idea, buyer DM, and validation plan.",
+  },
+  {
+    title: "Build after replies",
+    body: "Use Codex only after people reply, click, save, or show buying intent.",
+  },
 ];
 
 function LanguageSwitch() {
@@ -74,30 +81,34 @@ function ButtonLink({
   );
 }
 
-function ExampleOutputCard({ item }: { item: (typeof exampleOutputs)[number] }) {
+function MoneyMoveCard({ item }: { item: (typeof todaysMoneyMoves)[number] }) {
   return (
     <article className="min-w-0 overflow-hidden rounded-lg border border-white/10 bg-[#111214] p-4 sm:p-5">
       <div className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
-        Money Signal
+        Money Move
       </div>
-      <h3 className="mt-3 break-words text-lg font-semibold leading-6 text-white">
-        {item.name}
+      <div className="mt-3 break-words text-3xl font-black tracking-tight text-white">
+        {item.revenue}
+      </div>
+      <h3 className="mt-2 break-words text-lg font-semibold leading-6 text-white">
+        {item.sold}
       </h3>
       <div className="mt-4 grid min-w-0 gap-3 text-sm leading-6">
-        {[
-          ["Signal", item.signal],
-          ["Buyer", item.buyer],
-          ["Pain", item.pain],
-          ["First Offer", item.firstOffer],
-          ["48h Test", item.test],
-        ].map(([label, value]) => (
-          <div key={label} className="min-w-0">
-            <div className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
-              {label}
-            </div>
-            <p className="mt-1 break-words text-zinc-300">{value}</p>
+        <div className="min-w-0">
+          <div className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+            Who paid
           </div>
-        ))}
+          <p className="mt-1 break-words text-zinc-300">{item.buyer}</p>
+        </div>
+        <div className="min-w-0">
+          <div className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+            Why money moved
+          </div>
+          <p className="mt-1 break-words text-zinc-300">{item.why}</p>
+        </div>
+        <div className="rounded-lg border border-emerald-300/20 bg-emerald-300/[0.06] px-3 py-2 text-sm font-semibold text-emerald-100">
+          Try this: {item.tryThis}
+        </div>
       </div>
     </article>
   );
@@ -116,7 +127,7 @@ export default function HomePage() {
               <div className="truncate text-lg font-black tracking-tight transition group-hover:text-zinc-200">
                 Bilion
               </div>
-              <div className="truncate text-xs text-zinc-500">Money Signal OS</div>
+              <div className="truncate text-xs text-zinc-500">Money Move Feed</div>
             </div>
           </Link>
           <LanguageSwitch />
@@ -125,19 +136,22 @@ export default function HomePage() {
         <section className="py-14 md:py-20">
           <div className="max-w-3xl">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
-              Market -&gt; Signal -&gt; Output Pack -&gt; Test -&gt; Build
+              Money moved somewhere -&gt; Make it yours -&gt; Test today -&gt; Build after replies
             </div>
             <h1 className="mt-5 break-words text-4xl font-semibold leading-tight tracking-tight md:text-6xl">
-              Turn proven money signals into Codex-ready business prompts.
+              Stop guessing what to build.
             </h1>
             <p className="mt-5 max-w-2xl break-words text-base leading-7 text-zinc-300 md:text-lg md:leading-8">
-              Bilion helps AI builders find what people already pay for, turn it into posts, DMs, first offers, and Codex-ready MVP prompts, then build only after replies.
+              Bilion shows proven Money Moves, turns them into your version, and gives you the post, DM, offer, and validation plan to test today.
+            </p>
+            <p className="mt-3 max-w-2xl break-words text-sm font-semibold leading-6 text-emerald-200">
+              Build with Codex only after replies.
             </p>
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href="/app">Get today&apos;s money signal</ButtonLink>
-              <ButtonLink href="#example-outputs" variant="secondary">
-                See example outputs
+              <ButtonLink href="/app">See today&apos;s Money Move</ButtonLink>
+              <ButtonLink href="#todays-money-moves" variant="secondary">
+                View example Money Moves
               </ButtonLink>
             </div>
           </div>
@@ -150,19 +164,20 @@ export default function HomePage() {
                 What Bilion gives you
               </div>
               <h2 className="mt-3 break-words text-2xl font-semibold tracking-tight">
-                Everything needed to sell first, then build after replies.
+                Daily discovery, then one concrete test.
               </h2>
               <p className="mt-3 max-w-xl break-words text-sm leading-6 text-zinc-500">
-                Built for Codex, Cursor, and Claude Code users who can build, but need a sharper answer to what they should sell.
+                Built for AI builders who can build, but need to know what people already paid for first.
               </p>
             </div>
             <div className="grid min-w-0 gap-3 sm:grid-cols-2">
-              {deliverables.map((item) => (
+              {bilionGives.map((item) => (
                 <div
-                  key={item}
-                  className="min-w-0 rounded-lg border border-white/10 bg-[#111214] p-4 text-sm font-semibold leading-6 text-zinc-100"
+                  key={item.title}
+                  className="min-w-0 rounded-lg border border-white/10 bg-[#111214] p-4"
                 >
-                  <span className="break-words">{item}</span>
+                  <div className="break-words text-sm font-semibold text-white">{item.title}</div>
+                  <p className="mt-2 break-words text-sm leading-6 text-zinc-500">{item.body}</p>
                 </div>
               ))}
             </div>
@@ -185,26 +200,26 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="example-outputs" className="border-t border-white/10 py-10">
+        <section id="todays-money-moves" className="border-t border-white/10 py-10">
           <div className="mb-5 flex min-w-0 flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div className="min-w-0">
               <div className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
-                Example outputs
+                Today&apos;s Money Moves
               </div>
               <h2 className="mt-3 break-words text-2xl font-semibold tracking-tight">
-                Start from a real money signal with a buyer attached.
+                Open the feed and find one proven move to test.
               </h2>
               <p className="mt-3 max-w-2xl break-words text-sm leading-6 text-zinc-500">
-                Each output starts with a market signal, then turns it into a buyer, paid pain, first offer, validation move, and eventual Codex-ready MVP prompt.
+                Feed cards are short on purpose: money proof, who paid, why it worked, and a move you can make yours.
               </p>
             </div>
             <Link href="/app" className="text-sm font-semibold text-zinc-400 transition hover:text-white">
-              Generate a Launch Pack
+              See today&apos;s Money Move
             </Link>
           </div>
           <div className="grid min-w-0 gap-3 lg:grid-cols-3">
-            {exampleOutputs.map((item) => (
-              <ExampleOutputCard key={item.name} item={item} />
+            {todaysMoneyMoves.map((item) => (
+              <MoneyMoveCard key={item.sold} item={item} />
             ))}
           </div>
         </section>
@@ -216,35 +231,35 @@ export default function HomePage() {
                 Free
               </div>
               <h2 className="mt-3 break-words text-2xl font-semibold tracking-tight">
-                3 free Launch Packs per day.
+                3 free Money Moves per day.
               </h2>
               <p className="mt-3 break-words text-sm leading-6 text-zinc-500">
-                Use Bilion to see the signal, pick a market, test a first offer, and decide what deserves to be built.
+                Try one move, copy one post, and test demand before building.
               </p>
               <div className="mt-5">
                 <ButtonLink href="/app" variant="secondary">
-                  Get today&apos;s money signal
+                  See today&apos;s Money Move
                 </ButtonLink>
               </div>
             </article>
 
             <article className="min-w-0 overflow-hidden rounded-lg border border-emerald-300/20 bg-emerald-300/[0.06] p-5 sm:p-6">
               <div className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
-                Founder Access
+                Bilion Pro
               </div>
               <h2 className="mt-3 break-words text-2xl font-semibold tracking-tight">
-                Founder Access - $19
+                Pro Access - $19
               </h2>
               <p className="mt-3 break-words text-sm leading-6 text-zinc-300">
-                Unlock the full Launch Pack when you are ready to test the offer seriously.
+                Unlimited Money Moves. Unlimited Try This. More versions, launch assets, saved tests, winning moves, and Codex build plans.
               </p>
               <div className="mt-4 grid gap-2 text-sm leading-6 text-zinc-200">
                 {[
-                  "Full Codex MVP prompt",
-                  "DM script",
-                  "Offer template",
-                  "48-hour validation plan",
-                  "Build instructions",
+                  "Unlimited Money Moves",
+                  "Unlimited Try This",
+                  "More versions and launch assets",
+                  "Saved tests and winning moves",
+                  "Codex build plans after validation",
                 ].map((item) => (
                   <div key={item} className="rounded-lg border border-white/10 bg-black/20 px-3 py-2">
                     {item}
@@ -252,7 +267,7 @@ export default function HomePage() {
                 ))}
               </div>
               <div className="mt-5">
-                <ButtonLink href="/founder">Unlock Founder Access - $19</ButtonLink>
+                <ButtonLink href="/founder">Unlock unlimited Money Moves</ButtonLink>
               </div>
             </article>
           </div>
