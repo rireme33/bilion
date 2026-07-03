@@ -4054,7 +4054,7 @@ function buildBusinessStartPack(
     "Day 2:",
     "- Follow up with anyone who replied, saved, clicked, or asked a question.",
     "- Ask one payment question: would you pay for this sample for your own case?",
-    "- Log replies, DMs, paid interest, and notes in the Launch Queue.",
+    "- Log replies, DMs, paid interest, and notes in My Tests.",
   ].join("\n");
   const buildDropRule = [
     "Build / Drop rule:",
@@ -8508,6 +8508,9 @@ function MarketSelectionSection({
   const [savedTransformKeys, setSavedTransformKeys] = useState<string[]>([]);
   const [activePackCopied, setActivePackCopied] = useState("");
   const [activeBusinessAngle, setActiveBusinessAngle] = useState<BusinessAngleName>("Safe angle");
+  const [activeStartedSignalId, setActiveStartedSignalId] = useState("");
+  const [generatingSignalId, setGeneratingSignalId] = useState("");
+  const [generationMessage, setGenerationMessage] = useState("");
   const [businessControls, setBusinessControls] = useState<BusinessStartControls>({
     channel: "X",
     difficulty: "simple",
@@ -8578,6 +8581,7 @@ function MarketSelectionSection({
     selectedTransform === "Buyer DM" ||
     selectedTransform === "Codex Prompt";
   const winnerItems = validationQueue.filter((item) => item.winner);
+  const showGeneratedBusiness = activeStartedSignalId === deepDiveSignal.id && !generatingSignalId;
   const analyticsPayload = {
     buyer: deepDiveDetail.buyer,
     hasProAccess: hasFounderAccess,
@@ -8621,8 +8625,22 @@ function MarketSelectionSection({
     setDeepDiveSignalId(signal.id);
     setBusinessControls(getDefaultBusinessStartControls(signal));
     setActiveBusinessAngle("Safe angle");
+    setGeneratingSignalId(signal.id);
+    setGenerationMessage("Turning money into your version...");
     onSignalSeen(signal);
     onGenerateOutputPack(signal);
+
+    window.setTimeout(() => {
+      setGenerationMessage("Finding your angle...");
+    }, 450);
+    window.setTimeout(() => {
+      setGenerationMessage("Generating your business...");
+    }, 900);
+    window.setTimeout(() => {
+      setActiveStartedSignalId(signal.id);
+      setGeneratingSignalId("");
+      setGenerationMessage("");
+    }, 1300);
   }
 
   function addTransformToQueue() {
@@ -8820,6 +8838,7 @@ function MarketSelectionSection({
                 active={active}
                 detail={detail}
                 fitScore={recommendation.fitScore}
+                generating={generatingSignalId === signal.id}
                 index={index}
                 key={signal.id}
                 onTry={() => startBusiness(signal)}
@@ -8832,30 +8851,27 @@ function MarketSelectionSection({
 
         {!hasFounderAccess && <ProUpgradeCard onUnlockClick={trackUnlockProClick} />}
 
-        {deepDiveSignal && (
+        {generatingSignalId && (
+          <section className="mt-4 rounded-3xl border border-emerald-300/30 bg-emerald-300/[0.08] p-5 text-center shadow-lg shadow-emerald-950/20">
+            <div className="mx-auto h-2 w-32 overflow-hidden rounded-full bg-black/40">
+              <div className="h-full w-2/3 animate-pulse rounded-full bg-emerald-300" />
+            </div>
+            <p className="mt-4 text-sm font-black uppercase tracking-[0.18em] text-emerald-200">
+              {generationMessage || "Generating your business..."}
+            </p>
+          </section>
+        )}
+
+        {showGeneratedBusiness && (
           <article className="mt-2 min-w-0 overflow-hidden rounded-2xl border border-emerald-300/35 bg-black/35 p-4 shadow-lg shadow-emerald-950/20 md:rounded-3xl md:p-5">
             <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-              Signal detail
+              Your Business
             </div>
             <h3 className="mt-2 break-words text-xl font-black text-white">
               {truncateDisplayText(getDisplaySignalTitle(deepDiveSignal).title, 90)}
             </h3>
             <div className="mt-3 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.08] px-4 py-3 text-sm font-black text-yellow-100">
               Build only after replies.
-            </div>
-
-            <div className="mt-4 text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-              30-second business brief
-            </div>
-            <div className="mt-4 grid min-w-0 gap-3 md:grid-cols-2">
-              <MarketOpportunityField label="Money Signal" value={deepDiveDetail.proof} />
-              <MarketOpportunityField label="Who pays" value={deepDiveDetail.buyer} />
-              <MarketOpportunityField label="Why demand exists" value={deepDiveDetail.whyMoneyChangedHands} />
-              <MarketOpportunityField label="Paid Pain" value={deepDiveDetail.paidPain} />
-              <MarketOpportunityField label="First Offer" value={deepDiveDetail.firstOffer} />
-              <MarketOpportunityField label="Price" value={deepDiveDetail.price} />
-              <MarketOpportunityField label="Manual validation step" value={deepDiveDetail.fortyEightHourTest} />
-              <MarketOpportunityField label="Build-after-replies rule" value={deepDiveDetail.buildAfterReplies} />
             </div>
 
             <BusinessStartPackPanel
@@ -8881,59 +8897,63 @@ function MarketSelectionSection({
               queueLimitReached={queueLimitReached}
             />
 
-            <MoneyMoveAngleExpander signal={deepDiveSignal} />
-
-            <section className="mt-5 rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.06] p-4">
-              <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="min-w-0">
-                  <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-                    Turn this signal into launch assets
+            <details className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4">
+              <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+                Show advanced tools
+              </summary>
+              <MoneyMoveAngleExpander signal={deepDiveSignal} />
+              <section className="mt-5 rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.06] p-4">
+                <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="min-w-0">
+                    <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+                      Launch assets
+                    </div>
+                    <p className="mt-1 break-words text-sm font-bold leading-6 text-zinc-200">
+                      Extra formats for later. Your next move is still the X post.
+                    </p>
                   </div>
-                  <p className="mt-1 break-words text-sm font-bold leading-6 text-zinc-200">
-                    Get the offer, X post, buyer DM, validation plan, and a Codex-ready prompt for later.
-                  </p>
+                  <button
+                    type="button"
+                    onClick={() => onGenerateOutputPack(deepDiveSignal)}
+                    className="w-full rounded-2xl bg-emerald-300 px-5 py-4 text-center text-sm font-black text-black transition hover:bg-emerald-200 sm:w-auto"
+                  >
+                    Generate launch assets
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => onGenerateOutputPack(deepDiveSignal)}
-                  className="w-full rounded-2xl bg-emerald-300 px-5 py-4 text-center text-sm font-black text-black transition hover:bg-emerald-200 sm:w-auto"
-                >
-                  Generate launch assets
-                </button>
-              </div>
-              {outputPack && outputPack.signalId === deepDiveSignal.id && (
-                <BuildBriefPanel
-                  codexBuildPrompt={outputPack.codexBuildPrompt}
-                  detail={deepDiveDetail}
-                  signalTitle={getDisplaySignalTitle(deepDiveSignal).title}
-                />
-              )}
-            </section>
-
-            {outputPack && outputPack.signalId === deepDiveSignal.id && (
-              <>
-                <TransformStudio
-                  canAddToQueue={!queueLimitReached}
-                  hasFounderAccess={hasFounderAccess}
-                  onAddToQueue={addTransformToQueue}
-                  onSave={saveTransformOutput}
-                  onTransformChange={setSelectedTransform}
-                  onUnlockProClick={trackUnlockProClick}
-                  output={selectedTransformOutput}
-                  trackingPayload={analyticsPayload}
-                  selectedTransform={selectedTransform}
-                  transformAllowed={transformAllowed}
-                  wasSaved={savedTransformKeys.includes(`${deepDiveSignal.id}-${selectedTransform}`)}
-                />
-                {hasFounderAccess && (
-                  <RemixEngine
-                    onRemixChange={setSelectedRemix}
-                    remixOutput={selectedRemixOutput}
-                    selectedRemix={selectedRemix}
+                {outputPack && outputPack.signalId === deepDiveSignal.id && (
+                  <BuildBriefPanel
+                    codexBuildPrompt={outputPack.codexBuildPrompt}
+                    detail={deepDiveDetail}
+                    signalTitle={getDisplaySignalTitle(deepDiveSignal).title}
                   />
                 )}
-              </>
-            )}
+              </section>
+
+              {outputPack && outputPack.signalId === deepDiveSignal.id && (
+                <>
+                  <TransformStudio
+                    canAddToQueue={!queueLimitReached}
+                    hasFounderAccess={hasFounderAccess}
+                    onAddToQueue={addTransformToQueue}
+                    onSave={saveTransformOutput}
+                    onTransformChange={setSelectedTransform}
+                    onUnlockProClick={trackUnlockProClick}
+                    output={selectedTransformOutput}
+                    trackingPayload={analyticsPayload}
+                    selectedTransform={selectedTransform}
+                    transformAllowed={transformAllowed}
+                    wasSaved={savedTransformKeys.includes(`${deepDiveSignal.id}-${selectedTransform}`)}
+                  />
+                  {hasFounderAccess && (
+                    <RemixEngine
+                      onRemixChange={setSelectedRemix}
+                      remixOutput={selectedRemixOutput}
+                      selectedRemix={selectedRemix}
+                    />
+                  )}
+                </>
+              )}
+            </details>
 
             <section className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-4">
               <div className="text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
@@ -8995,6 +9015,7 @@ function MoneyMoveFeedCard({
   active,
   detail,
   fitScore,
+  generating,
   index,
   onTry,
   signal,
@@ -9003,6 +9024,7 @@ function MoneyMoveFeedCard({
   active: boolean;
   detail: ReturnType<typeof getOpportunityDetailFields>;
   fitScore: number;
+  generating: boolean;
   index: number;
   onTry: () => void;
   signal: BuildSignal;
@@ -9011,7 +9033,7 @@ function MoneyMoveFeedCard({
   return (
     <article
       className={[
-        "min-w-0 overflow-hidden rounded-2xl border p-4 transition",
+        "min-w-0 overflow-hidden rounded-2xl border p-4 transition duration-300 hover:-translate-y-0.5",
         active
           ? "border-emerald-300/70 bg-emerald-300/[0.12] shadow-lg shadow-emerald-950/30"
           : "border-white/10 bg-black/25 hover:border-emerald-300/35 hover:bg-white/[0.04]",
@@ -9025,26 +9047,30 @@ function MoneyMoveFeedCard({
           {getFitLabel(fitScore)}
         </span>
       </div>
+      <p className="mt-3 line-clamp-3 break-words text-lg font-black leading-7 text-emerald-100">
+        {normalizeDisplayText(detail.proof)}
+      </p>
       <h3 className="mt-2 break-words text-base font-black text-white">
         {truncateDisplayText(getDisplaySignalTitle(signal).title, 86)}
       </h3>
-      <div className="mt-3 space-y-3">
-        <CompactSignalField label="Revenue proof" value={detail.proof} />
-        <CompactSignalField label="Who paid" value={detail.buyer} />
-        <CompactSignalField label="Paid pain" value={detail.paidPain} />
-        <CompactSignalField label="Why money moved" value={detail.whyMoneyChangedHands || whyMatches} />
-      </div>
+      <p className="mt-3 line-clamp-2 break-words text-sm font-bold leading-6 text-zinc-300">
+        Who paid: {normalizeDisplayText(detail.buyer)}
+      </p>
+      <p className="mt-2 line-clamp-2 break-words text-sm leading-6 text-zinc-400">
+        {normalizeDisplayText(detail.whyMoneyChangedHands || whyMatches)}
+      </p>
       <button
         type="button"
         onClick={onTry}
+        disabled={generating}
         className={[
-          "mt-4 w-full rounded-xl px-3 py-3 text-center text-sm font-black transition",
+          "mt-4 w-full rounded-xl px-3 py-3 text-center text-sm font-black transition disabled:cursor-wait disabled:opacity-80",
           active
             ? "border border-emerald-300/35 bg-emerald-300/[0.08] text-emerald-100"
             : "bg-emerald-300 text-black hover:bg-emerald-200",
         ].join(" ")}
       >
-        Try This
+        {generating ? "Generating..." : "Try This"}
       </button>
     </article>
   );
@@ -9076,19 +9102,21 @@ function BusinessStartPackPanel({
     { label: "Copy DM", value: pack.dmScript },
     { label: "Copy Carousel", value: pack.carousel },
   ];
+  const primaryCopy = copyItems[0];
+  const secondaryCopyItems = copyItems.slice(1);
 
   return (
     <section className="mt-5 rounded-2xl border border-emerald-300/30 bg-emerald-300/[0.07] p-4 md:rounded-3xl md:p-5">
       <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0">
           <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-            Business Start Pack
+            Your Business
           </div>
           <h3 className="mt-2 break-words text-xl font-black text-white md:text-2xl">
             {pack.businessName}
           </h3>
           <p className="mt-2 max-w-2xl break-words text-sm font-bold leading-6 text-zinc-300">
-            Start this business today: copy the post, DM buyers, log results, and build only after replies.
+            Your next move is simple: copy the X post, publish it, then DM buyers who engage.
           </p>
         </div>
         <button
@@ -9097,21 +9125,38 @@ function BusinessStartPackPanel({
           disabled={queueLimitReached}
           className="w-full rounded-2xl bg-emerald-300 px-5 py-3 text-center text-sm font-black text-black transition hover:bg-emerald-200 disabled:cursor-not-allowed disabled:opacity-50 lg:w-auto"
         >
-          Save to Launch Queue
+          Save to My Tests
         </button>
       </div>
 
-      <div className="mt-4 grid min-w-0 gap-3 md:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-4 grid min-w-0 gap-3 md:grid-cols-3">
         <MarketOpportunityField label="Buyer" value={pack.buyer} />
-        <MarketOpportunityField label="Paid pain" value={pack.paidPain} />
         <MarketOpportunityField label="First offer" value={pack.firstOffer} />
         <MarketOpportunityField label="Price" value={pack.price} />
       </div>
-
-      <div className="mt-4 rounded-2xl border border-white/10 bg-black/25 p-4">
-        <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-          Choose angle controls
+      <div className="mt-4 rounded-2xl border border-white/10 bg-black/30 p-4">
+        <div className="text-[11px] font-black uppercase tracking-wide text-emerald-300">
+          Today&apos;s task
         </div>
+        <p className="mt-2 break-words text-sm font-bold leading-6 text-zinc-200">
+          Post this on {controls.channel}. DM 10 buyers. Build only after replies.
+        </p>
+      </div>
+
+      <div className="mt-4">
+        <button
+          type="button"
+          onClick={() => onCopy(primaryCopy.label, primaryCopy.value)}
+          className="w-full rounded-2xl bg-emerald-300 px-5 py-4 text-center text-sm font-black text-black transition hover:bg-emerald-200"
+        >
+          {copiedLabel === primaryCopy.label ? "Copied" : primaryCopy.label}
+        </button>
+      </div>
+
+      <details className="mt-4 rounded-2xl border border-white/10 bg-black/25 p-4">
+        <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+          Make it mine
+        </summary>
         <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           <label className="min-w-0 text-[11px] font-black uppercase tracking-wide text-zinc-500">
             Target buyer
@@ -9153,12 +9198,12 @@ function BusinessStartPackPanel({
             </button>
           ))}
         </div>
-      </div>
+      </details>
 
-      <div className="mt-4 rounded-2xl border border-white/10 bg-black/25 p-4">
-        <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-          Generate 5 business angles
-        </div>
+      <details className="mt-4 rounded-2xl border border-white/10 bg-black/25 p-4">
+        <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+          More Versions
+        </summary>
         <div className="mt-3 grid gap-3 lg:grid-cols-5">
           {anglePacks.map((anglePack) => {
             const active = anglePack.angleName === pack.angleName;
@@ -9188,10 +9233,14 @@ function BusinessStartPackPanel({
             );
           })}
         </div>
-      </div>
+      </details>
 
-      <div className="mt-4 grid gap-3 lg:grid-cols-3">
-        {copyItems.map((item) => (
+      <details className="mt-4 rounded-2xl border border-white/10 bg-black/25 p-4">
+        <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+          Show launch assets
+        </summary>
+        <div className="mt-3 grid gap-3 lg:grid-cols-2">
+        {secondaryCopyItems.map((item) => (
           <button
             key={item.label}
             type="button"
@@ -9201,9 +9250,6 @@ function BusinessStartPackPanel({
             {copiedLabel === item.label ? "Copied" : item.label}
           </button>
         ))}
-      </div>
-
-      <div className="mt-4 grid gap-3 xl:grid-cols-2">
         <BusinessStartPackOutput title="X post" value={pack.xPost} />
         <BusinessStartPackOutput title="3-slide carousel" value={pack.carousel} />
         <BusinessStartPackOutput title="DM script" value={pack.dmScript} />
@@ -9211,6 +9257,7 @@ function BusinessStartPackPanel({
         <BusinessStartPackOutput title="48-hour validation plan" value={pack.validationPlan} />
         <BusinessStartPackOutput title="Build / Drop rule" value={pack.buildDropRule} />
       </div>
+      </details>
 
       <details className="mt-4 rounded-2xl border border-white/10 bg-black/30 p-4">
         <summary className="cursor-pointer list-none text-sm font-black text-zinc-200">
@@ -9759,7 +9806,7 @@ function TransformStudio({
               disabled={!transformAllowed || !canAddToQueue}
               className="w-full rounded-xl border border-emerald-300/30 px-4 py-2.5 text-xs font-black text-emerald-100 transition hover:bg-emerald-300/10 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
             >
-              Save to Launch Queue
+              Save to My Tests
             </button>
           </div>
         </div>
@@ -9850,10 +9897,10 @@ function ValidationQueuePanel({
       <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
           <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-            Launch Queue
+            My Tests
           </div>
           <p className="mt-1 break-words text-sm font-bold leading-6 text-zinc-400">
-            Save a Business Start Pack, post it, DM buyers, log results, then decide Build or Drop.
+            Save your business, post it, DM buyers, log results, then decide Build or Drop.
           </p>
         </div>
         {!hasFounderAccess && (
@@ -9865,7 +9912,7 @@ function ValidationQueuePanel({
 
       {queue.length === 0 ? (
         <div className="mt-4 rounded-2xl border border-white/10 bg-black/35 p-4 text-sm font-bold leading-6 text-zinc-500">
-          Save a Business Start Pack to track validation results.
+          Save your business to track results.
         </div>
       ) : (
         <div className="mt-4 grid gap-3">
@@ -9907,7 +9954,7 @@ function ValidationQueuePanel({
 
               <div className="mt-4 rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.06] p-3">
                 <div className="text-[11px] font-black uppercase tracking-wide text-emerald-300">
-                  Validation Tracker
+                  Results
                 </div>
                 <div className="mt-3 grid gap-2 sm:grid-cols-3 lg:grid-cols-6">
                   {([
@@ -9958,7 +10005,7 @@ function ValidationQueuePanel({
                   onClick={() => onMarkWinner(item.id)}
                   className="rounded-xl border border-emerald-300/35 px-3 py-2 text-xs font-black text-emerald-100 transition hover:bg-emerald-300/10"
                 >
-                  Mark as Winner
+                  Mark Winning Move
                 </button>
                 <button
                   type="button"
@@ -9990,21 +10037,21 @@ function WinnerPanel({ winners }: { winners: ValidationQueueItem[] }) {
   return (
     <section className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-4">
       <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-        Your Money Signal Swipe File
+        Winning Moves
       </div>
       <p className="mt-2 break-words text-sm font-bold leading-6 text-zinc-400">
-        Signals that got real response belong here. Winners unlock the full Launch Pack: Codex MVP Prompt, landing page copy, pricing page copy, next 3 posts, and follow-up DM.
+        Moves that got real response belong here. A Winning Move unlocks the full Launch Pack: Codex MVP Prompt, landing page copy, pricing page copy, next 3 posts, and follow-up DM.
       </p>
       {winners.length === 0 ? (
         <p className="mt-3 text-sm font-bold leading-6 text-zinc-500">
-          No winners yet. Mark a queued output as Winner after replies, saves, clicks, or buyer interest.
+          No winning moves yet. Mark one after replies, saves, clicks, or buyer interest.
         </p>
       ) : (
         <div className="mt-4 grid gap-3 md:grid-cols-2">
           {winners.map((winner) => (
             <article key={winner.id} className="rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.06] p-4">
               <div className="text-xs font-black uppercase tracking-wide text-emerald-300">
-                Winner
+                Winning Move
               </div>
               <h4 className="mt-2 break-words text-sm font-black text-white">
                 {winner.signalTitle}
