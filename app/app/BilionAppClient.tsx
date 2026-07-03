@@ -4666,6 +4666,22 @@ function writeLaunchQueueItems(items: ValidationQueueItem[]) {
   }
 }
 
+function getDailyFeedSeed() {
+  const today = new Date();
+
+  return Number(`${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, "0")}${String(today.getDate()).padStart(2, "0")}`);
+}
+
+function rotateSignalsForDailyFeed(signals: BuildSignal[], seed: number, offset: number) {
+  if (signals.length === 0) {
+    return signals;
+  }
+
+  const startIndex = Math.abs(seed + offset) % signals.length;
+
+  return [...signals.slice(startIndex), ...signals.slice(0, startIndex)];
+}
+
 function trackBilionIntentEvent(
   name: BilionIntentEventName,
   payload: BilionIntentEventPayload,
@@ -8511,6 +8527,8 @@ function MarketSelectionSection({
   const [activeStartedSignalId, setActiveStartedSignalId] = useState("");
   const [generatingSignalId, setGeneratingSignalId] = useState("");
   const [generationMessage, setGenerationMessage] = useState("");
+  const [dailyFeedSeed] = useState(() => getDailyFeedSeed());
+  const [feedOffset, setFeedOffset] = useState(0);
   const [businessControls, setBusinessControls] = useState<BusinessStartControls>({
     channel: "X",
     difficulty: "simple",
@@ -8527,8 +8545,17 @@ function MarketSelectionSection({
     .filter((signal, index, signals) =>
       signals.findIndex((candidate) => candidate.id === signal.id) === index,
     );
-  const recommendationSource = marketScopedSignals.length
-    ? marketScopedSignals
+  const diverseFeedSignals = allSignals
+    .filter((signal, index, signals) =>
+      signals.findIndex((candidate) => candidate.id === signal.id) === index,
+    );
+  const dailyFeedSignals = rotateSignalsForDailyFeed(
+    diverseFeedSignals.length ? diverseFeedSignals : marketScopedSignals,
+    dailyFeedSeed,
+    feedOffset,
+  );
+  const recommendationSource = dailyFeedSignals.length
+    ? dailyFeedSignals
     : topMoneySignals.length
       ? topMoneySignals
       : opportunities.length > 0
@@ -8546,7 +8573,8 @@ function MarketSelectionSection({
     primaryRecommendation?.signal ||
     topMoneySignals[0] ||
     buildMarketSpecificSignal(selectedMarket);
-  const feedRecommendations = recommendations.slice(0, hasFounderAccess ? 9 : 6);
+  const feedRecommendations = recommendations.slice(0, hasFounderAccess ? 12 : 4);
+  const lockedDailyCount = hasFounderAccess ? 0 : Math.max(0, recommendations.length - feedRecommendations.length);
   const deepDiveDetail = getOpportunityDetailFields(deepDiveSignal);
   const effectiveBusinessControls = {
     ...businessControls,
@@ -8641,6 +8669,13 @@ function MarketSelectionSection({
       setGeneratingSignalId("");
       setGenerationMessage("");
     }, 1300);
+  }
+
+  function showNextMoneyMove() {
+    setActiveStartedSignalId("");
+    setGeneratingSignalId("");
+    setGenerationMessage("");
+    setFeedOffset((currentOffset) => currentOffset + 1);
   }
 
   function addTransformToQueue() {
@@ -8773,6 +8808,7 @@ function MarketSelectionSection({
     <section className="w-full max-w-full overflow-hidden rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.055] p-4 shadow-2xl md:rounded-3xl md:p-6">
       <MoneyMoveFeedIntro
         hasFounderAccess={hasFounderAccess}
+        lockedDailyCount={lockedDailyCount}
         selectedMarket={selectedMarket}
       />
 
@@ -8849,6 +8885,24 @@ function MarketSelectionSection({
           })}
         </div>
 
+        {!hasFounderAccess && lockedDailyCount > 0 && (
+          <section className="rounded-3xl border border-white/10 bg-black/30 p-5 text-center">
+            <div className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">
+              You&apos;ve discovered today&apos;s free Money Moves.
+            </div>
+            <p className="mx-auto mt-2 max-w-xl text-sm font-bold leading-6 text-zinc-300">
+              Bilion has more proven Money Moves ready. Unlock unlimited discovery when you want five more.
+            </p>
+            <a
+              href={CHECKOUT_URL || "/founder"}
+              onClick={trackUnlockProClick}
+              className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-emerald-300 px-5 py-3 text-sm font-black text-black transition hover:bg-emerald-200 sm:w-auto"
+            >
+              Unlock unlimited Money Moves
+            </a>
+          </section>
+        )}
+
         {!hasFounderAccess && <ProUpgradeCard onUnlockClick={trackUnlockProClick} />}
 
         {generatingSignalId && (
@@ -8896,6 +8950,14 @@ function MarketSelectionSection({
               pack={businessStartPack}
               queueLimitReached={queueLimitReached}
             />
+
+            <button
+              type="button"
+              onClick={showNextMoneyMove}
+              className="mt-4 w-full rounded-2xl border border-white/10 bg-black/30 px-5 py-4 text-center text-sm font-black text-zinc-100 transition hover:border-emerald-300/35 hover:bg-emerald-300/[0.08]"
+            >
+              Show Me Another Money Move
+            </button>
 
             <details className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4">
               <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
@@ -8980,9 +9042,11 @@ function MarketSelectionSection({
 
 function MoneyMoveFeedIntro({
   hasFounderAccess,
+  lockedDailyCount,
   selectedMarket,
 }: {
   hasFounderAccess: boolean;
+  lockedDailyCount: number;
   selectedMarket: AppMarketOption;
 }) {
   return (
@@ -8991,10 +9055,10 @@ function MoneyMoveFeedIntro({
         Money Move Feed
       </div>
       <h2 className="mt-2 max-w-3xl break-words text-3xl font-black text-white md:text-5xl">
-        Stop guessing what to build.
+        Today&apos;s Money Move is ready.
       </h2>
       <p className="mt-3 max-w-3xl break-words text-sm font-bold leading-6 text-zinc-300 md:text-base">
-        Discover where money already moved. Turn it into your version. Test before you build.
+        Open Bilion, find one proven opportunity, post or DM today, then come back tomorrow for the next one.
       </p>
       <div className="mt-4 flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-wide text-zinc-400">
         <span className="rounded-full border border-emerald-300/25 bg-emerald-300/[0.08] px-3 py-2 text-emerald-100">
@@ -9004,7 +9068,7 @@ function MoneyMoveFeedIntro({
           Money Move &rarr; Try This &rarr; Validate &rarr; Build After Replies
         </span>
         <span className="rounded-full border border-white/10 bg-black/25 px-3 py-2">
-          {hasFounderAccess ? "Pro feed unlocked" : "Free feed: enough to test one move today"}
+          {hasFounderAccess ? "Unlimited daily discovery" : `Free today: ${lockedDailyCount > 0 ? "try one, unlock more" : "try one Money Move"}`}
         </span>
       </div>
     </section>
@@ -9041,7 +9105,7 @@ function MoneyMoveFeedCard({
     >
       <div className="flex min-w-0 items-start justify-between gap-2">
         <div className="min-w-0 break-words text-[11px] font-black uppercase tracking-wide text-emerald-300">
-          {index === 0 ? "Top money move" : signal.signalSourceLabel || signal.sourceType || "Money move"}
+          {index === 0 ? "Today's Best Opportunity" : signal.signalSourceLabel || signal.sourceType || "Next Money Move"}
         </div>
         <span className="shrink-0 rounded-full border border-white/10 bg-black/25 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-zinc-300">
           {getFitLabel(fitScore)}
@@ -9323,17 +9387,16 @@ function ProUpgradeCard({ onUnlockClick }: { onUnlockClick: () => void }) {
             Bilion Pro
           </div>
           <h3 className="mt-2 break-words text-2xl font-black text-white">
-            You only need one winner.
+            Want five more?
           </h3>
           <p className="mt-2 max-w-2xl break-words text-sm font-bold leading-6 text-zinc-400">
-            Bilion Pro helps you test more evidence-backed money signals until one gets replies.
+            Free shows enough to test today. Pro keeps the Money Move Feed going every time curiosity hits.
           </p>
           <div className="mt-4 grid gap-2 text-sm font-bold leading-6 text-zinc-300 md:grid-cols-2">
-            <span>Unlock more recommended money signals</span>
-            <span>Turn every signal into posts, DMs, landing page copy, and Codex prompts</span>
-            <span>Remix by buyer, offer, price, and channel</span>
-            <span>Track validation progress</span>
-            <span>Save winning signals into your Money Signal Swipe File</span>
+            <span>Unlimited proven Money Moves</span>
+            <span>More versions for every move</span>
+            <span>Full launch assets when you find one worth testing</span>
+            <span>Save more tests and winning moves</span>
           </div>
         </div>
         <div className="w-full shrink-0 rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.08] p-4 lg:w-72">
@@ -9343,7 +9406,7 @@ function ProUpgradeCard({ onUnlockClick }: { onUnlockClick: () => void }) {
             onClick={onUnlockClick}
             className="mt-3 inline-flex w-full items-center justify-center rounded-2xl bg-emerald-300 px-5 py-3 text-center text-sm font-black text-black transition hover:bg-emerald-200"
           >
-            Unlock Bilion Pro
+            Unlock unlimited Money Moves
           </a>
           <p className="mt-3 text-xs font-bold leading-5 text-zinc-400">
             Find a winner faster by testing more proven signals, not by generating random ideas.
