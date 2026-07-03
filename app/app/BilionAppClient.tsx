@@ -1829,7 +1829,7 @@ const highQualityBusinessSparks: HighQualityBusinessSpark[] = [
       "Build only if they ask for weekly reports or a reusable tool.",
     ],
     launchPost:
-      "Small contractors still turn messy field notes into daily reports by hand. Launch Pack: Field Notes to Reports. Buyer: small contractors. Offer: $49/month jobsite report generator. Test it with one before/after report before building.",
+      "Small contractors still turn messy field notes into daily reports by hand. Launch Assets: Field Notes to Reports. Buyer: small contractors. Offer: $49/month jobsite report generator. Test it with one before/after report before building.",
     dmScript:
       "Quick idea: I am testing a workflow that turns messy jobsite notes into clean daily reports. Want me to turn one sample note into a client-ready report?",
     codexPromptPreview:
@@ -1851,7 +1851,7 @@ const highQualityBusinessSparks: HighQualityBusinessSpark[] = [
       "Build only if they want the next month handled.",
     ],
     launchPost:
-      "Local businesses lose trust when reviews sit unanswered. Launch Pack: Review Reply Copilot. Buyer: restaurants, clinics, salons. Offer: $500 setup + $150/month. Test by rewriting 5 reviews before building.",
+      "Local businesses lose trust when reviews sit unanswered. Launch Assets: Review Reply Copilot. Buyer: restaurants, clinics, salons. Offer: $500 setup + $150/month. Test by rewriting 5 reviews before building.",
     dmScript:
       "Quick idea: I rewrote a few review replies for local businesses using a simple AI workflow. Want me to send 5 before/after examples for your reviews?",
     codexPromptPreview:
@@ -3893,7 +3893,7 @@ function buildAngleOutput(
     return [
       `${buyerLabel} are already paying around this pain.`,
       "",
-      `Money signal: ${detail.proof}`,
+      `Money Move: ${detail.proof}`,
       "",
       `Buyer: ${detail.buyer}`,
       `Paid pain: ${detail.paidPain}`,
@@ -3925,7 +3925,7 @@ function buildAngleOutput(
       `Slide 1: ${buyerLabel} are paying to fix this`,
       "Do not start with a full product.",
       "",
-      "Slide 2: Money Signal",
+      "Slide 2: Money Move",
       detail.proof,
       "",
       "Slide 3: Buyer + Paid Pain",
@@ -4073,7 +4073,7 @@ function buildBusinessStartPack(
     xPost: [
       toneHook[controls.tone],
       "",
-      `Money Signal: ${detail.proof}`,
+      `Money Move: ${detail.proof}`,
       `Buyer: ${buyer}`,
       `Pain: ${detail.paidPain}`,
       `Offer: ${offerName}`,
@@ -4120,7 +4120,7 @@ function buildOutputPackFromSignal(signal: BuildSignal, angle: NextAction = "pos
   const buildScope = getOutputPackBuildScope(detail);
   const market = getSignalMarket(signal);
   const generatedAt = new Date().toISOString();
-  const signalTitle = title.detail || title.title || signal.sourceTitle || "Money Signal";
+  const signalTitle = title.detail || title.title || signal.sourceTitle || "Money Move";
   const angleNote = getLaunchPackAngleNote(angle);
   const metadata = getMoneyMoveMetadata(signal, detail);
   const validationPlan = [
@@ -4151,7 +4151,7 @@ function buildOutputPackFromSignal(signal: BuildSignal, angle: NextAction = "pos
     "- People like the idea but do not want the offer.",
   ].join("\n");
   const carouselSlides = [
-    `Slide 1: Money signal\n${detail.proof}\n\n${detail.buyer} are already paying around this problem.`,
+    `Slide 1: Money Move\n${detail.proof}\n\n${detail.buyer} are already paying around this problem.`,
     `Slide 2: Why buyers pay\n${detail.paidPain}\n\nSell this first: ${detail.firstOffer}`,
     `Slide 3: Validate before building\nCreate one manual before/after sample, DM 10-20 reachable buyers, and ask if they want the same result.\n\n${detail.buildAfterReplies}`,
   ];
@@ -4595,7 +4595,7 @@ function getValidationQueueNextAction(status: ValidationQueueStatus) {
   }
 
   if (status === "Winner") {
-    return "Open full Launch Pack and build after replies";
+    return "Open full Launch Assets and build after replies";
   }
 
   if (status === "Build") {
@@ -4643,7 +4643,7 @@ function readLaunchQueueItems() {
         paidInterest: Number(item.paidInterest) || 0,
         replies: Number(item.replies) || 0,
         saves: Number(item.saves) || 0,
-        signalTitle: item.signalTitle || "Money Signal",
+        signalTitle: item.signalTitle || "Money Move",
         status: validationQueueStatuses.includes(item.status) ? item.status : "Draft",
         views: Number(item.views) || 0,
         winner: Boolean(item.winner),
@@ -7608,7 +7608,7 @@ export default function BilionAppClient({
       setSelectedMarket(candidate.market);
     }
     setCopyFeedback({
-      message: "Extracted a Candidate Money Signal. Review it before approving.",
+      message: "Extracted a candidate Money Move. Review it before approving.",
       tone: "success",
     });
   }
@@ -7651,7 +7651,7 @@ export default function BilionAppClient({
     setSelectedAction("sell");
     setActiveWorkflowTab("library");
     setCopyFeedback({
-      message: "Approved to Money Signals. It can now rank in Top 3 and power Best Offer Today.",
+      message: "Approved to Money Moves. It can now rank in the feed and power the best move today.",
       tone: "success",
     });
   }
@@ -7669,7 +7669,7 @@ export default function BilionAppClient({
       return nextCandidates;
     });
     setCopyFeedback({
-      message: "Rejected candidate. It will not appear in Top 3 Money Signals.",
+      message: "Rejected candidate. It will not appear in the Money Move Feed.",
       tone: "success",
     });
   }
@@ -7680,7 +7680,7 @@ export default function BilionAppClient({
     writeRawSignals([]);
     writeCandidateMoneySignals([]);
     setCopyFeedback({
-      message: "Cleared raw and candidate Signal Inbox records. Approved Money Signals were kept.",
+      message: "Cleared raw and candidate inbox records. Approved Money Moves were kept.",
       tone: "success",
     });
   }
@@ -7770,14 +7770,14 @@ export default function BilionAppClient({
               Bilion
             </h1>
             <div className="mt-1 text-base font-bold text-zinc-200 md:mt-2 md:text-xl">
-              Get today&apos;s Money Move. Test demand before you build.
+              Where did money move today?
             </div>
 
             <p className="mt-3 max-w-2xl break-words text-sm leading-relaxed text-zinc-400 md:mt-4 md:text-base md:leading-7">
-              Bilion gives AI builders one evidence-backed business move, turns it into an offer, post, buyer DM, validation plan, and Codex-ready prompt, then tells you to build only after replies.
+              Bilion discovers real businesses people already paid for, helps you make one your own, then shows you exactly how to test it before building.
             </p>
             <div className="mt-4 inline-flex max-w-full rounded-full border border-white/10 bg-black/25 px-3 py-2 text-xs font-black uppercase tracking-wide text-zinc-400">
-              Money Signal &rarr; Offer Test &rarr; Buyer Replies &rarr; Build
+              Discover Money Moves &rarr; Make It Yours &rarr; Test Today &rarr; Build After Replies
             </div>
           </header>
 
@@ -8465,7 +8465,7 @@ function EvidenceInboxSummary({
         {topSignal && (
           <div className="min-w-0 rounded-2xl border border-emerald-300/40 bg-emerald-300/[0.09] p-4 shadow-lg shadow-emerald-950/20 lg:min-w-80">
             <div className="text-xs font-black uppercase tracking-[0.14em] text-emerald-300">
-              Money Signal
+              Money Move
             </div>
             <div className="mt-1 break-words text-sm font-black text-white">
               {truncateDisplayText(getDisplaySignalTitle(topSignal).title, 64)}
@@ -9058,14 +9058,14 @@ function MoneyMoveFeedIntro({
         Where did money move today?
       </h2>
       <p className="mt-3 max-w-3xl break-words text-sm font-bold leading-6 text-zinc-300 md:text-base">
-        Open Bilion, find one proven Money Move, make it yours, and test it today.
+        Bilion discovers real businesses people already paid for, helps you make one your own, then shows you exactly how to test it before building.
       </p>
       <div className="mt-4 flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-wide text-zinc-400">
         <span className="rounded-full border border-emerald-300/25 bg-emerald-300/[0.08] px-3 py-2 text-emerald-100">
           Feed: {selectedMarket}
         </span>
         <span className="rounded-full border border-white/10 bg-black/25 px-3 py-2">
-          Money Move &rarr; Try This &rarr; Validate &rarr; Build After Replies
+          Discover Money Moves &rarr; Make It Yours &rarr; Test Today &rarr; Build After Replies
         </span>
         <span className="rounded-full border border-white/10 bg-black/25 px-3 py-2">
           {hasFounderAccess ? "Unlimited daily discovery" : `Free today: ${lockedDailyCount > 0 ? "try one, unlock more" : "try one Money Move"}`}
@@ -9451,10 +9451,10 @@ function MoneyMoveAngleExpander({ signal }: { signal: BuildSignal }) {
             Money Move Angle Expander
           </div>
           <h3 className="mt-1 break-words text-lg font-black text-white">
-            Turn one money signal into multiple testable directions.
+            Turn one Money Move into multiple testable directions.
           </h3>
           <p className="mt-2 max-w-2xl break-words text-sm font-bold leading-6 text-zinc-400">
-            Money signal first. Product second. Build only after replies.
+            Money Move first. Product second. Build only after replies.
           </p>
         </div>
         <div className="grid min-w-0 gap-2 text-[11px] font-black uppercase tracking-wide text-zinc-500 sm:grid-cols-2 lg:w-[360px]">
@@ -10108,7 +10108,7 @@ function WinnerPanel({ winners }: { winners: ValidationQueueItem[] }) {
         Winning Moves
       </div>
       <p className="mt-2 break-words text-sm font-bold leading-6 text-zinc-400">
-        Moves that got real response belong here. A Winning Move unlocks the full Launch Pack: Codex MVP Prompt, landing page copy, pricing page copy, next 3 posts, and follow-up DM.
+        Moves that got real response belong here. A Winning Move unlocks the full build plan: landing page copy, pricing page copy, next 3 posts, follow-up DM, and the Codex MVP prompt after proof.
       </p>
       {winners.length === 0 ? (
         <p className="mt-3 text-sm font-bold leading-6 text-zinc-500">
@@ -10134,7 +10134,7 @@ function WinnerPanel({ winners }: { winners: ValidationQueueItem[] }) {
                 Winning output: {winner.outputType}
               </p>
               <div className="mt-3 grid gap-2 text-xs font-black text-zinc-200 sm:grid-cols-2">
-                <span className="rounded-xl border border-white/10 bg-black/25 px-3 py-2">Full Launch Pack</span>
+                <span className="rounded-xl border border-white/10 bg-black/25 px-3 py-2">Full build plan</span>
                 <span className="rounded-xl border border-white/10 bg-black/25 px-3 py-2">Codex MVP Prompt</span>
                 <span className="rounded-xl border border-white/10 bg-black/25 px-3 py-2">Landing + pricing copy</span>
                 <span className="rounded-xl border border-white/10 bg-black/25 px-3 py-2">Next 3 posts + follow-up DM</span>
@@ -10196,7 +10196,7 @@ function BuildBriefPanel({
       </div>
 
       <div className="mt-4 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.08] px-4 py-3 text-sm font-bold leading-6 text-yellow-100">
-        Build with Codex only after replies, saves, clicks, or buyer interest.
+        Build only after replies, saves, clicks, or buyer interest. Use Codex after proof.
       </div>
 
       <details className="mt-4 rounded-2xl border border-white/10 bg-black/25 p-4">
@@ -10356,7 +10356,7 @@ function SignalInboxSection({
                 onClick={handleExtract}
                 className="min-h-11 rounded-xl bg-emerald-300 px-4 py-2.5 text-xs font-black text-black transition hover:bg-emerald-200"
               >
-                Extract Money Signal
+                Extract Money Move
               </button>
             </div>
           </div>
@@ -10409,7 +10409,7 @@ function SignalInboxSection({
                   onClick={() => onApprove(candidate)}
                   className="min-h-11 rounded-xl bg-emerald-300 px-4 py-2.5 text-xs font-black text-black transition hover:bg-emerald-200"
                 >
-                  Approve to Money Signals
+                  Approve to Money Moves
                 </button>
                 <button
                   type="button"
@@ -10422,7 +10422,7 @@ function SignalInboxSection({
             </>
           ) : (
             <div className="mt-3 rounded-2xl border border-dashed border-white/10 bg-black/20 p-4 text-sm leading-6 text-zinc-500">
-              No candidate yet. Paste raw text and extract a Money Signal before approving it.
+              No candidate yet. Paste raw text and extract a Money Move before approving it.
             </div>
           )}
         </div>
@@ -10795,7 +10795,7 @@ function SecondaryToolsSection({
               Workflow note
             </summary>
             <p className="mt-3 text-sm leading-6 text-zinc-500">
-              Money Signal - Codex Build Brief - Content Test - Signal - Build with Codex.
+              Money Move - Your Business - Launch Assets - Replies - Build with Codex.
             </p>
           </details>
 
@@ -10984,7 +10984,7 @@ function WinnersSection({
 
       {winners.length === 0 ? (
         <div className="mt-6 min-w-0 break-words rounded-2xl border border-white/10 bg-black/30 p-4 text-sm leading-6 text-zinc-500 md:p-5">
-          No winners yet. Run the loop first: Money Signal &rarr; Codex Build Brief &rarr; Content test &rarr; Market response &rarr; Winner.
+          No winners yet. Run the loop first: Money Move &rarr; Your Business &rarr; Launch Assets &rarr; Market response &rarr; Winning Move.
         </div>
       ) : (
         <div className="mt-6 grid min-w-0 gap-3 md:grid-cols-2">

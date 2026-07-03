@@ -136,22 +136,22 @@ export default function HomePage() {
         <section className="py-14 md:py-20">
           <div className="max-w-3xl">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
-              Money moved somewhere -&gt; Make it yours -&gt; Test today -&gt; Build after replies
+              Discover Money Moves -&gt; Make It Yours -&gt; Test Today -&gt; Build After Replies
             </div>
             <h1 className="mt-5 break-words text-4xl font-semibold leading-tight tracking-tight md:text-6xl">
               Where did money move today?
             </h1>
             <p className="mt-5 max-w-2xl break-words text-base leading-7 text-zinc-300 md:text-lg md:leading-8">
-              Open Bilion, find one proven Money Move, make it yours, and test it today.
+              Bilion discovers real businesses people already paid for, helps you make one your own, then shows you exactly how to test it before building.
             </p>
             <p className="mt-3 max-w-2xl break-words text-sm font-semibold leading-6 text-emerald-200">
-              Build after replies. Codex comes last.
+              Stop guessing. Copy proven money. Build only after proof.
             </p>
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href="/app">See today&apos;s Money Move</ButtonLink>
+              <ButtonLink href="/app">See Today&apos;s Money Move</ButtonLink>
               <ButtonLink href="#todays-money-moves" variant="secondary">
-                View example Money Moves
+                Browse Money Moves
               </ButtonLink>
             </div>
           </div>
@@ -214,7 +214,7 @@ export default function HomePage() {
               </p>
             </div>
             <Link href="/app" className="text-sm font-semibold text-zinc-400 transition hover:text-white">
-              See today&apos;s Money Move
+              See Today&apos;s Money Move
             </Link>
           </div>
           <div className="grid min-w-0 gap-3 lg:grid-cols-3">
@@ -238,7 +238,7 @@ export default function HomePage() {
               </p>
               <div className="mt-5">
                 <ButtonLink href="/app" variant="secondary">
-                  See today&apos;s Money Move
+                  See Today&apos;s Money Move
                 </ButtonLink>
               </div>
             </article>
