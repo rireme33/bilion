@@ -139,13 +139,13 @@ export default function HomePage() {
               Money moved somewhere -&gt; Make it yours -&gt; Test today -&gt; Build after replies
             </div>
             <h1 className="mt-5 break-words text-4xl font-semibold leading-tight tracking-tight md:text-6xl">
-              Stop guessing what to build.
+              Where did money move today?
             </h1>
             <p className="mt-5 max-w-2xl break-words text-base leading-7 text-zinc-300 md:text-lg md:leading-8">
-              Bilion shows proven Money Moves, turns them into your version, and gives you the post, DM, offer, and validation plan to test today.
+              Open Bilion, find one proven Money Move, make it yours, and test it today.
             </p>
             <p className="mt-3 max-w-2xl break-words text-sm font-semibold leading-6 text-emerald-200">
-              Build with Codex only after replies.
+              Build after replies. Codex comes last.
             </p>
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
@@ -251,13 +251,13 @@ export default function HomePage() {
                 Pro Access - $19
               </h2>
               <p className="mt-3 break-words text-sm leading-6 text-zinc-300">
-                Unlimited Money Moves. Unlimited Try This. More versions, launch assets, saved tests, winning moves, and Codex build plans.
+                Never run out of Money Moves. Keep discovering proven opportunities until one catches your eye.
               </p>
               <div className="mt-4 grid gap-2 text-sm leading-6 text-zinc-200">
                 {[
-                  "Unlimited Money Moves",
+                  "Unlimited discovery",
                   "Unlimited Try This",
-                  "More versions and launch assets",
+                  "More versions when one catches your eye",
                   "Saved tests and winning moves",
                   "Codex build plans after validation",
                 ].map((item) => (

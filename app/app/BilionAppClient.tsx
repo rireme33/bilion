@@ -9055,10 +9055,10 @@ function MoneyMoveFeedIntro({
         Money Move Feed
       </div>
       <h2 className="mt-2 max-w-3xl break-words text-3xl font-black text-white md:text-5xl">
-        Today&apos;s Money Move is ready.
+        Where did money move today?
       </h2>
       <p className="mt-3 max-w-3xl break-words text-sm font-bold leading-6 text-zinc-300 md:text-base">
-        Open Bilion, find one proven opportunity, post or DM today, then come back tomorrow for the next one.
+        Open Bilion, find one proven Money Move, make it yours, and test it today.
       </p>
       <div className="mt-4 flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-wide text-zinc-400">
         <span className="rounded-full border border-emerald-300/25 bg-emerald-300/[0.08] px-3 py-2 text-emerald-100">
@@ -9103,15 +9103,7 @@ function MoneyMoveFeedCard({
           : "border-white/10 bg-black/25 hover:border-emerald-300/35 hover:bg-white/[0.04]",
       ].join(" ")}
     >
-      <div className="flex min-w-0 items-start justify-between gap-2">
-        <div className="min-w-0 break-words text-[11px] font-black uppercase tracking-wide text-emerald-300">
-          {index === 0 ? "Today's Best Opportunity" : signal.signalSourceLabel || signal.sourceType || "Next Money Move"}
-        </div>
-        <span className="shrink-0 rounded-full border border-white/10 bg-black/25 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-zinc-300">
-          {getFitLabel(fitScore)}
-        </span>
-      </div>
-      <p className="mt-3 line-clamp-3 break-words text-lg font-black leading-7 text-emerald-100">
+      <p className="line-clamp-3 break-words text-xl font-black leading-7 text-emerald-100">
         {normalizeDisplayText(detail.proof)}
       </p>
       <h3 className="mt-2 break-words text-base font-black text-white">
@@ -9123,6 +9115,19 @@ function MoneyMoveFeedCard({
       <p className="mt-2 line-clamp-2 break-words text-sm leading-6 text-zinc-400">
         {normalizeDisplayText(detail.whyMoneyChangedHands || whyMatches)}
       </p>
+      <div className="mt-3 flex min-w-0 flex-wrap gap-2">
+        <span className="rounded-full border border-emerald-300/20 bg-emerald-300/[0.06] px-2 py-1 text-[10px] font-black uppercase tracking-wide text-emerald-200">
+          {index === 0 ? "Today's Best Opportunity" : "Next Money Move"}
+        </span>
+        <span className="rounded-full border border-white/10 bg-black/25 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-zinc-500">
+          {getFitLabel(fitScore)}
+        </span>
+        {signal.signalSourceLabel || signal.sourceType ? (
+          <span className="rounded-full border border-white/10 bg-black/25 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-zinc-600">
+            {signal.signalSourceLabel || signal.sourceType}
+          </span>
+        ) : null}
+      </div>
       <button
         type="button"
         onClick={onTry}
@@ -9390,13 +9395,13 @@ function ProUpgradeCard({ onUnlockClick }: { onUnlockClick: () => void }) {
             Want five more?
           </h3>
           <p className="mt-2 max-w-2xl break-words text-sm font-bold leading-6 text-zinc-400">
-            Free shows enough to test today. Pro keeps the Money Move Feed going every time curiosity hits.
+            Never run out of Money Moves. Keep discovering proven opportunities until one catches your eye.
           </p>
           <div className="mt-4 grid gap-2 text-sm font-bold leading-6 text-zinc-300 md:grid-cols-2">
-            <span>Unlimited proven Money Moves</span>
-            <span>More versions for every move</span>
-            <span>Full launch assets when you find one worth testing</span>
-            <span>Save more tests and winning moves</span>
+            <span>Unlimited discovery</span>
+            <span>Unlimited Try This</span>
+            <span>More versions when one catches your eye</span>
+            <span>Save tests and winning moves</span>
           </div>
         </div>
         <div className="w-full shrink-0 rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.08] p-4 lg:w-72">
