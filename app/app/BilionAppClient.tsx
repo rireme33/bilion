@@ -4484,7 +4484,7 @@ function buildTransformOutput(
     return pack.codexBuildPrompt;
   }
 
-  return `${pack.codexBuildPrompt.split("\n").slice(0, 12).join("\n")}\n\nFounder Access unlocks the full Codex prompt.`;
+  return `${pack.codexBuildPrompt.split("\n").slice(0, 12).join("\n")}\n\nBilion Pro unlocks the full build-after-replies plan.`;
 }
 
 function buildRemixOutput(signal: BuildSignal, remix: RemixType) {
@@ -5820,8 +5820,8 @@ ${masterPrompt.launchCopy.dmMessage}
 48-hour validation plan:
 ${masterPrompt.validationPlan.map((step, index) => `${index + 1}. ${step}`).join("\n")}
 
-Get the full Codex Build Brief \u2014 $19
-Includes: full launch copy, 48h test, saved Winners, and the Codex Build Prompt.`;
+Unlock Bilion Pro — $9.99/month
+Includes unlimited Money Moves, more versions, saved tests, and build-after-replies plans.`;
 }
 
 function buildValidationPlanCopy(masterPrompt: MasterPrompt) {
@@ -6143,14 +6143,14 @@ function buildBuildAngle(masterPrompt: MasterPrompt, includeCodexPrompt: boolean
   if (masterPrompt.aiReveal) {
     const codexNote = includeCodexPrompt
       ? `\n\nCodex prompt is available below, but only after the market angle is clear.`
-      : "\n\nFounder/Paid access unlocks the full Codex-ready build prompt.";
+      : "\n\nBilion Pro unlocks the full build-after-replies plan.";
 
     return `${masterPrompt.aiReveal.buildAfterReplies.doNotBuildYet}\n\nBuild only if: ${masterPrompt.aiReveal.buildAfterReplies.buildOnlyIf}\n\nMVP scope: ${masterPrompt.aiReveal.buildAfterReplies.mvpScope}${codexNote}`;
   }
 
   const codexNote = includeCodexPrompt
     ? `\n\nCodex prompt is available below, but only after the market angle is clear.`
-    : "\n\nFounder/Paid access unlocks the full Codex-ready build prompt.";
+    : "\n\nBilion Pro unlocks the full build-after-replies plan.";
 
   return `${buildCodexAfterRepliesLine(masterPrompt.firstVersion)}${codexNote}`;
 }
@@ -6189,7 +6189,7 @@ function buildActionBriefCopy(
     includeCodexPrompt,
   );
 
-  return `${getActionLabel(action)} Codex Build Brief
+  return `${getActionLabel(action)} Money Move plan
 
 ${fields.map(([label, value]) => `${label}:\n${value}`).join("\n\n")}`;
 }
@@ -6272,10 +6272,10 @@ function buildLaunchPackCopy(masterPrompt: MasterPrompt, hasFounderAccess: boole
   ].join("\n");
   const codexPrompt = hasFounderAccess
     ? masterPrompt.fullCodeXMasterPrompt
-    : "Founder/Paid unlock: full Codex-ready build prompt after demand is validated.";
+    : "Bilion Pro unlocks the full build-after-replies plan after demand is validated.";
 
   return [
-    "Bilion Codex Build Brief",
+    "Bilion Money Move plan",
     "",
     "Money proof:",
     masterPrompt.originalCase,
@@ -8144,29 +8144,29 @@ export default function BilionAppClient({
                 disabled={loading || !canGenerate}
                 className="mt-6 w-full rounded-2xl bg-white px-5 py-4 text-sm font-black text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
               >
-                {loading ? "Generating..." : "Generate 1 free Codex Build Brief"}
+                {loading ? "Generating..." : "Try 1 free Money Move"}
               </button>
               {!canGenerate && (
                 <div className="mt-5 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-5">
                   <h3 className="text-lg font-black text-yellow-100">
-                    You&apos;ve used your 3 free Codex Build Briefs today.
+                    You&apos;ve used your 3 free Money Moves today.
                   </h3>
                   <p className="mt-2 text-sm leading-6 text-zinc-400">
-                    Founder Access unlocks unlimited Codex Build Briefs, saved Winners, and full Codex Build Prompts.
+                    Bilion Pro unlocks unlimited Money Moves, saved tests, and build-after-replies plans.
                   </p>
                   {CHECKOUT_URL ? (
                     <a
                       href={CHECKOUT_URL}
                       className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-white px-5 py-3 text-center text-sm font-bold text-black transition hover:bg-zinc-200 sm:w-auto"
                     >
-                      Unlock Founder Access - $19
+                      Unlock Bilion Pro — $9.99/month
                     </a>
                   ) : (
                     <a
                       href="/founder"
                       className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-white px-5 py-3 text-center text-sm font-bold text-black transition hover:bg-zinc-200 sm:w-auto"
                     >
-                      Unlock Founder Access - $19
+                      Unlock Bilion Pro — $9.99/month
                     </a>
                   )}
                 </div>
@@ -8185,10 +8185,10 @@ export default function BilionAppClient({
                 <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                   <div className="min-w-0">
                     <div className="inline-flex rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-300">
-                      Codex Build Brief
+                      Your Business
                     </div>
                     <h2 className="mt-4 break-words text-2xl font-black tracking-tight sm:text-3xl">
-                      Codex Build Brief generated
+                      Money Move ready
                     </h2>
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-xs font-bold uppercase tracking-wide text-zinc-400">
@@ -8222,7 +8222,7 @@ export default function BilionAppClient({
                     }
                   />
                   <InfoBlock
-                    label="Spark Score"
+                    label="Move Score"
                     value={
                       masterPrompt
                         ? buildOpportunityScore(masterPrompt)
@@ -8255,15 +8255,15 @@ export default function BilionAppClient({
                 <div className="flex min-w-0 flex-col gap-4 md:flex-row md:items-end md:justify-between">
                   <div className="min-w-0">
                     <div className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-wide text-black">
-                      Codex Build Brief
+                      Your Business
                     </div>
                     <h2 className="mt-4 break-words text-2xl font-black tracking-tight sm:text-3xl">
                       Generate from your selected signal, buyer, and action.
                     </h2>
                     <p className="mt-3 max-w-2xl break-words text-sm leading-relaxed text-zinc-400">
                       {hasFounderAccess
-                        ? "Founder Access unlocks unlimited Codex Build Briefs and the full Codex Build Prompt after demand is validated."
-                        : `Free Codex Build Briefs today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used. Founder Access unlocks unlimited Codex Build Briefs.`}
+                        ? "Bilion Pro unlocks unlimited Money Moves, more versions, saved tests, and build-after-replies plans."
+                        : `Free Money Moves today: ${freeUsageCount} of ${FREE_GENERATION_LIMIT} used. Bilion Pro unlocks unlimited discovery.`}
                     </p>
                   </div>
 
@@ -8281,7 +8281,7 @@ export default function BilionAppClient({
                       disabled={!canGenerate}
                       className="w-full rounded-2xl bg-white px-5 py-4 text-center text-sm font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                     >
-                      Generate Codex Build Brief
+                      Make It Yours
                     </button>
                     <button
                       type="button"
@@ -8319,27 +8319,27 @@ export default function BilionAppClient({
               ) : (
                 <section className="rounded-3xl border border-yellow-400/20 bg-yellow-400/[0.04] p-6 shadow-2xl">
                   <div className="inline-flex rounded-full bg-yellow-400/10 px-3 py-1 text-xs font-black uppercase tracking-wide text-yellow-300">
-                    Founder/Paid Access
+                    Bilion Pro
                   </div>
                   <h2 className="mt-4 text-3xl font-black tracking-tight">
-                    You&apos;ve used your 3 free Codex Build Briefs today.
+                    You&apos;ve used your 3 free Money Moves today.
                   </h2>
                   <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
-                    Founder Access unlocks unlimited Codex Build Briefs, saved Winners, and full Codex Build Prompts.
+                    Bilion Pro unlocks unlimited Money Moves, saved tests, and build-after-replies plans.
                   </p>
                   {CHECKOUT_URL ? (
                     <a
                       href={CHECKOUT_URL}
                       className="mt-5 inline-flex w-full items-center justify-center rounded-2xl bg-white px-5 py-3 text-center text-sm font-bold text-black transition hover:bg-zinc-200 sm:w-auto"
                     >
-                      Unlock Founder Access - $19
+                      Unlock Bilion Pro — $9.99/month
                     </a>
                   ) : (
                     <a
                       href="/founder"
                       className="mt-5 inline-flex w-full items-center justify-center rounded-2xl bg-white px-5 py-3 text-center text-sm font-bold text-black transition hover:bg-zinc-200 sm:w-auto"
                     >
-                      Unlock Founder Access - $19
+                      Unlock Bilion Pro — $9.99/month
                     </a>
                   )}
                 </section>
@@ -10685,7 +10685,7 @@ function DistributionQueueSection({
 
       {queue.length === 0 ? (
         <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-5 text-sm leading-6 text-zinc-500">
-          Generate a Codex Build Brief, then save validation assets here.
+          Try a Money Move, then save launch assets here.
         </div>
       ) : (
         <div className="mt-6 grid gap-3 lg:grid-cols-2">
@@ -11189,9 +11189,9 @@ function MasterPromptCard({
               Free
             </div>
             <p className="mt-2 text-sm leading-6 text-zinc-300">
-              Generate 3 Codex Build Briefs free. See the buyer, pain, first offer, and
-              48h test. Founder Access unlocks full Build Briefs, saved Winners,
-              and full Codex Build Prompts.
+              3 free Money Moves per day. See the buyer, pain, first offer, and
+              48h test. Bilion Pro unlocks unlimited discovery, saved tests,
+              and build-after-replies plans.
             </p>
           </div>
         )}
@@ -11246,7 +11246,7 @@ function MasterPromptCard({
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-              Codex Build Brief
+              Build After Replies
             </div>
             <h3 className="mt-2 text-2xl font-black tracking-tight">
               Sell this first. Build after replies.
@@ -11347,13 +11347,13 @@ function MasterPromptCard({
               {masterPrompt.fullCodeXMasterPrompt.split("\n").slice(0, 12).join("\n")}
             </pre>
             <p className="mt-3 text-sm leading-6 text-zinc-400">
-              Full Prompt is locked. Founder Access unlocks the full Codex Build Prompt after demand is validated.
+              Full build-after-replies plan is locked. Bilion Pro unlocks the full Codex prompt after demand is validated.
             </p>
             <a
               href={CHECKOUT_URL || "/founder"}
               className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-white px-5 py-3 text-center text-sm font-black text-black transition hover:bg-zinc-200 sm:w-auto"
             >
-              Unlock Founder Access - $19
+              Unlock Bilion Pro — $9.99/month
             </a>
           </div>
         )}
@@ -11408,16 +11408,16 @@ function MasterPromptCard({
       {!hasFounderAccess && (
         <div className="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.06] p-5">
           <h3 className="text-xl font-black text-white">
-            Unlock Founder Access - $19
+            Unlock Bilion Pro — $9.99/month
           </h3>
           <p className="mt-2 text-sm leading-6 text-zinc-300">
-            Get unlimited Codex Build Briefs, validation assets, saved Winners, and Codex prompts.
+            Get unlimited Money Moves, more versions, saved tests, and build-after-replies plans.
           </p>
           <a
             href={CHECKOUT_URL || "/founder"}
             className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-white px-5 py-3 text-center text-sm font-black text-black transition hover:bg-zinc-200 sm:w-auto"
           >
-            Unlock Founder Access - $19
+            Unlock Bilion Pro — $9.99/month
           </a>
         </div>
       )}
@@ -11474,7 +11474,7 @@ function CarouselGenerator({
 
       {!hasFounderAccess && (
         <div className="mt-4 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-4 text-sm leading-6 text-yellow-100">
-          Free preview shows Slide 1-2. Founder/Paid access unlocks all 5 slides.
+          Free preview shows Slide 1-2. Bilion Pro unlocks all 5 slides.
         </div>
       )}
 
@@ -11648,7 +11648,7 @@ function ExportAssets({
         </div>
         {!hasFounderAccess && (
           <div className="break-words rounded-xl border border-yellow-400/20 bg-yellow-400/[0.06] px-3 py-2 text-xs font-bold leading-5 text-yellow-100">
-            Codex prompt excluded until Founder/Paid access
+            Build-after-replies plan included with Bilion Pro
           </div>
         )}
       </div>
@@ -12143,11 +12143,11 @@ function LockedFounderView() {
   return (
     <div className="rounded-3xl border border-yellow-400/20 bg-yellow-400/[0.04] p-6">
       <div className="inline-flex rounded-full bg-yellow-400/10 px-3 py-1 text-xs font-medium text-yellow-300">
-        Founder only
+        Bilion Pro
       </div>
 
       <h3 className="mt-3 text-2xl font-black">
-        Founder preview
+        Pro preview
       </h3>
 
       <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
@@ -12162,10 +12162,9 @@ function LockedFounderView() {
       </div>
 
       <div className="mt-6 rounded-2xl border border-white/10 bg-black/40 p-5">
-        <h4 className="text-xl font-black">Unlock Founder Access</h4>
+        <h4 className="text-xl font-black">Unlock Bilion Pro</h4>
         <p className="mt-2 text-sm leading-6 text-zinc-400">
-          Get the full Implementation Prompt, build steps, comparable price, and pattern
-          matches.
+          Get unlimited Money Moves, more versions, saved tests, and build-after-replies plans.
         </p>
 
         {CHECKOUT_URL ? (
@@ -12173,7 +12172,7 @@ function LockedFounderView() {
             href={CHECKOUT_URL}
             className="mt-5 block rounded-2xl bg-white px-5 py-4 text-center text-sm font-bold text-black transition hover:bg-zinc-200"
           >
-            Unlock Founder Access - $19
+            Unlock Bilion Pro — $9.99/month
           </a>
         ) : (
           <button

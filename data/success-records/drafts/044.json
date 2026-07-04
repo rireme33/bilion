@@ -1,0 +1,289 @@
+{
+"sourceType": "YouTube",
+"source": {
+"videoTitle": "How I grew my mobile app to $17K per month",
+"creator": "Starter Story / Pat Walls",
+"speaker": "George Lampropolis",
+"sourceUrl": "https://www.youtube.com/watch?v=8kM-JcKpcDs",
+"genre": "創業者インタビュー / モバイルアプリ成長事例 / AIバイブコーディング",
+"language": "英語"
+},
+"oneLinePattern": "ニッチ競技者向けにAI動画分析アプリを作り、インフルエンサーの既存信用と短尺動画の“gotcha moment”でApp Store上位・月額課金へつなげたパターン",
+"business": {
+"businessName": "Wrestle AI",
+"productOrService": "レスリング試合動画を分析し、良かった点、悪かった点、改善点、ドリル、練習計画を提示するAIレスリングコーチアプリ",
+"industry": "スポーツテック / AIコーチング / モバイルアプリ",
+"targetMarket": "レスリング選手、学生アスリート、レスリングに取り組む若年層、競技コミュニティ",
+"customer": "レスリングの上達を望む選手。親、コーチ、チーム関係者が支払う可能性もあるが動画内では明確に断定されていない",
+"problemSolved": "自分の試合動画を見ても、何が良くて何を直すべきか分からない。個別コーチングは高く、日常的なフィードバックが得にくい",
+"valueProvided": "試合動画からパフォーマンス評価、改善点、強み、戦略、練習ドリル、トレーニング計画を出すことで、選手が具体的に改善できる",
+"price": "$9.99/月、$59.99/年",
+"revenue": "月17,000ドル以上。動画内では月額サブスクMRRが約8,000ドル、残りは年額課金由来と説明",
+"period": "数カ月以内。動画内では“last 6 months”と説明。ただしローンチ日についてJuly 1とSeptember 26の両方が出ており不一致あり",
+"usersOrSubscribers": "約17,000ダウンロード、SNSで200万インプレッション以上、ローンチ前に約3,000〜4,000件の予約注文"
+},
+"buyer": {
+"whoBuys": "レスリング選手本人、競技に真剣な学生アスリート、競技者の親、レスリングチームやコーチの可能性",
+"whyTheyBuy": "試合動画をアップロードするだけで、自分専用の改善点と練習ドリルが得られるため。通常のコーチングより安く、すぐ試せる",
+"urgency": "シーズン中、次の試合前、減量管理中、練習改善が必要なタイミングでは高い。一般ユーザーには緊急性は限定的",
+"willingnessToPay": "$9.99/月または$59.99/年を支払っているユーザーが存在するため一定の支払い意思は確認できる。ただし継続率は不明",
+"existingAlternatives": "対面コーチ、チームコーチ、YouTube技術解説、MyFitnessPalなどの栄養管理アプリ、紙やスプレッドシートの練習記録",
+"alternativeProblems": "対面コーチは高い、個別分析に時間がかかる、YouTubeは汎用的、栄養管理アプリはレスリング特化ではない、複数ツールに分散する"
+},
+"painDesireFear": {
+"pain": "試合で負けた原因や改善点が分からない。練習と試合動画がつながっておらず、上達のための具体的な次アクションが不足している",
+"desire": "自分専用のAIコーチに試合を分析してもらい、次の練習で何をすべきか明確にしたい",
+"fear": "次の試合でも同じミスを繰り返すこと。ライバルに差をつけられること。十分なコーチングを受けられないこと",
+"reasonsNotToBuy": "AI分析の精度への不信、動画アップロードの手間、レスリング専門コーチの判断を重視する層、無料情報で十分と考える層、サブスク疲れ"
+},
+"offer": {
+"whatIsSold": "AIレスリングコーチアプリの月額・年額サブスクリプション",
+"realBenefitSold": "試合動画から個別フィードバックを受け、練習メニューまで落とし込める“安価なパーソナルコーチ感”",
+"minimumProduct": "試合動画をアップロードし、選手を選択し、10点評価、改善点、強み、練習ドリルを返す動画分析機能",
+"subscriptionReason": "選手は試合・練習ごとに継続的に分析したい。減量、練習、試合予定、トレーニング計画を一体管理すると継続理由が生まれる",
+"upsellPotential": "チームプラン、コーチ向けダッシュボード、シーズン別トレーニングプラン、個別添削、上位AI分析、競技別展開"
+},
+"growthDistribution": {
+"initialAcquisition": "レスリング界の大きなインフルエンサーを共同創業者またはローンチ協力者として活用し、予約注文と初速を作った",
+"mainGrowthChannel": "インフルエンサーマーケティング、Instagram/TikTok/YouTube Shorts系の短尺動画、ニッチ競技コミュニティ",
+"postingFrequency": "自社投稿頻度は不明。インフルエンサー獲得では初期に1日100件DMを推奨。現在は1日20分ほどニッチ内をスクロールしてDMすると説明",
+"winningContentFormat": "試合動画をAIが分析し、評価・改善点・ドリルが出る瞬間を見せる短尺動画。5秒で理解できる“gotcha moment”",
+"scaleMethod": "インフルエンサーへの大量DM、電話交渉、4〜5本の動画契約、視聴保証付き契約、$2〜$5 CPM基準、20〜50%前払い",
+"adsUgcSeoCommunity": "主にインフルエンサー/UGC型。広告費として$500を投入し、追加で$250投入予定と発言。SEOやコミュニティ運営の詳細は不明",
+"whyItSpread": "レスリングというニッチで目新しく、動画分析の結果が短尺で伝わりやすく、既存インフルエンサーの信用を借りられたため"
+},
+"monetization": {
+"monetizationPath": "予約注文で初速を作る → App Store公開 → 年額トライアル導線で課金 → 月額/年額サブスク → 機能追加で継続率向上",
+"freeOffer": "無料トライアルがあると推測される。動画内では年額オプションにトライアルを付けていると説明",
+"paidProduct": "$9.99/月、$59.99/年のアプリ内サブスクリプション",
+"pricingModel": "月額サブスク + 年額サブスク。年額にトライアルを付けて年額課金を増やす設計",
+"whyLtvCanGrow": "試合分析、練習モード、栄養管理、体重記録、試合カレンダーを統合すると、単発分析から競技生活のOSに近づくため",
+"whyRecurringRevenueWorks": "競技者は練習・試合・減量を継続するため、毎月使う理由を設計できる。ただし継続率や解約率は動画内では不明"
+},
+"whyItWorked": {
+"reason1": "レスリングという狭いが熱量の高い市場に絞り、汎用AIではなく“自分の競技専用AIコーチ”にした",
+"reason2": "AI動画分析の結果が短尺動画で一瞬で伝わるため、SNSクリエイティブとプロダクト価値が直結した",
+"reason3": "共同創業者または協力者にレスリング界の大きなインフルエンサーがいて、ローンチ初速と信用を獲得できた",
+"marketTiming": "2025〜2026年のAIバイブコーディング、AI動画分析、ニッチAIアプリへの関心が高い時期",
+"founderStrength": "創業者はコード経験がないが、アプリのコンバージョン設計、バイラルアイデア、インフルエンサー営業に強みがあると発言",
+"highlyReplicableElements": "ニッチ選定、gotcha moment設計、オンボーディング模倣、AIコーディングでMVP構築、インフルエンサーDM、視聴保証付き契約",
+"lowReplicabilityElements": "レスリング界の大型インフルエンサーを共同創業者として持てた点、App Store上位入り、ローンチ時の予約注文、本人の営業量と交渉力"
+},
+"toolsStack": {
+"toolsUsed": [
+"Rork/Rorと聞こえるバイブコーディングプラットフォーム",
+"ChatGPT",
+"Expo",
+"Supabase",
+"OpenAI API",
+"Fiverr",
+"App Store / TestFlight",
+"Instagram",
+"TikTokまたは短尺動画プラットフォーム"
+],
+"aiTools": [
+"ChatGPT Premium",
+"OpenAI",
+"Rork/Ror系バイブコーディングツール"
+],
+"payment": "Fiverr開発者に約$250で支払い機能と認証を依頼。アプリ内課金の具体実装は不明",
+"database": "Supabase。約$30/月と説明",
+"hosting": "不明。モバイルアプリはApp Store配信。Expo/TestFlightを使用したと説明",
+"analytics": "収益ダッシュボードを見せたが、具体ツール名は不明",
+"other": [
+"栄養データベースAPI",
+"バーコードスキャナー",
+"動画分析APIまたはAI推論API",
+"海外開発者/デザイナー/VA候補"
+]
+},
+"evidence": {
+"evidenceQuotes": [
+"I literally don't know how to code at all.",
+"I went from idea to the app store in 1 month.",
+"Wrestle AI is like an AI wrestling coach.",
+"Our pricing is $9.99 for the month and then $59.99 for the year.",
+"we've done over 2 million impressions on social media.",
+"Download-wise, I think we're around 17,000.",
+"DM 100 people a day.",
+"the first words of your DM should be paid promo",
+"we had about 3,000 pre-orders, maybe 4,000.",
+"we're number 19 on the app store and we've made over a thousand bucks."
+],
+"numberEvidence": "月17,000ドル以上、月額サブスクMRR約8,000ドル、SNSインプレッション200万以上、ダウンロード約17,000、予約注文約3,000〜4,000、App Store 18位または19位、ローンチ日売上1,000ドル以上、開発外注$250、マーケ費$500+追加$250予定、OpenAI費用$40〜$60/月、Supabase約$30/月、ChatGPT Premium $20/月",
+"priceEvidence": "$9.99/月、$59.99/年。Rork/Ror系ツール$25/月で最初のアプリをローンチ。Fiverrで支払い・認証統合に約$250",
+"growthChannelEvidence": "インフルエンサーマーケティングが主要チャネル。共同創業者がレスリング界の大きなインフルエンサー。初期は1日100件DM、paid promoを冒頭に置く、電話交渉、視聴保証付き複数動画契約を推奨",
+"ambiguousPoints": [
+"ローンチ日がJuly 1とSeptember 26の両方で語られており、どちらがWrestle AIの正式ローンチか不明",
+"月17,000ドルの内訳に年額課金の前受けが含まれる可能性があるため、厳密なMRRとは限らない",
+"収益ダッシュボードの詳細、返金率、解約率、課金継続率は不明",
+"AI動画分析の精度、実際のユーザー満足度、レビュー評価は不明",
+"インフルエンサー共同創業者の影響度が大きく、一般再現性は低下する可能性がある",
+"“bot your personal Instagram account with followers”という助言はプラットフォーム規約・信用面でリスクが高い"
+]
+},
+"facts": [
+"George Lampropolisは18歳の大学1年生と説明されている",
+"Wrestle AIはAIレスリングコーチアプリとして説明されている",
+"価格は$9.99/月、$59.99/年と説明されている",
+"アプリは試合動画を分析し、良かった点、悪かった点、改善点、ドリル、行動計画を返すと説明されている",
+"SNSで200万インプレッション以上、約17,000ダウンロードと説明されている",
+"創業者はコード経験がなく、ChatGPTとバイブコーディングツールを使ったと説明している",
+"支払い機能と認証はFiverrの開発者に約$250で依頼したと説明されている",
+"Supabaseをバックエンドに使い、OpenAI推論費用が月$40〜$60程度と説明されている",
+"主要な成長方法はインフルエンサーマーケティングと説明されている",
+"ローンチ前に約3,000〜4,000件の予約注文があったと説明されている"
+],
+"inferences": [
+"この成功の核はAI開発そのものより、ニッチ選定、短尺で伝わるデモ、インフルエンサー配布、オンボーディング課金導線の組み合わせである可能性が高い",
+"他競技への横展開は可能だが、競技ごとのデータ、動画解析精度、インフルエンサー獲得がボトルネックになる",
+"最初から多機能エコシステムを作るより、試合動画分析という1つのgotcha momentだけで検証した方が再現性が高い",
+"月17,000ドルは年額課金を含む可能性があるため、純粋な月次継続収益として扱うのは危険",
+"親やコーチが支払者になる導線を作ると、学生アスリート本人より支払い余力が上がる可能性がある",
+"日本展開ではレスリングより野球、サッカー、バスケ、剣道、柔道、部活向けフォーム添削の方が市場が広い可能性がある"
+],
+"risks": {
+"legalRisk": "未成年・学生アスリートの動画アップロード、個人情報、顔・身体データ、スポーツ指導の安全性に関するリスクがある。医療・栄養・減量助言は特に慎重な免責が必要",
+"platformDependency": "App Store審査、Instagram/TikTokなどの短尺動画アルゴリズム、インフルエンサーアカウント、OpenAI/API依存がある",
+"competitionRisk": "MyFitnessPal、競技用分析アプリ、AI動画解析ツール、大手スポーツテック、競技コーチングサービスが競合になり得る",
+"replicabilityRisk": "大型ニッチインフルエンサーの協力、予約注文、App Store上位、短期間の収益化は再現難度が高い",
+"exaggerationOrSuspiciousPoints": [
+"収益が年額課金を含む場合、MRR表現が実態より強く見える可能性",
+"ローンチ日や期間の説明に不一致がある",
+"“誰でもできる”という文脈はStarter Story Buildの販促と結びついており、難易度が低く見せられている可能性",
+"インスタアカウントにフォロワーをbotで増やす助言は不正・規約違反・信用毀損リスクがある",
+"AI動画分析の品質、継続率、返金率、CAC、LTVの検証データが不足している"
+]
+},
+"aiNativeRemake": {
+"howToRebuildWithAI": "特定競技や練習領域に絞り、動画アップロード→AI分析→改善点→ドリル→次回練習プランを返すモバイルファーストMVPとして再構築する",
+"smallerStart": "モバイルアプリではなく、まずはフォーム/LPで動画を受け取り、24時間以内にAI分析レポートPDFを返す手動混合サービスから始める",
+"forSoloDevelopers": "Next.jsまたはExpoで動画アップロード、選手情報入力、OpenAI Vision/動画フレーム分析、分析結果保存、Stripe決済の最小構成を作る",
+"forNonEngineers": "Google Form、Stripe Payment Link、手動AI分析、Notion/Google Docsレポート、Instagram DM営業で“AIコーチ分析レポート”を売る",
+"japanLocalization": "野球の打撃フォーム、サッカーのシュートフォーム、バスケのシュート、剣道の素振り、柔道の技、部活の練習動画分析にローカライズ可能",
+"englishMarketVersion": "Baseball AI Coach、Pickleball AI Coach、BJJ AI Coach、Cheerleading Form Coach、Golf Swing AI Drill Plannerなどニッチ競技別に展開可能"
+},
+"starterProduct": {
+"minimumVersionIn48h": "競技を1つ選び、動画アップロードまたはDM送付で“AI Performance Breakdown”を作成し、10点評価、改善点3つ、ドリル3つ、次回練習メニューをPDF/メールで返す",
+"requiredFeatures": [
+"動画アップロードまたはDM受付",
+"競技者情報入力",
+"AI分析レポート生成",
+"10点評価",
+"強み",
+"改善点",
+"ドリル提案",
+"PDFまたは共有リンク出力",
+"StripeまたはPayment Link",
+"サンプル分析ページ"
+],
+"unnecessaryFeatures": [
+"ネイティブアプリ",
+"App Store公開",
+"リアルタイム動画解析",
+"栄養管理",
+"バーコードスキャナー",
+"カレンダー",
+"チーム管理",
+"認証",
+"複雑なダッシュボード",
+"完全自動化"
+],
+"firstPrice": "$19〜$49の単発分析レポート、または月$9〜$19の月3本分析プラン",
+"howToGetFirst10Customers": "対象競技の小〜中規模インフルエンサー、部活コーチ、練習動画を投稿している選手にDM。冒頭は“paid collab?”ではなく、倫理的に“Can I make a free AI breakdown of your latest match clip?”で無料分析を提供し、許可を得て事例化する",
+"validationMethod": "48時間で20〜50人にDMし、無料分析5件、支払い意思確認3件、有料購入1件、またはインフルエンサー1人の投稿許可を獲得できるかを見る"
+},
+"contentAngles": {
+"xPostIdeas": [
+"An 18-year-old built a $17K/month app without knowing how to code. The trick was not “AI app.” It was: niche sport + viral demo + influencer distribution.",
+"Most AI apps fail because nobody understands the value in 5 seconds. Wrestle AI worked because the demo is obvious: upload match video → get a coach-like breakdown.",
+"The real playbook: pick a painful niche, build one gotcha moment, copy high-converting onboarding, then DM niche influencers before you overbuild.",
+"Do not copy the full app. Copy the wedge: $19 AI performance breakdown for one niche sport, sold manually before App Store.",
+"The dangerous part: people will think vibe coding made this work. The money came from distribution, niche trust, and a paywall around a clear improvement moment."
+],
+"shortVideoIdeas": [
+"Hook: “He made $17K/month from an AI app without coding.” → Show: wrestling video upload → AI breakdown → lesson: gotcha moment beats features.",
+"Hook: “Don’t build another generic AI app.” → Explain: Wrestle AI chose one niche, one buyer, one visual result, one influencer channel.",
+"Hook: “This is the 48-hour version of a $17K/month app.” → Show: Google Form + Stripe + AI report + DM athletes.",
+"Hook: “The founder’s influencer script is aggressive, but the business pattern is real.” → Break down ethical version: free analysis → proof → paid breakdown.",
+"Hook: “The app had nutrition, calendar, training, and more. But the first thing to copy is only this…” → Focus on video analysis report."
+],
+"imageCardIdea": "1枚目: “$17K/month AI app from a dorm room” 2枚目: “Not the app. Copy the wedge: niche video → AI breakdown → drills” 3枚目: “48h test: sell $29 analysis reports before building mobile app”"
+},
+"bilionJudgment": {
+"worthAddingToBilion": "追加すべき。AI-native、収益数字、価格、成長チャネル、48時間検証への変換余地が明確。ただしインフルエンサー依存と数字の曖昧さはリスクとして明記する",
+"replicationScore": 6,
+"aiLeverageScore": 8,
+"monetizationClarityScore": 8,
+"buildDifficultyScore": 7,
+"whatToCopyNow": "ニッチ競技者向けの“動画→AI改善レポート”という最小ウェッジ、5秒で伝わるgotcha moment、年額トライアル導線、インフルエンサー/UGC配布",
+"whatNotToCopy": "最初からApp Storeアプリ、多機能エコシステム、フォロワーbot、過剰な“誰でも簡単”訴求、大型インフルエンサー前提の成長計画"
+},
+"bilionRecordJson": {
+"sourceType": "YouTube",
+"sourceUrl": "https://www.youtube.com/watch?v=8kM-JcKpcDs",
+"businessName": "Wrestle AI",
+"industry": "AIスポーツコーチング / モバイルアプリ",
+"revenueSignal": "月17,000ドル以上。月額サブスクMRR約8,000ドル、残りは年額課金由来と説明。ただし厳密な継続MRRかは不明",
+"buyer": "レスリング選手、学生アスリート、親、コーチ、レスリングチームの可能性",
+"pain": "試合動画を見ても何を改善すべきか分からず、個別コーチングや継続フィードバックが不足している",
+"desire": "自分の試合動画から個別の改善点、練習ドリル、次の行動計画をすぐ得たい",
+"fear": "同じミスを繰り返す、ライバルに負け続ける、十分なコーチングを受けられない",
+"offer": "AIレスリングコーチアプリ。動画分析、パフォーマンス評価、改善点、ドリル、練習計画、栄養管理、練習モードなど",
+"pricingModel": "$9.99/月、$59.99/年。年額オプションにトライアルを付けていると説明",
+"growthChannel": "インフルエンサーマーケティング、短尺動画、ニッチ競技コミュニティ、App Store初速",
+"distributionNotes": "初期は大きなレスリングインフルエンサーの影響力で予約注文とApp Store上位を獲得。その後、DM、電話交渉、複数動画契約、視聴保証付き契約で拡大",
+"whyItWorked": "熱量の高いニッチ、5秒で価値が伝わる動画分析、既存インフルエンサー信用、オンボーディングとペイウォール設計、AI開発による短期ローンチが噛み合った",
+"toolsUsed": [
+"Rork/Ror系バイブコーディングツール",
+"ChatGPT",
+"Supabase",
+"OpenAI",
+"Expo",
+"TestFlight",
+"Fiverr",
+"App Store",
+"Instagram"
+],
+"evidence": [
+"I went from idea to the app store in 1 month.",
+"Wrestle AI is like an AI wrestling coach.",
+"Our pricing is $9.99 for the month and then $59.99 for the year.",
+"we've done over 2 million impressions on social media.",
+"Download-wise, I think we're around 17,000.",
+"DM 100 people a day."
+],
+"risks": [
+"ローンチ日と期間の説明に不一致がある",
+"月17,000ドルに年額前受けが含まれる可能性",
+"インフルエンサー共同創業者の影響が大きい",
+"AI動画分析の精度や継続率は不明",
+"未成年・身体データ・スポーツ指導・栄養/減量助言のリスク",
+"フォロワーbot助言は規約・信用リスクが高い"
+],
+"aiNativeRemake": "特定競技に絞り、動画アップロードからAIが10点評価、改善点、ドリル、練習プランを返すAIコーチングサービスとして再構築する。最初はアプリではなく手動混合の分析レポートで検証する",
+"starterProduct": "$19〜$49のAI動画分析レポート。フォームまたはDMで動画を受け取り、AIで改善点と練習ドリルを作り、PDF/メールで返す",
+"validationPlan48h": "競技を1つ選ぶ。サンプル分析LPを作る。練習動画を投稿している選手・小規模インフルエンサー50人にDM。無料分析5件を作成。事例掲載許可を取り、$19〜$49の有料分析を提示。1件でも支払いがあればMVP化、なければ競技または訴求を変更",
+"xPostIdeas": [
+"An 18-year-old built a $17K/month AI wrestling app. But the real lesson is not vibe coding. It is niche + gotcha moment + influencer distribution.",
+"Do not copy Wrestle AI as an app. Copy the first paid wedge: upload your match video → get an AI breakdown → receive drills.",
+"The app worked because the result is visual. A wrestler can see the promise in 5 seconds. That is why the creative converted.",
+"The 48h version: sell $29 AI video breakdowns manually before touching the App Store.",
+"AI builders keep building dashboards. The money is often in one painful niche with one obvious demo."
+],
+"shortScriptIdeas": [
+"This college student made $17K/month from an AI wrestling app. The trick was not the code. It was a video demo every wrestler instantly understood.",
+"Here is the business pattern: pick one niche sport, find one visual pain, build one AI analysis result, then distribute through niche influencers.",
+"The smaller version you can test in 48 hours: take athlete videos by DM, run AI analysis, send a paid PDF breakdown.",
+"Most people will copy the mobile app. That is wrong. Copy the wedge: AI feedback on a painful performance moment.",
+"If your AI app cannot be understood in 5 seconds, your influencer creatives will not convert."
+],
+"imagePrompt": "Create a dark SaaS-style carousel image. Slide 1: '$17K/month AI app from one niche sport' with a wrestling mat/video upload visual. Slide 2: 'Copy the wedge, not the app: video → AI breakdown → drills'. Slide 3: '48h test: sell $29 analysis reports before building'. Minimal, sharp, high-contrast, founder/operator aesthetic.",
+"buildPromptSeed": "Build a mobile-first MVP for an AI sports video breakdown service. Users choose one niche sport, upload a short match or practice video, enter role/skill level/goals, and receive a structured performance report with score out of 10, strengths, mistakes, three improvement drills, and a next-session training plan. Include a sample landing page, upload form, mock AI report output, Stripe payment placeholder, admin queue for submitted videos, and shareable report page. Do not build a full native app, nutrition tracker, calendar, team dashboard, or authentication in the first version. Optimize for 48-hour validation and influencer/DM sales.",
+"monetizationPath": "Start with $19〜$49 one-time AI analysis reports. Convert repeat users to $9〜$19/month for 3 analyses per month. Add team/coach plan later. Eventually build native app only after repeated paid demand and content proof.",
+"replicationScore": 6,
+"aiLeverageScore": 8,
+"monetizationClarity": 8,
+"buildDifficulty": 7
+}
+}

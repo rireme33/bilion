@@ -1,0 +1,281 @@
+{
+"sourceType": "YouTube",
+"source": {
+"videoTitle": "I Built An $85M AI Startup in 5 Months (here's my playbook)",
+"creator": "不明",
+"speaker": "不明",
+"sourceUrl": "https://www.youtube.com/watch?v=efa728D0yWM",
+"genre": "AIスタートアップ構築プレイブック",
+"language": "英語"
+},
+"oneLinePattern": "AI検索への移行という市場変化を捉え、企業のChatGPT・Gemini・Perplexity上での表示状況を診断する無料レポートを入口に、AEO/AI検索最適化SaaSへ転換したパターン",
+"business": {
+"businessName": "Searchable",
+"productOrService": "AI検索可視化・AEO支援ツール。ChatGPT、Gemini、Perplexityなどで企業や競合がどう表示されるかをスキャンし、企業のAI検索上の見え方を可視化する。",
+"industry": "AI検索最適化、AEO、マーケティングSaaS、B2B SaaS",
+"targetMarket": "AI検索・生成AI経由で顧客獲得したい企業、創業者、マーケティング責任者、代理店",
+"customer": "founders、marketing managers、agencies、AI検索でブランド露出を増やしたい企業",
+"problemSolved": "顧客がGoogleだけでなくChatGPTなどで購買判断をするようになったが、企業側は自社がAI回答内で表示されているか、競合と比べてどう見られているかを把握できない。",
+"valueProvided": "AI検索上のブランド可視性、競合比較、改善余地をレポート化し、企業がAI検索経由の顧客獲得に取り組めるようにする。",
+"price": "不明。初期ユーザーには50%の生涯割引を提供したと説明されている。",
+"revenue": "$3 million ARR超。動画冒頭では$3 million in annual recurring revenue、後半ではbeyond 3 million dollars of annual recurring revenueと説明。",
+"period": "公開ローンチから約5か月。1月に公開し、6月時点で5か月稼働と説明。",
+"usersOrSubscribers": "不明。待機リストは数千人規模になり得ると一般論で説明。Searchable固有の待機リスト人数は不明。AI Search Acceleratorは数百人の顧客を獲得したと説明。"
+},
+"buyer": {
+"whoBuys": "創業者、マーケティング責任者、代理店、AI検索上で自社やクライアントを露出させたい企業",
+"whyTheyBuy": "購買行動がGoogle検索からChatGPTなどのAI回答へ移行しており、自社が推薦・比較・表示されないことが機会損失になるため。",
+"urgency": "高い。AI検索の表示枠を早く取りにいく企業ほど複利的な分配優位を得る、という主張が動画内でされている。",
+"willingnessToPay": "比較的高いと推測。既存のSEOツール市場に大きな予算があり、AEOはその延長線上にあると説明されている。ただし実際の価格は不明。",
+"existingAlternatives": "SEOツール、SEO代理店、コンテンツマーケティング、ブランドモニタリング、手動でのChatGPT/Perplexity検索確認",
+"alternativeProblems": "既存SEOツールはGoogle検索中心で、ChatGPT、Gemini、PerplexityなどのAI回答内の可視性や競合比較に最適化されていない可能性がある。"
+},
+"painDesireFear": {
+"pain": "AI検索で自社が表示されているか分からない。競合がAI回答に出ていても気づけない。新しいAEO領域に対する明確な答えがない。",
+"desire": "ChatGPTやPerplexityで自社が推奨され、AI経由で顧客獲得できる状態を作りたい。",
+"fear": "AI検索の波に乗り遅れ、競合が回答エンジン上の露出を先に獲得してしまうこと。",
+"reasonsNotToBuy": "AI検索最適化の効果測定が曖昧に見える。価格が不明。AI回答は変動するため成果保証が難しい。既存SEOツールや代理店で十分だと感じる可能性がある。"
+},
+"offer": {
+"whatIsSold": "AI検索可視性診断、競合比較、AEO改善支援、AI検索上でのブランド表示改善を支援するSaaS",
+"realBenefitSold": "AI検索時代の新しい顧客獲得チャネルで、自社が見つかり選ばれる可能性を高めること",
+"minimumProduct": "企業名を入力すると、ChatGPT、Gemini、Perplexity等での自社・競合の表示状況をスキャンし、簡易AI visibility reportを出すツール",
+"subscriptionReason": "AI検索結果は継続的に変化し、競合状況も変わるため、定点観測・改善提案・レポート更新に継続課金の理由がある。",
+"upsellPotential": "AEOコンサル、AI Search Accelerator、代理店向け複数クライアント管理、実行支援AIエージェント、個別デモ、法人プラン"
+},
+"growthDistribution": {
+"initialAcquisition": "AI検索に関する教育コンテンツを毎日投稿し、各投稿下部でローンチ待機リスト登録を促した。",
+"mainGrowthChannel": "創業者主導のLinkedIn等のオーガニックコンテンツ、無料AI visibility report、待機リスト、デモ/相談、アウトバウンド",
+"postingFrequency": "10月以降、毎日AI検索に関するコンテンツを出したと説明。",
+"winningContentFormat": "AI検索の考え方、ブランド成長、購買行動の変化、チェックシート、無料レポート、教育型投稿、創業者の学びや問題提起",
+"scaleMethod": "反応の良いオーガニック投稿を広告に転用。待機リストへデモ案内。無料レポートでアカウント登録。Apollo、LinkedIn、Clayを使った高パーソナライズ outbound。AI Search Acceleratorの提供。",
+"adsUgcSeoCommunity": "広告、オーガニックSNS、プレス、Google検索、AI検索、Slackコミュニティ、アウトバウンドを併用。",
+"whyItSpread": "AI検索という新しい不安と機会が同時に立ち上がっており、企業がまだ明確な答えを持っていないテーマに対して、無料診断と教育コンテンツが刺さったため。"
+},
+"monetization": {
+"monetizationPath": "無料教育コンテンツ → 待機リスト → 早期アクセス → 無料AI visibility report → アカウント登録 → 有料SaaS → 研修プログラム/上位機能/AIエージェント",
+"freeOffer": "無料AI visibility report。企業名を入力し、AI検索上での表示状況や競合比較を確認できる。",
+"paidProduct": "Searchableの有料SaaS。詳細価格は不明。",
+"pricingModel": "不明。ARRと言っているためサブスクリプション型と推測できるが、具体的な月額・年額価格は不明。",
+"whyLtvCanGrow": "企業のAI検索対応は一度きりではなく、継続的な監視、改善、競合比較、実行支援が必要になるため。",
+"whyRecurringRevenueWorks": "AI回答・競合・検索行動が変化し続けるため、定点観測レポート、改善提案、施策実行を継続利用する理由がある。"
+},
+"whyItWorked": {
+"reason1": "AI検索への移行という大きな消費者行動変化を早期にテーマ化した。",
+"reason2": "プロダクト完成前から教育コンテンツと待機リストで需要を集め、ローンチ前に見込み客を温めた。",
+"reason3": "無料AI visibility reportで価値を先出しし、アカウント登録と有料転換への摩擦を下げた。",
+"marketTiming": "ChatGPT、Perplexityなどで購買判断する流れが拡大し、企業がAI検索上の表示に関心を持ち始めたタイミング。",
+"founderStrength": "過去に8桁規模の事業を複数構築した経験、営業・マーケティング担当としての創業者発信力、技術系共同創業者とのチーム組成。",
+"highlyReplicableElements": "無料診断レポート、教育コンテンツ、待機リスト、1機能MVP、早期ユーザーからの毎日フィードバック、ICP向けパーソナライズ診断DM",
+"lowReplicabilityElements": "$85M評価、5か月で$3M ARR、投資家ネットワーク、強い創業者実績、技術共同創業者の確保、既存フォロワーや発信力"
+},
+"toolsStack": {
+"toolsUsed": [
+"Slack",
+"Apollo",
+"LinkedIn",
+"Clay",
+"ChatGPT",
+"Gemini",
+"Perplexity"
+],
+"aiTools": [
+"ChatGPT",
+"Gemini",
+"Perplexity",
+"AI search platforms",
+"autonomous AI agent"
+],
+"payment": "不明",
+"database": "不明",
+"hosting": "不明",
+"analytics": "不明",
+"other": [
+"waitlist",
+"free AI visibility report",
+"30-minute consultation",
+"product demo",
+"AI Search Accelerator"
+]
+},
+"evidence": {
+"evidenceQuotes": [
+"My business just hit $3 million in annual recurring revenue",
+"got valued at $85 million",
+"just 5 months after we launched it",
+"we reached a million dollars of ARR in 60 days",
+"nearly 50% of those free users converted to paid users",
+"We have a team of 18 people",
+"I started putting out content about AI search",
+"we then launched a Slack community",
+"We use a combination of Apollo and LinkedIn",
+"we use Clay to enrich it"
+],
+"numberEvidence": "$3M ARR、$85M評価、5か月、$1M ARR in 60 days、50% lifetime discount、無料ユーザーの約50%が有料転換、チーム18人、AI Search Acceleratorで数百人の顧客",
+"priceEvidence": "具体価格は不明。早期アクセスでは50%の生涯割引を提供したと説明。",
+"growthChannelEvidence": "毎日のAI検索教育コンテンツ、待機リスト、無料AI visibility report、Slackコミュニティ、広告、オーガニックSNS、プレス、Google検索、AI検索、Apollo/LinkedIn/Clayによるアウトバウンド",
+"ambiguousPoints": [
+"SearchableとSearchBarの表記が書き起こし内で混在している。",
+"$85M評価の投資条件や投資家名は不明。",
+"$3M ARRの内訳、顧客数、ARPA、解約率は不明。",
+"無料ユーザーの約50%有料転換の母数が不明。",
+"待機リストの実数は不明。",
+"創業者の既存フォロワー数や過去事業からの信用効果は不明。"
+]
+},
+"facts": [
+"動画タイトルは「I Built An $85M AI Startup in 5 Months (here's my playbook)」。",
+"事業はSearchableとして説明されている。",
+"動画内で$3M ARR、$85M評価、ローンチ後5か月と主張されている。",
+"1月にSearchableを公開ローンチしたと説明されている。",
+"60日で$1M ARRに到達したと説明されている。",
+"プロダクトのMVPはprompt trackingで、ChatGPT、Gemini、Perplexityなどで企業がどこでどれくらい言及されているかを表示するものだった。",
+"10月頃からAI検索に関する教育コンテンツを毎日投稿したと説明されている。",
+"早期アクセスでは50%の生涯割引を提供したと説明されている。",
+"Slackコミュニティを立ち上げたと説明されている。",
+"無料AI visibility reportを1週間かけて作ったと説明されている。",
+"無料レポートを見るにはSearchableアカウント作成が必要だったと説明されている。",
+"無料ユーザーの約50%が有料ユーザーに転換したと説明されている。",
+"Apollo、LinkedIn、Clayをアウトバウンドに使っていると説明されている。",
+"チームは18人だと説明されている。"
+],
+"inferences": [
+"この事業の本質は、AI検索時代のSEO不安を可視化レポートで顕在化し、SaaS課金へつなげるB2B診断型プロダクトである。",
+"AI visibility reportはリードマグネットであると同時に、プロダクト価値のデモとして機能している。",
+"無料レポートの結果に競合比較や損失感を入れることで、有料転換率が上がった可能性がある。",
+"創業者の発信力と過去実績が成長速度に大きく影響している可能性が高い。",
+"ソロ開発者がそのまま$3M ARRを再現するのは難しいが、特定業界向けの小型AI検索診断ツールとしてなら48時間検証可能。"
+],
+"risks": {
+"legalRisk": "AI検索プラットフォームへの自動クエリ、スクレイピング、商用利用の規約リスクがある可能性。動画内で法務詳細は不明。",
+"platformDependency": "ChatGPT、Gemini、Perplexityなど外部AIプラットフォームの仕様変更、回答品質、API/利用制限に強く依存する。",
+"competitionRisk": "SEOツール企業、AEO専業ツール、代理店、ブランドモニタリングSaaSが参入しやすい。",
+"replicabilityRisk": "高速成長は創業者の実績、ネットワーク、チーム、資金調達力、発信力に依存しており、初心者が同じ規模で再現するのは難しい。",
+"exaggerationOrSuspiciousPoints": [
+"$85M評価の根拠や投資条件が動画内だけでは検証できない。",
+"$3M ARRの顧客数、売上認識、契約期間、解約率が不明。",
+"無料ユーザー約50%有料転換は非常に高く、母数や定義が不明。",
+"「Everything is repeatable」と主張しているが、創業者の過去実績やネットワークの影響が大きい可能性がある。",
+"AI検索最適化の効果がどこまで測定可能かは動画内だけでは不明。"
+]
+},
+"aiNativeRemake": {
+"howToRebuildWithAI": "特定業界の企業名と主要キーワードを入力すると、ChatGPT/Perplexity/Geminiでの表示状況を手動またはAPI経由で確認し、競合比較・改善提案・投稿案を含むAI visibility reportを生成する。",
+"smallerStart": "全業界向けAEO SaaSではなく、歯科、法律事務所、採用会社、AI代理店、SaaS企業など1業界に絞った無料AI検索診断レポートから始める。",
+"forSoloDevelopers": "最初は完全自動化せず、フォーム入力→手動/半自動でAI検索確認→PDF/Notionレポート納品→反応があればダッシュボード化する。",
+"forNonEngineers": "Googleフォーム、スプレッドシート、ChatGPT、Canva/Docs、Stripe Payment Linkで無料診断または低価格診断を販売し、需要を確認する。",
+"japanLocalization": "日本では『ChatGPTでおすすめされる店舗/士業/会社になる診断』として、歯科、美容院、士業、採用会社、工務店向けに展開できる。",
+"englishMarketVersion": "英語圏では『AI Visibility Report for agencies/SaaS/local service businesses』として、LinkedIn投稿とパーソナライズDMで無料診断を配布する。"
+},
+"starterProduct": {
+"minimumVersionIn48h": "1業界向けAI Visibility Mini Report。企業名、URL、競合3社、狙いたい検索質問5個を入力してもらい、ChatGPT/Perplexity/Geminiでの表示状況、競合表示、改善案、コンテンツ案を1枚レポート化する。",
+"requiredFeatures": [
+"企業名/URL/競合/狙う質問を入力するフォーム",
+"AI検索での表示有無を記録するチェック表",
+"競合比較スコア",
+"改善提案3〜5個",
+"AI検索に出るためのコンテンツ案",
+"PDFまたはWebレポート出力",
+"有料相談または月額監視へのCTA"
+],
+"unnecessaryFeatures": [
+"完全自動クローリング",
+"複雑なログイン",
+"多業界対応",
+"高度なダッシュボード",
+"チーム管理",
+"請求書管理",
+"AIエージェントによる自動実行"
+],
+"firstPrice": "$19〜$99の単発診断、または無料診断から$99/月〜$299/月の月次監視へ転換。日本向けなら9,800円の単発診断または月額19,800円程度から検証。",
+"howToGetFirst10Customers": "LinkedIn/Xで『AI検索であなたの会社は表示されるか』系の教育投稿を10本出し、ICP企業50社に個別DMで無料ミニ診断を提案し、反応者にレポートを送り、有料の詳細診断または月次監視を提案する。",
+"validationMethod": "48時間で無料診断希望10件、レポート提出5件、有料詳細診断1件、または月額監視の商談2件を基準にする。"
+},
+"contentAngles": {
+"xPostIdeas": [
+"Googleで1位でも、ChatGPTで存在しない会社になる時代が来ている。",
+"SEOツールは昔から何億ドルも売れている。次はAEOツールが売れる。",
+"企業が今知りたいのは『自社がChatGPTに推薦されるか』だ。",
+"無料AI visibility reportは、SaaSのリードマグネットとして強すぎる。",
+"プロダクトを作る前に、待機リスト200人を取れないなら危険信号。",
+"AEO SaaSの最小MVPはダッシュボードではなく、競合比較レポート1枚でいい。"
+],
+"shortVideoIdeas": [
+"ChatGPTであなたの会社名を検索しても出てこない。それ、もう集客機会を失っているかもしれない。",
+"$3M ARRのAI検索SaaSが最初に作ったのは巨大プロダクトではなく、prompt trackingだった。",
+"無料レポートを先に渡すだけで、AI SaaSの販売導線はかなり強くなる。",
+"AI検索時代のSEOは、まず『表示されているか』を測るところから始まる。",
+"このビジネスを48時間で小さく真似るなら、1業界向けAI Visibility Reportだけ作れ。"
+],
+"imageCardIdea": "1枚目:『$3M ARR AI startupの最初のMVPはこれ』、2枚目:『企業名→AI検索表示→競合比較→改善案』、3枚目:『作る前に無料レポートで売れ』の3枚カルーセル"
+},
+"bilionJudgment": {
+"worthAddingToBilion": "追加価値あり。ただし$85M評価や$3M ARRの再現ではなく、『AI検索診断レポートを入口にしたAEO小型SaaS/サービス』として抽象化して入れるべき。",
+"replicationScore": 6,
+"aiLeverageScore": 9,
+"monetizationClarityScore": 8,
+"buildDifficultyScore": 7,
+"whatToCopyNow": "無料AI visibility report、1業界特化、教育コンテンツ、待機リスト、競合比較、診断DM、1機能MVP",
+"whatNotToCopy": "$85M評価を狙うこと、全業界向けAEOプラットフォームを最初から作ること、共同創業者/投資家/大規模チーム前提の成長速度を真似ること"
+},
+"bilionRecordJson": {
+"sourceType": "YouTube",
+"sourceUrl": "https://www.youtube.com/watch?v=efa728D0yWM",
+"businessName": "Searchable",
+"industry": "AI検索最適化、AEO、B2BマーケティングSaaS",
+"revenueSignal": "$3M ARR超、$85M評価、ローンチ後5か月、60日で$1M ARRと動画内で主張",
+"buyer": "創業者、マーケティング責任者、代理店、AI検索で顧客獲得したい企業",
+"pain": "ChatGPT、Gemini、Perplexityなどで自社が表示されているか分からず、競合にAI検索上の露出を取られる不安がある。",
+"desire": "AI検索で自社が推薦され、競合より先に新しい顧客獲得チャネルを押さえたい。",
+"fear": "AI検索時代に見つからない会社になり、購買検討から外れること。",
+"offer": "AI検索可視化レポート、競合比較、AEO改善支援SaaS",
+"pricingModel": "不明。ARR表現からサブスクリプションと推測。早期ユーザーには50% lifetime discountを提供。",
+"growthChannel": "創業者主導のAI検索教育コンテンツ、待機リスト、無料AI visibility report、Slackコミュニティ、広告、プレス、Google/AI検索、Apollo/LinkedIn/Clayによるアウトバウンド",
+"distributionNotes": "10月から毎日AI検索コンテンツを投稿し、各投稿下部で待機リスト登録を促進。無料レポートはフル結果を見るためにアカウント作成を必要にし、有料転換導線にした。",
+"whyItWorked": "AI検索という新しい市場変化に対し、企業の不安を無料診断で可視化し、教育コンテンツで信頼を作ってからSaaSへ転換したため。",
+"toolsUsed": [
+"Slack",
+"Apollo",
+"LinkedIn",
+"Clay",
+"ChatGPT",
+"Gemini",
+"Perplexity"
+],
+"evidence": [
+"$3 million in annual recurring revenue",
+"$85 million valuation",
+"$1M ARR in 60 days",
+"nearly 50% of those free users converted to paid users",
+"team of 18 people"
+],
+"risks": [
+"$85M評価の条件や検証元が不明",
+"$3M ARRの内訳、顧客数、解約率が不明",
+"AI検索プラットフォーム依存が強い",
+"SEO大手やAEO新興企業との競争が激しい",
+"創業者の発信力と過去実績への依存が大きい"
+],
+"aiNativeRemake": "1業界に絞ったAI Visibility Mini Reportを作り、企業名・URL・競合・狙う質問を入力すると、AI検索上の表示状況、競合比較、改善案を出す小型診断ツールにする。",
+"starterProduct": "48時間で作るなら、フォーム入力→手動/半自動AI検索チェック→PDF/Notionレポート納品→$19〜$99単発診断または$99/月の月次監視へ誘導。",
+"validationPlan48h": "1業界を選ぶ。AI検索に関する教育投稿を10本作る。ICP企業50社に『無料AI visibility mini reportを作ります』とDMする。10件の希望、5件のレポート納品、1件の有料詳細診断または2件の商談を目標にする。",
+"xPostIdeas": [
+"Googleで見つかっても、ChatGPTで見つからない会社はこれから負ける。",
+"$3M ARRのAI検索SaaSが最初に作ったのは巨大なAIエージェントではなく、企業の表示状況を測るprompt trackingだった。",
+"無料診断レポートはAI SaaSの最強リードマグネットになり得る。",
+"AEOの最小商品は、AI検索ダッシュボードではなく競合比較レポート1枚でいい。"
+],
+"shortScriptIdeas": [
+"ChatGPTであなたの会社は推薦されますか？この問いだけで新しいB2B SaaSが作れます。",
+"5か月で$3M ARRと語られたAIスタートアップの入口は、無料AI visibility reportでした。",
+"AI検索時代のSEOを小さく始めるなら、1業界向けの診断レポートから始めてください。"
+],
+"imagePrompt": "Dark SaaS style carousel. Card 1: '$3M ARR AI Search SaaS Pattern'. Card 2: 'Company name → AI visibility scan → competitor comparison → improvement plan'. Card 3: 'Start with a free report, sell monthly monitoring'. Minimal, premium, no hype.",
+"buildPromptSeed": "Build a mobile-first AI Visibility Mini Report web app for one niche. The user enters company name, website URL, target market, 3 competitors, and 5 customer search questions. The app generates a mock report showing whether the company appears in ChatGPT/Gemini/Perplexity-style answers, competitor visibility, missed opportunities, recommended content, and a CTA for monthly monitoring. Use mock data, local state, no auth, no database, no external API. Include export/copy report and a pricing CTA.",
+"monetizationPath": "無料AI visibility mini report → $19〜$99詳細診断 → $99/月〜$299/月の月次AI検索監視 → 代理店/複数クライアントプラン → AEO実行支援",
+"replicationScore": 6,
+"aiLeverageScore": 9,
+"monetizationClarity": 8,
+"buildDifficulty": 7
+}
+}

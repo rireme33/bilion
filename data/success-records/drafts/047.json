@@ -1,0 +1,291 @@
+{
+"sourceType": "YouTube",
+"source": {
+"videoTitle": "My Apps Failed Until I Discovered This Playbook ($35K/month apps)",
+"creator": "Starter Story",
+"speaker": "Loick（フランス出身のSaaS創業者）、Pat Walls",
+"sourceUrl": "https://www.youtube.com/watch?v=-OPKa8DIzKU",
+"genre": "創業者インタビュー / SaaS成長事例 / e-commerce SaaS",
+"language": "英語"
+},
+"oneLinePattern": "e-commerce業界の明確な既存需要に対して、小さく検証したSaaSを作り、YouTubeクリエイター提携を主要販売チャネルにして月商$35K〜$750K MRRまで伸ばすパターン。",
+"business": {
+"businessName": "Infuspy / Minia / Drop Magic（動画内で複数SaaSとして説明）",
+"productOrService": "e-commerce事業者向けのインフルエンサー発見ツール、商品リサーチツール、AIストア作成SaaS",
+"industry": "e-commerce SaaS / dropshipping / creator-led SaaS",
+"targetMarket": "dropshipper、e-commerce事業者、初心者のオンラインストア運営者",
+"customer": "Instagram・Snapchatで商品を宣伝したいe-commerce事業者、売れる商品を探すdropshipper、AIでオンラインストアを作りたい初心者",
+"problemSolved": "売れる商品、売れるプロモーション相手、オンラインストア構築の手間を短縮する",
+"valueProvided": "市場機会の発見、インフルエンサー選定、AIによるストア作成を通じて、e-commerce事業者の立ち上げ・販促・商品発見を速くする",
+"price": "不明",
+"revenue": "Infuspyは2か月で約$20K MRR、Miniaは2年以内に最大$750K MRR、Drop Magicは最初の4か月で$45K MRR超、3社はいずれも少なくとも$35K MRRに到達と説明",
+"period": "Infuspyは2か月、Miniaは2年以内、Drop Magicは最初の4か月",
+"usersOrSubscribers": "不明"
+},
+"buyer": {
+"whoBuys": "dropshipper、e-commerce事業者、AIでオンラインストアを作りたい初心者、インフルエンサーマーケティングを行う商品販売者",
+"whyTheyBuy": "売れる商品や販促チャネルを見つけたい、ストア構築を速くしたい、失敗リスクを下げたいから",
+"urgency": "e-commerceでは商品選定・広告・インフルエンサー選定の遅れが売上機会損失になるため、比較的高い可能性がある。ただし動画内で緊急度の数値証拠は不明",
+"willingnessToPay": "成功すれば売上に直結する業務のため支払い意欲は高いと推測できるが、具体価格は不明",
+"existingAlternatives": "手動リサーチ、競合広告リサーチツール、インフルエンサー検索、Shopifyテンプレート、e-commerce教育コンテンツ、代理店",
+"alternativeProblems": "手動作業が遅い、情報が分散する、実際に売れるか分かりにくい、初心者にはストア構築が複雑、既存ツールは学習コストが高い可能性がある"
+},
+"painDesireFear": {
+"pain": "商品リサーチ、インフルエンサー選定、ストア作成に時間がかかり、何を売ればよいか分からない",
+"desire": "短時間で売れる商品・販促相手・ストアを作り、e-commerceで収益を出したい",
+"fear": "時間と広告費を使っても商品が売れない、誰も使わないSaaSを作ってしまう、distributionがないままプロダクトだけ作って失敗する",
+"reasonsNotToBuy": "成果保証がない、競合ツールが多い、e-commerce市場に詳しくないと使いこなせない、AI生成ストアの品質に不安がある、価格不明"
+},
+"offer": {
+"whatIsSold": "e-commerce向けの機会発見・商品発見・AIストア作成SaaS",
+"realBenefitSold": "売れる確率の高いe-commerce施策を速く見つけ、実行までの時間を短縮すること",
+"minimumProduct": "特定ニッチ向けに、商品リサーチ結果、競合広告、インフルエンサー候補、AIストア生成を1つだけ提供する軽量MVP",
+"subscriptionReason": "市場リサーチ、商品発見、クリエイター発見、ストア改善は継続的に必要なため月額化しやすい",
+"upsellPotential": "高度な分析、広告クリエイティブ生成、YouTube/Instagram/TikTokクリエイターDB、アフィリエイト管理、ストア自動生成、チーム機能、代理店向けプラン"
+},
+"growthDistribution": {
+"initialAcquisition": "最初はニュースレターで初期トラクションを検証し、その後ノーコードアプリでPMFを検証したと説明",
+"mainGrowthChannel": "YouTubeクリエイター提携",
+"postingFrequency": "不明。ただし成功したクリエイターとは1本のテスト動画後に3〜4本のパッケージ契約を行うと説明",
+"winningContentFormat": "YouTubeの長尺動画内で、クリエイターが実際にアプリの使い方を見せる形式",
+"scaleMethod": "キーワード検索でクリエイターを探し、エンゲージメント率・コメント数・過去案件継続回数を見て選定し、固定費＋コミッションで契約。効果が出たら複数動画パッケージへ拡大",
+"adsUgcSeoCommunity": "YouTube長尺動画、クリエイター提携、アフィリエイト/コミッション、長尺動画のショート動画・広告への再利用、SEO/オーガニック流入",
+"whyItSpread": "クリエイターが既に顧客層を持っており、長尺動画でプロダクトの使用文脈を説明でき、動画が長期間残って継続的にコンバージョンするため"
+},
+"monetization": {
+"monetizationPath": "SaaS月額課金を中心に、YouTubeクリエイター経由で顧客獲得し、MRRを拡大するモデル",
+"freeOffer": "Drop Magicでは無料ユーザーにAI画像5枚を提供していると説明",
+"paidProduct": "e-commerce向けSaaS。具体的な有料プラン価格は不明",
+"pricingModel": "月額SaaSと推測されるが、具体価格・プラン構成は不明",
+"whyLtvCanGrow": "e-commerce業務は継続的に商品・広告・ストア改善が必要で、成果につながれば継続利用されやすいから",
+"whyRecurringRevenueWorks": "商品リサーチ、競合監視、クリエイター発見、ストア改善は一度きりではなく継続的な業務だから"
+},
+"whyItWorked": {
+"reason1": "プロダクト起点ではなく、e-commerce事業者の既存問題から始めた",
+"reason2": "ニュースレター、ノーコードアプリ、本格アプリの順に、低リスクで検証してから開発した",
+"reason3": "YouTubeクリエイターを販売チャネルまたは共同創業者として組み込み、distribution riskを下げた",
+"marketTiming": "AIツールでMVP構築が速くなり、e-commerce初心者向けのAIストア作成やリサーチ自動化の需要が高まっている時期と説明されている",
+"founderStrength": "5年間の失敗後に、感情ではなく期限・マイルストーン・牽引力で判断する姿勢へ変わった点。さらに複数SaaSを同じプレイブックで伸ばした経験",
+"highlyReplicableElements": "YouTubeクリエイター選定、1本目をテスト動画にする、固定費＋コミッション、30%低い初期オファー、効果が出たら3〜4本契約にする、creator co-founderの活用",
+"lowReplicabilityElements": "500人以上のYouTubeクリエイターとの提携、e-commerce市場への深い理解、成功クリエイターを共同創業者にできる交渉力、Miniaの$750K MRR規模"
+},
+"toolsStack": {
+"toolsUsed": [
+"Supabase",
+"Next.js",
+"Vercel",
+"Sentry",
+"Trigger.dev",
+"Cursor",
+"Claude Code",
+"Gemini",
+"OpenAI",
+"Loops"
+],
+"aiTools": [
+"Cursor",
+"Claude Code",
+"Gemini",
+"OpenAI",
+"Nanobana（動画内発音ベース、正式名称不明）"
+],
+"payment": "クリエイターのトラッキングと支払いを処理するツールを使うと説明。具体名は不明",
+"database": "Supabase",
+"hosting": "Vercel",
+"analytics": "Sentryはデバッグ用途。売上・プロダクト分析ツールは不明",
+"other": [
+"YouTube creator research",
+"CRMツール（具体名不明）",
+"メールマーケティング用Loops",
+"クリエイター機会検出ツールとしてblimeのように聞こえるが正式名称不明"
+]
+},
+"evidence": {
+"evidenceQuotes": [
+"I spent the first 5 years building an app nobody used.",
+"All of them reaching at least 35k MRR.",
+"Minia actually peaked at 750K MRR within 2 years.",
+"more than 60% of our new customers come from YouTube.",
+"views divided by followers. It should be over 10%.",
+"minimum of like 100 comments per video.",
+"we use Supabase for database, Next.js and Vercel.",
+"the sweet spot will be between 70% and 80% margin.",
+"don't get emotionally attached to a project."
+],
+"numberEvidence": "3つの成功SaaS、10以上のSaaSをローンチ、最初の5年はゼロユーザー・ゼロ収益、Infuspyは2か月で$20K MRR、Miniaは2年以内に$750K MRR、Drop Magicは4か月で$45K MRR超、YouTubeが新規顧客の60%以上、500以上のYouTubeクリエイターと協業、エンゲージメント率10%以上、コメント100件以上を目安、AIコスト約$1.5K/月、サーバー/compute約$100/月、理想粗利70〜80%",
+"priceEvidence": "SaaSの具体販売価格は不明。クリエイター契約は固定費＋コミッション、初期オファーを30%下げると説明",
+"growthChannelEvidence": "YouTubeクリエイター提携が新規顧客の60%以上を生むと説明。長尺動画は利用方法を見せられ、3年前の動画からもコンバージョンがあると説明",
+"ambiguousPoints": [
+"タイトルの$35K/month appsと本文の$35K MRRは整合するが、各アプリの現在収益・純利益は詳細不明",
+"Infuspy / Infy、Drop Magic / Dram Magic / Draw Magicの表記が書き起こし内で揺れている",
+"$750K MRRの証拠は本人発言ベースで、外部検証はこの書き起こし内にない",
+"クリエイター管理・支払いツール名、CRM名が書き起こしでは不明瞭",
+"価格プラン、解約率、LTV、CAC、利益率の実測詳細は不明",
+"500人以上のYouTubeクリエイター提携の期間・契約条件の内訳は不明"
+]
+},
+"facts": [
+"Loickはフランス出身の創業者として紹介されている",
+"10以上のSaaSを立ち上げ、成功したのは3つと説明している",
+"最初の5年間は誰も使わないSaaSを作り、ゼロユーザー・ゼロMRRだったと述べている",
+"Infuspyはe-commerce事業者がInstagramとSnapchatのインフルエンサーを見つけるためのツールだったと説明されている",
+"Infuspyは2か月で$20K MRRに達したと説明されている",
+"Miniaはdropshipperやe-commerce事業者が市場機会や商品を発見するSaaSと説明されている",
+"Miniaは2年以内に$750K MRRでピークを迎えたと説明されている",
+"Drop Magicは初心者向けにAIでオンラインストアを作るSaaSと説明されている",
+"Drop Magicは最初の4か月で$45K MRR超まで成長中と説明されている",
+"成功アプリではYouTubeクリエイターをpromoterまたはco-founderとして活用したと説明されている",
+"MiniaとDrop Magicでは500以上のYouTubeクリエイターと協業したと説明されている",
+"新規顧客の60%以上がYouTubeから来ると説明されている",
+"クリエイター選定ではエンゲージメント率10%以上、動画あたり100コメント以上を目安にすると説明されている",
+"最初の動画はテストとして契約し、1か月後に損益分岐や反応を見ると説明されている",
+"技術スタックとしてSupabase、Next.js、Vercel、Sentry、Trigger.dev、Cursor、Claude Code、Gemini、OpenAI、Loopsが挙げられている",
+"理想的な利益率は70〜80%と説明されている"
+],
+"inferences": [
+"このパターンの本質はSaaS開発力よりも、YouTubeクリエイターを販売チャネルとして先に設計することにある",
+"e-commerce領域は売上に近い業務のため、B2B SaaSとして課金しやすい可能性がある",
+"AI-native remakeでは、最初から巨大SaaSを作るよりも、特定市場向けのリサーチ・診断・生成ツールから始める方が再現性が高い",
+"YouTubeクリエイターを共同創業者にするのは強力だが、初心者には交渉難易度が高い",
+"日本市場で真似るなら、e-commerce支援者、Shopify構築者、TikTok Shop運営者、物販スクール講師、輸入販売者向けに絞る方が検証しやすい",
+"Bilion向けには、プロダクト案そのものよりもCreator-led SaaS distribution playbookとして登録する価値が高い"
+],
+"risks": {
+"legalRisk": "e-commerce支援、インフルエンサー分析、AIストア生成自体の法的リスクは中程度。ただし広告表現、著作権、スクレイピング、プラットフォーム規約、ステマ規制、成果誇大表示には注意が必要",
+"platformDependency": "高い。YouTube、Instagram、Snapchat、Shopify系プラットフォーム、広告・SNSデータに依存する可能性がある",
+"competitionRisk": "高い。e-commerceリサーチ、AIストア生成、インフルエンサー検索は競合が多く、差別化には市場特化・distribution・クリエイター提携が必要",
+"replicabilityRisk": "中〜高。小型MVPは再現可能だが、500人規模のYouTube提携、$750K MRR、creator co-founder獲得は再現性が低い",
+"exaggerationOrSuspiciousPoints": [
+"収益・MRRは本人発言ベースで、書き起こし内にダッシュボード画像や外部監査の確認はない",
+"3社すべてが初月付近で$35K MRRに到達したという表現は強く、詳細な定義や期間が曖昧",
+"YouTubeが60%以上の新規顧客を生むという数字は強いが、計測方法は不明",
+"Miniaの$750K MRRは非常に大きいが、利益、チャーン、広告費、アフィリエイト報酬の詳細は不明",
+"Starter Story Buildの宣伝が動画途中に含まれるため、AIで作れるという文脈がやや販売寄りに強調されている"
+]
+},
+"aiNativeRemake": {
+"howToRebuildWithAI": "e-commerceの特定作業を1つ選び、AIでリサーチ・要約・生成・意思決定を補助する小型SaaSにする。例：YouTubeクリエイター提携候補診断、Shopify商品ページ生成、競合広告分析、TikTok Shop商品リサーチ、インフルエンサーDM文生成",
+"smallerStart": "YouTubeクリエイター提携リストを自動採点する$29のレポート、またはShopify初心者向けのAIストア改善診断から始める",
+"forSoloDevelopers": "Next.js、Supabase、OpenAI/Claude、Stripe/LemonSqueezyで、CSV/URL入力から候補リスト・スコア・DM文・LP改善案を出すだけのMVPを作る",
+"forNonEngineers": "Gumroad/Notion/Google Sheetsで、e-commerce向けCreator Outreach Pack、商品リサーチテンプレート、AIストア診断レポートを販売し、手動納品で検証する",
+"japanLocalization": "日本ならShopify運営者、BASE/STORES運営者、D2C小規模ブランド、TikTok Shop準備層、物販スクール運営者向けに、売れる商品・投稿・クリエイター候補を診断する小型商品にする",
+"englishMarketVersion": "英語圏ならdropshippers、Shopify solopreneurs、e-commerce creators向けに、YouTube creator partnership finder、AI store launch kit、product opportunity scannerとして出す"
+},
+"starterProduct": {
+"minimumVersionIn48h": "YouTube Creator Fit Report for E-commerce SaaS：ユーザーが商品/市場/競合URLを入力すると、狙うべきYouTubeキーワード、クリエイター選定基準、DM文、初回契約オファー、1本目動画の検証指標を出すAI診断レポート",
+"requiredFeatures": [
+"市場/商品カテゴリ入力",
+"YouTube検索キーワード生成",
+"クリエイター評価基準チェックリスト",
+"初回DMテンプレート生成",
+"固定費＋コミッションのオファー案生成",
+"1本目動画テストの損益分岐チェック項目",
+"48時間検証プラン出力",
+"PDFまたはNotion形式のレポート出力"
+],
+"unnecessaryFeatures": [
+"本格的なYouTube API連携",
+"自動支払い管理",
+"高度なアフィリエイトトラッキング",
+"チーム権限管理",
+"完全自動クリエイターDB",
+"AI画像生成",
+"複雑なダッシュボード"
+],
+"firstPrice": "$19〜$49の単発レポート、または$99の個別Creator Outreach Pack。月額化するなら$19〜$29/月から検証",
+"howToGetFirst10Customers": "X、Indie Hackers、Shopify/DTC/e-commerce系コミュニティ、YouTubeクリエイターに向けて『SaaSは作ったが販売チャネルがない人向けに、YouTube提携候補と初回DMを作る』と投稿し、10人に無料または割引で診断を提供する",
+"validationMethod": "48時間以内に10件DM、3投稿、5件無料診断、2件有料$19〜$49の支払い、または5件の具体的な診断依頼が来るかで判断"
+},
+"contentAngles": {
+"xPostIdeas": [
+"He built 10+ SaaS apps. Most failed. The 3 that worked had one thing in common: YouTube creators were the distribution engine.",
+"A French founder hit $750K MRR with an e-commerce SaaS. The product mattered. But the real playbook was creator-led distribution.",
+"Stop building in the dark. His first 5 years had zero users. The winning version started with a real e-commerce problem, newsletter validation, no-code MVP, then real SaaS.",
+"YouTube is not just content. For this founder, it drives 60%+ of new customers. Long-form demos convert better than random short-form virality.",
+"The underrated SaaS cofounder: a creator who is already a power user, already trusted by the market, and already knows how to sell the product."
+],
+"shortVideoIdeas": [
+"Hook: He wasted 5 years building an app nobody used. Then 3 SaaS apps crossed $35K MRR. Lesson: distribution before product attachment.",
+"Hook: This founder says YouTube brings 60%+ of his SaaS customers. Show the 4-step creator selection system: search keywords, check 10% engagement, 100 comments, test one video.",
+"Hook: The SaaS playbook nobody tells beginners: newsletter first, no-code MVP second, real app third. Not the other way around.",
+"Hook: Creator cofounders are distribution insurance. Product risk plus distribution risk is too much for one solo builder.",
+"Hook: If your SaaS has no channel, it is not a business yet. This e-commerce founder used 500+ YouTube creators to scale."
+],
+"imageCardIdea": "1枚目：『$750K MRR SaaSの本体はプロダクトではなくYouTube提携だった』。2枚目：クリエイター選定基準『10% engagement / 100 comments / 3回以上スポンサー継続』。3枚目：48h starter product『Creator Fit Reportを$29で売れ』"
+},
+"bilionJudgment": {
+"worthAddingToBilion": "追加する価値あり。理由は、単なるSaaS成功談ではなく、creator-led distribution、検証順序、MVP構築、YouTube提携条件、粗利目安、ツールスタックまでAIビルダー向けに再利用しやすい。ただし収益の外部検証は弱いため、スコアは過度に高くしない。",
+"replicationScore": 7,
+"aiLeverageScore": 8,
+"monetizationClarityScore": 7,
+"buildDifficultyScore": 6,
+"whatToCopyNow": "YouTubeクリエイター提携を前提にした小型SaaS検証。特に『1本目はテスト動画』『固定費＋コミッション』『効果が出たら3〜4本契約』『クリエイターをpower userとして巻き込む』部分",
+"whatNotToCopy": "いきなり500人のクリエイター提携、AIストア生成の大型SaaS、$750K MRRの規模感、creator co-founder前提の資本政策、5年粘る姿勢"
+},
+"bilionRecordJson": {
+"sourceType": "YouTube",
+"sourceUrl": "https://www.youtube.com/watch?v=-OPKa8DIzKU",
+"businessName": "Infuspy / Minia / Drop Magic",
+"industry": "e-commerce SaaS / creator-led SaaS",
+"revenueSignal": "Infuspy $20K MRR in 2 months、Minia peak $750K MRR within 2 years、Drop Magic over $45K MRR in first 4 months、successful apps at least $35K MRRと説明",
+"buyer": "dropshipper、e-commerce事業者、AIでオンラインストアを作りたい初心者",
+"pain": "売れる商品、販促相手、ストア構築方法が分からず、手動リサーチと構築に時間がかかる",
+"desire": "売れる商品・インフルエンサー・ストアを速く見つけて、e-commerce収益を伸ばしたい",
+"fear": "誰も使わないプロダクトを作る、広告費や時間を無駄にする、distributionがないまま失敗する",
+"offer": "e-commerce向けの商品発見、インフルエンサー発見、AIストア作成SaaS",
+"pricingModel": "月額SaaSと推測。具体価格は不明",
+"growthChannel": "YouTubeクリエイター提携。新規顧客の60%以上がYouTube由来と説明",
+"distributionNotes": "YouTubeでキーワード検索し、エンゲージメント率10%以上、動画100コメント以上、同一ブランドとの3回以上の案件継続を確認。1本目はテスト動画、損益分岐を確認後に3〜4本契約へ拡大",
+"whyItWorked": "実在するe-commerceの痛みから始め、ニュースレター→ノーコード→本格アプリで検証し、YouTubeクリエイターを販売チャネルまたは共同創業者として組み込んだため",
+"toolsUsed": [
+"Supabase",
+"Next.js",
+"Vercel",
+"Sentry",
+"Trigger.dev",
+"Cursor",
+"Claude Code",
+"Gemini",
+"OpenAI",
+"Loops"
+],
+"evidence": [
+"I spent the first 5 years building an app nobody used.",
+"All of them reaching at least 35k MRR.",
+"Minia actually peaked at 750K MRR within 2 years.",
+"more than 60% of our new customers come from YouTube.",
+"the sweet spot will be between 70% and 80% margin."
+],
+"risks": [
+"収益は本人発言ベースで外部検証はこの書き起こし内にない",
+"e-commerce SaaSは競合が多い",
+"YouTubeクリエイター依存が高い",
+"500人以上の提携は初心者には再現しにくい",
+"プラットフォーム規約や広告表現リスクがある"
+],
+"aiNativeRemake": "e-commerce向けにYouTube creator partnership finder、商品リサーチAI、Shopifyストア診断、AIストア改善レポートとして小さく再構築する",
+"starterProduct": "48時間で作るなら、e-commerce事業者向けYouTube Creator Fit Report。市場/商品を入力すると、狙うキーワード、クリエイター選定基準、初回DM、固定費＋コミッション案、1本目動画の検証指標を出す",
+"validationPlan48h": "Day1: e-commerce/SaaS/Shopify系の創業者・個人開発者30人にDMし、$19〜$49のCreator Fit Reportを提案。Xで3投稿。Day2: 5件無料診断を作り、2件以上の有料化または5件以上の具体依頼が出るか確認。反応がなければ市場か訴求を変更",
+"xPostIdeas": [
+"A founder hit $750K MRR with an e-commerce SaaS. The hidden engine was not code. It was YouTube creators.",
+"His first 5 years: zero users. His winning playbook: real pain → newsletter → no-code MVP → SaaS → YouTube distribution.",
+"YouTube drove 60%+ of new customers. That is not content marketing. That is a sales channel.",
+"Before you build SaaS, ask: who already owns the audience that needs this?",
+"Creator cofounder > random marketer when the creator is a power user and trusted by the market."
+],
+"shortScriptIdeas": [
+"He failed for 5 years with zero users. Then built 3 SaaS apps past $35K MRR. The switch: stop building ideas, start solving proven e-commerce pain.",
+"This founder’s SaaS gets 60%+ of new customers from YouTube. Not TikTok virality. Long-form demos that show the product working.",
+"The 4-step creator playbook: search YouTube keywords, check engagement, check sponsor history, test one video, then scale the partnership.",
+"Want a SaaS idea? Start where creators already sell to the exact buyer. Then build the product behind that demand.",
+"The first MVP was not a full app. It was a newsletter, then no-code, then real software only after traction."
+],
+"imagePrompt": "Create a clean dark SaaS carousel card: headline '$750K MRR lesson: distribution before product', show a simple flow 'Pain → Newsletter → No-code MVP → SaaS → YouTube creators', include small proof chips '$20K MRR / $750K MRR / 60%+ customers from YouTube', high-contrast startup research aesthetic, no faces, no fake dashboard",
+"buildPromptSeed": "Build a mobile-first Next.js app called Creator Fit Report for e-commerce SaaS founders. The app should let a user enter product category, target customer, competitor URLs, and current offer. Generate YouTube keyword ideas, creator evaluation checklist, outreach DM, fixed-fee plus commission offer options, first-video test metrics, and a 48-hour validation plan. Use local mock data first, no auth, no external API, clean dark UI, exportable report section, and sample data for Shopify/dropshipping/AI store builder niches.",
+"monetizationPath": "Start with $19〜$49 one-time AI-generated report, upsell $99 custom outreach pack, then convert repeated users into $19〜$29/month creator pipeline SaaS with saved reports, CRM, follow-up templates, and performance tracking",
+"replicationScore": 7,
+"aiLeverageScore": 8,
+"monetizationClarity": 7,
+"buildDifficulty": 6
+}
+}

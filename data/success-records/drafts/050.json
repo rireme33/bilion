@@ -1,0 +1,199 @@
+
+"X",
+"メールリスト",
+"プログラマティックSEO",
+"広告"
+]
+},
+"evidence": {
+"evidenceQuotes": [
+"I vipcoded an AI app that makes over $30,000 a month.",
+"I made my first $20,000 before the idea was even built.",
+"Subscriber is an AI script writing tool for YouTube creators.",
+"18 months later I have over 4,000 customers.",
+"We have plans anywhere from $49 to $300 a month.",
+"in the past year, I've done over $700,000 in sales.",
+"bring in over 30,000 views a month just from Google.",
+"The only way to really get validation is to collect money from people.",
+"Probably 90% of my code is written with cloud code."
+],
+"numberEvidence": "月約$30,000、過去1年で$700,000超、4,000顧客以上、Googleから月30,000ビュー以上、AI compute月$3,500、広告月$2,000、その他月$1,500、初期プリセール$20,000、50ライセンス、2〜3日で完売、60日で納品予定",
+"priceEvidence": "$49〜$300/月、初期プリセールは50件限定ライフタイムライセンス、最初の10件は非常に安く、その後10件ごとに価格を上げた",
+"growthChannelEvidence": "word of mouth、social media、programmatic SEO、X、email list、viral giveaways、週次メール、個別DM/対話",
+"ambiguousPoints": [
+"正確なプリセール価格帯は不明",
+"LTV、解約率、利益率は不明",
+"4,000 customersが有料顧客のみか、過去購入者や無料ユーザーを含むか不明",
+"月$30,000が直近MRRか平均的な月商かは語られているが、厳密な会計期間は不明",
+"字幕のcloud codeがClaude Codeを指すのかは文脈上可能性が高いが断定不可",
+"プログラマティックSEOの具体ページ構造やキーワード戦略は不明"
+]
+},
+"facts": [
+"GilはYouTubeクリエイター向けAI台本作成SaaSを作った",
+"月約$30,000のサブスクリプション収益があると語られている",
+"過去1年で$700,000超の売上があると語られている",
+"18か月後に4,000顧客以上と語られている",
+"月額プランは$49〜$300と語られている",
+"開発前に50件限定のライフタイムライセンスをプリセールした",
+"プリセールは2〜3日で売り切れ、約$20,000を得たと語られている",
+"返金保証を付け、60日以内に納品し、その後2週間試せる条件にした",
+"集客チャネルとして口コミ、SNS、プログラマティックSEOが語られている",
+"Googleから月30,000ビュー以上を獲得していると語られている",
+"月$3,500程度をAI computeに使っていると語られている",
+"月$2,000程度を広告に使っていると語られている",
+"月$1,500程度をweb scraping、hosting、email sending等に使っていると語られている",
+"LaravelとDigitalOceanを使っていると語られている"
+],
+"inferences": [
+"YouTube台本作成は継続利用されるため、月額SaaS化しやすい",
+"AI生成品質が購入継続の中心価値であり、単なるChatGPTラッパーでは解約されやすい",
+"最初の勝ち筋はプロダクト機能よりも、購入者候補の信頼獲得とプリセール設計にあった",
+"同じパターンはYouTube以外の反復コンテンツ制作領域にも移植できる",
+"ソロ開発者が真似する場合、いきなりフルSaaSを作るより、特定ジャンル向けの台本診断・台本生成パックから始める方が現実的",
+"プログラマティックSEOは後半のスケール手段であり、最初の検証手段ではない"
+],
+"risks": {
+"legalRisk": "YouTube動画や競合コンテンツをスクレイピング・分析する場合、著作権、利用規約、データ取得方法に注意が必要",
+"platformDependency": "YouTube、Google検索、X、AIモデルプロバイダーに依存する",
+"competitionRisk": "ChatGPT、Claude、YouTube支援SaaS、AIライティングツール、動画制作ツールとの競争が激しい",
+"replicabilityRisk": "台本品質、プロンプト設計、リサーチ精度、SEO流入獲得、発信での信頼構築が難しく、単純なコピーでは勝ちにくい",
+"exaggerationOrSuspiciousPoints": [
+"月$30,000と過去1年$700,000超の関係は単純計算では差があるため、月ごとの変動や一時売上が含まれる可能性がある",
+"4,000 customersの定義が有料継続顧客なのか累計顧客なのか不明",
+"Starter Story側の自社講座広告が途中に入っており、AIで誰でも短期間に作れる印象が強調されている可能性がある",
+"創業者は経験豊富で、完全初心者が同じ速度で再現できるとは限らない",
+"プリセール成功には既にメールリストと信頼が必要で、単に決済ページを出すだけでは成立しない"
+]
+},
+"aiNativeRemake": {
+"howToRebuildWithAI": "特定ジャンルのYouTubeクリエイター向けに、動画アイデア、競合リサーチ、構成、フック、台本ドラフト、CTAまで生成するAIワークフローとして再構築する",
+"smallerStart": "SaaSではなく、特定ジャンル向けの『YouTube Script Audit + 10本分のAI台本パック』を$49〜$199で売る",
+"forSoloDevelopers": "Next.jsまたはLaravelで、入力フォーム、チャンネル情報保存、台本生成、履歴、テンプレート、Stripe課金を持つ小型SaaSから開始できる",
+"forNonEngineers": "Notion/Google Docs/フォーム/ChatGPT/Claudeを使い、手動納品の台本生成サービスとして先に売る",
+"japanLocalization": "日本市場では、顔出しなしYouTube、ショート動画、切り抜き、教育系チャンネル、店舗集客YouTube向けの台本生成・改善サービスに変換できる",
+"englishMarketVersion": "English marketでは、faceless YouTube channels、creator agencies、YouTube automation teams向けのscript workflow toolとして展開できる"
+},
+"starterProduct": {
+"minimumVersionIn48h": "YouTubeチャンネルURLまたはテーマを受け取り、動画アイデア10件、1本分の構成、フック5案、台本ドラフト、改善チェックリストを返す手動または半自動のAI台本診断サービス",
+"requiredFeatures": [
+"ターゲットチャンネルまたはジャンル入力",
+"動画テーマ入力",
+"フック生成",
+"構成生成",
+"台本ドラフト生成",
+"YouTube向け改善チェックリスト",
+"Google DocsまたはNotionでの納品",
+"決済リンク",
+"返金保証または初回満足保証"
+],
+"unnecessaryFeatures": [
+"ユーザー認証",
+"完全自動SaaS",
+"高度なチーム管理",
+"複雑な分析ダッシュボード",
+"大量テンプレート",
+"多言語対応",
+"動画編集機能",
+"サムネイル生成までのフル機能"
+],
+"firstPrice": "$49〜$199の一回払い、または初期10名限定の低価格プリセール",
+"howToGetFirst10Customers": "XでYouTube運営者・faceless channel運営者・ショート動画制作者を探し、無料の台本改善例を投稿し、DMで『あなたのチャンネル用に1本だけ台本改善します』と提案する",
+"validationMethod": "48時間でX投稿3本、DM50件、無料診断10件、プリセール5件以上を目標にして、支払いが発生するかを見る"
+},
+"contentAngles": {
+"xPostIdeas": [
+"A developer made $20K before building his SaaS. The trick was not coding faster. It was pre-selling to 50 people first.",
+"Most builders validate with compliments. Gil validated with money: 50 pre-sale licenses, sold out in 2–3 days, before the app existed.",
+"This $30K/month AI SaaS did not start with a product. It started with X, free value, an email list, and weekly conversations with buyers.",
+"Painkiller beats vitamin: YouTube creators do not need another AI writer. They need the script bottleneck removed.",
+"The real MVP was not the app. It was the offer: limited licenses, rising prices, money-back guarantee, and a 60-day delivery promise."
+],
+"shortVideoIdeas": [
+"Hook: He made $20,000 before building the app. Breakdown: audience first, email list, pre-sale, refund guarantee, then build.",
+"Hook: Stop asking people if they would pay. Ask them to pay. Show Gil's 50-license pre-sale as the proof.",
+"Hook: This $30K/month AI SaaS started from one bottleneck: YouTube scripts. Explain painkiller vs vitamin.",
+"Hook: The SaaS was not the genius part. The launch sequence was. Explain 7-day email sequence and FOMO pricing.",
+"Hook: You do not need a big app to start. Sell the manual version first. Show the 48-hour remake."
+],
+"imageCardIdea": "1枚目: '$20K before the app existed'、2枚目: 'Audience → Email list → Pre-sale → Build'、3枚目: 'Copy this: sell the painkiller before coding the SaaS'"
+},
+"bilionJudgment": {
+"worthAddingToBilion": "追加すべき。AIビルダーにとって、作る前に売る・プリセール・メールリスト・ペインキラー選定というBilionの中核思想と非常に相性が良い",
+"replicationScore": 8,
+"aiLeverageScore": 9,
+"monetizationClarityScore": 9,
+"buildDifficultyScore": 6,
+"whatToCopyNow": "YouTube台本SaaSそのものではなく、Xで価値提供→メールリスト→個別対話→限定プリセール→返金保証→開発の順番をコピーする",
+"whatNotToCopy": "いきなりフルSaaS、プログラマティックSEO、大規模なAI compute前提のプロダクト、創業者の実績頼みの売り方をそのままコピーしない"
+},
+"bilionRecordJson": {
+"sourceType": "YouTube",
+"sourceUrl": "https://www.youtube.com/watch?v=7KqlwjBM_tM",
+"businessName": "Subscribr（字幕ではSubscriber表記）",
+"industry": "Creator Economy / AI Writing / YouTube SaaS",
+"revenueSignal": "月約$30,000のサブスクリプション収益、過去1年で$700,000超、4,000顧客以上",
+"buyer": "YouTubeクリエイター、faceless YouTube運営者、動画制作チーム",
+"pain": "良いYouTube台本を書く人材が見つかりにくく、台本作成が制作のボトルネックになる",
+"desire": "動画制作を速く回し、品質の高い台本を安定して作りたい",
+"fear": "台本品質が低くて動画が伸びない、投稿頻度が落ちる、外注や人材不足で制作が止まる",
+"offer": "YouTube向けAI台本作成SaaS。初期は50件限定ライフタイムライセンスをプリセール",
+"pricingModel": "$49〜$300/月。初期プリセールで約$20,000を開発前に販売",
+"growthChannel": "X、メールリスト、個別対話、口コミ、SNS、プログラマティックSEO",
+"distributionNotes": "ゼロフォロワーのXからYouTube領域の人をフォローし、無料価値提供とviral giveawaysで1,000人超のメールリストを構築。週1回メールし、個別にアイデアを聞き、50件限定プリセールで検証",
+"whyItWorked": "口頭フィードバックではなく実際の支払いで検証し、YouTube台本という明確なペインキラーをAIで解決した。限定数、価格上昇、返金保証、60日納品で初期購入の心理的ハードルを下げた",
+"toolsUsed": [
+"Laravel",
+"DigitalOcean",
+"ChatGPT",
+"複数のAI model providers",
+"Claude Codeの可能性が高いが字幕ではcloud code",
+"X",
+"メールリスト",
+"プログラマティックSEO"
+],
+"evidence": [
+"月約$30,000",
+"過去1年で$700,000超",
+"4,000顧客以上",
+"$49〜$300/月",
+"Googleから月30,000ビュー以上",
+"開発前に$20,000プリセール",
+"50ライセンスが2〜3日で完売",
+"AI compute月$3,500",
+"広告月$2,000"
+],
+"risks": [
+"YouTubeやGoogle検索への依存",
+"AI台本ツールの競争激化",
+"創業者の開発力・過去実績・発信力が再現性を下げる",
+"4,000 customersの定義が不明",
+"字幕上のツール名cloud codeは正確性に曖昧さがある",
+"プログラマティックSEOは初心者には再現難度が高い"
+],
+"aiNativeRemake": "特定ジャンルのYouTubeクリエイター向けに、動画テーマからフック、構成、台本、CTA、改善チェックリストを生成する小型AIワークフローとして再構築する",
+"starterProduct": "48時間ではSaaSを作らず、YouTube Script Audit + 10本分のAI台本パックを$49〜$199でプリセールする",
+"validationPlan48h": "1日目: YouTube運営者向けの無料台本改善投稿を3本出し、対象者50人にDM。2日目: 10件無料診断を行い、5件以上に$49〜$199の初期台本パックを提案。支払いが2件以上あれば継続",
+"xPostIdeas": [
+"He made $20K before building the SaaS. Not from code. From a pre-sale.",
+"The app made $30K/month because it solved one bottleneck: YouTube scripts.",
+"Stop validating with compliments. Validate with money.",
+"The MVP was an offer: 50 licenses, rising prices, refund guarantee, 60-day delivery.",
+"AI builders should copy the sequence, not the product."
+],
+"shortScriptIdeas": [
+"He made $20K before the app existed. Here is the 5-step breakdown.",
+"This is why pre-sale beats building in silence.",
+"Painkiller vs vitamin: why this AI YouTube tool sold.",
+"The 7-day email sequence behind a $30K/month micro-SaaS.",
+"How to remake this as a 48-hour AI starter product."
+],
+"imagePrompt": "Create a dark SaaS-style carousel image. Slide 1 headline: '$20K before the app existed'. Slide 2: 'X → Email list → Pre-sale → Build'. Slide 3: 'Sell the painkiller before coding the SaaS'. Minimal, sharp, founder-market-fit aesthetic.",
+"buildPromptSeed": "Build a small AI YouTube Script Audit tool. Users enter channel niche, target audience, video idea, tone, and goal. The app returns 5 hooks, a video structure, a 1,200-word script draft, title ideas, CTA options, and a quality checklist. Use mock auth, local state, simple dashboard, saved scripts, and Stripe placeholder. Mobile-first. No external API required in MVP; use mocked AI output placeholders.",
+"monetizationPath": "無料の台本改善例で集客 → メールリスト化 → 初回$49〜$199の台本パック販売 → 月額$49〜$300のSaaSまたは継続台本生成サービスへ移行",
+"replicationScore": 8,
+"aiLeverageScore": 9,
+"monetizationClarity": 9,
+"buildDifficulty": 6
+}
+}

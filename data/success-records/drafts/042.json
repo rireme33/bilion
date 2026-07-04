@@ -1,0 +1,291 @@
+{
+"sourceType": "YouTube",
+"source": {
+"videoTitle": "How I Built a $12K/Month Micro-SaaS",
+"creator": "Starter Story",
+"speaker": "Vikash / Vikos（表記ゆれあり）",
+"sourceUrl": "https://www.youtube.com/watch?v=W48emwbUlUE",
+"genre": "創業者インタビュー / Micro-SaaS / Starter Story",
+"language": "英語"
+},
+"oneLinePattern": "Upworkで見つけたPhotoshop作業の反復痛みを小さなプラグインにし、顧客の長尾課題をYouTubeチュートリアル化して月$12K規模まで積み上げたニッチMicro-SaaSパターン",
+"business": {
+"businessName": "Bulk Mockup",
+"productOrService": "Photoshop上で大量のモックアップ生成を自動化するプラグイン",
+"industry": "デザイン自動化 / Photoshopプラグイン / Print-on-demand支援 / Micro-SaaS",
+"targetMarket": "Print-on-demandストア運営者、Etsy販売者、Tシャツ・商品モックアップを大量作成するデザイナーやEC運営者",
+"customer": "Photoshopで商品モックアップを手作業で大量作成している個人・小規模EC・POD販売者",
+"problemSolved": "1件30分〜1時間、または大量作成に数日かかるモックアップ作成作業を短時間で自動化する",
+"valueProvided": "50件のモックアップを約1分、または1,800件のモックアップを30分未満で作成できる時間削減",
+"price": "$15/月の示唆あり。ただし全体の料金体系は不明",
+"revenue": "$12,000〜$13,000/月程度",
+"period": "直近1年のGumroadダッシュボードで継続的に月$12K〜$13Kと発言。事業全体の運営期間は数年",
+"usersOrSubscribers": "不明"
+},
+"buyer": {
+"whoBuys": "Print-on-demand販売者、Etsy販売者、Photoshopで商品画像を量産する小規模EC運営者、デザイン業務者",
+"whyTheyBuy": "モックアップ作成を外注・VA・手作業で行うと時間がかかりすぎ、商品投入速度が落ちるため",
+"urgency": "高い。大量の商品画像を作る必要がある販売者は、作業遅延がそのまま販売機会損失になる",
+"willingnessToPay": "実際に最初の顧客がスクリプトに$300を即支払い、現在も月額課金されているため比較的高い",
+"existingAlternatives": "Photoshop手作業、Virtual Assistant雇用、外注、既存のPhotoshopスクリプト、テンプレート運用",
+"alternativeProblems": "手作業は遅い、VAは管理コストがある、外注は継続費が高い、汎用ツールはPOD特化の細かいワークフローに合わない可能性がある"
+},
+"painDesireFear": {
+"pain": "大量のモックアップ作成が単純反復で、30分〜1時間または数日単位の時間を奪う",
+"desire": "デザインファイルとテンプレートを指定するだけで、一括で商品モックアップを生成したい",
+"fear": "商品登録が遅れる、外注費が膨らむ、競合より出品スピードで負ける、Photoshop作業に時間を吸われ続ける",
+"reasonsNotToBuy": "Photoshop依存、既存ワークフローとの互換性不安、テンプレート形式への対応不安、プラグイン導入の面倒さ、月額課金への抵抗"
+},
+"offer": {
+"whatIsSold": "Photoshopでモックアップテンプレートとデザインファイルを一括処理するプラグイン",
+"realBenefitSold": "モックアップ作成時間の大幅削減、出品スピード向上、VAや外注コスト削減",
+"minimumProduct": "最初はPhotoshopスクリプト。テンプレートフォルダとデザインフォルダを選択して一括生成するだけの粗いツール",
+"subscriptionReason": "POD・Etsy販売者は継続的に新商品や新デザインを追加するため、反復利用が発生する",
+"upsellPotential": "高い。テンプレート管理、バッチ処理上限、チーム利用、カスタムチュートリアル、PODプラットフォーム連携、AI背景生成、商品リスティング作成支援へ拡張可能"
+},
+"growthDistribution": {
+"initialAcquisition": "Upwork / freelancer.comでPhotoshop自動化案件を受けたことが最初の需要発見",
+"mainGrowthChannel": "YouTubeチュートリアルとGoogle検索流入",
+"postingFrequency": "不明",
+"winningContentFormat": "特定のPhotoshop作業課題を直接解決する短いチュートリアル動画",
+"scaleMethod": "顧客サポート、オンボーディングメール、コミュニティ観察、YouTubeコメントから長尾課題を収集し、その課題ごとに動画を作るコンテンツフライホイール",
+"adsUgcSeoCommunity": "広告ではなく、YouTube SEO、Google検索、顧客サポート由来の教育コンテンツ、コミュニティ観察が中心",
+"whyItSpread": "バズではなく、検索意図が明確な顧客が具体的な作業課題で検索し、解決動画から購入に進むため"
+},
+"monetization": {
+"monetizationPath": "Upwork案件の内部スクリプト → $300で初販売 → 一括購入のライフタイムディール → 開発者を雇って製品化 → 月額課金",
+"freeOffer": "YouTubeの無料チュートリアル動画、カスタムチュートリアル、サポート動画",
+"paidProduct": "Bulk Mockup Photoshopプラグイン",
+"pricingModel": "月額課金。価格は$15/月の示唆あり。ただし正式プラン詳細は不明",
+"whyLtvCanGrow": "商品画像の作成は一度きりではなく、POD販売者が新商品や新デザインを追加するたびに発生するため",
+"whyRecurringRevenueWorks": "顧客のワークフローに組み込まれ、継続的な時間削減を提供するため解約しにくい"
+},
+"whyItWorked": {
+"reason1": "Upworkの実案件から発見したため、実在する有料痛みに直結していた",
+"reason2": "Photoshopの中でもPODモックアップ作成という狭い反復作業に絞ったため、価値がわかりやすかった",
+"reason3": "顧客サポートと長尾YouTube動画を成長エンジンに変換し、少ない再生数でも購入意図の高い顧客を獲得した",
+"marketTiming": "POD、Etsy、オンライン販売者が商品画像を大量に必要とし、YouTube/Googleで具体的な作業解決を探すタイミングと合っていた",
+"founderStrength": "Photoshop作業の現場経験、顧客サポートへの執着、顧客課題を動画化する継続力",
+"highlyReplicableElements": "フリーランス案件から反復作業を探す、手動作業を小さく自動化する、サポート内容をチュートリアル化する、長尾検索動画を資産化する",
+"lowReplicabilityElements": "Photoshopスクリプトやプラグイン開発の知識、Adobe環境への依存、3年で1,500本以上の顧客対応動画を蓄積する継続力"
+},
+"toolsStack": {
+"toolsUsed": [
+"Photoshop",
+"JavaScript",
+"Stack Overflow",
+"Gumroad",
+"Upwork",
+"freelancer.com",
+"Komodoex（文字起こし上の表記。Loom代替）",
+"Boldes（文字起こし上の表記。サポートチケット管理）",
+"Sanja（文字起こし上の表記。レビュー表示）",
+"Zoom",
+"Adobe",
+"Boromi（文字起こし上の表記。スクリーンレコーダー）",
+"Notion",
+"cal.com",
+"YouTube"
+],
+"aiTools": [],
+"payment": "Gumroad",
+"database": "不明",
+"hosting": "不明",
+"analytics": "不明",
+"other": [
+"顧客サポート動画の蓄積",
+"オンボーディングメール",
+"YouTubeコメント分析",
+"コミュニティ観察"
+]
+},
+"evidence": {
+"evidenceQuotes": [
+"I built a Photoshop plug-in called Bulk Mockup that brings me $12,000 a month.",
+"Mockup creation process is a manual job that takes around 30 to 1 hour.",
+"Our plug-in helps the customer convert it into 2 minutes.",
+"Customer find us through YouTube.",
+"I've been consistently hitting around 12,000 13,000 a month.",
+"The whole 1,800 mock-ups got done under 30 minutes.",
+"give me $300 and I'll give you this",
+"My growth or marketing is what I call a content flywheel.",
+"I create YouTube videos that solve longtail customer problem.",
+"You do not need to get a viral video to be successful at marketing a product.",
+"I do not brainstorm content ideas. I harvest customer pain.",
+"we have over 1,500 recorded videos",
+"22% views on our YouTube channel comes from Google search.",
+"Just be obsessed with your customer's problem."
+],
+"numberEvidence": "$12,000/月、$12,000〜$13,000/月、1,800 mockupsを30分未満、50 mockupsを約1分、370 viewsから3 customers、12,000 viewsの動画が6か月で$213、3年で1,500本以上の録画動画、100件以上の5-star reviews、Google検索がYouTube視聴の22%",
+"priceEvidence": "$300の初回販売、$15/月の示唆、Komodoex $19 lifetime、サポートチケット管理 $15/月、Zoom $20/月、Adobe $40/月、Notion $12/月、cal.com $0",
+"growthChannelEvidence": "顧客はYouTubeから来る、YouTube動画をGoogle検索向けに最適化、タイトル・説明文・最初の30秒にキーワードを入れる、Google検索が視聴の22%",
+"ambiguousPoints": [
+"$15/月 × 3 customers の計算が本来$45 MRRと思われるが、文字起こしでは「$345 MR」と読めるため不整合がある",
+"正式な料金プラン、顧客数、解約率、利益率は不明",
+"Gumroadダッシュボードの詳細は書き起こしだけでは検証不可",
+"ツール名に文字起こし由来の誤記可能性がある",
+"売上が純利益か総売上かは不明"
+]
+},
+"facts": [
+"Bulk MockupはPhotoshopプラグインである",
+"創業者はPhotoshop関連のフリーランス案件をUpworkとfreelancer.comで行っていた",
+"最初のバージョンはPhotoshopスクリプトだった",
+"最初の顧客は1,800件のモックアップ作成を依頼し、30分未満で完了した",
+"初期スクリプトは$300で販売された",
+"数年間ライフタイムディールとして販売された",
+"その後Upworkで開発者を雇い、製品を磨いた",
+"顧客獲得の中心はYouTubeである",
+"顧客課題を収集して動画化するcontent flywheelを使っている",
+"顧客課題の収集元はコミュニティ、オンボーディングメール、サポート、YouTubeコメントである",
+"サポート通話や動画を3年で1,500本以上蓄積したと発言している",
+"Google検索がYouTubeチャンネル視聴の22%と発言している"
+],
+"inferences": [
+"PODやEtsy販売者は新商品追加のたびにモックアップ作成が発生するため、月額課金との相性が良い",
+"少ない再生数でも検索意図が強い動画であれば、通常のバズ狙いより購入率が高い可能性がある",
+"UpworkやFiverrの作業依頼は、AI-native small toolの需要発見場所として使える",
+"顧客サポートを単なるコストではなく、コンテンツ・プロダクト改善・SEOの素材として扱うのがこのモデルの核",
+"Bilionでは「小さい反復作業 × 明確な専門ツール × 長尾チュートリアルSEO」のパターンとして抽出できる"
+],
+"risks": {
+"legalRisk": "Adobe Photoshopプラグインとしての互換性、Adobeの仕様変更、商標・プラグイン配布ルールへの依存がある。動画内で法務詳細は不明",
+"platformDependency": "Photoshop、Adobe、YouTube、Google検索、Gumroadに依存している",
+"competitionRisk": "Photoshop自動化、POD支援ツール、AI画像生成、Canva系テンプレートツールとの競合可能性がある",
+"replicabilityRisk": "単に同じプラグインを作っても遅い。顧客課題の解像度、サポート蓄積、長尾SEO動画の継続がないと再現性は下がる",
+"exaggerationOrSuspiciousPoints": [
+"売上スクリーンショットは動画内で見せたとされるが、書き起こしだけでは検証不能",
+"370 viewsから3 customersという高いCVはニッチ検索意図が強い可能性はあるが、一般化しすぎると危険",
+"$15/月×3 customersのMRR計算が文字起こし上で不自然",
+"月$12Kがどの程度継続しているか、解約率や広告費は不明",
+"製品品質、サポート負荷、Adobe更新対応のコストは不明"
+]
+},
+"aiNativeRemake": {
+"howToRebuildWithAI": "Upwork、Reddit、YouTubeコメント、顧客サポートログから『1つの専門作業を大量処理する痛み』を抽出し、AIで操作手順・テンプレート・バッチ処理・チュートリアル生成を自動化する小型ツールに変換する",
+"smallerStart": "Photoshopプラグインをいきなり作らず、まずはPOD販売者向けに『モックアップ作業診断 + 自動化スクリプト設計 + 1本のカスタムLoom』を$49〜$299で販売する",
+"forSoloDevelopers": "特定ツールの自動化スクリプト、ブラウザ拡張、Figma/Canva/Photoshop補助、CSV一括処理など、1作業だけを置換するpointy feature appとして作る",
+"forNonEngineers": "最初はAIで手順書、テンプレート、Zapier/Make、スプレッドシート、簡易スクリプトを組み合わせて半手動代行として売る",
+"japanLocalization": "日本のBASE、STORES、minne、SUZURI、メルカリShops運営者向けに、商品画像・モックアップ・説明文・登録作業の一括化として展開可能",
+"englishMarketVersion": "Etsy sellers、POD sellers、Shopify print-on-demand operators向けに、mockup workflow audit、Photoshop/Canva automation pack、YouTube tutorial funnelで販売可能"
+},
+"starterProduct": {
+"minimumVersionIn48h": "POD/Etsy販売者向け『Mockup Workflow Audit』。顧客の現在のモックアップ作業をフォームで回収し、AIで時間ロス診断、改善手順、推奨テンプレート構成、簡易自動化スクリプト案、1本のカスタム動画を納品する",
+"requiredFeatures": [
+"対象顧客の作業内容を聞くフォーム",
+"テンプレート数・デザイン数・作業時間を入力する診断",
+"AIによる作業分解と自動化余地の抽出",
+"改善手順レポート生成",
+"カスタムチュートリアル動画または手順書",
+"Stripe/Gumroad/LemonSqueezy等の決済リンク",
+"Before/Afterの時間削減見積もり"
+],
+"unnecessaryFeatures": [
+"完全なPhotoshopプラグイン",
+"ユーザー管理",
+"複雑なダッシュボード",
+"チーム機能",
+"高度なテンプレートマーケットプレイス",
+"Adobe公式連携",
+"AI画像生成機能"
+],
+"firstPrice": "$49〜$99の診断レポート、または$299の個別自動化セットアップ",
+"howToGetFirst10Customers": "Etsy/POD/Photoshop関連YouTube動画のコメント、Reddit、Facebookグループ、Upwork案件、X検索で『mockup batch』『Photoshop mockup automation』『POD mockup』に悩む人を探し、売り込まずに無料ミニ診断または作業時間削減例を送る",
+"validationMethod": "48時間で10人にDM、3件の作業画面・ファイル構成ヒアリング、1件でも$49以上の前払いまたは$299セットアップの合意が取れるか確認する"
+},
+"contentAngles": {
+"xPostIdeas": [
+"A Photoshop plugin makes $12K/month by solving one tiny pain: turning 30-60 min mockup work into 2 minutes. The growth channel was not viral TikTok. It was boring YouTube tutorials for long-tail customer pain.",
+"One video had 370 views. It still brought 3 customers. That is the point: views are not the KPI when the viewer has buying intent.",
+"The founder did not brainstorm content. He harvested pain from support calls, onboarding emails, communities, and YouTube comments. Then he turned each pain into a tutorial.",
+"This is the Micro-SaaS pattern most AI builders miss: do not build a huge SaaS. Find one repeated workflow, automate it, then make search-based content for the exact buyer.",
+"Upwork is not just for freelancing. It is a paid-pain database. This founder found a Photoshop automation job, hacked a script, sold it for $300, then turned it into a $12K/month plugin."
+],
+"shortVideoIdeas": [
+"Hook: This $12K/month app is just a Photoshop plugin. Breakdown: 30-60 min mockup task → 2 minutes → YouTube tutorials → monthly customers. CTA: steal the pattern, not the product.",
+"Hook: A video with 370 views made customers. Explain why buying-intent content beats viral content for Micro-SaaS.",
+"Hook: Stop brainstorming AI app ideas. Go to Upwork and find tasks people already pay for. Show the Bulk Mockup path: freelance pain → script → $300 → monthly plugin.",
+"Hook: The founder recorded 1,500+ support videos. Not for content vanity, but to mine edge-case problems and turn them into YouTube SEO assets.",
+"Hook: The best SaaS idea may be a one-feature app. Show examples: bank statement converter, Photoshop mockup generator, report generator."
+],
+"imageCardIdea": "1枚目:『$12K/mo from a tiny Photoshop plugin』、2枚目:『Pain: 30-60 min mockup work → 2 min』、3枚目:『Growth: customer pain → YouTube tutorial → Google search → buyer』、4枚目:『Copy this: one workflow, one buyer, one search problem』"
+},
+"bilionJudgment": {
+"worthAddingToBilion": "追加価値は高い。Bilionの『成功例をAI-native small productに変換する』思想と非常に相性が良い。特に、作る前にUpwork/YouTubeコメント/サポートログから有料痛みを拾うパターンとして使える",
+"replicationScore": 8,
+"aiLeverageScore": 7,
+"monetizationClarityScore": 9,
+"buildDifficultyScore": 6,
+"whatToCopyNow": "Upwork・YouTubeコメント・コミュニティから反復作業を拾い、1作業だけを自動化する小型商品を作り、長尾チュートリアルで買う人だけを集める流れ",
+"whatNotToCopy": "Photoshopプラグインをそのまま真似すること、バズ狙いの動画を作ること、顧客と話さずにコードだけ書くこと、最初から完全SaaS化すること"
+},
+"bilionRecordJson": {
+"sourceType": "YouTube",
+"sourceUrl": "https://www.youtube.com/watch?v=W48emwbUlUE",
+"businessName": "Bulk Mockup",
+"industry": "Photoshopプラグイン / POD支援 / Micro-SaaS",
+"revenueSignal": "$12,000〜$13,000/月",
+"buyer": "Print-on-demand販売者、Etsy販売者、Photoshopで大量の商品モックアップを作る小規模EC運営者",
+"pain": "商品モックアップ作成が手作業で30分〜1時間、または大量作成に数日かかる",
+"desire": "テンプレートとデザインを指定するだけで、大量のモックアップを一括生成したい",
+"fear": "商品投入が遅れる、外注費が増える、作業量に追われて販売機会を逃す",
+"offer": "Photoshop上でPOD用モックアップ生成を一括自動化するプラグイン",
+"pricingModel": "月額課金。$15/月の示唆あり。初期は$300の単発販売とライフタイムディール",
+"growthChannel": "YouTubeチュートリアル、Google検索、顧客サポート由来コンテンツ",
+"distributionNotes": "コミュニティ、オンボーディングメール、サポート、YouTubeコメントから顧客痛みを収集し、長尾検索向け動画に変換する。タイトル・説明文・最初の30秒にキーワードを入れる",
+"whyItWorked": "小さいが強い反復作業を解決し、顧客の実際の質問をチュートリアル化したため、少ない再生数でも購入意図の高い顧客に届いた",
+"toolsUsed": [
+"Photoshop",
+"JavaScript",
+"Stack Overflow",
+"Gumroad",
+"Upwork",
+"freelancer.com",
+"YouTube",
+"Zoom",
+"Adobe",
+"Notion",
+"cal.com"
+],
+"evidence": [
+"$12,000/month",
+"$12,000〜$13,000/month",
+"1,800 mock-ups under 30 minutes",
+"50 mockups in maybe 1 minute",
+"370 viewsから3 customers",
+"22% views from Google search",
+"1,500 recorded videos over 3 years"
+],
+"risks": [
+"Adobe/Photoshop依存",
+"YouTube/Google検索依存",
+"売上スクリーンショットの外部検証不可",
+"$15/月の計算に文字起こし上の不整合あり",
+"顧客サポート負荷が高い"
+],
+"aiNativeRemake": "POD/Etsy/EC販売者の画像作成・商品登録・説明文作成などの反復作業を、AIと自動化スクリプトで一括処理するpointy feature appに作り替える",
+"starterProduct": "POD販売者向けMockup Workflow Audit。現在の作業手順を診断し、時間削減レポート、テンプレート構成、簡易自動化案、カスタム動画を$49〜$299で販売する",
+"validationPlan48h": "1日目: YouTubeコメント、Reddit、Upwork、Etsy/POD系コミュニティでモックアップ作業に悩む20人を抽出。10人に作業時間削減の無料ミニ診断をDM。2日目: 3人にヒアリングし、1人から$49診断または$299セットアップの前払いを取る。反応があれば最小スクリプトまたは手順書を納品する",
+"xPostIdeas": [
+"This $12K/month Micro-SaaS is not a huge app. It is a Photoshop plugin that turns 30-60 min mockup work into 2 minutes.",
+"A YouTube video with 370 views brought 3 customers. Low views, high intent, real pain.",
+"The founder does not brainstorm content. He harvests customer pain from support, onboarding emails, communities, and comments.",
+"Upwork is a paid-pain database. This started from one Photoshop automation job.",
+"Copy the pattern: one buyer, one painful workflow, one tutorial funnel, one tiny paid tool."
+],
+"shortScriptIdeas": [
+"A founder in India built a $12K/month Photoshop plugin. Not by going viral. By solving one painful workflow for POD sellers.",
+"He found the idea on Upwork. A client needed 1,800 mockups. He automated it in under 30 minutes and sold the script for $300.",
+"His growth engine is simple: collect customer pain, record a tutorial, optimize for YouTube and Google search.",
+"One video had only 370 views but brought 3 customers. That is why buying intent beats vanity metrics.",
+"AI builders should copy this pattern: find a tiny repeated workflow, automate it, then make long-tail content for the exact buyer."
+],
+"imagePrompt": "Create a dark SaaS-style carousel image explaining a micro-SaaS pattern: '$12K/month from one tiny Photoshop workflow'. Show a flow: Upwork paid pain → Photoshop script → $300 first sale → YouTube long-tail tutorials → $12K/month plugin. Use clean typography, no faces, no hype, business research aesthetic.",
+"buildPromptSeed": "Build a mobile-first web app called Mockup Workflow Audit for POD/Etsy sellers. The app should ask for current mockup workflow, number of templates, number of designs, tools used, time per batch, and biggest bottleneck. Generate a paid-pain report showing time lost, automation opportunities, recommended folder/template structure, a 48-hour automation plan, and a DM-ready offer. Include mock data, local state, no auth, no database, no external APIs. Add a pricing section for $49 audit and $299 setup. Add copy buttons for report, DM, and tutorial script.",
+"monetizationPath": "$49診断 → $299個別セットアップ → $15〜$29/月の小型自動化ツール → テンプレート/チーム/上限追加の上位プラン",
+"replicationScore": 8,
+"aiLeverageScore": 7,
+"monetizationClarity": 9,
+"buildDifficulty": 6
+}
+}

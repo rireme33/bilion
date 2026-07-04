@@ -1,0 +1,282 @@
+{
+"sourceType": "YouTube",
+"source": {
+"videoTitle": "My mobile app made $800K in 365 days",
+"creator": "Starter Story",
+"speaker": "Louis / Louie と Pat Walls",
+"sourceUrl": "https://www.youtube.com/watch?v=LYdJ3dfNCVs",
+"genre": "起業インタビュー / モバイルアプリ成功事例",
+"language": "英語"
+},
+"oneLinePattern": "作る前にTikTokコメントとトレンドで需要を検証し、AI変身系モバイルアプリをMVPで出して、バイラル動画とApp Store導線でサブスク収益化するパターン",
+"business": {
+"businessName": "Glow Up",
+"productOrService": "AIで自分に似合うメイクルックを試せるモバイルアプリ",
+"industry": "BeautyTech / AI写真加工 / モバイルサブスクリプション",
+"targetMarket": "メイクに関心がある女性、TikTok上の美容コンテンツ視聴者、メイク商品選びに迷うユーザー",
+"customer": "自分に合うメイクを知りたい女性、メイクルックを試したい一般消費者",
+"problemSolved": "実際に化粧品を買って自分で試す前に、自分に合うメイクルックや商品を確認できない問題",
+"valueProvided": "AIで顔写真にメイクを適用し、似合うメイク、必要な商品、メイク手順を提示する",
+"price": "$9.99/週 または $39.99/年",
+"revenue": "1年間で合計$800,000、現在月間約$15,000",
+"period": "ローンチ後1年、0から100,000ユーザーまで約3日",
+"usersOrSubscribers": "累計約2,000,000ユーザー、約70,000有料顧客"
+},
+"buyer": {
+"whoBuys": "メイクに興味があり、自分に似合うルックや商品を短時間で知りたいTikTok世代の女性",
+"whyTheyBuy": "化粧品を買う前に失敗を減らしたい、AIで自分に合う見た目をすぐ見たい、トレンドのメイクを自分の顔で試したいから",
+"urgency": "TikTok動画を見た直後の衝動、バイラル投稿内の招待コード共有、無料メイクルック獲得導線により即時性が高い",
+"willingnessToPay": "週$9.99のサブスクで70,000有料顧客がいると語られており、一定の支払い意思は確認できる。ただし継続率は不明",
+"existingAlternatives": "実店舗での化粧品試用、YouTube/TikTokのメイクチュートリアル、美容部員への相談、ARメイクアプリ、写真加工アプリ",
+"alternativeProblems": "実店舗試用は手間がかかる、動画は自分の顔に合うか分からない、既存ARアプリは商品発見やパーソナライズ体験が弱い可能性がある"
+},
+"painDesireFear": {
+"pain": "自分に似合うメイクが分からない、化粧品を買ってから失敗したくない、メイクの手順や商品選びが面倒",
+"desire": "自分に似合うメイクをすぐ見たい、SNSで映える変化を体験したい、商品と手順まで一気に知りたい",
+"fear": "似合わない化粧品にお金を使うこと、自分の見た目に自信が持てないこと、トレンドに乗り遅れること",
+"reasonsNotToBuy": "AI結果の品質が低い、写真アップロードへの抵抗、週課金が高く感じる、無料フィルターアプリで十分と感じる、メイクに継続利用の必然性がない"
+},
+"offer": {
+"whatIsSold": "AIメイクルックの無制限生成サブスクリプション",
+"realBenefitSold": "化粧品を買う前に、自分に似合うメイクを可視化できる安心感と楽しさ",
+"minimumProduct": "顔写真アップロード、数問のオンボーディング、AIメイク生成、商品リスト、メイク手順、週課金ペイウォール",
+"subscriptionReason": "複数のメイクルックを試したい、定期的に新しいルックを生成したい、無制限アクセスが欲しいという理由で週課金にしている",
+"upsellPotential": "商品アフィリエイト、ブランド提携、プレミアムメイクパック、パーソナル診断、イベント用ルック、UGCクリエイター向け素材生成"
+},
+"growthDistribution": {
+"initialAcquisition": "TikTokのメイク動画とコメント欄を調査し、アプリを作る前にコンテンツ投稿で需要を検証",
+"mainGrowthChannel": "TikTokのバイラル動画、アンカーリンク、複数アカウント運用",
+"postingFrequency": "初期は1日1投稿、トラクション後は1日4〜6投稿、ピーク時は約7アカウントで各8〜12投稿/日",
+"winningContentFormat": "顔出し不要で複製しやすいトレンド動画にアプリのアイデアを乗せ、コメント欄で招待コード共有を促す形式",
+"scaleMethod": "TikTokアカウントを複数作成し、同じ勝ちトレンドを大量投稿。バイラル動画にApp Storeアンカーリンクを追加してDL導線を短縮",
+"adsUgcSeoCommunity": "初期は自前TikTok投稿。資金がある場合はUGCとインフルエンサーも有効と発言。SEOやコミュニティについては不明",
+"whyItSpread": "コメント欄でコード共有が発生し、再視聴、コメント、エンゲージメントが増え、TikTokアルゴリズム上の拡散が起きた可能性が高い"
+},
+"monetization": {
+"monetizationPath": "TikTok動画視聴 → アンカーリンクでApp Storeへ → アプリDL → 長めのパーソナライズオンボーディング → AI結果表示 → 週額/年額サブスク課金",
+"freeOffer": "招待コードで3人を招待すると無料メイクルックを得られる仕組み",
+"paidProduct": "無制限AIメイクルック生成サブスクリプション",
+"pricingModel": "$9.99/週 または $39.99/年",
+"whyLtvCanGrow": "メイクルックの種類追加、季節イベント、商品推薦、アフィリエイト、ブランド提携に広げられるためLTV拡張余地がある",
+"whyRecurringRevenueWorks": "複数ルックを試す娯楽性と、無制限生成の欲求に対して週課金を設定している。ただし長期継続理由は動画内では弱い"
+},
+"whyItWorked": {
+"reason1": "アプリを作る前にTikTokコメント欄で需要を確認し、作った後に売る失敗パターンを避けた",
+"reason2": "メイクという巨大TikTokニッチに入り、既に視聴・コメント・悩みが大量にある場所で配信した",
+"reason3": "アンカーリンク、招待コード、コメント欄共有により、動画視聴からDLと再エンゲージメントまでの導線が短かった",
+"marketTiming": "AI画像生成・顔写真加工への関心が高まり、TikTokで美容系コンテンツが大きく伸びている時期に合っていた",
+"founderStrength": "過去に約10個のアプリを失敗し、モバイルアプリ開発とMVP構築経験があった。Flutterflowで高速開発できた",
+"highlyReplicableElements": "TikTokコメント調査、コンテンツ先行検証、トレンド複製、MVP構築、アンカーリンク導線、複数アカウント投稿",
+"lowReplicabilityElements": "48M再生のバイラル再現、App Store上位到達、TikTokアカウントの国設定、メイクAIの品質、初期アルゴリズム運"
+},
+"toolsStack": {
+"toolsUsed": [
+"Flutterflow",
+"Firebase",
+"Google Cloud Functions",
+"Superwall",
+"Mixpanel",
+"TikTok",
+"VPN",
+"USA SIM card",
+"iPhone"
+],
+"aiTools": [
+"AI makeup look generation APIまたは画像生成系AI。具体名は不明"
+],
+"payment": "Superwall",
+"database": "Firebase",
+"hosting": "Firebase / Google Cloud Functions",
+"analytics": "Mixpanel",
+"other": [
+"App Store",
+"Google Play",
+"TikTok anchor link"
+]
+},
+"evidence": {
+"evidenceQuotes": [
+"I built a makeup app called Glow Up.",
+"It makes around 15K per month right now",
+"generated a total of 800K in revenue",
+"$9.99 per week",
+"$39.99 per year",
+"around 2 million people",
+"around 70,000 paying customer",
+"zero to 100K user in around 3 days",
+"48 million views with 2 million likes",
+"12.5K in sales in like one day",
+"60K downloads",
+"Most of our downloads came from our anchor link",
+"Our profit margin are around 90%"
+],
+"numberEvidence": "$800,000総収益、月$15,000、2,000,000ユーザー、70,000有料顧客、100,000ユーザー到達まで約3日、1動画48M再生・2Mいいね・1日$12.5K売上・60K DL、利益率約90%",
+"priceEvidence": "$9.99/週、$39.99/年",
+"growthChannelEvidence": "TikTokコメント調査、TikTok投稿、アンカーリンク、複数アカウント、ピーク時7アカウントで各8〜12投稿/日",
+"ambiguousPoints": [
+"売上、ユーザー数、有料顧客数はインタビュー発言ベースであり、外部証憑は動画内では確認できない",
+"70,000有料顧客と現在月$15,000の関係から、解約率や過去累計課金者の定義が不明",
+"AI生成に使った具体API名は不明",
+"TikTokのUSA SIM、VPN、複数アカウント運用が現在も同じように機能するかは不明",
+"App Storeランキングの期間、国、カテゴリ詳細は動画内だけでは不明",
+"週課金の返金率、解約率、広告費、Apple/Google手数料後の正味利益は不明"
+]
+},
+"facts": [
+"Glow UpはAIでメイクルックを試せるiOS/Google Play向けモバイルアプリ",
+"価格は$9.99/週または$39.99/年と発言されている",
+"ローンチ後1年で総収益$800,000と発言されている",
+"現在月間約$15,000の収益と発言されている",
+"累計約2,000,000ユーザー、約70,000有料顧客と発言されている",
+"0から100,000ユーザーまで約3日と発言されている",
+"Lifestyleカテゴリ1位、無料アプリカテゴリ4位になったと発言されている",
+"TikTokコメント欄を調査し、コンテンツを先に作って需要検証した",
+"1本のTikTok動画が約48M再生、2Mいいね、1日約$12.5K売上、60Kダウンロードを生んだと発言されている",
+"Flutterflow、Firebase、Google Cloud Functions、Superwall、Mixpanelを使ったと発言されている",
+"利益率は約90%と発言されている"
+],
+"inferences": [
+"成功の核はアプリ機能そのものより、TikTokで需要のある変身・診断・自己改善フォーマットを発見し、投稿で検証してから作った点にある",
+"招待コード共有はTikTokコメント欄のエンゲージメントを人工的に高め、動画拡散とアプリDLを同時に生んだ可能性が高い",
+"週課金は短期衝動課金には強いが、長期継続率が低い可能性もある",
+"Beauty領域以外にも、髪型、服装、肌診断、プロフィール写真、就活写真、デート写真などの自己変身カテゴリへ応用できる",
+"Bilion向けには、AI画像変身アプリをそのまま真似るより、TikTokコメント欄から買う理由が見えるニッチを選ぶ手法をコピーすべき"
+],
+"risks": {
+"legalRisk": "顔写真、肌、外見に関するデータを扱うため、プライバシー、データ保管、同意、未成年利用、地域ごとの個人情報規制に注意が必要",
+"platformDependency": "TikTok、App Store、Google Play、Superwall、AI APIに強く依存。TikTokアルゴリズムやリンク仕様変更で獲得が止まる可能性がある",
+"competitionRisk": "AI写真加工、ARメイク、美容診断は競合が多く、大手美容ブランドや既存アプリに模倣されやすい",
+"replicabilityRisk": "48M再生、App Store上位、3日で100Kユーザーは再現性が低い。大量投稿と複数アカウント運用も誰でも同じ成果になるわけではない",
+"exaggerationOrSuspiciousPoints": [
+"総収益$800,000と現在月$15,000の差が大きく、初期バイラル後に収益が落ちた可能性がある",
+"70,000有料顧客の定義が累計なのか現在有料なのか不明",
+"利益率90%にApple/Google手数料、返金、税金、UGC費用、人件費がどこまで含まれるか不明",
+"TikTok複数アカウント、USA SIM、VPN運用はプラットフォームリスクがある",
+"メイクAI結果の品質や顧客満足度は動画内デモだけでは判断できない"
+]
+},
+"aiNativeRemake": {
+"howToRebuildWithAI": "TikTokコメント欄で『自分に合う〇〇を知りたい』系の需要を探し、AI画像生成または診断モデルでパーソナライズ結果を返すモバイルファースト体験を作る",
+"smallerStart": "アプリを作る前に、TikTok/Instagram Reelsで『AIであなたに似合うメイクを作る』投稿を出し、Google FormやDMで写真を受け取り、手動AI生成で10人に納品する",
+"forSoloDevelopers": "Flutterflow、React Native、Expo、Firebase、RevenueCat/Superwall、画像生成APIでMVPを作る。最初は顔写真アップロード、診断質問、結果画像、ペイウォールだけでよい",
+"forNonEngineers": "フォーム、Canva、CapCut、画像生成AI、Stripe/Lemon Squeezyを使い、アプリではなく『AIメイク診断レポート』として手動販売から始める",
+"japanLocalization": "日本では『垢抜けメイク診断』『ブルベ/イエベ別AIメイク』『就活/婚活/デート用メイク提案』として、TikTok・Instagram・LINE導線で検証できる。ただし顔写真と美容表現の規約に注意",
+"englishMarketVersion": "英語圏では『AI glow up』『AI makeup look』『find your best makeup look』としてTikTokで検証し、App StoreアプリまたはWeb診断に誘導する"
+},
+"starterProduct": {
+"minimumVersionIn48h": "アプリではなく、TikTok/Instagram用の『AI Glow Up Report』を48時間で作る。ユーザーが写真と悩みを送ると、AIメイク画像3枚、商品カテゴリ、手順、似合う理由をPDFまたはWebページで返す",
+"requiredFeatures": [
+"写真アップロードまたはDM受付",
+"肌トーン・目的・好みを聞く短い質問フォーム",
+"AIメイクルック画像生成",
+"おすすめ商品カテゴリ",
+"メイク手順",
+"Before/After画像",
+"決済リンク",
+"TikTok/Instagram投稿テンプレ"
+],
+"unnecessaryFeatures": [
+"ネイティブアプリ",
+"ログイン",
+"高度なDB",
+"本格的な商品EC連携",
+"リアルタイムAR",
+"大量のメイクカテゴリ",
+"自動レコメンドエンジン"
+],
+"firstPrice": "$9 one-time report または $19 for 3 looks。アプリ化後は $9.99/week または $39/year をテスト",
+"howToGetFirst10Customers": "TikTokでメイク変身系のトレンドを10本投稿し、コメント欄で『comment GLOW and I’ll send the AI makeup test』と誘導。美容系TikTokのコメント欄で悩みを拾い、10人にDMで無料または$9診断を提案する",
+"validationMethod": "48時間で10〜20本のショート動画を投稿し、コメント数、DM数、写真提出数、有料購入数を測る。最低基準は10件以上の診断希望、3件以上の写真提出、1件以上の有料購入"
+},
+"contentAngles": {
+"xPostIdeas": [
+"He built 10 apps that failed. Then he stopped coding and studied TikTok comments. The next app made $800K in a year.",
+"The app was not the genius part. The genius part was this: find the buyer in TikTok comments before writing code.",
+"One TikTok video drove 48M views, 60K downloads, and $12.5K sales in a day. The lesson: distribution was the product.",
+"Glow Up charged $9.99/week for AI makeup looks. Not because the tech was complex, but because the pain was visual, emotional, and instant.",
+"Before you build your AI app, post the promise 20 times. If nobody comments, do not code."
+],
+"shortVideoIdeas": [
+"Hook: He made $800K from an AI makeup app. Twist: the idea came from TikTok comments, not coding.",
+"Hook: This founder failed with 10 apps. Then he validated with content first and hit 100K users in 3 days.",
+"Hook: The best app growth hack here was not AI. It was a TikTok comment loop using invite codes.",
+"Hook: One video made $12.5K in a day. Here is the exact flow: video, anchor link, App Store, onboarding, paywall.",
+"Hook: Stop building apps for yourself. Build what thousands of people are already asking for in comments."
+],
+"imageCardIdea": "1枚目:『10 apps failed → 1 TikTok-first app made $800K』。2枚目:『Pattern: comments → content → MVP → anchor link → subscription』。3枚目:『Build this smaller: AI Glow Up Report in 48h』"
+},
+"bilionJudgment": {
+"worthAddingToBilion": "追加する価値あり。理由は、数字が強く、TikTok先行検証、AI変身アプリ、サブスク、MVP構築、48時間スターター商品への変換がしやすいから。ただしバイラル再現性は過信しない",
+"replicationScore": 7,
+"aiLeverageScore": 8,
+"monetizationClarityScore": 9,
+"buildDifficultyScore": 6,
+"whatToCopyNow": "TikTokコメント欄から悩みを拾い、コンテンツを先に出して、反応が出たら小さなAI診断/変身レポートを売る流れ",
+"whatNotToCopy": "いきなりネイティブアプリを作ること、$800Kや48M再生を再現前提にすること、VPN/複数アカウント運用だけに賭けること、メイク領域を理解せず品質の低いAI結果を売ること"
+},
+"bilionRecordJson": {
+"sourceType": "YouTube",
+"sourceUrl": "https://www.youtube.com/watch?v=LYdJ3dfNCVs",
+"businessName": "Glow Up",
+"industry": "BeautyTech / AI mobile app",
+"revenueSignal": "ローンチ後1年で$800,000、現在月$15,000、70,000有料顧客、2,000,000ユーザーと発言",
+"buyer": "自分に似合うメイクを知りたいTikTok世代の女性",
+"pain": "化粧品を買う前に自分に似合うか分からない。メイク商品と手順選びが面倒",
+"desire": "自分の顔で似合うメイクをすぐ試したい。垢抜けたい。SNS映えする変化を見たい",
+"fear": "似合わない商品を買って失敗すること、自分に合うメイクが分からないこと",
+"offer": "AIで自分の顔にメイクルックを適用し、商品と手順まで提示するアプリ",
+"pricingModel": "$9.99/週または$39.99/年のサブスクリプション",
+"growthChannel": "TikTokバイラル、コメント欄、アンカーリンク、複数アカウント投稿",
+"distributionNotes": "作る前にTikTokメイク動画とコメント欄を調査。初期は1日1投稿、反応後は4〜6投稿/日、ピーク時は7アカウントで各8〜12投稿/日。バイラル動画にApp Storeアンカーリンクを追加",
+"whyItWorked": "大きな美容ニッチ、視覚的なBefore/After、AI変身の即時性、コメント欄の招待コード共有、App Storeへの短い導線が重なった",
+"toolsUsed": [
+"Flutterflow",
+"Firebase",
+"Google Cloud Functions",
+"Superwall",
+"Mixpanel",
+"TikTok",
+"App Store",
+"Google Play"
+],
+"evidence": [
+"generated a total of 800K in revenue",
+"It makes around 15K per month right now",
+"$9.99 per week",
+"$39.99 per year",
+"around 70,000 paying customer",
+"48 million views with 2 million likes",
+"12.5K in sales in like one day",
+"60K downloads"
+],
+"risks": [
+"売上・ユーザー数は発言ベースで外部確認なし",
+"TikTok依存が強い",
+"バイラル再現性が低い",
+"顔写真データを扱うプライバシーリスク",
+"AIメイク品質が低いと解約・返金につながる",
+"週課金は短期売上に強いが長期継続率が不明"
+],
+"aiNativeRemake": "メイク以外の『自分に似合う〇〇』市場で、AI写真診断・変身レポートを先に手動販売し、需要確認後にモバイルアプリ化する",
+"starterProduct": "AI Glow Up Report。写真と質問フォームから、3種類のAIメイク画像、商品カテゴリ、手順、似合う理由をPDFまたはWebページで納品",
+"validationPlan48h": "TikTok/Instagramでメイク変身ショートを10〜20本投稿。コメントとDMで無料診断希望を集め、写真提出10件、支払い1件以上を目標にする。購入がなければアプリ化しない",
+"xPostIdeas": [
+"He failed with 10 apps. Then he studied TikTok comments before coding. The next app made $800K in a year.",
+"Glow Up was not a tech-first app. It was a TikTok-first offer wrapped in an AI mobile app.",
+"One video: 48M views, 60K downloads, $12.5K in sales. The lesson is simple: content before code.",
+"The smallest version is not an app. It is a $9 AI glow up report sold through TikTok comments."
+],
+"shortScriptIdeas": [
+"He built 10 apps nobody used. Then he stopped guessing and read TikTok comments. That became Glow Up, an AI makeup app that made $800K.",
+"The playbook: find a huge niche, study comments, post the promise, wait for traction, build the MVP, add the App Store link.",
+"This is why your AI app does not sell. You are building before you know if the video can get comments."
+],
+"imagePrompt": "Dark SaaS style carousel. Slide 1: '10 failed apps → $800K AI makeup app'. Slide 2: 'TikTok comments → viral content → MVP → anchor link → subscription'. Slide 3: 'Start smaller: sell a $9 AI Glow Up Report before building the app'.",
+"buildPromptSeed": "Build a mobile-first AI Glow Up Report MVP. Users upload a selfie, answer 5 questions about skin tone, desired look, occasion, sensitivity, and style. The app returns 3 AI makeup look concepts, product categories, step-by-step routine, and a shareable before/after card. Include mock AI output, local state, no auth, no database, Stripe/Lemon placeholder, and a TikTok validation dashboard with comments, DMs, and purchases.",
+"monetizationPath": "Free/low-cost AI diagnosis → $9 one-time report → $19 bundle of 3 looks → $9.99/week app subscription → product affiliate or brand partnership",
+"replicationScore": 7,
+"aiLeverageScore": 8,
+"monetizationClarity": 9,
+"buildDifficulty": 6
+}
+}

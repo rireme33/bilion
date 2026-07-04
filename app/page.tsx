@@ -248,7 +248,7 @@ export default function HomePage() {
                 Bilion Pro
               </div>
               <h2 className="mt-3 break-words text-2xl font-semibold tracking-tight">
-                Pro Access - $19
+                Bilion Pro — $9.99/month
               </h2>
               <p className="mt-3 break-words text-sm leading-6 text-zinc-300">
                 Never run out of Money Moves. Keep discovering proven opportunities until one catches your eye.

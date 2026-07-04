@@ -408,7 +408,7 @@ function getOpportunityFieldsJa(output: SourceOutput): [string, string][] {
   const firstCustomerPlan = output.validationSteps.slice(0, 3).join("\n");
 
   return [
-    ["Business Spark", firstOffer || productAngle || pattern],
+    ["Money Move", firstOffer || productAngle || pattern],
     ["なぜ販売になるか", whySold],
     ["買う相手", whoPays],
     ["痛み", pain],
@@ -637,18 +637,18 @@ ${output.validationSteps.map((step, index) => `${index + 1}. ${step}`).join("\n"
 }
 
 const japaneseMobileReplyCopy = `売りたい相手・自分の強み・考えてる案を送ってください。
-BilionでBusiness Sparkに変換して、最初に何を売るべきか返します。`;
+BilionでMoney Moveに変換して、最初に何を売るべきか返します。`;
 
 const japaneseMobileDmCopy = `Bilionを検証中です。売れたビジネスの型から、収益機会・価格・投稿文・48時間検証まで出します。
 あなたの案で1回無料診断しましょうか？`;
 
-const japaneseMobileSalesCtaCopy = `Founder Accessを解除 — $19
+const japaneseMobileSalesCtaCopy = `Bilion Proを解除 — $9.99/月
 
-Business Spark、売るための文章、Codex Promptを無制限に使えます。`;
+Money Moveの無制限閲覧、追加バージョン、保存、検証後のBuildプランが使えます。`;
 
 const reviewedJapaneseBusinessSparks: SourceOutput[] = [
   createSourceOutput({
-    label: "Business Spark Seed",
+    label: "Money Move Seed",
     proof: "品質確認済みseed / Business Automation",
     title: "Invoice Follow-up Sprint",
     signal:
@@ -670,7 +670,7 @@ const reviewedJapaneseBusinessSparks: SourceOutput[] = [
       "Build this only after someone replies, clicks, or asks for the offer. Build a mobile-first MVP called Invoice Follow-up Sprint for freelancers and solo agencies. The tool helps users paste overdue invoice details, generate polite follow-up emails, track follow-up status, and copy next actions. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no external APIs, no payment integration. Include screens for landing/offer, invoice input form, generated email output, saved follow-up records, and validation panel. Input fields: client name, invoice amount, due date, days overdue, relationship tone, previous follow-up status, context notes. Outputs: subject line, polite follow-up email, priority, next action, internal note. Include 3 mock invoices. Add copy buttons. Make the UI mobile-first with no horizontal scroll.",
   }),
   createSourceOutput({
-    label: "Business Spark Seed",
+    label: "Money Move Seed",
     proof: "品質確認済みseed / Local Business",
     title: "Review Reply Copilot",
     signal:
@@ -692,7 +692,7 @@ const reviewedJapaneseBusinessSparks: SourceOutput[] = [
       "Build this only after someone replies, clicks, or asks for the offer. Build a mobile-first MVP called Review Reply Copilot for local service businesses. The tool helps owners paste customer reviews and generate polite, brand-safe replies. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no external APIs. Screens: offer overview, review input, generated reply output, saved replies, validation panel. Inputs: business type, review text, star rating, tone, owner note. Outputs: short reply, warm reply, recovery reply, internal note. Include 5 mock reviews. Add copy buttons. Mobile-first UI.",
   }),
   createSourceOutput({
-    label: "Business Spark Seed",
+    label: "Money Move Seed",
     proof: "品質確認済みseed / Micro SaaS",
     title: "Name Tracing Worksheets",
     signal:
@@ -994,7 +994,7 @@ Acceptance criteria:
       ],
       [
         "何を売るか",
-        "GitHubリポジトリURLやトレンド名を入力すると、買う相手、痛み、価格、48時間検証、Launch Pack、反応後のBuild Promptに変換する市場検証ツール。",
+        "GitHubリポジトリURLやトレンド名を入力すると、買う相手、痛み、価格、48時間検証、Launch Assets、反応後のBuildプランに変換する市場検証ツール。",
       ],
       ["いくらで売るか", "$19 one-time または $9/month"],
       [
@@ -1003,7 +1003,7 @@ Acceptance criteria:
       ],
     ],
     validationSteps: [
-      "GitHubトレンド1件を収益機会とLaunch Packに変換する60秒デモを作る。",
+      "GitHubトレンド1件を収益機会とLaunch Assetsに変換する60秒デモを作る。",
       "XでAIビルダー向けに投稿する。",
       "Codex / Cursor / Claude Codeユーザー30人にDMする。",
       "5人から「使いたい」または$19購入を取れるか確認する。",
@@ -1063,7 +1063,7 @@ UI requirements:
 Acceptance criteria:
 - The page loads successfully.
 - User can select GitHubシグナル or Indie Hackers DB.
-- User clicks Launch Packを作る.
+- User clicks Launch Assetsを作る.
 - Output appears only after click.
 - Output changes based on selected source.
 - Copy button copies the selected source's Build Prompt.`,
@@ -1079,7 +1079,7 @@ Acceptance criteria:
       "エージェント構成、ツール権限、入力例、失敗時の処理を毎回ゼロから考えるため、デモまでは作れても実運用の型にならない。",
     product:
       "目的を選ぶと、AIエージェントの役割、ツール、入力例、制約、テスト手順を含む実装テンプレートを生成するワークフローツール。",
-    price: "$29買い切り、または $12/月",
+    price: "$29初回セットアップ、または $12/月",
     whyNow:
       "AIエージェントを試す人は増えていますが、実務に落とし込める設計テンプレートはまだ不足しています。",
     validationSteps: [
@@ -1334,7 +1334,7 @@ function JapaneseMarketSelectionSection({
           </p>
         </div>
         <div className="hidden rounded-full border border-white/10 bg-black/30 px-4 py-2 text-xs font-black uppercase tracking-wide text-zinc-400 md:block">
-          Path → Business Spark → 48時間検証 → 反応 → Codex
+          Money Move → Make It Yours → Test Today → Build After Replies
         </div>
       </div>
 
@@ -1375,7 +1375,7 @@ function JapaneseMarketSelectionSection({
               </span>
             </div>
             <div className="mt-3 text-xs font-black uppercase tracking-[0.16em] text-zinc-500 md:mt-4">
-              Business Spark
+              Money Move
             </div>
             <h3 className="mt-2 break-words text-xl font-black tracking-tight text-white md:text-2xl">
               {opportunity.title}
@@ -1393,7 +1393,7 @@ function JapaneseMarketSelectionSection({
             disabled={!canGenerate}
             className="w-full rounded-xl bg-emerald-300 px-4 py-3 text-center text-sm font-black text-black transition hover:bg-emerald-200 disabled:cursor-not-allowed disabled:opacity-50 lg:w-auto lg:rounded-2xl lg:px-5 lg:py-4"
           >
-            無料でBusiness Sparkを出す
+            無料でMoney Moveを試す
           </button>
         </div>
 
@@ -1480,7 +1480,7 @@ function JapaneseEvidenceToolsSection() {
           </div>
         </summary>
         <p className="mt-4 break-words border-t border-white/10 pt-4 text-sm leading-7 text-zinc-500">
-          証拠貼り付けインポートは英語版で先行テスト中です。日本語版では、まず市場選定とLaunch Pack生成を使ってください。
+          証拠貼り付けインポートは英語版で先行テスト中です。日本語版では、まず市場選定とLaunch Assets生成を使ってください。
         </p>
       </details>
     </div>
@@ -1651,7 +1651,7 @@ export default function JapaneseBilionAppClient({
               その他のシグナル
             </div>
             <h1 className="mt-3 max-w-2xl break-words text-3xl font-semibold leading-tight tracking-tight md:mt-5 md:text-5xl">
-              まずは上の「Business Spark」から始めてください。
+              まずは上の「Money Move」から始めてください。
             </h1>
             <p className="mt-3 max-w-xl break-words text-sm leading-relaxed text-zinc-400 md:mt-5 md:text-base md:leading-7">
               さらに探したい場合は、GitHubシグナルやIndie Hackers DBから別の火種を確認できます。BilionはランダムにAIアイデアを出すツールではなく、作る前に買う相手・痛み・初回オファーを決めるためのツールです。
@@ -1701,10 +1701,10 @@ export default function JapaneseBilionAppClient({
                   disabled={isGenerating}
                   className="w-full rounded-xl bg-white px-4 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                 >
-                  別のBusiness Sparkを表示
+                  別のMoney Moveを表示
                 </button>
               ) : (
-                <ButtonLink href="/jp/founder">Founder Accessを見る</ButtonLink>
+                <ButtonLink href="/jp/founder">Bilion Proを見る</ButtonLink>
               )}
               <ButtonLink href="/jp" variant="secondary">
                 トップに戻る
@@ -1712,8 +1712,8 @@ export default function JapaneseBilionAppClient({
             </div>
             {!hasFounderAccess && (
               <p className="mt-4 max-w-xl break-words text-sm leading-6 text-zinc-500">
-                無料でも有料版と同じ品質の出力を1日3回まで確認できます。Founder
-                Accessでは、無制限生成・無制限コピー・追加角度の生成が使えます。
+                無料でも有料版と同じ品質の出力を1日3回まで確認できます。Bilion Proでは、
+                Money Moveの無制限閲覧、追加バージョン、保存、検証後のBuildプランが使えます。
               </p>
             )}
             <p className="mt-3 max-w-xl break-words text-xs leading-5 text-zinc-500">
@@ -1721,7 +1721,7 @@ export default function JapaneseBilionAppClient({
             </p>
             {hasFounderAccess && (
               <p className="mt-4 max-w-xl break-words text-sm leading-6 text-zinc-500">
-                Founder Access unlocked. Business Spark、Launch Pack、Codex Build Promptを無制限に使えます。
+                Bilion Pro unlocked. Money Moveの無制限閲覧、追加バージョン、保存、検証後のBuildプランが使えます。
               </p>
             )}
           </div>
@@ -1729,7 +1729,7 @@ export default function JapaneseBilionAppClient({
           <div className="min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-[#111214] p-4 shadow-xl shadow-black/20 md:p-5">
             <div className="border-b border-white/10 pb-4">
               <div className="text-xs font-semibold tracking-[0.16em] text-zinc-500">
-                {showOutput ? "Launch Pack" : "まだ表示されていません"}
+                {showOutput ? "Launch Assets" : "まだ表示されていません"}
               </div>
               {showOutput ? (
                 <>
@@ -1742,7 +1742,7 @@ export default function JapaneseBilionAppClient({
               ) : (
                 <>
                   <p className="mt-2 break-words text-sm leading-7 text-zinc-400">
-                    Pathを選び、「無料でBusiness Sparkを出す」を押してください。
+                    Pathを選び、「無料でMoney Moveを試す」を押してください。
                   </p>
                   <p className="mt-3 break-words rounded-xl border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-500">
                     参照元 IH42kDB + GitHubシグナル
@@ -1779,10 +1779,10 @@ export default function JapaneseBilionAppClient({
                 {!hasFounderAccess && (
                   <div className="min-w-0 overflow-hidden rounded-xl border border-emerald-400/20 bg-emerald-400/[0.06] p-4">
                     <h3 className="break-words text-lg font-semibold text-white">
-                      Founder Accessを解除 — $19
+                      Bilion Proを解除 — $9.99/月
                     </h3>
                     <p className="mt-2 break-words text-sm leading-6 text-zinc-400">
-                      Business Spark、売るための文章、Launch Pack、反応後に使うCodex Build Promptを含みます。
+                      Money Moveの無制限閲覧、追加バージョン、保存、検証後のBuildプランを含みます。
                     </p>
                     <div className="mt-4">
                       <ButtonLink href="/jp/founder">完全版を見る</ButtonLink>
@@ -1799,13 +1799,13 @@ export default function JapaneseBilionAppClient({
           <section className="w-full max-w-full overflow-hidden border-t border-white/10 py-10">
             <div className="min-w-0 overflow-hidden rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.04] p-4 md:p-6">
               <h2 className="break-words text-2xl font-semibold tracking-tight text-yellow-100">
-                本日の無料Business Spark 3件を使い切りました。
+                本日の無料Money Move 3件を使い切りました。
               </h2>
               <p className="mt-3 max-w-3xl break-words text-sm leading-7 text-zinc-400">
-                Founder Accessでは、Business Spark、Launch Pack全文、Winner保存、Codex Build Prompt全文を無制限に使えます。
+                Bilion Proでは、Money Moveの無制限閲覧、追加バージョン、保存、検証後のBuildプランが使えます。
               </p>
               <div className="mt-5">
-                <ButtonLink href="/jp/founder">Founder Accessを解除 — $19</ButtonLink>
+                <ButtonLink href="/jp/founder">Bilion Proを解除 — $9.99/月</ButtonLink>
               </div>
             </div>
           </section>
@@ -1845,10 +1845,10 @@ export default function JapaneseBilionAppClient({
                     Codex Build Prompt Preview
                   </div>
                   <p className="mt-2 break-words text-sm leading-6 text-zinc-400">
-                    Full Promptはロックされています。Founder AccessでCodex Build Prompt全文を解除できます。
+                    Full Promptはロックされています。Bilion Proで検証後のBuildプラン全文を解除できます。
                   </p>
                   <div className="mt-4">
-                    <ButtonLink href="/jp/founder">Founder Accessを解除 — $19</ButtonLink>
+                    <ButtonLink href="/jp/founder">Bilion Proを解除 — $9.99/月</ButtonLink>
                   </div>
                 </div>
               )}
@@ -1865,7 +1865,7 @@ export default function JapaneseBilionAppClient({
               Winnerは、市場から反応があった収益機会です。
             </h2>
             <p className="mt-3 max-w-3xl break-words text-sm leading-7 text-zinc-400">
-              証拠 → 収益機会 → Launch Pack → 市場反応 → Winner。返信、保存、クリック、DM、購入意思が出たものだけを、次に作るべき候補として残します。
+              証拠 → 収益機会 → Launch Assets → 市場反応 → Winner。返信、保存、クリック、DM、購入意思が出たものだけを、次に作るべき候補として残します。
             </p>
           </div>
         </section>
@@ -1959,7 +1959,7 @@ function JapaneseMobileShareKit({ output }: { output: SourceOutput }) {
     {
       key: "sales-cta",
       label: "販売CTAをコピー",
-      helper: "Offer the $19 Launch Pack",
+      helper: "Offer Bilion Pro",
       text: japaneseMobileSalesCtaCopy,
     },
   ];
@@ -1977,7 +1977,7 @@ function JapaneseMobileShareKit({ output }: { output: SourceOutput }) {
       </div>
       <p className="mt-2 break-words text-sm leading-6 text-zinc-400">
         Post this brief on X → Reply to interested people with this → Offer the
-        $19 Launch Pack.
+        Bilion Pro.
       </p>
       <div className="mt-4 grid min-w-0 gap-3 sm:grid-cols-2">
         {shareItems.map((item) => (

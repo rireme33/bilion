@@ -1,0 +1,294 @@
+{
+"sourceType": "YouTube",
+"source": {
+"videoTitle": "I make $10K/month from 28 apps",
+"creator": "Starter Story",
+"speaker": "Pat Walls / Max",
+"sourceUrl": "https://www.youtube.com/watch?v=vw2Yc4Y1PsU",
+"genre": "創業者インタビュー / モバイルアプリ副業 / インディーハッカー事例",
+"language": "英語"
+},
+"oneLinePattern": "1つの大作アプリに賭けず、App Store検索キーワードを起点に小型アプリを高速で量産し、反応が出た勝ち筋だけ改善・広告投下するモバイルアプリポートフォリオ型ビジネス。",
+"business": {
+"businessName": "Maxの28個の小型モバイルアプリポートフォリオ",
+"productOrService": "検索キーワードごとに作られたシンプルなモバイルアプリ群",
+"industry": "モバイルアプリ / App Store最適化 / AIアプリ / サブスクリプションアプリ",
+"targetMarket": "App Storeで具体的な悩みを検索する一般ユーザー。例として学生向け学習アプリ、識別系アプリなどが言及された。",
+"customer": "App Storeで特定キーワードを検索し、単一機能で問題解決したいユーザー",
+"problemSolved": "ユーザーがApp Storeで検索する具体的な問題を、余計な機能を削った単一機能アプリで解決する。",
+"valueProvided": "検索意図に合った機能をすぐ使える形で提供し、ユーザーの悩みを最短で処理する。",
+"price": "個別アプリの価格は不明",
+"revenue": "月間収益10,000ドル。開始前は月200ドル。上位4アプリがそれぞれ約1,500ドルを生むと発言。",
+"period": "8か月",
+"usersOrSubscribers": "全アプリ合計で有料購読者1,000人超。日次ユーザーは全アプリ合計で4,000〜5,000人程度。"
+},
+"buyer": {
+"whoBuys": "App Storeで特定の課題をキーワード検索するユーザー。例として学生、識別系アプリを探すユーザーなど。",
+"whyTheyBuy": "検索した問題をすぐ解決したいから。アプリの価値は大規模な機能群ではなく、検索意図に一致した単一コア機能にある。",
+"urgency": "中程度。検索行動がある時点で顕在ニーズはあるが、緊急性の強さはキーワードや用途によって変わる。",
+"willingnessToPay": "競合アプリが月100〜200ユーロ以上稼いでいる市場を基準に参入しているため、一定の支払い意思はあると推測できる。",
+"existingAlternatives": "App Store上位競合アプリ。Sensor Towerや類似ツールで競合収益を確認している。",
+"alternativeProblems": "競合が複雑すぎる、検索意図とズレている、コア機能が弱い、価格や導線が悪い可能性がある。ただし動画内で具体的な競合課題は詳述されていない。"
+},
+"painDesireFear": {
+"pain": "ユーザーはApp Storeで具体的な問題を解決するアプリを探している。ビルダー側は1つの大作に時間を使いすぎ、需要がないアプリに固執してしまう。",
+"desire": "ユーザーは特定課題をすぐ解決したい。ビルダーは短期間で多数のアプリを出し、当たりをデータで見つけたい。",
+"fear": "ビルダー側の恐怖は、時間をかけて作ったアプリが伸びないこと。ユーザー側の恐怖は不明。",
+"reasonsNotToBuy": "アプリの品質が低い、無料代替で足りる、競合が強い、検索流入が一時的で継続利用されない、サブスク価値が弱い。"
+},
+"offer": {
+"whatIsSold": "App Storeで検索される具体的キーワードに対応した小型モバイルアプリ。",
+"realBenefitSold": "ユーザーの検索意図に対する即時解決。ビルダー視点では、大作ではなく多数の小さな賭けによる収益ポートフォリオ。",
+"minimumProduct": "選定キーワードに直結する単一コア機能、オンボーディング、ペイウォール、App Storeメタデータ、スクリーンショット、アイコン。",
+"subscriptionReason": "繰り返し使う学習・識別・AI処理系の用途であれば継続課金の理由が成立する。ただし各アプリの具体的サブスク設計は不明。",
+"upsellPotential": "勝ちアプリに広告投下、機能改善、バグ修正、追加AI機能、上位プラン、関連キーワードアプリ展開が可能。"
+},
+"growthDistribution": {
+"initialAcquisition": "App Store検索流入。強いキーワードをAstroなどのASOツールで見つけ、App Storeメタデータをキーワードに合わせる。",
+"mainGrowthChannel": "App Store Optimization。初期リリース時のApp Storeブーストも利用。",
+"postingFrequency": "SNS投稿頻度は不明。アプリ開発頻度は8か月で28アプリ、ほぼ週1本ペースに近い。",
+"winningContentFormat": "動画内ではコンテンツマーケティングではなく、App Store検索キーワードと競合収益分析が中心。",
+"scaleMethod": "多数リリースし、沈まないアプリだけに戻って改善・広告投下する。",
+"adsUgcSeoCommunity": "SEOではなくASO中心。勝ちアプリには広告を追加して伸ばすと説明。",
+"whyItSpread": "検索需要がすでにあり、キーワードに対してコア機能が明確なため。初期App Storeブーストで露出され、維持できるアプリだけが残る。"
+},
+"monetization": {
+"monetizationPath": "検索需要のある小型アプリを作る、サブスクまたは有料機能で収益化、複数アプリをポートフォリオ化、勝ちアプリに改善と広告を集中する。",
+"freeOffer": "不明",
+"paidProduct": "モバイルアプリ内の有料プランまたはサブスクリプションと推測されるが、個別課金形態は不明。",
+"pricingModel": "不明。動画では全体収益と購読者数は出ているが、各アプリの価格は確認できない。",
+"whyLtvCanGrow": "勝ちアプリだけ改善すれば継続率や課金率を高められる可能性がある。複数アプリで当たりを増やせる。",
+"whyRecurringRevenueWorks": "有料購読者1,000人超と発言しているため、サブスクリプション型の収益が含まれていると判断できる。ただし各アプリの継続理由は不明。"
+},
+"whyItWorked": {
+"reason1": "アイデア起点ではなく、App Store検索キーワードと競合収益から市場を選んだ。",
+"reason2": "1アプリ1コア機能に絞り、既存コンポーネントやコードを再利用して開発時間を極端に短縮した。",
+"reason3": "すべてを改善せず、リリース後のデータで浮くアプリだけに戻るポートフォリオ戦略を取った。",
+"marketTiming": "AIコーディングツールやテンプレート再利用により、個人でも高速にモバイルアプリを量産しやすくなったタイミング。",
+"founderStrength": "本業がiOSエンジニアで、Flutter、Fastlane、Firebase、AIコーディング、ASOツールを扱える実装力がある。",
+"highlyReplicableElements": "キーワード調査、競合収益確認、単一機能MVP、テンプレート再利用、App Storeメタデータ最適化、勝ちアプリだけ改善する判断。",
+"lowReplicabilityElements": "8年程度のiOS開発経験、本業後に高速開発する実装力、App Store審査・ASO・広告運用の実務勘。"
+},
+"toolsStack": {
+"toolsUsed": [
+"Flutter",
+"Fastlane",
+"Cursor",
+"Firebase",
+"OpenAI",
+"Gemini",
+"Mixpanel",
+"Astro",
+"FoxData",
+"Figma",
+"Sensor Towerまたは類似ツール"
+],
+"aiTools": [
+"ChatGPT",
+"Gemini",
+"Cursor",
+"OpenAI"
+],
+"payment": "不明。モバイルアプリ内課金またはサブスクリプションと推測されるが、動画内では詳細不明。",
+"database": "Firebase",
+"hosting": "Firebase hosting",
+"analytics": "Mixpanel",
+"other": [
+"App Store",
+"Figmaテンプレート",
+"オンボーディングテンプレート",
+"ペイウォールテンプレート",
+"スクリーンショットテンプレート",
+"アプリアイコンテンプレート"
+]
+},
+"evidence": {
+"evidenceQuotes": [
+"In eight months, I build and ship over 28 apps.",
+"now bringing me $10,000 monthly revenue",
+"over 1,000 subscribers",
+"four or 5K across all my apps",
+"One app I've built in 2 hours.",
+"Once the app is live, just let it go",
+"First of all, my main source of ideas is... Astro.",
+"at least 100 or €200 per month",
+"I basically copy like 90% of the code",
+"return to winners and scale with ads"
+],
+"numberEvidence": "8か月で28アプリ、月10,000ドル、購読者1,000人超、日次ユーザー4,000〜5,000人、上位4アプリが各約1,500ドル、ツール費用はCursor約20ドル/月、OpenAI約200ドル/月、Gemini約50ドル/月、Firebase約5〜10ドル/月、Astro約10ドル/月。",
+"priceEvidence": "各アプリのユーザー向け価格は不明。競合参入基準として月100〜200ユーロ以上の収益が言及された。",
+"growthChannelEvidence": "AstroでASOキーワードを調査し、App Store検索キーワードに合わせてメタデータを設定。リリース後のApp Storeブーストと自然流入を見て、勝ちアプリに戻る。",
+"ambiguousPoints": [
+"28アプリそれぞれの名前、カテゴリ、価格、収益内訳は不明。",
+"月10,000ドルが粗収益か純利益かは不明。",
+"有料購読者1,000人超の解約率、LTV、月次継続率は不明。",
+"広告費、App Store手数料、税金を差し引いた利益は不明。",
+"Sensor Tower等の競合収益推定の正確性には限界がある。",
+"2時間で作ったアプリが収益化したかどうかは不明。",
+"スポンサー部分が含まれるため、Starter Story Buildの訴求として話が強調されている可能性がある。"
+]
+},
+"facts": [
+"Maxは本業でiOSエンジニアとして働いている。",
+"Maxは8か月で28個のシンプルなモバイルアプリを作ったと発言している。",
+"アプリ群の月間収益は10,000ドルと発言している。",
+"全アプリ合計の購読者は1,000人超と発言している。",
+"日次ユーザーは全アプリ合計で4,000〜5,000人程度と発言している。",
+"最大収益の大部分は4つのアプリから来ており、それぞれ約1,500ドルを生むと発言している。",
+"アイデア調査の主なツールとしてAstroを使っている。",
+"競合収益確認にSensor Towerまたは類似ツールを使うと説明している。",
+"競合が月100〜200ユーロ以上稼いでいる市場を基準にしている。",
+"Flutter、Fastlane、Cursor、Firebase、OpenAI、Gemini、Mixpanel、Astro、FoxDataを使っている。",
+"リリース後に沈まないアプリを改善し、広告で伸ばすと説明している。"
+],
+"inferences": [
+"この事例の本質は、アプリ開発力よりもキーワード選定、量産、撤退判断、再利用テンプレートの組み合わせにある。",
+"1つの大きなアイデアに固執するより、検索需要が確認できる小さな市場に複数回賭ける方が再現性が高い。",
+"AIコーディングやテンプレート化によって、モバイルアプリ開発経験者の生産性が大きく上がっている。",
+"非エンジニアが完全再現するには難易度が高いが、CodexやFlutterテンプレート、Firebaseを使えば一部は再現可能。",
+"Bilion向けには、アプリそのものよりも『App Storeキーワードから小型AIアプリ案を生成するシステム』として変換しやすい。"
+],
+"risks": {
+"legalRisk": "AI画像認識、医療、教育、金融、識別系アプリの場合、誤判定や免責表記、プライバシー、データ利用規約に注意が必要。",
+"platformDependency": "App Store検索、App Store審査、ランキング、初期ブースト、アプリ内課金に強く依存する。",
+"competitionRisk": "小型アプリは模倣されやすく、ASOキーワード競争や広告入札で収益性が落ちる可能性がある。",
+"replicabilityRisk": "Maxは経験あるiOSエンジニアであり、非エンジニアが同じ速度で28個作るのは難しい。",
+"exaggerationOrSuspiciousPoints": [
+"月10,000ドルの内訳、証拠画面、App Store Connectの数値は書き起こし内では確認できない。",
+"2時間でアプリを作れる発言は、テンプレートや既存コードの再利用が前提であり、初心者には再現しにくい。",
+"上位4アプリ以外は小さな収益と説明されており、28個すべてが成功しているわけではない。",
+"Starter Story Buildの広告文脈があり、視聴者に『自分もすぐできる』印象を与える方向に編集されている可能性がある。",
+"競合収益推定ツールの数値を参入判断に使っているが、推定値の誤差リスクがある。"
+]
+},
+"aiNativeRemake": {
+"howToRebuildWithAI": "App Storeキーワード調査、競合収益推定、単一機能定義、UXフロー、Flutter/Codex用実装プロンプト、ASOメタデータ、スクリーンショット文言まで自動生成する『Tiny App Portfolio Builder』に変換する。",
+"smallerStart": "まずはApp Storeキーワードを1つ選び、競合3つを分析し、1機能だけのWeb版またはFlutterプロトタイプを48時間で作る。",
+"forSoloDevelopers": "Flutterテンプレート、Firebase、Codex、Cursor、OpenAI/Gemini APIを使い、オンボーディング、ペイウォール、設定画面を共通化して小型アプリを連続投入する。",
+"forNonEngineers": "最初はアプリ開発ではなく、キーワード調査レポート、アプリ案生成、ASO文言生成、競合分析テンプレートを売る方が現実的。",
+"japanLocalization": "日本向けには『App Store検索から作るAI小型アプリ量産レポート』『日本語ASOキーワード診断』『個人開発者向け48時間アプリ企画パック』として展開できる。",
+"englishMarketVersion": "英語圏では『28 tiny app bets system』『App Store keyword to MVP prompt』『AI app portfolio starter pack』として、vibe coderやmobile indie hacker向けに売れる。"
+},
+"starterProduct": {
+"minimumVersionIn48h": "App Storeキーワードを入力すると、競合分析チェックリスト、1機能MVP案、Flutter/Codex実装プロンプト、ASOタイトル・説明文、48時間検証手順を出すWebツールまたはレポート。",
+"requiredFeatures": [
+"キーワード入力",
+"ターゲットユーザー定義",
+"競合3件の手動入力欄",
+"競合収益メモ欄",
+"単一コア機能の抽出",
+"Flutter/Codex用MVPプロンプト生成",
+"App Storeタイトル案",
+"説明文案",
+"スクリーンショット文言案",
+"48時間検証プラン出力"
+],
+"unnecessaryFeatures": [
+"自動App Storeスクレイピング",
+"自動収益推定API連携",
+"ユーザー認証",
+"決済",
+"高度な広告運用機能",
+"チーム管理",
+"完全なアプリビルダー"
+],
+"firstPrice": "初回は19〜49ドルのキーワード診断レポート、または99ドルのApp Portfolio Starter Packが現実的。",
+"howToGetFirst10Customers": "X、TikTok、Instagramで『$10K/month from 28 apps』型の事例カードを投稿し、App Storeで作るものに困っているFlutter/Codex/CursorユーザーにDM。Indie Hackers、Redditのr/SideProjectやr/iOSProgramming、Xのvibe coder層にも投稿する。",
+"validationMethod": "48時間で10本投稿、30DM、3件の無料診断を実施し、1件でも19〜49ドルでキーワード診断レポートが売れるか確認する。売れたらWebツール化、売れなければレポートの切り口を変更する。"
+},
+"contentAngles": {
+"xPostIdeas": [
+"He went from $200/mo to $10K/mo by shipping 28 tiny apps. Not one big idea. 28 keyword bets.",
+"Most app builders ask: what should I build? Max asks: what keyword already has buyers?",
+"The playbook is brutal: find keyword, check competitors, build one feature, ship, move on.",
+"The real moat is not the app. It is the shipping system.",
+"4 of 28 apps make most of the money. That is the entire lesson."
+],
+"shortVideoIdeas": [
+"1人のiOS開発者が8か月で28個アプリを出して月1万ドル。勝因は天才的アイデアではなく、App Storeキーワードの量産テスト。",
+"大作アプリを作るな。検索されている小さな悩みを1機能で解決しろ。沈まなかったアプリだけ磨け。",
+"この人の戦略はAI時代の個人開発そのもの。作る前にキーワード、競合収益、難易度を見る。",
+"28個作っても、稼ぐ中心は4個。だから最初から当てようとせず、小さく賭け続ける。",
+"Codex時代に必要なのはアプリのアイデアではなく、当たりを探す出荷システム。"
+],
+"imageCardIdea": "1枚目: 『$200/mo → $10K/mo: 28 tiny apps』、2枚目: 『Keyword → 1 feature → ship → move on』、3枚目: 『Build only after the market signal』という3枚カルーセル。"
+},
+"bilionJudgment": {
+"worthAddingToBilion": "追加価値あり。AIビルダー向けに『作る前に市場シグナルを見る』というBilionの思想と非常に相性が良い。ただしモバイル実装経験が前提なので、非エンジニア向けにはレポート/診断/プロンプト商品へ変換する必要がある。",
+"replicationScore": 7,
+"aiLeverageScore": 8,
+"monetizationClarityScore": 8,
+"buildDifficultyScore": 7,
+"whatToCopyNow": "App Storeキーワード起点、競合収益確認、1機能MVP、テンプレート再利用、リリース後に沈まないものだけ改善する判断。",
+"whatNotToCopy": "初心者がいきなり28個の本格モバイルアプリを作ること。収益証拠なしに競合推定だけを信じること。品質の低いアプリを大量投入すること。"
+},
+"bilionRecordJson": {
+"sourceType": "YouTube",
+"sourceUrl": "https://www.youtube.com/watch?v=vw2Yc4Y1PsU",
+"businessName": "Maxの28個の小型モバイルアプリポートフォリオ",
+"industry": "モバイルアプリ / ASO / AIアプリ / 個人開発",
+"revenueSignal": "8か月で28アプリを出し、月200ドルから月10,000ドルへ。購読者1,000人超、日次ユーザー4,000〜5,000人。上位4アプリが各約1,500ドル。",
+"buyer": "App Storeで特定課題を検索するユーザー",
+"pain": "ユーザーは具体的な悩みをすぐ解決したい。ビルダーは需要不明の大作アプリに時間を浪費しがち。",
+"desire": "検索需要がある小さな課題を1機能アプリで解決し、複数の収益源を作りたい。",
+"fear": "1つのアプリに時間を使いすぎて失敗すること。App Store検索で沈むこと。",
+"offer": "検索キーワードごとの単一機能モバイルアプリ",
+"pricingModel": "個別価格は不明。購読者数が出ているためサブスクリプション収益が含まれると推測。",
+"growthChannel": "App Store Optimization / キーワード検索 / 初期App Storeブースト / 勝ちアプリへの広告投下",
+"distributionNotes": "Astroで人気度と難易度を見てキーワード選定。競合が月100〜200ユーロ以上稼いでいるか確認。アプリ説明文やメタデータを選定キーワードに合わせる。",
+"whyItWorked": "大作主義を捨て、検索需要と競合収益で市場を選び、テンプレート再利用で1機能アプリを高速出荷し、データで勝ちアプリだけに戻った。",
+"toolsUsed": [
+"Flutter",
+"Fastlane",
+"Cursor",
+"Firebase",
+"OpenAI",
+"Gemini",
+"Mixpanel",
+"Astro",
+"FoxData",
+"Figma",
+"Sensor Tower"
+],
+"evidence": [
+"8か月で28アプリ",
+"月10,000ドル",
+"購読者1,000人超",
+"日次ユーザー4,000〜5,000人",
+"上位4アプリが各約1,500ドル",
+"1アプリを2時間で作った記録",
+"競合収益の基準は月100〜200ユーロ以上"
+],
+"risks": [
+"App Store依存",
+"競合収益推定の誤差",
+"経験ある開発者でないと速度再現が難しい",
+"品質が低い大量生産になる危険",
+"各アプリの価格・解約率・利益率は不明"
+],
+"aiNativeRemake": "App Storeキーワードから、1機能MVP、競合分析、Codex/Flutter実装プロンプト、ASO文言、48時間検証計画を生成するAIツールに変換する。",
+"starterProduct": "App Store Keyword to Tiny App Prompt Generator。キーワードを入れると、買うユーザー、痛み、1機能MVP、Flutter/Codexプロンプト、ASOタイトル、スクリーンショット文言、検証手順を出す。",
+"validationPlan48h": "1日目に『28 tiny apps』事例カードを5本投稿し、Flutter/Codex/Cursorユーザー30人にDM。3件の無料キーワード診断を提供。2日目に診断結果を19〜49ドルで有料化し、1件でも売れるか確認する。",
+"xPostIdeas": [
+"He did not build one big app. He shipped 28 tiny keyword bets and reached $10K/mo.",
+"The app idea was not the edge. The keyword research system was.",
+"Build one feature. Ship it. Let App Store data decide. Then move on.",
+"4 apps carry most of the revenue. That is why portfolio beats obsession.",
+"AI builders should stop asking what to build and start asking what keyword already pays."
+],
+"shortScriptIdeas": [
+"この人は8か月で28個のアプリを出して月1万ドル。やったことはシンプル。App Storeで検索されるキーワードを見つけ、1機能だけ作って、すぐ出す。",
+"月1万ドルの秘密は神アプリではない。28個の小さな賭け。そのうち4個が大半を稼いでいる。",
+"AI時代の個人開発は、作る力より選ぶ力。キーワード、競合収益、難易度を見てから作る。",
+"この戦略をBilionでやるなら、App StoreキーワードからCodexプロンプトまで一気に変換する。",
+"大作を作るな。市場が反応する小型アプリを出して、沈まないものだけ磨け。"
+],
+"imagePrompt": "Dark SaaS style carousel. Card 1: '$200/mo → $10K/mo from 28 tiny apps'. Card 2: 'Keyword research → 1 core feature → Ship fast → Move on'. Card 3: 'Only return to winners'. Minimal, high-contrast, App Store keyword grid, mobile app cards, no face.",
+"buildPromptSeed": "Build a web app called Tiny App Signal Generator. The user enters an App Store keyword, target user, competitor notes, and estimated competitor revenue. The app outputs a buyer profile, pain, one-feature MVP, Flutter/Codex build prompt, App Store title, subtitle, description, screenshot text, pricing hypothesis, and 48-hour validation plan. Use Next.js, local state, mock data, no auth, no database, mobile-first dark UI.",
+"monetizationPath": "無料で3件のキーワード診断を提供し、19〜49ドルの診断レポートにする。その後、99ドルのApp Portfolio Starter Pack、月19〜29ドルのキーワード・MVP生成ツール、上位プランでASOテンプレートや広告テスト手順を販売する。",
+"replicationScore": 7,
+"aiLeverageScore": 8,
+"monetizationClarity": 8,
+"buildDifficulty": 7
+}
+}

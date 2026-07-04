@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -45,7 +45,7 @@ export default async function JapaneseFounderPage({
               <div className="truncate text-lg font-black tracking-tight transition group-hover:text-zinc-200">
                 Bilion
               </div>
-              <div className="truncate text-xs text-zinc-500">Codex Business Spark</div>
+              <div className="truncate text-xs text-zinc-500">Money Move Feed</div>
             </div>
           </Link>
           <Link
@@ -58,22 +58,20 @@ export default async function JapaneseFounderPage({
 
         <div className="mt-14 min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-[#111214] p-5 shadow-xl shadow-black/20 sm:p-6 md:p-8">
           <div className="text-xs font-semibold tracking-[0.18em] text-zinc-500">
-            FOUNDER ACCESS
+            BILION PRO
           </div>
           <h1 className="mt-4 break-words text-3xl font-semibold tracking-tight md:text-4xl">
-            Founder Accessを解除 — $19
+            Bilion Proを解除 — $9.99/月
           </h1>
           <p className="mt-4 break-words text-sm leading-7 text-zinc-400">
-            Business Spark、Launch Pack全文、Winner保存、Codex Build Prompt全文を無制限に使えます。
+            Money Moveの無制限閲覧、追加バージョン、保存、検証後のBuildプランが使えます。
           </p>
           <p className="mt-3 break-words text-sm leading-7 text-zinc-500">
-            作る前に市場を選び、先に売るためのAIビルダー向けアクセスです。反応があったものだけ、Codexで小さく作ります。
+            AIビルダーが、作る前に需要を検証するためのProアクセスです。
           </p>
-
           {error === "invalid_access" && (
             <p className="mt-4 rounded-xl border border-red-400/20 bg-red-400/10 p-3 text-sm text-red-200">
-              アクセスコードが正しくありません。
-            </p>
+              繧｢繧ｯ繧ｻ繧ｹ繧ｳ繝ｼ繝峨′豁｣縺励￥縺ゅｊ縺ｾ縺帙ｓ縲・            </p>
           )}
 
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
@@ -81,14 +79,13 @@ export default async function JapaneseFounderPage({
               href="/jp/app"
               className="w-full rounded-xl border border-white/10 px-4 py-3 text-center text-sm font-semibold text-zinc-100 transition hover:bg-white/[0.04] sm:w-auto"
             >
-              日本語アプリに戻る
-            </Link>
+              譌･譛ｬ隱槭い繝励Μ縺ｫ謌ｻ繧・            </Link>
             {CHECKOUT_URL ? (
               <a
                 href={CHECKOUT_URL}
                 className="w-full rounded-xl bg-white px-4 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200 sm:w-auto"
               >
-                Founder Accessを解除 — $19
+                Bilion Proを解除 — $9.99/月
               </a>
             ) : (
               <button
