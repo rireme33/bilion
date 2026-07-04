@@ -71,7 +71,8 @@ export default async function JapaneseFounderPage({
           </p>
           {error === "invalid_access" && (
             <p className="mt-4 rounded-xl border border-red-400/20 bg-red-400/10 p-3 text-sm text-red-200">
-              繧｢繧ｯ繧ｻ繧ｹ繧ｳ繝ｼ繝峨′豁｣縺励￥縺ゅｊ縺ｾ縺帙ｓ縲・            </p>
+              アクセスコードが正しくありません。
+            </p>
           )}
 
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
@@ -79,7 +80,8 @@ export default async function JapaneseFounderPage({
               href="/jp/app"
               className="w-full rounded-xl border border-white/10 px-4 py-3 text-center text-sm font-semibold text-zinc-100 transition hover:bg-white/[0.04] sm:w-auto"
             >
-              譌･譛ｬ隱槭い繝励Μ縺ｫ謌ｻ繧・            </Link>
+              日本語アプリに戻る
+            </Link>
             {CHECKOUT_URL ? (
               <a
                 href={CHECKOUT_URL}

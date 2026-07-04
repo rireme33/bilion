@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+const CHECKOUT_URL = process.env.NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL || "/jp/founder";
+
 const benefits = [
   {
     title: "毎日のMoney Move",
@@ -43,15 +45,25 @@ function ButtonLink({
   href: string;
   variant?: "primary" | "secondary";
 }) {
+  const className = [
+    "inline-flex min-h-11 items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold transition",
+    variant === "primary"
+      ? "bg-white text-zinc-950 hover:bg-zinc-200"
+      : "border border-white/10 text-zinc-200 hover:bg-white/[0.04]",
+  ].join(" ");
+
+  if (href.startsWith("http")) {
+    return (
+      <a href={href} className={className}>
+        {children}
+      </a>
+    );
+  }
+
   return (
     <Link
       href={href}
-      className={[
-        "inline-flex min-h-11 items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold transition",
-        variant === "primary"
-          ? "bg-white text-zinc-950 hover:bg-zinc-200"
-          : "border border-white/10 text-zinc-200 hover:bg-white/[0.04]",
-      ].join(" ")}
+      className={className}
     >
       {children}
     </Link>
@@ -162,7 +174,14 @@ export default function JapaneseHomePage() {
                   </div>
                 </div>
               </div>
-              <ButtonLink href="/jp/app">今日のMoney Moveを見る</ButtonLink>
+              <div className="flex flex-col gap-3 sm:flex-row md:flex-col">
+                <ButtonLink href="/jp/app" variant="secondary">
+                  今日のMoney Moveを見る
+                </ButtonLink>
+                <ButtonLink href={CHECKOUT_URL}>
+                  Bilion Proを解除 — $9.99/月
+                </ButtonLink>
+              </div>
             </div>
           </div>
         </section>

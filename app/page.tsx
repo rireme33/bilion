@@ -3,6 +3,8 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+const CHECKOUT_URL = process.env.NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL || "/founder";
+
 const todaysMoneyMoves = [
   {
     revenue: "$15k MRR",
@@ -66,15 +68,25 @@ function ButtonLink({
   children: ReactNode;
   variant?: "primary" | "secondary";
 }) {
+  const className = [
+    "inline-flex w-full items-center justify-center rounded-xl px-5 py-3 text-center text-sm font-semibold transition sm:w-auto",
+    variant === "primary"
+      ? "bg-white text-zinc-950 hover:bg-zinc-200"
+      : "border border-white/10 text-zinc-100 hover:bg-white/[0.04]",
+  ].join(" ");
+
+  if (href.startsWith("http")) {
+    return (
+      <a href={href} className={className}>
+        {children}
+      </a>
+    );
+  }
+
   return (
     <Link
       href={href}
-      className={[
-        "inline-flex w-full items-center justify-center rounded-xl px-5 py-3 text-center text-sm font-semibold transition sm:w-auto",
-        variant === "primary"
-          ? "bg-white text-zinc-950 hover:bg-zinc-200"
-          : "border border-white/10 text-zinc-100 hover:bg-white/[0.04]",
-      ].join(" ")}
+      className={className}
     >
       {children}
     </Link>
@@ -267,7 +279,7 @@ export default function HomePage() {
                 ))}
               </div>
               <div className="mt-5">
-                <ButtonLink href="/founder">Unlock unlimited Money Moves</ButtonLink>
+                <ButtonLink href={CHECKOUT_URL}>Unlock unlimited Money Moves</ButtonLink>
               </div>
             </article>
           </div>

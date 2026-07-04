@@ -1,6 +1,8 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+const CHECKOUT_URL = process.env.NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL || "";
+
 type FounderPageProps = {
   searchParams: Promise<{
     access?: string | string[];
@@ -40,6 +42,24 @@ export default async function FounderPage({ searchParams }: FounderPageProps) {
           build-after-replies plans. Built for AI builders who want to test
           demand before they build.
         </p>
+        <div className="mt-6">
+          {CHECKOUT_URL ? (
+            <a
+              href={CHECKOUT_URL}
+              className="inline-flex w-full items-center justify-center rounded-2xl bg-white px-5 py-3 text-center text-sm font-black text-black transition hover:bg-zinc-200"
+            >
+              Unlock Bilion Pro — $9.99/month
+            </a>
+          ) : (
+            <button
+              type="button"
+              disabled
+              className="inline-flex w-full cursor-not-allowed items-center justify-center rounded-2xl border border-white/10 px-5 py-3 text-center text-sm font-black text-zinc-500"
+            >
+              Checkout link not configured
+            </button>
+          )}
+        </div>
       </section>
     </main>
   );
