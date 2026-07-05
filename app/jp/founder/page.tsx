@@ -20,7 +20,7 @@ export default async function JapaneseFounderPage({
 
   if (access) {
     redirect(
-      `/api/founder/access?access=${encodeURIComponent(access)}&next=${encodeURIComponent("/jp/app")}`,
+      `/api/founder/access?access=${encodeURIComponent(access)}&next=${encodeURIComponent("/app")}`,
     );
   }
 
@@ -30,7 +30,7 @@ export default async function JapaneseFounderPage({
     cookieStore.get("paid_access")?.value === "1";
 
   if (hasFounderAccess) {
-    redirect("/jp/app");
+    redirect("/app");
   }
 
   return (
@@ -49,7 +49,7 @@ export default async function JapaneseFounderPage({
             </div>
           </Link>
           <Link
-            href="/founder?next=/jp/app"
+            href="/founder?next=/app"
             className="shrink-0 rounded-full border border-white/10 px-3 py-1.5 text-xs font-medium text-zinc-400 transition hover:text-white"
           >
             English
@@ -77,7 +77,7 @@ export default async function JapaneseFounderPage({
 
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             <Link
-              href="/jp/app"
+              href="/app"
               className="w-full rounded-xl border border-white/10 px-4 py-3 text-center text-sm font-semibold text-zinc-100 transition hover:bg-white/[0.04] sm:w-auto"
             >
               日本語アプリに戻る

@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
+import { constantTimeEqual } from "@/lib/security";
 
 export const runtime = "nodejs";
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const access = url.searchParams.get("access") || "";
-  const expected = process.env.BILION_PAID_ACCESS_CODE;
+  const expected = process.env.BILION_PAID_ACCESS_CODE?.trim();
 
   if (!expected) {
     return new NextResponse("Missing BILION_PAID_ACCESS_CODE", {
@@ -13,7 +14,7 @@ export async function GET(req: Request) {
     });
   }
 
-  if (access !== expected) {
+  if (!constantTimeEqual(access, expected)) {
     const deniedUrl = new URL("/success", req.url);
     deniedUrl.searchParams.set("error", "invalid_paid_access");
     return NextResponse.redirect(deniedUrl);

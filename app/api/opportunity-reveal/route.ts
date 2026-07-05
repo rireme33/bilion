@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { MAX_BODY_SIZE_BYTES, checkRateLimit } from "@/lib/security";
 
 export const runtime = "nodejs";
 
@@ -206,6 +207,16 @@ function parseOpenAiJson(data: unknown) {
 }
 
 export async function POST(request: Request) {
+  const rateLimit = checkRateLimit(request, "opportunity-reveal", 10, 60_000);
+  if (!rateLimit.allowed) {
+    return NextResponse.json({ error: "Too many requests." }, { status: 429, headers: { "Retry-After": String(Math.ceil(rateLimit.retryAfterMs / 1000)) } });
+  }
+
+  const contentLength = request.headers.get("content-length");
+  if (contentLength && Number(contentLength) > MAX_BODY_SIZE_BYTES) {
+    return NextResponse.json({ error: "Request body too large." }, { status: 413 });
+  }
+
   const apiKey = process.env.OPENAI_API_KEY;
 
   if (!apiKey) {
@@ -228,6 +239,11 @@ export async function POST(request: Request) {
       { error: "Missing required opportunity signal fields." },
       { status: 400 },
     );
+  }
+
+  const inputText = JSON.stringify(body).length;
+  if (inputText > MAX_BODY_SIZE_BYTES) {
+    return NextResponse.json({ error: "Request body too large." }, { status: 413 });
   }
 
   const openAiResponse = await fetch("https://api.openai.com/v1/chat/completions", {

@@ -4405,6 +4405,7 @@ function getRecommendedSignals(
   goal: DailyGoal,
   buyerPreference: BuyerPreference,
   monetization: MonetizationPreference,
+  limit = 3,
 ) {
   const seenIds = new Set<string>();
 
@@ -4423,7 +4424,7 @@ function getRecommendedSignals(
       why: getWhySignalMatches(signal, goal, buyerPreference, monetization),
     }))
     .sort((a, b) => b.fitScore - a.fitScore || getSignalOpportunityScore(b.signal) - getSignalOpportunityScore(a.signal))
-    .slice(0, 3);
+    .slice(0, limit);
 }
 
 function buildLandingPageCopy(signal: BuildSignal) {
@@ -8527,6 +8528,7 @@ function MarketSelectionSection({
   const [activeStartedSignalId, setActiveStartedSignalId] = useState("");
   const [generatingSignalId, setGeneratingSignalId] = useState("");
   const [generationMessage, setGenerationMessage] = useState("");
+  const [feedVisibleCount, setFeedVisibleCount] = useState(12);
   const [dailyFeedSeed] = useState(() => getDailyFeedSeed());
   const [feedOffset, setFeedOffset] = useState(0);
   const [businessControls, setBusinessControls] = useState<BusinessStartControls>({
@@ -8566,6 +8568,7 @@ function MarketSelectionSection({
     dailyGoal,
     buyerPreference,
     monetizationPreference,
+    60,
   );
   const primaryRecommendation = recommendations[0];
   const deepDiveSignal =
@@ -8573,8 +8576,8 @@ function MarketSelectionSection({
     primaryRecommendation?.signal ||
     topMoneySignals[0] ||
     buildMarketSpecificSignal(selectedMarket);
-  const feedRecommendations = recommendations.slice(0, hasFounderAccess ? 12 : 4);
-  const lockedDailyCount = hasFounderAccess ? 0 : Math.max(0, recommendations.length - feedRecommendations.length);
+  const feedRecommendations = recommendations.slice(0, feedVisibleCount);
+  const remainingFeedCount = Math.max(0, recommendations.length - feedRecommendations.length);
   const deepDiveDetail = getOpportunityDetailFields(deepDiveSignal);
   const effectiveBusinessControls = {
     ...businessControls,
@@ -8676,6 +8679,12 @@ function MarketSelectionSection({
     setGeneratingSignalId("");
     setGenerationMessage("");
     setFeedOffset((currentOffset) => currentOffset + 1);
+  }
+
+  function loadMoreMoneyMoves() {
+    setFeedVisibleCount((currentCount) =>
+      Math.min(recommendations.length, currentCount + 10),
+    );
   }
 
   function addTransformToQueue() {
@@ -8808,7 +8817,6 @@ function MarketSelectionSection({
     <section className="w-full max-w-full overflow-hidden rounded-2xl border border-emerald-300/25 bg-emerald-300/[0.055] p-4 shadow-2xl md:rounded-3xl md:p-6">
       <MoneyMoveFeedIntro
         hasFounderAccess={hasFounderAccess}
-        lockedDailyCount={lockedDailyCount}
         selectedMarket={selectedMarket}
       />
 
@@ -8875,7 +8883,9 @@ function MarketSelectionSection({
                 detail={detail}
                 fitScore={recommendation.fitScore}
                 generating={generatingSignalId === signal.id}
+                hasFounderAccess={hasFounderAccess}
                 index={index}
+                onUnlockProClick={trackUnlockProClick}
                 key={signal.id}
                 onTry={() => startBusiness(signal)}
                 signal={signal}
@@ -8885,13 +8895,23 @@ function MarketSelectionSection({
           })}
         </div>
 
-        {!hasFounderAccess && lockedDailyCount > 0 && (
+        {remainingFeedCount > 0 && (
+          <button
+            type="button"
+            onClick={loadMoreMoneyMoves}
+            className="w-full rounded-2xl border border-emerald-300/25 bg-black/30 px-5 py-4 text-center text-sm font-black text-emerald-100 transition hover:bg-emerald-300/[0.08]"
+          >
+            Load 10 more Money Moves
+          </button>
+        )}
+
+        {!hasFounderAccess && (
           <section className="rounded-3xl border border-white/10 bg-black/30 p-5 text-center">
             <div className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">
-              You&apos;ve discovered today&apos;s free Money Moves.
+              Discovery is free. Execution is paid.
             </div>
             <p className="mx-auto mt-2 max-w-xl text-sm font-bold leading-6 text-zinc-300">
-              Bilion has more proven Money Moves ready. Unlock unlimited discovery when you want five more.
+              Browse the feed for free. Unlock the deep dive when you want the X post, DM script, offer structure, test plan, similar moves, and build-after-replies plan.
             </p>
             <a
               href={CHECKOUT_URL || "/founder"}
@@ -8916,7 +8936,7 @@ function MarketSelectionSection({
           </section>
         )}
 
-        {showGeneratedBusiness && (
+        {hasFounderAccess && showGeneratedBusiness && (
           <article className="mt-2 min-w-0 overflow-hidden rounded-2xl border border-emerald-300/35 bg-black/35 p-4 shadow-lg shadow-emerald-950/20 md:rounded-3xl md:p-5">
             <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
               Your Business
@@ -8927,6 +8947,16 @@ function MarketSelectionSection({
             <div className="mt-3 rounded-2xl border border-yellow-400/20 bg-yellow-400/[0.08] px-4 py-3 text-sm font-black text-yellow-100">
               Build only after replies.
             </div>
+
+            <MoneyMoveDeepDive
+              detail={deepDiveDetail}
+              pack={businessStartPack}
+              signal={deepDiveSignal}
+              similarMoves={recommendations
+                .map((recommendation) => recommendation.signal)
+                .filter((signal) => signal.id !== deepDiveSignal.id)
+                .slice(0, 3)}
+            />
 
             <BusinessStartPackPanel
               anglePacks={businessAnglePacks}
@@ -9042,11 +9072,9 @@ function MarketSelectionSection({
 
 function MoneyMoveFeedIntro({
   hasFounderAccess,
-  lockedDailyCount,
   selectedMarket,
 }: {
   hasFounderAccess: boolean;
-  lockedDailyCount: number;
   selectedMarket: AppMarketOption;
 }) {
   return (
@@ -9068,9 +9096,14 @@ function MoneyMoveFeedIntro({
           Discover Money Moves &rarr; Make It Yours &rarr; Test Today &rarr; Build After Replies
         </span>
         <span className="rounded-full border border-white/10 bg-black/25 px-3 py-2">
-          {hasFounderAccess ? "Unlimited daily discovery" : `Free today: ${lockedDailyCount > 0 ? "try one, unlock more" : "try one Money Move"}`}
+          {hasFounderAccess ? "Unlimited deep dives and execution assets" : "Free: browse the Money Move Feed"}
         </span>
       </div>
+      {!hasFounderAccess && (
+        <p className="mt-4 max-w-3xl break-words text-sm font-bold leading-6 text-zinc-500">
+          Free value is discovery. Bilion Pro unlocks deep dives, X posts, DMs, test plans, similar moves, and build-after-replies plans.
+        </p>
+      )}
     </section>
   );
 }
@@ -9080,7 +9113,9 @@ function MoneyMoveFeedCard({
   detail,
   fitScore,
   generating,
+  hasFounderAccess,
   index,
+  onUnlockProClick,
   onTry,
   signal,
   whyMatches,
@@ -9089,7 +9124,9 @@ function MoneyMoveFeedCard({
   detail: ReturnType<typeof getOpportunityDetailFields>;
   fitScore: number;
   generating: boolean;
+  hasFounderAccess: boolean;
   index: number;
+  onUnlockProClick: () => void;
   onTry: () => void;
   signal: BuildSignal;
   whyMatches: string;
@@ -9109,11 +9146,15 @@ function MoneyMoveFeedCard({
       <h3 className="mt-2 break-words text-base font-black text-white">
         {truncateDisplayText(getDisplaySignalTitle(signal).title, 86)}
       </h3>
-      <p className="mt-3 line-clamp-2 break-words text-sm font-bold leading-6 text-zinc-300">
-        Who paid: {normalizeDisplayText(detail.buyer)}
-      </p>
-      <p className="mt-2 line-clamp-2 break-words text-sm leading-6 text-zinc-400">
-        {normalizeDisplayText(detail.whyMoneyChangedHands || whyMatches)}
+      <div className="mt-3 grid min-w-0 gap-2">
+        <CompactMoneyMoveLine label="Money Move" value={detail.whatSold || detail.pattern} />
+        <CompactMoneyMoveLine label="Buyer" value={detail.buyer} />
+        <CompactMoneyMoveLine label="Paid Pain" value={detail.paidPain} />
+        <CompactMoneyMoveLine label="Offer angle" value={detail.firstOffer} />
+        <CompactMoneyMoveLine label="Price" value={detail.price} />
+      </div>
+      <p className="mt-3 line-clamp-2 break-words text-sm leading-6 text-zinc-400">
+        {normalizeDisplayText(whyMatches)}
       </p>
       <div className="mt-3 flex min-w-0 flex-wrap gap-2">
         <span className="rounded-full border border-emerald-300/20 bg-emerald-300/[0.06] px-2 py-1 text-[10px] font-black uppercase tracking-wide text-emerald-200">
@@ -9128,20 +9169,128 @@ function MoneyMoveFeedCard({
           </span>
         ) : null}
       </div>
-      <button
-        type="button"
-        onClick={onTry}
-        disabled={generating}
-        className={[
-          "mt-4 w-full rounded-xl px-3 py-3 text-center text-sm font-black transition disabled:cursor-wait disabled:opacity-80",
-          active
-            ? "border border-emerald-300/35 bg-emerald-300/[0.08] text-emerald-100"
-            : "bg-emerald-300 text-black hover:bg-emerald-200",
-        ].join(" ")}
-      >
-        {generating ? "Generating..." : "Try This"}
-      </button>
+      {hasFounderAccess ? (
+        <button
+          type="button"
+          onClick={onTry}
+          disabled={generating}
+          className={[
+            "mt-4 w-full rounded-xl px-3 py-3 text-center text-sm font-black transition disabled:cursor-wait disabled:opacity-80",
+            active
+              ? "border border-emerald-300/35 bg-emerald-300/[0.08] text-emerald-100"
+              : "bg-emerald-300 text-black hover:bg-emerald-200",
+          ].join(" ")}
+        >
+          {generating ? "Generating..." : "Try This"}
+        </button>
+      ) : (
+        <a
+          href={CHECKOUT_URL || "/founder"}
+          onClick={onUnlockProClick}
+          className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-emerald-300 px-3 py-3 text-center text-sm font-black text-black transition hover:bg-emerald-200"
+        >
+          Unlock Deep Dive
+        </a>
+      )}
     </article>
+  );
+}
+
+function CompactMoneyMoveLine({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0 rounded-xl border border-white/10 bg-black/25 px-3 py-2">
+      <div className="text-[10px] font-black uppercase tracking-wide text-zinc-500">
+        {label}
+      </div>
+      <p className="mt-1 line-clamp-2 break-words text-xs font-bold leading-5 text-zinc-200">
+        {normalizeDisplayText(value)}
+      </p>
+    </div>
+  );
+}
+
+function MoneyMoveDeepDive({
+  detail,
+  pack,
+  signal,
+  similarMoves,
+}: {
+  detail: ReturnType<typeof getOpportunityDetailFields>;
+  pack: BusinessStartPack;
+  signal: BuildSignal;
+  similarMoves: BuildSignal[];
+}) {
+  return (
+    <section className="mt-5 rounded-2xl border border-white/10 bg-black/25 p-4 md:rounded-3xl md:p-5">
+      <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+            Deep Dive
+          </div>
+          <h3 className="mt-2 break-words text-xl font-black text-white">
+            {truncateDisplayText(getDisplaySignalTitle(signal).title, 90)}
+          </h3>
+          <p className="mt-2 break-words text-sm font-bold leading-6 text-zinc-400">
+            Get the X post, DM script, offer, and test plan. Build after replies.
+          </p>
+        </div>
+        <span className="rounded-full border border-emerald-300/25 bg-emerald-300/[0.08] px-3 py-2 text-xs font-black uppercase tracking-wide text-emerald-200">
+          Bilion Pro
+        </span>
+      </div>
+
+      <div className="mt-4 grid min-w-0 gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <MarketOpportunityField label="Money Move" value={detail.whatSold || detail.proof} />
+        <MarketOpportunityField label="Buyer" value={detail.buyer} />
+        <MarketOpportunityField label="Paid Pain" value={detail.paidPain} />
+        <MarketOpportunityField label="Why money is moving here" value={detail.whyMoneyChangedHands} />
+        <MarketOpportunityField label="First Offer" value={pack.firstOffer} />
+        <MarketOpportunityField label="Price" value={pack.price} />
+      </div>
+
+      <div className="mt-4 grid gap-3 lg:grid-cols-2">
+        <BusinessStartPackOutput title="X post" value={pack.xPost} />
+        <BusinessStartPackOutput title="DM script" value={pack.dmScript} />
+        <BusinessStartPackOutput
+          title="Landing page angle"
+          value={`Headline: ${pack.businessName}\nSubheadline: ${detail.buyer} can turn ${detail.paidPain} into a clean output before building software.\nCTA: Want the ${pack.firstOffer}?`}
+        />
+        <BusinessStartPackOutput title="Test today checklist" value={pack.validationPlan} />
+        <BusinessStartPackOutput title="Build after replies rule" value={pack.buildDropRule} />
+        <BusinessStartPackOutput title="Optional Codex MVP prompt" value={pack.codexMvpPrompt} />
+      </div>
+
+      <details className="mt-4 rounded-2xl border border-white/10 bg-black/25 p-4">
+        <summary className="cursor-pointer list-none text-xs font-black uppercase tracking-[0.16em] text-zinc-500">
+          Similar Money Moves
+        </summary>
+        <div className="mt-3 grid gap-3 md:grid-cols-3">
+          {similarMoves.length ? (
+            similarMoves.map((similarMove) => {
+              const similarDetail = getOpportunityDetailFields(similarMove);
+
+              return (
+                <div key={similarMove.id} className="min-w-0 rounded-2xl border border-white/10 bg-black/30 p-3">
+                  <div className="text-[10px] font-black uppercase tracking-wide text-emerald-300">
+                    Money Move
+                  </div>
+                  <div className="mt-2 break-words text-sm font-black text-white">
+                    {truncateDisplayText(getDisplaySignalTitle(similarMove).title, 64)}
+                  </div>
+                  <p className="mt-2 line-clamp-3 break-words text-xs font-bold leading-5 text-zinc-400">
+                    {similarDetail.buyer} / {similarDetail.firstOffer}
+                  </p>
+                </div>
+              );
+            })
+          ) : (
+            <p className="text-sm font-bold leading-6 text-zinc-500">
+              No close matches yet. Load more Money Moves to discover related patterns.
+            </p>
+          )}
+        </div>
+      </details>
+    </section>
   );
 }
 
@@ -12217,7 +12366,7 @@ function LanguageSwitch() {
   return (
     <div className="flex rounded-full border border-white/10 bg-white/[0.03] p-1 text-xs font-medium text-zinc-500">
       <span className="rounded-full bg-white px-3 py-1.5 text-zinc-950">English</span>
-      <Link href="/jp/app" className="rounded-full px-3 py-1.5 transition hover:text-white">Japanese</Link>
+      <Link href="/jp" className="rounded-full px-3 py-1.5 transition hover:text-white">Japanese</Link>
     </div>
   );
 }

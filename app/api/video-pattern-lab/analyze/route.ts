@@ -1,3 +1,5 @@
+import { MAX_FILE_SIZE_BYTES, MAX_FRAMES, MAX_TEXT_FIELD_LENGTH, checkRateLimit } from "@/lib/security";
+
 type VideoPatternAnalysis = {
   summary: {
     product_name: string;
@@ -478,6 +480,11 @@ async function analyzeWithOpenAI({
 }
 
 export async function POST(request: Request) {
+  const rateLimit = checkRateLimit(request, "video-pattern-lab", 10, 60_000);
+  if (!rateLimit.allowed) {
+    return Response.json({ error: "Too many requests." }, { status: 429, headers: { "Retry-After": String(Math.ceil(rateLimit.retryAfterMs / 1000)) } });
+  }
+
   try {
     const formData = await request.formData();
     const video = formData.get("video");
@@ -489,12 +496,24 @@ export async function POST(request: Request) {
     const frames = JSON.parse(framePayload) as string[];
     const apiKey = process.env.OPENAI_API_KEY;
 
+    if (productName.length > MAX_TEXT_FIELD_LENGTH || niche.length > MAX_TEXT_FIELD_LENGTH || offer.length > MAX_TEXT_FIELD_LENGTH) {
+      return Response.json({ error: "Input text is too long." }, { status: 413 });
+    }
+
+    if (!Array.isArray(frames) || frames.length > MAX_FRAMES) {
+      return Response.json({ error: "Too many frames provided." }, { status: 413 });
+    }
+
     if (!hasVideoLabAccess(accessCode)) {
       return Response.json({ error: "Unauthorized. Enter a valid Video Pattern Lab access code." }, { status: 401 });
     }
 
     if (!(video instanceof File)) {
       return Response.json({ error: "Upload an MP4, MOV, or short video file." }, { status: 400 });
+    }
+
+    if (video.size > MAX_FILE_SIZE_BYTES) {
+      return Response.json({ error: "Uploaded file is too large." }, { status: 413 });
     }
 
     if (!apiKey) {
