@@ -849,10 +849,13 @@ async function copyText(value: string) {
 }
 
 export default function ContentStudioClient({
+  locale = "en",
   records,
 }: {
+  locale?: "en" | "ja";
   records: ContentStudioRecord[];
 }) {
+  const isJapanese = locale === "ja";
   const [tone, setTone] = useState<Tone>("Sharp");
   const [platform, setPlatform] = useState<Platform>("X");
   const [ctaLevel, setCtaLevel] = useState<CtaLevel>("Auto");
@@ -900,6 +903,24 @@ export default function ContentStudioClient({
       }, {}),
     [records],
   );
+  const sourceCountLabels = useMemo(() => {
+    if (!isJapanese) {
+      return Object.entries(sourceCounts).reduce<Record<string, string>>((labels, [label]) => {
+        labels[label] = label;
+
+        return labels;
+      }, {});
+    }
+
+    return Object.entries(sourceCounts).reduce<Record<string, string>>((labels, [label]) => {
+      labels[label] = {
+        github: "GitHub",
+        indie: "Indie Hackers",
+      }[label] || label;
+
+      return labels;
+    }, {});
+  }, [isJapanese, sourceCounts]);
 
   useEffect(() => {
     window.localStorage.setItem(storageKey, JSON.stringify(cardStates));
@@ -1038,25 +1059,24 @@ export default function ContentStudioClient({
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="min-w-0">
               <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-                Operator / Internal Marketing / Loop Engine
+                {isJapanese ? "運用ツール / コンテンツ制作 / 改善ループ" : "Operator / Internal Marketing / Loop Engine"}
               </div>
               <h1 className="mt-3 max-w-3xl text-3xl font-black tracking-tight text-white sm:text-5xl">
-                Bilion awareness pack from internal DB records.
+                {isJapanese ? "Bilionのシグナルから、今日発信するコンテンツを作成。" : "Bilion awareness pack from internal DB records."}
               </h1>
               <p className="mt-4 max-w-3xl text-sm leading-6 text-zinc-400 sm:text-base">
-                Internal operator page for turning existing Bilion signals into
-                social awareness posts. Bilion customer-facing value stays
-                Build / Sell / Post. This page is not an LP feature, paid
-                feature, or user-facing product promise.
+                {isJapanese
+                  ? "Bilionに蓄積されたシグナルを、SNS投稿へ変換するための運用ページです。投稿後の反応を記録し、反応の良い切り口を残しながら改善できます。"
+                  : "Internal operator page for turning existing Bilion signals into social awareness posts. Bilion customer-facing value stays Build / Sell / Post. This page is not an LP feature, paid feature, or user-facing product promise."}
               </p>
               <div className="mt-4 grid max-w-4xl gap-3 text-xs leading-5 text-zinc-400 md:grid-cols-2">
                 <InfoPanel
-                  label="SNS shows"
-                  items={snsVisibleFields}
+                  label={isJapanese ? "SNSで見せる内容" : "SNS shows"}
+                  items={isJapanese ? ["収益機会", "買い手", "有料でも解決したい悩み", "最小オファー", "価格", "Bilionへの導線"] : snsVisibleFields}
                 />
                 <InfoPanel
-                  label="Bilion deep dive keeps"
-                  items={bilionDeepDiveFields}
+                  label={isJapanese ? "Bilion内で深掘りする内容" : "Bilion deep dive keeps"}
+                  items={isJapanese ? ["作るもの", "売り方", "投稿案", "Codexプロンプト", "検証プラン", "反論への対応", "DM文面", "カルーセル", "LPの切り口", "価格設計", "リスク"] : bilionDeepDiveFields}
                 />
               </div>
             </div>
@@ -1068,7 +1088,9 @@ export default function ContentStudioClient({
                   className="rounded-lg border border-white/10 bg-white/[0.03] p-3"
                 >
                   <div className="text-xl font-black text-white">{count}</div>
-                  <div className="mt-1 capitalize">{label}s</div>
+                  <div className="mt-1 capitalize">
+                    {isJapanese ? `${sourceCountLabels[label]} 件` : `${sourceCountLabels[label]}s`}
+                  </div>
                 </div>
               ))}
             </div>
@@ -1076,34 +1098,34 @@ export default function ContentStudioClient({
         </section>
 
         <section className="grid gap-4 rounded-lg border border-white/10 bg-white/[0.03] p-4 xl:grid-cols-[1fr_1fr_1fr_auto] xl:items-end">
-          <ControlGroup label="Tone">
+          <ControlGroup label={isJapanese ? "トーン" : "Tone"}>
             {tones.map((item) => (
               <ToggleButton
                 key={item}
                 active={tone === item}
-                label={item}
+                label={isJapanese ? ({ Sharp: "端的", Founder: "創業者目線", Educational: "解説", Viral: "拡散重視" } as const)[item] : item}
                 onClick={() => setTone(item)}
               />
             ))}
           </ControlGroup>
 
-          <ControlGroup label="Platform">
+          <ControlGroup label={isJapanese ? "投稿先" : "Platform"}>
             {platforms.map((item) => (
               <ToggleButton
                 key={item}
                 active={platform === item}
-                label={item}
+                label={isJapanese ? ({ X: "X", "Instagram Carousel": "Instagram", "TikTok Script": "TikTok", LinkedIn: "LinkedIn" } as const)[item] : item}
                 onClick={() => handlePlatformChange(item)}
               />
             ))}
           </ControlGroup>
 
-          <ControlGroup label="CTA">
+          <ControlGroup label={isJapanese ? "CTAの強さ" : "CTA"}>
             {ctaLevels.map((item) => (
               <ToggleButton
                 key={item}
                 active={ctaLevel === item}
-                label={item}
+                label={isJapanese ? ({ Auto: "自動", Soft: "控えめ", Medium: "標準", Direct: "直接的" } as const)[item] : item}
                 onClick={() => handleCtaChange(item)}
               />
             ))}
@@ -1115,7 +1137,7 @@ export default function ContentStudioClient({
               onClick={handleGenerate}
               className="min-h-12 rounded-md bg-white px-5 text-sm font-black text-zinc-950 transition hover:bg-zinc-200"
             >
-              Generate Daily Content Mix
+              {isJapanese ? "今日のコンテンツ30件を生成" : "Generate Daily Content Mix"}
             </button>
             <button
               type="button"
@@ -1123,8 +1145,8 @@ export default function ContentStudioClient({
               className="min-h-12 rounded-md bg-emerald-300 px-5 text-sm font-black text-zinc-950 transition hover:bg-emerald-200"
             >
               {copiedKey === "channel-export"
-                ? "Copied"
-                : `1-click Copy ${platform}`}
+                ? (isJapanese ? "コピーしました" : "Copied")
+                : (isJapanese ? `${platform}用をまとめてコピー` : `1-click Copy ${platform}`)}
             </button>
             <button
               type="button"
@@ -1132,19 +1154,19 @@ export default function ContentStudioClient({
               className="min-h-12 rounded-md border border-white/10 px-5 text-sm font-black text-zinc-100 transition hover:bg-white/[0.06]"
             >
               {copiedKey === "markdown-export"
-                ? "Copied"
-                : "Export Today's 30 as Markdown"}
+                ? (isJapanese ? "コピーしました" : "Copied")
+                : (isJapanese ? "今日の30件をMarkdownで出力" : "Export Today's 30 as Markdown")}
             </button>
           </div>
         </section>
 
         <section className="grid gap-3 rounded-lg border border-white/10 bg-black/25 p-4 text-sm text-zinc-400 sm:grid-cols-3 xl:grid-cols-6">
-          <StatusMetric label="Generated" value={summary.generated.toString()} />
-          <StatusMetric label="Ready" value={summary.ready.toString()} />
-          <StatusMetric label="Needs Work" value={summary.needsWork.toString()} />
-          <StatusMetric label="Posted" value={summary.posted.toString()} />
-          <StatusMetric label="Winners" value={summary.winners.toString()} />
-          <StatusMetric label="Losers" value={summary.losers.toString()} />
+          <StatusMetric label={isJapanese ? "生成済み" : "Generated"} value={summary.generated.toString()} />
+          <StatusMetric label={isJapanese ? "投稿可能" : "Ready"} value={summary.ready.toString()} />
+          <StatusMetric label={isJapanese ? "要改善" : "Needs Work"} value={summary.needsWork.toString()} />
+          <StatusMetric label={isJapanese ? "投稿済み" : "Posted"} value={summary.posted.toString()} />
+          <StatusMetric label={isJapanese ? "反応あり" : "Winners"} value={summary.winners.toString()} />
+          <StatusMetric label={isJapanese ? "反応なし" : "Losers"} value={summary.losers.toString()} />
         </section>
 
         <section className="flex flex-wrap gap-2 rounded-lg border border-white/10 bg-white/[0.03] p-3">
@@ -1160,17 +1182,17 @@ export default function ContentStudioClient({
                   : "border border-white/10 text-zinc-300 hover:bg-white/[0.06]",
               ].join(" ")}
             >
-              {item}
+              {isJapanese ? ({ All: "すべて", Ready: "投稿可能", "Needs Work": "要改善", Skip: "見送り" } as const)[item] : item}
             </button>
           ))}
           <div className="ml-auto min-h-10 rounded-md border border-white/10 px-3 py-2 text-xs font-bold text-zinc-400">
-            Bulk copy: {platform} queue + full Markdown
+            {isJapanese ? `一括出力：${platform}投稿キュー + Markdown全文` : `Bulk copy: ${platform} queue + full Markdown`}
           </div>
         </section>
 
         {copiedKey === "error" && (
           <div className="rounded-lg border border-yellow-300/30 bg-yellow-300/10 p-3 text-sm font-bold text-yellow-100">
-            Clipboard blocked. Select the text and copy it manually.
+            {isJapanese ? "クリップボードへコピーできませんでした。テキストを選択して手動でコピーしてください。" : "Clipboard blocked. Select the text and copy it manually."}
           </div>
         )}
 

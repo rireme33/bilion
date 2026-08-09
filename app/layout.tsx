@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bilion",
+  title: "BILION | 海外の成功事例を日本の商品へ",
   description:
-    "Bilion turns real market signals into build-ready SaaS specs for AI builders.",
+    "海外で実際に売れたAI・オンラインビジネス事例を、日本で一人でも実行できる商品案とCodex実装案へ変換します。",
   icons: {
     icon: [
       { url: "/favicon.ico" },

@@ -6,7 +6,6 @@ const FULLWIDTH_P = "\uFF50";
 const OLD_APP_PATHS = new Set([
   "/App",
   "/apps",
-  "/jp/app",
   `/ap${FULLWIDTH_P}`,
   "/ap%EF%BD%90",
 ]);
@@ -36,5 +35,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/App", "/apps", "/jp/app", "/apｐ"],
+  matcher: ["/App", "/apps", "/apｐ"],
 };

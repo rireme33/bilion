@@ -128,6 +128,14 @@ The importer should:
 - Make file paths explicit and safe.
 - Ensure directories exist before writing files.
 
+## English Copy Quality Standard
+
+All English copy in Bilion must sound like it was written by a native English-speaking SaaS founder or startup marketer.
+
+Apply this standard to every offer, product page, Gumroad copy, Lemon Squeezy copy, X post, TikTok script, Reddit post, DM, CTA, upsell, lead magnet, onboarding message, app label, and generated content asset.
+
+Use the detailed rules in `docs/english-quality-standard.md`.
+
 ## Validation
 
 After changes, run the smallest useful checks available.

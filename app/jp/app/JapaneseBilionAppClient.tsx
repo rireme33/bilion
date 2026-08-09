@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
+import BilionCoreClient from "../../app/BilionCoreClient";
 import { showcaseItems } from "../../showcase/showcase-data";
 
 const FREE_DAILY_LIMIT_JP = 3;
@@ -119,6 +120,7 @@ function createSourceOutput({
       ["売れた型", signal],
       ["なぜ売れたか", whyNow],
       ["誰が払うか", buyer],
+      ["痛み", pain],
       ["収益機会の角度", product],
       ["最初の有料オファー", title],
       ["価格", price],
@@ -130,7 +132,7 @@ function createSourceOutput({
   };
 }
 
-function createMasterPrompt({
+function createJapaneseMasterPrompt({
   productName,
   buyer,
   pain,
@@ -147,54 +149,57 @@ function createMasterPrompt({
   price: string;
   validationSteps: string[];
 }) {
-  return `Build a standalone new web app from scratch.
+  return `以下の収益機会を、反応があったあとに実装するためのCodex向けプロンプトです。
 
-Product name:
+製品名:
 ${productName}
 
-Buyer:
+買う相手:
 ${buyer}
 
-Pain:
+痛み:
 ${pain}
 
-Product angle:
+価値提案:
 ${productAngle}
 
-First version:
+最初の実装:
 ${firstVersion}
 
-Price:
+価格:
 ${price}
 
-48h validation plan:
+48時間の検証計画:
 ${validationSteps.map((step, index) => `${index + 1}. ${step}`).join("\n")}
 
-Core workflow:
-1. User opens the product.
-2. User enters or selects a realistic sample input.
-3. App classifies the input and generates the commercial output.
-4. App shows next actions, status, and copy-ready sections.
-5. User copies the output or uses it as a sales demo.
+実装の基本フロー:
+1. ユーザーが画面を開く。
+2. ユーザーが現実的な入力を入れる。
+3. アプリが入力内容を整理し、商材として使える出力を作る。
+4. 次に進むためのアクションと、コピーしやすい見出しを表示する。
+5. ユーザーがその結果をコピーしたり、営業デモとして使う。
 
-Technical requirements:
-- Use Next.js and React.
-- Use local React state only.
-- Use mock data only.
-- Do not add authentication.
-- Do not add payments.
-- Do not add a database.
-- Do not call external APIs.
-- Do not require environment variables.
+技術要件:
+- Next.js と React を使う。
+- ローカル状態だけで完結させる。
+- ダミーデータのみを使う。
+- 認証は入れない。
+- 決済は入れない。
+- データベースは使わない。
+- 外部APIは呼ばない。
+- 環境変数を必要としない。
 
-UI requirements:
-- Mobile-first layout.
-- Dark, calm SaaS style.
-- Clear source or input selector.
-- Clear output cards.
-- Copy button for generated sections.
-- No generic AI gradients.
-- No decorative noise.`;
+UI要件:
+- モバイルファーストで作る。
+- ダークで落ち着いたSaaSっぽい見た目にする。
+- 入力元や入力欄を明確にする。
+- 出力カードを見やすくする。
+- 生成結果をすぐコピーできるようにする。
+- 見た目の飾りは最小限にする。`;
+}
+
+function createMasterPrompt(props: Parameters<typeof createJapaneseMasterPrompt>[0]) {
+  return createJapaneseMasterPrompt(props);
 }
 
 function getNextOutputIndex(poolLength: number, currentIndex: number) {
@@ -316,38 +321,25 @@ function mapGoldmineResultToSourceOutput(free: GoldmineFreeResult): SourceOutput
   };
 }
 
-function opportunityLabelJa(label: string) {
-  const labels: Record<string, string> = {
-    "シグナル": "売れた型",
-    "何が金になるか": "最初の有料オファー",
-    "誰が買うか": "誰が払うか",
-    "どんな痛みを解決するか": "なぜ売れたか",
-    "何を売るか": "収益機会の角度",
-    "いくらで売るか": "価格",
-    "なぜ今買うか": "48時間検証の理由",
-  };
-
-  return labels[label] || label;
+function containsJapaneseText(value?: string) {
+  return Boolean(value && /[ぁ-んァ-ヶ一-龠々]/u.test(value));
 }
 
-function opportunityValueJa(label: string, value: string, title: string) {
-  if (label === "ローンチコピー" || label === "リードマグネット") {
-    return value;
-  }
+function hasUsableJapaneseGoldmineResult(free: GoldmineFreeResult) {
+  const hasJapaneseBuyer = free.pattern_matches?.some(containsJapaneseText) ?? false;
+  const hasJapaneseSteps =
+    free.build_steps?.length && free.build_steps.every(containsJapaneseText);
 
-  if (label === "何が金になるか") {
-    return `${value}。まず小さな有料オファーとして売る。`;
-  }
+  return Boolean(
+    containsJapaneseText(free.title || free.what_you_can_build) &&
+      containsJapaneseText(free.why_its_useful || free.what_happened) &&
+      hasJapaneseBuyer &&
+      hasJapaneseSteps,
+  );
+}
 
-  if (label === "なぜ今買うか") {
-    return `${value} これを48時間で検証する。`;
-  }
-
-  if (label === "何を売るか") {
-    return `${value}。LP見出し、X投稿、DM文まで含めて先に売る。`;
-  }
-
-  return value || title;
+function trimJapaneseSentenceEnding(value: string) {
+  return value.trim().replace(/[。.!！?？]+$/u, "");
 }
 
 function getFieldValueJa(
@@ -357,6 +349,43 @@ function getFieldValueJa(
 ) {
   const field = output.businessFields.find(([label]) => labels.includes(label));
   return field?.[1] || fallback;
+}
+
+function buildJapaneseImplementationPrompt(output: SourceOutput) {
+  const buyer = getOpportunityValueByLabelJa(output, "誰が払うか");
+  const pain = getOpportunityValueByLabelJa(output, "痛み");
+  const firstOffer = getOpportunityValueByLabelJa(output, "初回有料オファー");
+  const price = getOpportunityValueByLabelJa(output, "価格");
+
+  return `以下の収益機会を、反応があったあとに実装するためのCodex向けプロンプトです。
+
+製品名:
+${output.title}
+
+買う相手:
+${buyer}
+
+痛み:
+${pain}
+
+初回オファー:
+${firstOffer}
+
+価格:
+${price}
+
+実装方針:
+- まずは1ページのMVPとして、入力・生成結果・コピーの流れだけを作る。
+- 認証、決済、外部API連携は入れず、ローカル状態で検証できる形にする。
+- モバイルファーストで、見た目よりも「売れるか」を確認しやすい構成にする。
+- 反応があったら、次の改善フェーズに進めるようにする。
+
+実装要件:
+- Next.js と React と TypeScript を使う。
+- ローカル状態のみ使用する。
+- 外部APIやデータベースは使わない。
+- まずは最小機能で検証できる形にする。
+- コピーや共有しやすいUIにする。`;
 }
 
 function getOpportunityFieldsJa(output: SourceOutput): [string, string][] {
@@ -395,10 +424,11 @@ function getOpportunityFieldsJa(output: SourceOutput): [string, string][] {
     ["価格", "いくらで売るか"],
     "$19 one-time または $29/month",
   );
+  const launchPain = trimJapaneseSentenceEnding(pain);
   const launchPost = getFieldValueJa(
     output,
     ["Launch Post", "ローンチ投稿"],
-    `${whoPays}向けに、${pain}を解決する${firstOffer}を検証中です。まずBefore/Afterサンプルで反応を見ます。`,
+    `${whoPays}向けに、${launchPain}という課題を解決する「${firstOffer}」を検証中です。まずBefore/Afterサンプルで反応を見ます。`,
   );
   const dmScript = getFieldValueJa(
     output,
@@ -414,13 +444,27 @@ function getOpportunityFieldsJa(output: SourceOutput): [string, string][] {
     ["痛み", pain],
     ["初回オファー", `${firstOffer}\n${price}`],
     ["48時間検証", firstCustomerPlan],
-    ["Launch Post", launchPost],
-    ["DM Script", dmScript],
-    ["Codex Build Prompt", output.masterPrompt.split("\n").slice(0, 8).join("\n")],
+    ["ローンチ投稿", launchPost],
+    ["DM文", dmScript],
+    ["Codex実装プロンプト", buildJapaneseImplementationPrompt(output)],
   ];
 }
 
 function getOpportunityValueByLabelJa(output: SourceOutput, targetLabel: string) {
+  const aliases: Record<string, string[]> = {
+    "売れた型": ["売れた型", "シグナル"],
+    "なぜ売れたか": ["なぜ売れたか", "どんな痛みを解決するか", "なぜ今買うか"],
+    "痛み": ["痛み", "どんな痛みを解決するか"],
+    "誰が払うか": ["誰が払うか", "誰が買うか"],
+    "初回有料オファー": ["最初の有料オファー", "何が金になるか"],
+    "価格": ["価格", "いくらで売るか"],
+  };
+  const matchingAliases = aliases[targetLabel];
+
+  if (matchingAliases) {
+    return getFieldValueJa(output, matchingAliases, output.title);
+  }
+
   return (
     getOpportunityFieldsJa(output).find(([label]) => label === targetLabel)?.[1] ||
     ""
@@ -440,7 +484,7 @@ function getSourceOutputTextJa(output: SourceOutput) {
 function getJapaneseMarketForOutput(output: SourceOutput): JapaneseMarketKey {
   const text = getSourceOutputTextJa(output).toLowerCase();
 
-  if (/bug|api|freelance|開発代行|受託|issue|pr/.test(text)) return "developer";
+  if (/github|repo|repository|codex|cursor|developer|devrel|bug|api|freelance|開発代行|受託|issue|pr/.test(text)) return "developer";
   if (/automation|自動化|spreadsheet|email|report|レポート|メール|業務|ローカル|口コミ|clinic|restaurant|review/.test(text)) return "local";
   if (/plugin|extension|template|gumroad|etsy|shopify|chrome|テンプレ|プラグイン|デジタル/.test(text)) return "ecommerce";
   if (/agency|エージェンシー|consultant|client|コンサル|納品/.test(text)) return "aiAgency";
@@ -469,9 +513,9 @@ function getJapaneseOpportunityScore(output: SourceOutput) {
 function getJapaneseEvidenceLevel(output: SourceOutput) {
   const score = getJapaneseOpportunityScore(output);
 
-  if (score >= 42) return "Strong";
-  if (score >= 34) return "Medium";
-  return "Directional";
+  if (score >= 42) return "強い";
+  if (score >= 34) return "中程度";
+  return "参考";
 }
 
 function getMarketLabelJa(key: JapaneseMarketKey) {
@@ -569,7 +613,7 @@ function getMarketFallbackOutputJa(market: JapaneseMarketKey): SourceOutput {
 
   return createSourceOutput({
     label: "市場サンプル",
-    proof: `参照元 mock evidence / ${label}`,
+    proof: `参照元 確認用サンプル / ${label}`,
     title: item.product,
     signal: `${label}市場では、すでに手作業で行われている反復業務に小さな有料ツールの余地がある。`,
     buyer: item.buyer,
@@ -636,20 +680,20 @@ ${output.validationSteps.map((step, index) => `${index + 1}. ${step}`).join("\n"
 作る前に、投稿/DMで売れるかを見る。`;
 }
 
-const japaneseMobileReplyCopy = `売りたい相手・自分の強み・考えてる案を送ってください。
-BilionでMoney Moveに変換して、最初に何を売るべきか返します。`;
+const japaneseMobileReplyCopy = `売りたい相手、強み、考えている案を送ってください。
+BilionでMoney Moveに変換し、まず何を売るべきかを整理してお返しします。`;
 
-const japaneseMobileDmCopy = `Bilionを検証中です。売れたビジネスの型から、収益機会・価格・投稿文・48時間検証まで出します。
-あなたの案で1回無料診断しましょうか？`;
+const japaneseMobileDmCopy = `Bilionで市場の証拠をもとに収益機会を整理しています。
+売れた型、価格、投稿文、48時間検証まで一緒に出せます。あなたの案で、まずは一度無料で見てもらえますか？`;
 
 const japaneseMobileSalesCtaCopy = `Bilion Proを解除 — $9.99/月
 
-Money Moveの無制限閲覧、追加バージョン、保存、検証後のBuildプランが使えます。`;
+Money Moveの無制限閲覧、追加バージョン、保存、検証後の実装プランが使えます。`;
 
 const reviewedJapaneseBusinessSparks: SourceOutput[] = [
   createSourceOutput({
     label: "Money Move Seed",
-    proof: "品質確認済みseed / Business Automation",
+    proof: "確認済みサンプル / 業務自動化",
     title: "Invoice Follow-up Sprint",
     signal:
       "フリーランスや小規模制作会社では、請求書の催促がメール、スプレッドシート、記憶に散らばりやすい。",
@@ -666,12 +710,23 @@ const reviewedJapaneseBusinessSparks: SourceOutput[] = [
       "フリーランスまたは小規模制作会社20人に送る。",
       "返信、クリック、ワークフロー希望が出た場合だけ作る。",
     ],
-    masterPrompt:
-      "Build this only after someone replies, clicks, or asks for the offer. Build a mobile-first MVP called Invoice Follow-up Sprint for freelancers and solo agencies. The tool helps users paste overdue invoice details, generate polite follow-up emails, track follow-up status, and copy next actions. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no external APIs, no payment integration. Include screens for landing/offer, invoice input form, generated email output, saved follow-up records, and validation panel. Input fields: client name, invoice amount, due date, days overdue, relationship tone, previous follow-up status, context notes. Outputs: subject line, polite follow-up email, priority, next action, internal note. Include 3 mock invoices. Add copy buttons. Make the UI mobile-first with no horizontal scroll.",
+    masterPrompt: createMasterPrompt({
+      productName: "Invoice Follow-up Sprint",
+      buyer: "フリーランスと小規模制作会社",
+      pain: "請求書の催促は気まずく、後回しになりやすく、メールと表計算に分散している。",
+      productAngle: "未払い請求の状況を貼ると、丁寧な催促メール、優先度、次の対応、簡単な管理メモを生成するワークフロー。",
+      firstVersion: "請求書情報を入力すると、催促メール、優先度、次のアクション、管理メモを生成するモバイルファーストのMVP。",
+      price: "$500 setup + $150/month",
+      validationSteps: [
+        "未払い請求メモから催促メールになるBefore/Afterサンプルを1つ作る。",
+        "フリーランスまたは小規模制作会社20人に送る。",
+        "返信、クリック、ワークフロー希望が出た場合だけ作る。",
+      ],
+    }),
   }),
   createSourceOutput({
     label: "Money Move Seed",
-    proof: "品質確認済みseed / Local Business",
+    proof: "確認済みサンプル / 地域ビジネス",
     title: "Review Reply Copilot",
     signal:
       "ローカル店舗は口コミが売上に直結するが、返信文を書く作業は反復的で後回しになりやすい。",
@@ -688,12 +743,23 @@ const reviewedJapaneseBusinessSparks: SourceOutput[] = [
       "近隣店舗オーナーにサンプルを送る。",
       "翌月分も任せたいと言われた場合だけ作る。",
     ],
-    masterPrompt:
-      "Build this only after someone replies, clicks, or asks for the offer. Build a mobile-first MVP called Review Reply Copilot for local service businesses. The tool helps owners paste customer reviews and generate polite, brand-safe replies. Use Next.js, React, and TypeScript. Use local state and localStorage only. No auth, no database, no external APIs. Screens: offer overview, review input, generated reply output, saved replies, validation panel. Inputs: business type, review text, star rating, tone, owner note. Outputs: short reply, warm reply, recovery reply, internal note. Include 5 mock reviews. Add copy buttons. Mobile-first UI.",
+    masterPrompt: createMasterPrompt({
+      productName: "Review Reply Copilot",
+      buyer: "飲食店、クリニック、美容室、地域店舗",
+      pain: "口コミ返信の重要性を分かっているが、毎回トーンや謝罪文を考えるのが重い。",
+      productAngle: "口コミを貼ると、短い返信、丁寧な返信、低評価向け返信、オーナー確認メモを生成する小型ツール。",
+      firstVersion: "口コミを入力すると、返信案、要注意フラグ、オーナー確認メモを生成するモバイルファーストのMVP。",
+      price: "$500 setup + $150/month",
+      validationSteps: [
+        "実際の口コミ5件をBefore/Afterで書き換える。",
+        "近隣店舗オーナーにサンプルを送る。",
+        "翌月分も任せたいと言われた場合だけ作る。",
+      ],
+    }),
   }),
   createSourceOutput({
     label: "Money Move Seed",
-    proof: "品質確認済みseed / Micro SaaS",
+    proof: "確認済みサンプル / 小規模SaaS",
     title: "Name Tracing Worksheets",
     signal:
       "保護者や先生は、子どもの名前入りプリントのような個別教材にすでにお金を払っている。",
@@ -710,8 +776,19 @@ const reviewedJapaneseBusinessSparks: SourceOutput[] = [
       "保護者・先生クリエイター20人に無料サンプルを提案する。",
       "自分の子ども用が欲しいと言われた場合だけ作る。",
     ],
-    masterPrompt:
-      "Build this only after someone replies, clicks, or asks for the offer. Build a mobile-first MVP called Name Tracing Worksheets. The tool lets parents and teachers enter a child's name and generate a printable tracing worksheet. Use Next.js, React, and TypeScript. Use local state only. No auth, no database, no external APIs, no payment integration. Screens: landing/offer, worksheet form, worksheet preview, saved examples, validation panel. Inputs: child name, letter size, line style, number of rows, theme. Outputs: printable worksheet preview and copy/download placeholder. Include 3 sample names. Mobile-first UI.",
+    masterPrompt: createMasterPrompt({
+      productName: "Name Tracing Worksheets",
+      buyer: "保護者、幼児教室の先生、ホームスクール家庭",
+      pain: "個別ワークシートを作りたいが、毎回デザインするのは面倒で時間がかかる。",
+      productAngle: "名前を入力すると、なぞり書き用の印刷ワークシートを生成する小さなSaaS。",
+      firstVersion: "名前を入力すると、印刷用のワークシートプレビューを生成するモバイルファーストのMVP。",
+      price: "$9 one-time または $5/month",
+      validationSteps: [
+        "名前なぞりワークシートのサンプルを3つ投稿する。",
+        "保護者・先生クリエイター20人に無料サンプルを提案する。",
+        "自分の子ども用が欲しいと言われた場合だけ作る。",
+      ],
+    }),
   }),
 ];
 
@@ -1315,7 +1392,7 @@ function JapaneseMarketSelectionSection({
 }) {
   const marketLabel = getMarketLabelJa(selectedMarket);
   const buyer = getOpportunityValueByLabelJa(opportunity, "誰が払うか");
-  const pain = getOpportunityValueByLabelJa(opportunity, "なぜ売れたか");
+  const pain = getOpportunityValueByLabelJa(opportunity, "痛み");
   const firstOffer = getOpportunityValueByLabelJa(opportunity, "初回有料オファー");
   const price = getOpportunityValueByLabelJa(opportunity, "価格");
 
@@ -1324,7 +1401,7 @@ function JapaneseMarketSelectionSection({
       <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div className="min-w-0">
           <div className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
-            Start here
+            ここから開始
           </div>
           <h2 className="mt-1 break-words text-2xl font-black tracking-tight text-white md:mt-2 md:text-4xl">
             AIに「何を作ればいいか」を聞くのをやめる
@@ -1334,7 +1411,7 @@ function JapaneseMarketSelectionSection({
           </p>
         </div>
         <div className="hidden rounded-full border border-white/10 bg-black/30 px-4 py-2 text-xs font-black uppercase tracking-wide text-zinc-400 md:block">
-          Money Move → Make It Yours → Test Today → Build After Replies
+          収益機会を選ぶ → 自分向けに変える → 今日検証する → 反応後に作る
         </div>
       </div>
 
@@ -1371,7 +1448,7 @@ function JapaneseMarketSelectionSection({
                 スコア {getJapaneseOpportunityScore(opportunity)}/50
               </span>
               <span className="rounded-full border border-white/10 bg-black/25 px-2 py-1 text-zinc-500">
-                証拠レベル {getJapaneseEvidenceLevel(opportunity)}
+                根拠の目安 {getJapaneseEvidenceLevel(opportunity)}
               </span>
             </div>
             <div className="mt-3 text-xs font-black uppercase tracking-[0.16em] text-zinc-500 md:mt-4">
@@ -1480,19 +1557,30 @@ function JapaneseEvidenceToolsSection() {
           </div>
         </summary>
         <p className="mt-4 break-words border-t border-white/10 pt-4 text-sm leading-7 text-zinc-500">
-          証拠貼り付けインポートは英語版で先行テスト中です。日本語版では、まず市場選定とLaunch Assets生成を使ってください。
+          証拠貼り付けインポートは英語版で先行テスト中です。日本語版では、まず市場選定と販売素材の生成を使ってください。
         </p>
       </details>
     </div>
   );
 }
 
-export default function JapaneseBilionAppClient({
+export default function JapaneseBilionAppClient(
+  props: JapaneseBilionAppClientProps,
+) {
+  if (!props.hasFounderAccess) {
+    return <BilionCoreClient hasFounderAccess={false} />;
+  }
+
+  return <JapaneseBilionPaidAppClient {...props} />;
+}
+
+function JapaneseBilionPaidAppClient({
   hasFounderAccess,
 }: JapaneseBilionAppClientProps) {
   const [freeUsageCount, setFreeUsageCount] = useState(0);
   const [showOutput, setShowOutput] = useState(false);
-  const [copiedPrompt, setCopiedPrompt] = useState(false);
+  const [copyPromptStatus, setCopyPromptStatus] =
+    useState<"" | "copied" | "error">("");
   const [sourceType, setSourceType] = useState<SourceType>("indie");
   const [selectedMarket, setSelectedMarket] =
     useState<JapaneseMarketKey>("education");
@@ -1501,6 +1589,8 @@ export default function JapaneseBilionAppClient({
   const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
+    const previousLanguage = document.documentElement.lang;
+    document.documentElement.lang = "ja";
     const loadAccess = window.setTimeout(() => {
       const usageCount = readFreeUsageCount();
 
@@ -1508,7 +1598,10 @@ export default function JapaneseBilionAppClient({
       setShowOutput(false);
     }, 0);
 
-    return () => window.clearTimeout(loadAccess);
+    return () => {
+      document.documentElement.lang = previousLanguage;
+      window.clearTimeout(loadAccess);
+    };
   }, []);
 
   const selectedPool = sourceOutputPools[sourceType];
@@ -1564,6 +1657,11 @@ export default function JapaneseBilionAppClient({
         throw new Error("Goldmine response missing free result");
       }
 
+      if (!hasUsableJapaneseGoldmineResult(data.free)) {
+        generateLocalOutput();
+        return;
+      }
+
       setCurrentOutput(mapGoldmineResultToSourceOutput(data.free));
     } catch {
       generateLocalOutput();
@@ -1598,18 +1696,16 @@ export default function JapaneseBilionAppClient({
 
     setCurrentOutput(topMarketOpportunity);
     setShowOutput(true);
-    setCopiedPrompt(false);
+    setCopyPromptStatus("");
     incrementFreeUsage();
   }
 
   async function copyMasterPrompt() {
-    const promptText = hasFounderAccess
-      ? selectedOutput.masterPrompt
-      : selectedOutput.masterPrompt.split("\n").slice(0, 12).join("\n");
+    const promptText = buildJapaneseImplementationPrompt(selectedOutput);
 
-    await navigator.clipboard.writeText(promptText);
-    setCopiedPrompt(true);
-    window.setTimeout(() => setCopiedPrompt(false), 1200);
+    const copied = await writeClipboardTextJa(promptText);
+    setCopyPromptStatus(copied ? "copied" : "error");
+    window.setTimeout(() => setCopyPromptStatus(""), 1500);
   }
 
   return (
@@ -1636,7 +1732,7 @@ export default function JapaneseBilionAppClient({
             onMarketChange={(market) => {
               setSelectedMarket(market);
               setShowOutput(false);
-              setCopiedPrompt(false);
+              setCopyPromptStatus("");
             }}
             onReveal={revealMarketOpportunity}
             opportunity={topMarketOpportunity}
@@ -1674,7 +1770,7 @@ export default function JapaneseBilionAppClient({
                         setCurrentOutputIndex(0);
                         setCurrentOutput(null);
                         setShowOutput(false);
-                        setCopiedPrompt(false);
+                        setCopyPromptStatus("");
                       }}
                       className={[
                         "min-w-0 rounded-xl border px-4 py-3 text-left text-sm font-semibold transition break-words",
@@ -1683,7 +1779,7 @@ export default function JapaneseBilionAppClient({
                           : "border-white/10 bg-black/20 text-zinc-300 hover:bg-white/[0.04]",
                       ].join(" ")}
                     >
-                      {sourceOutputPools[source][0]!.label}
+                      {source === "indie" ? "Indie Hackers DB" : "GitHubシグナル"}
                     </button>
                   );
                 })}
@@ -1701,7 +1797,7 @@ export default function JapaneseBilionAppClient({
                   disabled={isGenerating}
                   className="w-full rounded-xl bg-white px-4 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                 >
-                  別のMoney Moveを表示
+                  {isGenerating ? "生成中..." : "別のMoney Moveを表示"}
                 </button>
               ) : (
                 <ButtonLink href="/jp/founder">Bilion Proを見る</ButtonLink>
@@ -1717,11 +1813,11 @@ export default function JapaneseBilionAppClient({
               </p>
             )}
             <p className="mt-3 max-w-xl break-words text-xs leading-5 text-zinc-500">
-              まず売る。反応があったものだけ作る。Codex Build Promptは、市場反応を見たあとに使います。
+              まず売る。反応があったものだけ作る。Codex実装プロンプトは、市場反応を見たあとに使います。
             </p>
             {hasFounderAccess && (
               <p className="mt-4 max-w-xl break-words text-sm leading-6 text-zinc-500">
-                Bilion Pro unlocked. Money Moveの無制限閲覧、追加バージョン、保存、検証後のBuildプランが使えます。
+                Bilion Proが有効です。Money Moveの無制限閲覧、追加バージョン、保存、検証後の実装プランが使えます。
               </p>
             )}
           </div>
@@ -1729,7 +1825,7 @@ export default function JapaneseBilionAppClient({
           <div className="min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-[#111214] p-4 shadow-xl shadow-black/20 md:p-5">
             <div className="border-b border-white/10 pb-4">
               <div className="text-xs font-semibold tracking-[0.16em] text-zinc-500">
-                {showOutput ? "Launch Assets" : "まだ表示されていません"}
+                {showOutput ? "販売素材" : "まだ表示されていません"}
               </div>
               {showOutput ? (
                 <>
@@ -1742,7 +1838,7 @@ export default function JapaneseBilionAppClient({
               ) : (
                 <>
                   <p className="mt-2 break-words text-sm leading-7 text-zinc-400">
-                    Pathを選び、「無料でMoney Moveを試す」を押してください。
+                    市場を選び、「無料でMoney Moveを試す」を押してください。
                   </p>
                   <p className="mt-3 break-words rounded-xl border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-500">
                     参照元 IH42kDB + GitHubシグナル
@@ -1817,13 +1913,13 @@ export default function JapaneseBilionAppClient({
               <div className="flex min-w-0 flex-col gap-4 border-b border-white/10 pb-4 sm:flex-row sm:items-end sm:justify-between">
                 <div className="min-w-0">
                   <div className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
-                    CODEX BUILD PROMPT
+                    CODEX実装プロンプト
                   </div>
                   <h2 className="mt-2 break-words text-2xl font-semibold tracking-tight">
                     反応があったら作る。
                   </h2>
                   <p className="mt-3 max-w-3xl break-words text-sm leading-7 text-zinc-400">
-                    返信、クリック、購入意思が出たあとに、このCodex Promptを使ってください。
+                    返信、クリック、購入意思が出たあとに、このCodexプロンプトを使ってください。
                   </p>
                 </div>
                 <button
@@ -1831,21 +1927,23 @@ export default function JapaneseBilionAppClient({
                   onClick={copyMasterPrompt}
                   className="w-full rounded-xl bg-white px-4 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200 sm:w-auto"
                 >
-                  {copiedPrompt ? "コピー済み" : "Codex Promptをコピー"}
+                  {copyPromptStatus === "copied"
+                    ? "コピー済み"
+                    : copyPromptStatus === "error"
+                      ? "コピーできませんでした"
+                      : "Codexプロンプトをコピー"}
                 </button>
               </div>
               <pre className="mt-5 max-h-[620px] max-w-full overflow-auto whitespace-pre-wrap break-words rounded-xl border border-white/10 bg-black/35 p-4 font-sans text-sm leading-6 text-zinc-100">
-                {hasFounderAccess
-                  ? selectedOutput.masterPrompt
-                  : selectedOutput.masterPrompt.split("\n").slice(0, 12).join("\n")}
+                {buildJapaneseImplementationPrompt(selectedOutput)}
               </pre>
               {!hasFounderAccess && (
                 <div className="mt-4 rounded-xl border border-white/10 bg-black/25 p-4">
                   <div className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
-                    Codex Build Prompt Preview
+                    Codex実装プロンプトのプレビュー
                   </div>
                   <p className="mt-2 break-words text-sm leading-6 text-zinc-400">
-                    Full Promptはロックされています。Bilion Proで検証後のBuildプラン全文を解除できます。
+                    プロンプト全文はロックされています。Bilion Proで検証後の実装プラン全文を利用できます。
                   </p>
                   <div className="mt-4">
                     <ButtonLink href="/jp/founder">Bilion Proを解除 — $9.99/月</ButtonLink>
@@ -1859,13 +1957,13 @@ export default function JapaneseBilionAppClient({
         <section className="w-full max-w-full overflow-hidden border-t border-white/10 py-8">
           <div className="min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-[#111214] p-4 md:p-5">
             <div className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
-              Winner Loop
+              勝ち筋の確認
             </div>
             <h2 className="mt-2 break-words text-2xl font-semibold tracking-tight">
-              Winnerは、市場から反応があった収益機会です。
+              勝ち筋とは、市場から反応があった収益機会です。
             </h2>
             <p className="mt-3 max-w-3xl break-words text-sm leading-7 text-zinc-400">
-              証拠 → 収益機会 → Launch Assets → 市場反応 → Winner。返信、保存、クリック、DM、購入意思が出たものだけを、次に作るべき候補として残します。
+              証拠 → 収益機会 → 販売素材 → 市場反応 → 勝ち筋。返信、保存、クリック、DM、購入意思が出たものだけを、次に作るべき候補として残します。
             </p>
           </div>
         </section>
@@ -1941,25 +2039,25 @@ function JapaneseMobileShareKit({ output }: { output: SourceOutput }) {
     {
       key: "x-post",
       label: "X投稿をコピー",
-      helper: "Post this brief on X",
+      helper: "この内容をX投稿用にコピー",
       text: buildJapaneseMobileXPost(output),
     },
     {
       key: "reply",
       label: "返信をコピー",
-      helper: "Reply to interested people with this",
+      helper: "興味を示した相手への返信文",
       text: japaneseMobileReplyCopy,
     },
     {
       key: "dm",
       label: "DMをコピー",
-      helper: "Reply to interested people with this",
+      helper: "見込み客へ送るDM文",
       text: japaneseMobileDmCopy,
     },
     {
       key: "sales-cta",
       label: "販売CTAをコピー",
-      helper: "Offer Bilion Pro",
+      helper: "Bilion Proの案内文",
       text: japaneseMobileSalesCtaCopy,
     },
   ];
@@ -1973,11 +2071,10 @@ function JapaneseMobileShareKit({ output }: { output: SourceOutput }) {
   return (
     <div className="min-w-0 overflow-hidden rounded-xl border border-emerald-400/20 bg-emerald-400/[0.06] p-4">
       <div className="text-xs font-semibold tracking-wide text-emerald-300">
-        Mobile Share Kit
+        モバイル共有セット
       </div>
       <p className="mt-2 break-words text-sm leading-6 text-zinc-400">
-        Post this brief on X → Reply to interested people with this → Offer the
-        Bilion Pro.
+        Xへ投稿し、興味を示した相手へ返信し、Bilion Proを案内するための文面です。
       </p>
       <div className="mt-4 grid min-w-0 gap-3 sm:grid-cols-2">
         {shareItems.map((item) => (

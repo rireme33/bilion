@@ -120,7 +120,7 @@ export default function JapaneseHomePage() {
               作るのは、返信や購入意思が出たあと。
             </p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink href="/app">今日のMoney Moveを見る</ButtonLink>
+              <ButtonLink href="/jp/app">今日のMoney Moveを見る</ButtonLink>
               <ButtonLink href="/jp/founder" variant="secondary">
                 Bilion Proを見る
               </ButtonLink>
@@ -175,7 +175,7 @@ export default function JapaneseHomePage() {
                 </div>
               </div>
               <div className="flex flex-col gap-3 sm:flex-row md:flex-col">
-                <ButtonLink href="/app" variant="secondary">
+                <ButtonLink href="/jp/app" variant="secondary">
                   今日のMoney Moveを見る
                 </ButtonLink>
                 <ButtonLink href={CHECKOUT_URL}>
